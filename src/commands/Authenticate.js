@@ -48,7 +48,7 @@ class AuthenticateCommand extends Command {
 				console.log("Declined", args.key);
 				return message.util.send(L.get("KEY_DECLINED"));
 			}
-    	});
+    	}, {});
     	return message.util.send(L.get("CHECKING_KEY"));
     }
 }
