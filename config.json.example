@@ -1,5 +1,7 @@
 {
     "ownerID": "1111111111111",
     "prefix": ",",
-    "token": "xxxxxxxxx"
+    "token": "xxxxxxxxx",
+    "registered_role": "rolename (must exist!)",
+    "world_id": 2202
 }
