@@ -1,15 +1,15 @@
-const { Command } = require('discord-akairo');
+const { Command } = require("discord-akairo");
 
 class HelloCommand extends Command {
     constructor() {
-        super('hello', {
-            aliases: ['hello']
+        super("hello", {
+            aliases: ["hello"]
         });
     }
 
     exec(message) {
         // Also available: util.reply()
-        return message.util.send('Hello!');
+        return message.util.send("Hello!");
     }
 }
 
