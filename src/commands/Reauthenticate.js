@@ -31,6 +31,7 @@ class ReauthenticateCommand extends Command {
                     m.removeRole(r);
                     m.send(L.get("KEY_INVALIDATED"));
                 }
+                DB.deleteKey(p.api_key);
             });
             
         });
