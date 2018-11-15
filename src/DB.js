@@ -1,50 +1,51 @@
 const Util = require("./Util.js");
-const sqlite3 = require("sqlite3").verbose();
-
-function initSchema() {
-    let sql = `
-        CREATE TABLE registrations(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            api_key TEXT,
-            user INT,
-            created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    `;
-    execute((db) => {
-        db.run(sql);
-    });
-}
+//const sqlite3 = require("sqlite3").verbose();
+const sqlite3 = require("better-sqlite3");
 
 function execute(f) {
-    let db = new sqlite3.Database("./db/database.db", sqlite3.OPEN_CREATE, (err) => {
+    let db = new sqlite3("./db/database.db", [], err => {
         if(err) {
-            return console.error(err.message);
+            return console.error("DB open()", err.message);
         }
     });
     let res = f(db);
 
-    db.close((err) => {
-        return console.error(err.message);
+    db.close(err => {
+        if(err) {
+            return console.error("DB close()", err.message);
+        }
     });
     return res;
 }
 
-exports.storeAPIKey = function(key, user) {
-    let sql = `INSERT INTO registrations(api_key, user) VALUES(?,?)`;
-    execute((db) => {
-        db.run(sql, [key, user]);
+exports.initSchema = function() {
+    let sql = `
+        CREATE TABLE IF NOT EXISTS registrations(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user INT UNIQUE NOT NULL,
+            api_key TEXT NOT NULL,
+            created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    `;
+    execute(db => {
+        db.prepare(sql).run();
+    });
+}
+
+exports.storeAPIKey = function(user, key) {
+    let sql = `INSERT INTO registrations(user, api_key) VALUES(?,?)
+                ON CONFLICT(user) DO UPDATE SET api_key = ?, created = datetime('now', 'localtime')`;
+    execute(db => {
+        db.prepare(sql).run([user, key, key]);
     });
 }
 
 exports.revalidateKeys = function() {
-    let sql = `SELECT api_key, user FROM registrations`;
-    execute((db) => {
-        let prune = [];
-        db.each(sql, [], (err, row) => {
-            if(!exports.validateWorld(row.api_key)) {
-                prune.push(row.user);
-            }
-        });
-        return prune;
-    });
+    return execute(db => 
+        Promise.all(
+            db.prepare(`SELECT api_key, user FROM registrations`).all().map(r => 
+                Util.validateWorld(r.api_key).then(isOnWorld => !isOnWorld ? r : undefined)
+            )
+        )
+    );
 }
