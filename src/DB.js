@@ -24,7 +24,7 @@ exports.initSchema = function() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user INT UNIQUE NOT NULL,
             api_key TEXT NOT NULL,
-            gw2account TEXT UNIQUE NOT NULL,
+            gw2account TEXT NOT NULL,
             created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `;
