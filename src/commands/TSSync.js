@@ -11,17 +11,11 @@ class TSSyncCommand extends Command {
     constructor() {
         super("tssync", {
             aliases: ["tssync"],
-            args: [
-                {
-                    id: "key",
-                    type: "string",
-                    default: ""
-                }
-            ]
+            userPermissions: ['ADMINISTRATOR']
         });
     }
 
-    exec(message, args) {
+    exec(message) {
 
     var tsClient = new TeamSpeak(config.ts.ip, config.ts.port);
     var options = ['away', 'times']; // or for only one options = 'away'

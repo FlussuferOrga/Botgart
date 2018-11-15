@@ -28,7 +28,7 @@ class AuthenticateCommand extends Command {
             members.append({"guild": message.member, "member": message.member.guild})
         } else {
             // this snippet allows users to authenticate themselves
-            // through a DM and is dedicated to Jey, who is fucking 
+            // through a DM and is dedicated to Jey, who is a fucking 
             // numbnut when it comes to data privacy and posting your
             // API key in public channels.
             this.client.guilds.forEach(function(g) {

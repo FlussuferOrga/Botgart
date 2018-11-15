@@ -56,7 +56,7 @@ exports.storeAPIKey = function(user, guild, key, gw2account) {
 exports.revalidateKeys = function() {
     return execute(db => 
         Promise.all(
-            db.prepare(`SELECT api_key, user FROM registrations`).all().map(r => 
+            db.prepare(`SELECT api_key, guild, user FROM registrations ORDER BY guild`).all().map(r => 
                 Util.validateWorld(r.api_key).then(isOnWorld => !isOnWorld ? r : undefined)
             )
         )
