@@ -3,5 +3,11 @@
     "prefix": ",",
     "token": "xxxxxxxxx",
     "registered_role": "rolename (must exist!)",
-    "world_id": 2202
+    "world_id": 2202,
+    "ts": {
+        "ip": "127.0.01",
+        "port": 10011,
+        "user": "admin",
+        "password": "secret" 
+    }
 }

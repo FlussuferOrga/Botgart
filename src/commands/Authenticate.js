@@ -40,17 +40,21 @@ class AuthenticateCommand extends Command {
                     console.error("Role not found: " + config.registered_role);
                     return message.util.send(L.get("REG_ROLE_NOT_FOUND"));
                 } else {
-                    let uid = message.member.user.id;
-                    DB.storeAPIKey(uid, args.key);
-                    console.log("Accepted", args.key, message.member.displayName);
-                    message.member.addRole(r);
-                    return message.util.send(L.get("KEY_ACCEPTED"));    
+                    Util.getAccountGUID(args.key).then(guid => {
+                        DB.storeAPIKey(message.member.user.id, args.key, guid);
+                        console.log("Accepted", args.key, message.member.displayName);
+                        message.member.addRole(r);
+                        return message.util.send(L.get("KEY_ACCEPTED"));    
+                    });
+                    
                 }       
             } else {
                 console.log("Declined", args.key);
                 return message.util.send(L.get("KEY_DECLINED"));
             }
-        }, err => {});
+        }, err => {
+            console.error(err);
+        });
         return message.util.send(L.get("CHECKING_KEY"));
     }
 }

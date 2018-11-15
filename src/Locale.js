@@ -7,7 +7,7 @@ var DE = {
     "CHECKING_KEY": "Prüfe API-Key...",
     "REG_ROLE_NOT_FOUND": "Die eingestellte Rolle existiert nicht auf dem Server. Bitte informiere einen Administrator.",
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
-    "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys in der Eingangshalle des Servers."
+    "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys in der Eingangshalle des Servers:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste in der Eingangshalle des Servers `,auth ` gefolgt von deinem neuen Schlüssel."
 
 }
 

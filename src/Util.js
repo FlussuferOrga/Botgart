@@ -6,15 +6,15 @@ api.setStorage(new gw2.memStore());
 exports.validateWorld = function(apikey) {
     api.setAPIKey(apikey);
     return api.getAccount().then(
-       res => { return new Promise((resolve, reject) => resolve(res.world === config.world_id))},
-       res => undefined
+       res => new Promise((resolve, reject) => resolve(res.world === config.world_id)),
+       res => console.error
     );  
 }
 
 exports.getAccountGUID = function(apikey) {
     api.setAPIKey(apikey);
     return api.getAccount().then(
-        res => { return new Promise((resolve, reject) => resolve(res.id))},
-        res => undefined
+        res => new Promise((resolve, reject) => resolve(res.id)),
+        res => console.error
     );
 }

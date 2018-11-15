@@ -8,7 +8,13 @@ function execute(f) {
             return console.error("DB open()", err.message);
         }
     });
-    let res = f(db);
+
+    try {
+        var res = f(db);
+    } catch(err) {
+        var res = undefined;
+        console.error(err);
+    }
 
     db.close(err => {
         if(err) {
@@ -28,17 +34,13 @@ exports.initSchema = function() {
             created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `;
-    execute(db => {
-        db.prepare(sql).run();
-    });
+    execute(db => db.prepare(sql).run());
 }
 
 exports.storeAPIKey = function(user, key, gw2account) {
     let sql = `INSERT INTO registrations(user, api_key, gw2account) VALUES(?,?,?)
                 ON CONFLICT(user) DO UPDATE SET api_key = ?, created = datetime('now', 'localtime')`;
-    execute(db => {
-        db.prepare(sql).run([user, key, gw2account, key]);
-    });
+    execute(db => db.prepare(sql).run(user, key, gw2account, key));
 }
 
 exports.revalidateKeys = function() {
