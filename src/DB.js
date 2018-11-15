@@ -28,19 +28,30 @@ exports.initSchema = function() {
     let sql = `
         CREATE TABLE IF NOT EXISTS registrations(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user INT UNIQUE NOT NULL,
+            user INT NOT NULL,
+            guild INT NOT NULL,
             api_key TEXT NOT NULL,
             gw2account TEXT NOT NULL,
-            created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created TIMESTAMP DEFAULT (datetime('now','localtime')),
+            UNIQUE(user, guild) ON CONFLICT REPLACE,
+            UNIQUE(guild, api_key)
         )
-    `;
+    `; // no ON CONFLICT for second unique, that's an actual error
     execute(db => db.prepare(sql).run());
 }
 
-exports.storeAPIKey = function(user, key, gw2account) {
-    let sql = `INSERT INTO registrations(user, api_key, gw2account) VALUES(?,?,?)
-                ON CONFLICT(user) DO UPDATE SET api_key = ?, created = datetime('now', 'localtime')`;
-    execute(db => db.prepare(sql).run(user, key, gw2account, key));
+exports.storeAPIKey = function(user, guild, key, gw2account) {
+    console.log(user, guild, key, gw2account);
+    let sql = `INSERT INTO registrations(user, guild, api_key, gw2account) VALUES(?,?,?,?)`;
+    return execute(db => {
+                try {
+                    db.prepare(sql).run(user, guild, key, gw2account);
+                    return true;
+                } catch(err) {
+                    //console.error(err);
+                    return false;
+                }
+            });
 }
 
 exports.revalidateKeys = function() {

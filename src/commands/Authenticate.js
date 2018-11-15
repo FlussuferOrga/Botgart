@@ -20,42 +20,68 @@ class AuthenticateCommand extends Command {
     }
 
     exec(message, args) {
-        if(!message.member) {
-            return; // direct message
+        let isDirectMessage = message.member !== undefined;
+        let members = [];
+        let reply = "";
+        if(!isDirectMessage) {
+            members.append({"guild": message.member, "member": message.member.guild})
+        } else {
+            // this snippet allows users to authenticate themselves
+            // through a DM and is dedicated to Jey, who is fucking 
+            // numbnut when it comes to data privacy and posting your
+            // API key in public channels.
+            this.client.guilds.forEach(function(g) {
+                let m = g.members.find(m => m.id === message.author.id);
+                if(m) {
+                    members.push({"guild":g, "member":m});
+                }
+            });
         }
+
+        message.util.send(L.get("CHECKING_KEY"))
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
         let validFormat = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
         if(!validFormat) {
             return message.util.send(L.get("KEY_INVALID_FORMAT"));
-        }
-        if(message.deletable) {
-            message.delete();
         } else {
-            message.util.send(L.get("NO_DEL_PERM"));
-        }
-        Util.validateWorld(args.key).then(isOnWorld => {
-            if(isOnWorld) {
-                let r = message.member.guild.roles.find(role => role.name === config.registered_role);
-                if(!r) {
-                    console.error("Role not found: " + config.registered_role);
-                    return message.util.send(L.get("REG_ROLE_NOT_FOUND"));
+            // try to delete the message for privacy reasons
+            if(!isDirectMessage) {
+                if(message.deletable) {
+                    message.delete();
                 } else {
-                    Util.getAccountGUID(args.key).then(guid => {
-                        DB.storeAPIKey(message.member.user.id, args.key, guid);
-                        console.log("Accepted", args.key, message.member.displayName);
-                        message.member.addRole(r);
-                        return message.util.send(L.get("KEY_ACCEPTED"));    
-                    });
-                    
-                }       
-            } else {
-                console.log("Declined", args.key);
-                return message.util.send(L.get("KEY_DECLINED"));
+                    message.util.send(L.get("NO_DEL_PERM"));
+                }
             }
-        }, err => {
-            console.error(err);
-        });
-        return message.util.send(L.get("CHECKING_KEY"));
+            Util.validateWorld(args.key).then(isOnWorld => {
+                if(isOnWorld === true) {
+                    Util.getAccountGUID(args.key).then(guid => {
+                        members.forEach(function(m) {
+                            let r = m.guild.roles.find(role => role.name === config.registered_role);
+                            if(!r) {
+                                console.error("Role %s not found on server %s. Skipping.", config.registered_role, g.name);
+                            } else {
+                                let unique = DB.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
+                                if(unique) {
+                                    console.log("Accepted %s for %s on %s.", args.key, m.member.user.username, m.guild.name);
+                                    m.member.addRole(r);
+                                    reply = L.get("KEY_ACCEPTED")
+
+                                } else {
+                                    console.log("Duplicate API key %s on server %s.", args.key, m.guild.name);
+                                    reply = L.get("KEY_NOT_UNIQUE")
+                                }
+                            }
+                            message.util.send(reply);
+                        })
+                    });   
+                } else {
+                    console.log("Declined API key ${args.key}.");
+                    reply = L.get("KEY_DECLINED");
+                }
+            }, err => {
+                console.error(err);
+            });
+        }
     }
 }
 
