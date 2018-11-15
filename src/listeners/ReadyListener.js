@@ -1,3 +1,5 @@
+const DB = require("../DB.js");
+
 const { Listener } = require("discord-akairo");
 
 class ReadyListener extends Listener {
@@ -9,7 +11,9 @@ class ReadyListener extends Listener {
     }
 
     exec() {
-        console.log("I'm ready!");
+        console.log("Bot started!");
+        DB.initSchema();
+        console.log("Database initialised.");
     }
 }
 
