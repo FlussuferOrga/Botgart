@@ -1,11 +1,11 @@
 const Util = require("./Util.js");
-//const sqlite3 = require("sqlite3").verbose();
+const winston = require('winston');
 const sqlite3 = require("better-sqlite3");
 
 function execute(f) {
     let db = new sqlite3("./db/database.db", [], err => {
         if(err) {
-            return console.error("DB open()", err.message);
+            return winston.log("error", "DB open()", err);
         }
     });
 
@@ -13,12 +13,12 @@ function execute(f) {
         var res = f(db);
     } catch(err) {
         var res = undefined;
-        console.error(err);
+        winston.log("error", "DB execute", err);
     }
 
     db.close(err => {
         if(err) {
-            return console.error("DB close()", err.message);
+            return winston.log("error", "DB close()", err);
         }
     });
     return res;
@@ -41,7 +41,6 @@ exports.initSchema = function() {
 }
 
 exports.storeAPIKey = function(user, guild, key, gw2account) {
-    console.log(user, guild, key, gw2account);
     let sql = `INSERT INTO registrations(user, guild, api_key, gw2account) VALUES(?,?,?,?)`;
     return execute(db => {
                 try {
@@ -65,8 +64,7 @@ exports.revalidateKeys = function() {
 }
 
 exports.deleteKey = function(key) {
-    let sql = `DELETE FROM registrations WHERE api_key = ?`;
-    execute(db => db.prepare(sql).run(key));
+    execute(db => db.prepare(`DELETE FROM registrations WHERE api_key = ?`).run(key));
 }
 
 

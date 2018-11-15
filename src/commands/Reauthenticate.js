@@ -1,9 +1,11 @@
 const { Command } = require("discord-akairo");
+const winston = require('winston');
 var DB = require("../DB.js");
 var Util = require("../Util.js");
 var Const = require("../Const.js");
 var L = require("../Locale.js");
 var config = require("../../config.json");
+
 
 class ReauthenticateCommand extends Command {
     constructor() {
@@ -28,6 +30,7 @@ class ReauthenticateCommand extends Command {
             prune.filter(p => p !== undefined).forEach(p => {
                 let m = message.guild.members.find(member => p.user == member.user.id);
                 if(m) {
+                    winston.log("info", "Pruning %s.", m.user.username);
                     m.removeRole(r);
                     m.send(L.get("KEY_INVALIDATED"));
                 }

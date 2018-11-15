@@ -1,4 +1,5 @@
 const { Command } = require("discord-akairo");
+const winston = require('winston');
 var DB = require("../DB.js");
 var Util = require("../Util.js");
 var Const = require("../Const.js");
@@ -33,7 +34,7 @@ class AuthenticateCommand extends Command {
             this.client.guilds.forEach(function(g) {
                 let m = g.members.find(m => m.id === message.author.id);
                 if(m) {
-                    members.push({"guild":g, "member":m});
+                    members.push({"guild": g, "member": m});
                 }
             });
         }
@@ -58,16 +59,16 @@ class AuthenticateCommand extends Command {
                         members.forEach(function(m) {
                             let r = m.guild.roles.find(role => role.name === config.registered_role);
                             if(!r) {
-                                console.error("Role %s not found on server %s. Skipping.", config.registered_role, g.name);
+                                winston.log("error", "Role %s not found on server %s. Skipping.", config.registered_role, g.name);
                             } else {
                                 let unique = DB.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
                                 if(unique) {
-                                    console.log("Accepted %s for %s on %s.", args.key, m.member.user.username, m.guild.name);
+                                    winston.log("info", "Accepted %s for %s on %s.", args.key, m.member.user.username, m.guild.name);
                                     m.member.addRole(r);
                                     reply = L.get("KEY_ACCEPTED")
 
                                 } else {
-                                    console.log("Duplicate API key %s on server %s.", args.key, m.guild.name);
+                                    winston.log("info", "Duplicate API key %s on server %s.", args.key, m.guild.name);
                                     reply = L.get("KEY_NOT_UNIQUE")
                                 }
                             }
@@ -75,11 +76,11 @@ class AuthenticateCommand extends Command {
                         })
                     });   
                 } else {
-                    console.log("Declined API key ${args.key}.");
+                    winston.log("info","Declined API key ${args.key}.");
                     reply = L.get("KEY_DECLINED");
                 }
             }, err => {
-                console.error(err);
+                winston.log("error","Error occured while validating world.", err);
             });
         }
     }

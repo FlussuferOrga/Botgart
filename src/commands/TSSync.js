@@ -1,4 +1,5 @@
 const { Command } = require("discord-akairo");
+const winston = require('winston');
 var DB = require("../DB.js");
 var Util = require("../Util.js");
 var Const = require("../Const.js");

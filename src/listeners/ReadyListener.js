@@ -1,5 +1,5 @@
 const DB = require("../DB.js");
-
+const winston = require('winston');
 const { Listener } = require("discord-akairo");
 
 class ReadyListener extends Listener {
@@ -11,9 +11,9 @@ class ReadyListener extends Listener {
     }
 
     exec() {
-        console.log("Bot started!");
+        winston.log("info", "Bot started!");
         DB.initSchema();
-        console.log("Database initialised.");
+        winston.log("info", "Database initialised.");
         //DB.dummy();
 
         const config = require("../../config.json");
