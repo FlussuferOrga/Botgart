@@ -25,7 +25,22 @@ class ListCronsCommand extends Command {
         if(!message.member) {
             return message.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
-        return;
+        let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
+        let header = format.formatUnicorn("ID", "TIME", "COMMAND", "ARGUMENTS", "GUILD", "CREATED BY", "CREATED AT") + "\n";
+        let mes = header;
+        DB.getCronjobs().forEach((cron) => {
+            let line = format.formatUnicorn(cron.id, cron.schedule, cron.command, cron.arguments, cron.guild, cron.created_by, cron.created) + "\n";
+            if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
+                // leave some space for the backticks and additional linebreaks
+                mes += line;
+            } else {
+                // message full -> send it and start a new one
+                mes = "```\n" + mes + "\n```";
+                message.author.send(mes);
+                mes = header + line;
+            }
+        });
+        message.author.send("```\n" + mes + "\n```");
     }
 }
 

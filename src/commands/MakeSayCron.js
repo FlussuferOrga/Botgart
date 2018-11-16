@@ -35,7 +35,7 @@ class MakeSayCron extends Command {
             return message.member.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
 
-        let cmdargs = {channel: args.channel, text: args.text};
+        let cmdargs = {channel: args.channel.id, text: args.text};
         let job = Util.scheduleCronjob(this.client, args.schedule, message.guild.id, "say", cmdargs);
         if(!job) {
             return message.member.send(L.get("CRONJOB_NOT_STORED"));

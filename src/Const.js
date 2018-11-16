@@ -1,3 +1,1 @@
-// NOT USED
-/*exports.WorldId = 2202;
-exports.RegisteredRole = "Flussufer";*/
+exports.MAX_MESSAGE_LENGTH = 2000;

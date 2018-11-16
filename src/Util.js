@@ -28,13 +28,12 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
             winston.log("info", "Scheduling Say in " + guild + "#" + args.channel.name + " to " + time + ".");
             job = schedule.scheduleJob(time, () => {
                 let g = client.guilds.find(g => g.id === guild);
-                console.log(job);
                 if(!g) {
                     winston.log("error", "I am not a member of guild " + guild + ". Canceling Say cronjob.");
                     job.cancel();
                     return;
                 } else {
-                    let c = g.channels.find(c => c.id === args.channel.id);
+                    let c = g.channels.find(c => c.id === args.channel);
                     if(!c) {
                         winston.log("error", "Can not find a channel " + args.channel.name + ". Canceling Say cronjob.");
                         job.cancel();
@@ -52,3 +51,23 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
     }
     return job;
 }
+
+// taken from https://stackoverflow.com/a/18234317
+String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+function () {
+    "use strict";
+    var str = this.toString();
+    if (arguments.length) {
+        var t = typeof arguments[0];
+        var key;
+        var args = ("string" === t || "number" === t) ?
+            Array.prototype.slice.call(arguments)
+            : arguments[0];
+
+        for (key in args) {
+            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+        }
+    }
+
+    return str;
+};
