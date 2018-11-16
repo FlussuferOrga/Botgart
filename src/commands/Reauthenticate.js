@@ -5,7 +5,6 @@ var Util = require("../Util.js");
 var Const = require("../Const.js");
 var L = require("../Locale.js");
 var config = require("../../config.json");
-const winston = require('winston');
 
 class ReauthenticateCommand extends Command {
     constructor() {
