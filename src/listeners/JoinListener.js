@@ -10,7 +10,9 @@ class JoinListener extends Listener {
     }
 
     exec(member) {
-        member.send(L.get("WELCOME"));
+        if(!member.user.bot) {
+            member.send(L.get("WELCOME"));
+        }
     }
 }
 
