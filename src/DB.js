@@ -13,6 +13,7 @@ function execute(f) {
         var res = f(db);
     } catch(err) {
         var res = undefined;
+        console.log(err);
         winston.log("error", "DB execute", err);
     }
 
@@ -25,19 +26,29 @@ function execute(f) {
 }
 
 exports.initSchema = function() {
-    let sql = `
-        CREATE TABLE IF NOT EXISTS registrations(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user INT NOT NULL,
-            guild INT NOT NULL,
-            api_key TEXT NOT NULL,
-            gw2account TEXT NOT NULL,
-            created TIMESTAMP DEFAULT (datetime('now','localtime')),
-            UNIQUE(user, guild) ON CONFLICT REPLACE,
-            UNIQUE(guild, api_key)
-        )
-    `; // no ON CONFLICT for second unique, that's an actual error
-    execute(db => db.prepare(sql).run());
+    let sqls = [
+    `CREATE TABLE IF NOT EXISTS registrations(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user INT NOT NULL,
+        guild INT NOT NULL,
+        api_key TEXT NOT NULL,
+        gw2account TEXT NOT NULL,
+        created TIMESTAMP DEFAULT (datetime('now','localtime')),
+        UNIQUE(user, guild) ON CONFLICT REPLACE,
+        UNIQUE(guild, api_key)
+    )`, // no ON CONFLICT for second unique, that's an actual error
+    `CREATE TABLE IF NOT EXISTS cronjobs(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        schedule TEXT NOT NULL,
+        command TEXT NOT NULL,
+        arguments TEXT,
+        created_by INT NOT NULL,
+        guild INT NOT NULL,
+        created TIMESTAMP DEFAULT (datetime('now','localtime'))
+    )`
+    ]; 
+    sqls.forEach(sql => execute(db => db.prepare(sql).run()))
+    
 }
 
 exports.storeAPIKey = function(user, guild, key, gw2account) {
@@ -78,4 +89,20 @@ exports.dummy = function() {
         230947151931375617, '4A820A42-000D-3B46-91B9-F7E664FEBAAEB321BE57-5FB1-4DF2-85A7-000000000000',"dsa"
         ]));
 
+}
+
+exports.storeCronjob = function(schedule, command, args, creator, guild) {
+    let sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?,?,?,?,?)`;
+    return execute(db => {
+        let last_id = undefined;
+        db.transaction((_) => {
+            db.prepare(sql).run(schedule, command, args, creator, guild);
+            last_id = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+        })(null);
+        return last_id;
+    });
+}
+
+exports.getCronjobs = function() {
+    return execute(db => db.prepare(`SELECT * FROM cronjobs`).all());
 }

@@ -8,8 +8,10 @@ var DE = {
     "CHECKING_KEY": "Prüfe API-Key...",
     "REG_ROLE_NOT_FOUND": "Die eingestellte Rolle existiert nicht auf dem Server. Bitte informiere einen Administrator.",
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
-    "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys in der Eingangshalle des Servers:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste `,auth ` gefolgt von deinem neuen Schlüssel in der Eingangshalle des Servers oder per Direktnachricht an mich."
-
+    "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys in der Eingangshalle des Servers:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste `,auth ` gefolgt von deinem neuen Schlüssel in der Eingangshalle des Servers oder per Direktnachricht an mich.",
+    "NOT_AVAILABLE_AS_DM": "Dieser Befehl ist per Privatnachricht nicht nutzbar. Bitte versuche es auf einem Server erneut.",
+    "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID: ",
+    "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Möglicherweise ist die von dir übergebene Zeitangabe ungültig. Du kannst diese auf https://crontab.guru/ überprüfen."
 }
 
 exports.get = function(key) {
