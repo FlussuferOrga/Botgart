@@ -1,10 +1,10 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-var DB = require("../DB.js");
-var Util = require("../Util.js");
-var Const = require("../Const.js");
-var L = require("../Locale.js");
-var config = require("../../config.json");
+const DB = require("../DB.js");
+const Util = require("../Util.js");
+const Const = require("../Const.js");
+const L = require("../Locale.js");
+const config = require("../../config.json");
 
 class AuthenticateCommand extends Command {
     constructor() {
@@ -59,16 +59,16 @@ class AuthenticateCommand extends Command {
                         members.forEach(function(m) {
                             let r = m.guild.roles.find(role => role.name === config.registered_role);
                             if(!r) {
-                                winston.log("error", "Role %s not found on server %s. Skipping.", config.registered_role, g.name);
+                                winston.log("error", "Role {0} not found on server {1}. Skipping.".formatUnicorn(config.registered_role, g.name));
                             } else {
                                 let unique = DB.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
                                 if(unique) {
-                                    winston.log("info", "Accepted %s for %s on %s.", args.key, m.member.user.username, m.guild.name);
+                                    winston.log("info", "Accepted {0} for {1} on {2}.".formatUnicorn(args.key, m.member.user.username, m.guild.name));
                                     m.member.addRole(r);
                                     reply = L.get("KEY_ACCEPTED")
 
                                 } else {
-                                    winston.log("info", "Duplicate API key %s on server %s.", args.key, m.guild.name);
+                                    winston.log("info", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
                                     reply = L.get("KEY_NOT_UNIQUE")
                                 }
                             }

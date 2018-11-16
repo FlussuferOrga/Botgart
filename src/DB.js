@@ -106,3 +106,14 @@ exports.storeCronjob = function(schedule, command, args, creator, guild) {
 exports.getCronjobs = function() {
     return execute(db => db.prepare(`SELECT * FROM cronjobs`).all());
 }
+
+exports.deleteCronjob = function(id) {
+    return execute(db => {
+        let changes = 0;
+        db.transaction((_) => {
+            db.prepare(`DELETE FROM cronjobs WHERE id = ?`).run(id)
+            changes = db.prepare(`SELECT changes() AS changes`).get().changes;
+        })(null);
+        return changes > 0;
+    });
+}

@@ -8,8 +8,8 @@ const config = require("../../config.json");
 
 class MakeSayCron extends Command {
     constructor() {
-        super("makesaycron", {
-            aliases: ["makesaycron","mksaycron"],
+        super("makecmdcron", {
+            aliases: ["makecommandcron", "makecmdcron","mkcmdcron"],
             split: "quoted",
             args: [
                 {
@@ -18,11 +18,11 @@ class MakeSayCron extends Command {
                     default: ""
                 },
                 {
-                    id: "channel",
-                    type: "textChannel"
+                    id: "cmd",
+                    type: "string"
                 },
                 {
-                    id: "text",
+                    id: "args",
                     type: "string"
                 }
             ],
@@ -35,12 +35,16 @@ class MakeSayCron extends Command {
             return message.member.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
 
-        let cmdargs = {channel: args.channel.id, text: args.text};
-        let job = Util.scheduleCronjob(this.client, args.schedule, message.guild, "say", cmdargs);
+        let schedule = args.schedule;
+        let cmd = args.cmd;
+        let cmdargs = args.args;
+
+        // TODO: lookup commandname from alias
+        let job = Util.scheduleCronjob(this.client, args.schedule, message.guild, cmd, cmdargs);
         if(!job) {
             return message.member.send(L.get("CRONJOB_NOT_STORED"));
         } else {
-            let cid = DB.storeCronjob(args.schedule, "say", JSON.stringify(cmdargs), message.member.user.id, message.guild.id);
+            let cid = DB.storeCronjob(args.schedule, cmd, JSON.stringify(cmdargs), message.member.user.id, message.guild.id);
             Util.cronJobs[cid] = job;
             return message.member.send(L.get("CRONJOB_STORED") + cid);
         }

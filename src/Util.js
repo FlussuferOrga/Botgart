@@ -1,8 +1,9 @@
-var config = require("../config.json");
+const config = require("../config.json");
 const winston = require('winston');
-var schedule = require('node-schedule');
-var gw2 = require("@cthos/gw2-api");
-var api = new gw2.gw2();
+const DB = require("./DB.js");
+const schedule = require('node-schedule');
+const gw2 = require("@cthos/gw2-api");
+const api = new gw2.gw2();
 api.setStorage(new gw2.memStore());
 
 exports.validateWorld = function(apikey) {
@@ -21,21 +22,25 @@ exports.getAccountGUID = function(apikey) {
     );
 }
 
+exports.cronJobs = {};
+
 exports.scheduleCronjob = function(client, time, guild, command, args) {
     let job = null;
     switch(command) {
         case "say":
-            winston.log("info", "Scheduling Say in " + guild + "#" + args.channel.name + " to " + time + ".");
             job = schedule.scheduleJob(time, () => {
-                let g = client.guilds.find(g => g.id === guild);
+                // Note that this callback could take place long after the cron was scheduled.
+                // So the bot could no longer be there. We therefore need to find() the guild
+                // again to make sure the bot is still on there.
+                let g = client.guilds.find(g => g.id === guild.id);
                 if(!g) {
-                    winston.log("error", "I am not a member of guild " + guild + ". Canceling Say cronjob.");
+                    winston.log("error", "I am not a member of guild {0}. Canceling Say cronjob.".formatUnicorn(guild));
                     job.cancel();
                     return;
                 } else {
                     let c = g.channels.find(c => c.id === args.channel);
                     if(!c) {
-                        winston.log("error", "Can not find a channel " + args.channel.name + ". Canceling Say cronjob.");
+                        winston.log("error", "Can not find a channel {0}. Canceling Say cronjob.".formatUnicorn(args.channel));
                         job.cancel();
                         return;
                     } else {
@@ -43,13 +48,34 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
                         winston.log("info", "Executed Say.");
                     }
                 }
-            })
+            });
+            winston.log("info", "Scheduling Say in {0}#{1} to {2}.".formatUnicorn(guild, args.channel, time));
+        break;
+
+        case "reauthenticate":
         break;
 
         default:
+            winston.log("error", "Unhandled cron type '{0}'".formatUnicorn(command));
         break;
     }
     return job;
+}
+
+exports.deleteCronjob = function(id) {
+    let canceled = false;
+    let deletedFromDB = false;
+    if(id in exports.cronJobs) {
+        exports.cronJobs[id].cancel();
+        delete exports.cronJobs[id];
+        canceled = true;
+        winston.log("info", "Canceled cronjob with ID {0}.".formatUnicorn(id));
+    }
+    if(DB.deleteCronjob(id)) {
+        deletedFromDB = true;
+        winston.log("info", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
+    }
+    return canceled || deletedFromDB;
 }
 
 // taken from https://stackoverflow.com/a/18234317
@@ -68,6 +94,5 @@ function () {
             str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
         }
     }
-
     return str;
 };
