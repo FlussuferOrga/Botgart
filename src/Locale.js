@@ -16,8 +16,9 @@ var DE = {
     "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden.",
     "NO_SUCH_COMMAND": "Den von dir angegebenen Befehl '{0}' kenne ich nicht.",
     "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
-    "HELPTEXT_SAY_CRON": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Cron Zeitangabe> <Channel, in dem der Text geschrieben werden soll> <Text, der geschrieben werden soll>`.",
-    "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen."
+    "HELPTEXT_SAY_CRON": "Bitte benutze den Befehl mit folgenden Parametern:\n`\"<Cron Zeitangabe>\" <Channel, in dem der Text geschrieben werden soll> \"<Text, der geschrieben werden soll>\"`.",
+    "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
+    "HELPTEXT_POLL": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`."
 }
 
 exports.get = function(key) {

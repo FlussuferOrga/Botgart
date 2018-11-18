@@ -70,7 +70,7 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
                         return;
                     } else {
                         c.send(args.text);
-                        winston.log("info", "Executed Say.");
+                        winston.log("info", "Executed Say Cron.");
                     }
                 }
             });
@@ -83,6 +83,27 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
             });
         break;
 
+        /*case "poll":
+            job = schedule.scheduleJob(time, () => {
+                let g = client.guilds.find(g => g.id === guild.id);
+                if(!g) {
+                    winston.log("error", "I am not a member of guild {0}. Canceling Poll cronjob.".formatUnicorn(guild));
+                    job.cancel();
+                    return;
+                } else {
+                    let c = g.channels.find(c => c.id === args.channel);
+                    if(!c) {
+                        winston.log("error", "Can not find a channel {0}. Canceling Poll cronjob.".formatUnicorn(args.channel));
+                        job.cancel();
+                        return;
+                    } else {
+                        client.commandHandler.modules.get(command).command(c, args.question, args.emotes);
+                        winston.log("info", "Executed Poll Cron.");
+                    }
+                }
+            });
+        break;
+        */
         default:
             winston.log("error", "Unhandled cron type '{0}'".formatUnicorn(command));
         break;
