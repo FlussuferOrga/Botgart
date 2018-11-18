@@ -1,8 +1,8 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const Util = require("../../Util.js");
-const L = require("../../Locale.js");
-const config = require("../../../config.json");
+const Util = require.main.require("./src/Util.js");
+const L = require.main.require("./src/Locale.js");
+const config = require.main.require("./config.json");
 
 class DeleteCronCommand extends Command {
     constructor() {

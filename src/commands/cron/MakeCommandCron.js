@@ -1,12 +1,12 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const DB = require("../../DB.js");
-const Util = require("../../Util.js");
-const Const = require("../../Const.js");
-const L = require("../../Locale.js");
-const config = require("../../../config.json");
+const DB = require.main.require("./src/DB.js");
+const Util = require.main.require("./src/Util.js");
+const Const = require.main.require("./src/Const.js");
+const L = require.main.require("./src/Locale.js");
+const config = require.main.require("./config.json");
 
-class MakeSayCron extends Command {
+class MakeCommandCron extends Command {
     constructor() {
         super("makecmdcron", {
             aliases: ["makecommandcron", "makecmdcron","mkcmdcron"],
@@ -61,4 +61,4 @@ class MakeSayCron extends Command {
     }
 }
 
-module.exports = MakeSayCron;
+module.exports = MakeCommandCron;

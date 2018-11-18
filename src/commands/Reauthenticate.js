@@ -1,10 +1,9 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-var DB = require("../DB.js");
-var Util = require("../Util.js");
-var Const = require("../Const.js");
-var L = require("../Locale.js");
-var config = require("../../config.json");
+const DB = require.main.require("./src/DB.js");
+const Util = require.main.require("./src/Util.js");
+const L = require.main.require("./src/Locale.js");
+const config = require.main.require("./config.json");
 
 class ReauthenticateCommand extends Command {
     constructor() {
