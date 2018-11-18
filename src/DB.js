@@ -29,8 +29,8 @@ exports.initSchema = function() {
     let sqls = [
     `CREATE TABLE IF NOT EXISTS registrations(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user INT NOT NULL,
-        guild INT NOT NULL,
+        user BIGINT NOT NULL,
+        guild BIGINT NOT NULL,
         api_key TEXT NOT NULL,
         gw2account TEXT NOT NULL,
         created TIMESTAMP DEFAULT (datetime('now','localtime')),
@@ -42,8 +42,8 @@ exports.initSchema = function() {
         schedule TEXT NOT NULL,
         command TEXT NOT NULL,
         arguments TEXT,
-        created_by INT NOT NULL,
-        guild INT NOT NULL,
+        created_by BIGINT NOT NULL,
+        guild BIGINT NOT NULL,
         created TIMESTAMP DEFAULT (datetime('now','localtime'))
     )`
     ]; 

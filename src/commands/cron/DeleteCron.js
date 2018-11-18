@@ -24,7 +24,6 @@ class DeleteCronCommand extends Command {
             return message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
 
-        console.log("args:", typeof args.id);
         if(!args.id) {
             return message.util.send(L.get("HELPTEXT_DEL_CRON"));
         }

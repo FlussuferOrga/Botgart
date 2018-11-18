@@ -11,7 +11,7 @@ var DE = {
     "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys in der Eingangshalle des Servers:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste `,auth ` gefolgt von deinem neuen Schlüssel in der Eingangshalle des Servers oder per Direktnachricht an mich.",
     "NOT_AVAILABLE_AS_DM": "Dieser Befehl ist per Privatnachricht nicht nutzbar. Bitte versuche es auf einem Server erneut.",
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}.",
-    "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Möglicherweise ist die von dir übergebene Zeitangabe ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
+    "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
     "CRONJOB_DELETED": "Der Cronjob wurde gelöscht.",
     "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden.",
     "NO_SUCH_COMMAND": "Den von dir angegebenen Befehl '{0}' kenne ich nicht.",

@@ -27,18 +27,23 @@ exports.cronJobs = {};
 exports.rescheduleCronjobs = function(client) {
     let croncount = 0;
     DB.getCronjobs().forEach(cron => {
-        cron.args = cron.args || "{}"; // make sure JSON.parse works for empty command args
-        let job = exports.scheduleCronjob(client, cron.schedule, cron.guild, cron.command, JSON.parse(cron.args));
-        if(!job) {
-            winston.log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
+        let args = JSON.parse(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
+        let guild = client.guilds.find(g => g.id = cron.guild);
+        if(!guild) {
+            winston.log("error", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
         } else {
-            if(cron.id in exports.cronJobs && exports.cronJobs[cron.id]) {
-                // just to be safe, cancel any remaining jobs before rescheduling them
-                exports.cronJobs[cron.id].cancel();
+            let job = exports.scheduleCronjob(client, cron.schedule, guild, cron.command, args);
+            if(!job) {
+                winston.log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
+            } else {
+                if(cron.id in exports.cronJobs && exports.cronJobs[cron.id]) {
+                    // just to be safe, cancel any remaining jobs before rescheduling them
+                    exports.cronJobs[cron.id].cancel();
+                }
+                exports.cronJobs[cron.id] = job;
+                croncount++;
+                winston.log("info", "Rescheduled cronjob {0}".formatUnicorn(cron.id));
             }
-            exports.cronJobs[cron.id] = job;
-            croncount++;
-            winston.log("info", "Rescheduled cronjob {0}".formatUnicorn(cron.id));
         }
     });
     winston.log("info", "Done rescheduling {0} cronjobs.".formatUnicorn(croncount));
@@ -69,7 +74,7 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
                     }
                 }
             });
-            winston.log("info", "Scheduling Say in {0}#{1} to {2}.".formatUnicorn(guild, args.channel, time));
+            winston.log("info", "Scheduling Say in {0}#{1} to {2}.".formatUnicorn(guild.id, args.channel, time));
         break;
 
         case "reauthenticate":
