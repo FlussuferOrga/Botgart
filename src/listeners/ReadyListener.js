@@ -1,6 +1,7 @@
 const DB = require("../DB.js");
 const winston = require('winston');
 const { Listener } = require("discord-akairo");
+const Util = require("../Util.js");
 
 class ReadyListener extends Listener {
     constructor() {
@@ -14,13 +15,15 @@ class ReadyListener extends Listener {
         winston.log("info", "Bot started!");
         DB.initSchema();
         winston.log("info", "Database initialised.");
+        winston.log("info", "Rescheduling cronjobs from database.");
+        Util.rescheduleCronjobs(this.client);
         //DB.dummy();
 
-        const config = require("../../config.json");
+        /*const config = require("../../config.json");
         var TeamSpeak = require('node-teamspeak-api');
         var tsClient = new TeamSpeak(config.ts.ip, config.ts.port);
         
-        /*var options = ['away', 'times']; // or for only one options = 'away'
+        var options = ['away', 'times']; // or for only one options = 'away'
      
         tsClient.send('clientlist', options, function(err, resp, req) {
             console.log(err,resp,req);

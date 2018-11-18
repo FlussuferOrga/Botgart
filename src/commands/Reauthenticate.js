@@ -14,7 +14,7 @@ class ReauthenticateCommand extends Command {
         });
     }
 
-    exec(message) {
+    command() {
         DB.revalidateKeys().then(function(prune) {
             let guild,r;
             prune.filter(p => p !== undefined).forEach(p => {
@@ -28,7 +28,7 @@ class ReauthenticateCommand extends Command {
                     winston.log("error", "Could not find a guild %s. Have I been kicked?", p.guild.id)
                 } else {
                     if(!r) {
-                        winston.log("error", "Could not find a role named  %s on server %s.", guild.name, config.registered_role);
+                        winston.log("error", "Could not find a role named %s on server %s.", guild.name, config.registered_role);
                     } else {
                         let m = guild.members.find(member => p.user == member.user.id);
                         if(m) {
@@ -41,8 +41,12 @@ class ReauthenticateCommand extends Command {
                 // delete in any case
                 DB.deleteKey(p.api_key);
             });
-            
-        });   
+        });
+        winston.log("info", "Pruning complete.");      
+    }
+
+    exec(message) {
+        this.command();
         return message.util.send(L.get("PRUNING_COMPLETE"));
     }
 }

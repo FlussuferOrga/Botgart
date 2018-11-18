@@ -1,12 +1,12 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const Util = require("../Util.js");
-const L = require("../Locale.js");
-const config = require("../../config.json");
+const Util = require("../../Util.js");
+const L = require("../../Locale.js");
+const config = require("../../../config.json");
 
 class DeleteCronCommand extends Command {
     constructor() {
-        super("deletecrons", {
+        super("deletecron", {
             aliases: ["deletecron","rmcron","delcron"],
             args: [
                 {
@@ -21,12 +21,18 @@ class DeleteCronCommand extends Command {
 
     exec(message, args) {
         if(!message.member) {
-            return message.send(L.get("NOT_AVAILABLE_AS_DM"));
+            return message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
+
+        console.log("args:", typeof args.id);
+        if(!args.id) {
+            return message.util.send(L.get("HELPTEXT_DEL_CRON"));
+        }
+
         let cid = args.id;
         let deleted = Util.deleteCronjob(cid);
         let mes = deleted ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
-        return message.author.send(mes);
+        return message.util.send(mes);
     }
 }
 

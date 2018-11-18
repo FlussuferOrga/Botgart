@@ -24,6 +24,26 @@ exports.getAccountGUID = function(apikey) {
 
 exports.cronJobs = {};
 
+exports.rescheduleCronjobs = function(client) {
+    let croncount = 0;
+    DB.getCronjobs().forEach(cron => {
+        cron.args = cron.args || "{}"; // make sure JSON.parse works for empty command args
+        let job = exports.scheduleCronjob(client, cron.schedule, cron.guild, cron.command, JSON.parse(cron.args));
+        if(!job) {
+            winston.log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
+        } else {
+            if(cron.id in exports.cronJobs && exports.cronJobs[cron.id]) {
+                // just to be safe, cancel any remaining jobs before rescheduling them
+                exports.cronJobs[cron.id].cancel();
+            }
+            exports.cronJobs[cron.id] = job;
+            croncount++;
+            winston.log("info", "Rescheduled cronjob {0}".formatUnicorn(cron.id));
+        }
+    });
+    winston.log("info", "Done rescheduling {0} cronjobs.".formatUnicorn(croncount));
+}
+
 exports.scheduleCronjob = function(client, time, guild, command, args) {
     let job = null;
     switch(command) {
@@ -53,6 +73,9 @@ exports.scheduleCronjob = function(client, time, guild, command, args) {
         break;
 
         case "reauthenticate":
+            job = schedule.scheduleJob(time, () => {
+                client.commandHandler.modules.get(command).command();
+            });
         break;
 
         default:

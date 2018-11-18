@@ -10,10 +10,14 @@ var DE = {
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
     "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys in der Eingangshalle des Servers:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste `,auth ` gefolgt von deinem neuen Schlüssel in der Eingangshalle des Servers oder per Direktnachricht an mich.",
     "NOT_AVAILABLE_AS_DM": "Dieser Befehl ist per Privatnachricht nicht nutzbar. Bitte versuche es auf einem Server erneut.",
-    "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID: ",
+    "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Möglicherweise ist die von dir übergebene Zeitangabe ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
     "CRONJOB_DELETED": "Der Cronjob wurde gelöscht.",
-    "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden."
+    "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden.",
+    "NO_SUCH_COMMAND": "Den von dir angegebenen Befehl '{0}' kenne ich nicht.",
+    "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
+    "HELPTEXT_SAY_CRON": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Cron Zeitangabe> <Channel, in dem der Text geschrieben werden soll> <Text, der geschrieben werden soll>`.",
+    "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen."
 }
 
 exports.get = function(key) {
