@@ -13,7 +13,6 @@ function execute(f) {
         var res = f(db);
     } catch(err) {
         var res = undefined;
-        console.log(err);
         winston.log("error", "DB execute", err);
     }
 
@@ -58,7 +57,7 @@ exports.storeAPIKey = function(user, guild, key, gw2account) {
                     db.prepare(sql).run(user, guild, key, gw2account);
                     return true;
                 } catch(err) {
-                    //console.error(err);
+                    //winston.log("error",err);
                     return false;
                 }
             });

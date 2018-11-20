@@ -16,8 +16,8 @@ class ReadyListener extends Listener {
         DB.initSchema();
         winston.log("info", "Database initialised.");
         winston.log("info", "Rescheduling cronjobs from database.");
-        Util.rescheduleCronjobs(this.client);
-        //DB.dummy();
+        this.client.cronjobs = {};
+        this.client.commandHandler.modules.get("makecron").rescheduleCronjobs();
 
         /*const config = require("../../config.json");
         var TeamSpeak = require('node-teamspeak-api');

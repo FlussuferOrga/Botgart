@@ -11,4 +11,4 @@ const client = new AkairoClient({
     commandUtilLifetime: 600000
 });
 
-client.login(config.token);
+client.login(config.token);9

@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@cthos/gw2-api": "^2.2.1",
+    "assert": "^1.4.1",
     "better-sqlite3": "^5.0.1",
     "discord-akairo": "^7.5.5",
     "discord.js": "^11.4.2",
