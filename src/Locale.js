@@ -42,8 +42,9 @@ var DE = {
     "DESC_HELP": "Dieser Befehl. Listet alle verfügbaren Befehle mit einer kurzen Beschreibung auf.",
     "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem Teamspeak3-Server (NICHT AKTIV).",
     "DESC_ADD_FAQ": "Fügt den FAQ einen Eintrag hinzu.",
-    "DESC_RM_FAQ": "Entfernt einen Eintrag von den FAQ.",
-    "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der RTFM wieder."
+    "DESC_DEL_FAQ": "Entfernt einen Eintrag von den FAQ.",
+    "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der RTFM wieder.",
+    "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf."
 }
 
 exports.get = function(key) {

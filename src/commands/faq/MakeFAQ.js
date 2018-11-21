@@ -14,7 +14,7 @@ FIXME
 class MakeFAQCommand extends BotgartCommand {
     constructor() {
         super("addfaq", {
-            aliases: ["makertfm","makefaq","newrtfm","newfaq","addrtfm","addfaq"],
+            aliases: ["makertfm","makefaq","newrtfm","newfaq","addrtfm","addfaq","mkrtfm","mkfaq"],
             split: "quoted",
             args: [
                 {
@@ -25,9 +25,10 @@ class MakeFAQCommand extends BotgartCommand {
                     id: "text",
                     type: "string"
                 }
-            ]
+            ],
+            userPermissions: ["ADMINISTRATOR"]
         },
-        true,  // available per DM
+        false,  // available per DM
         true // cronable
         );
     }

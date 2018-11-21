@@ -11,16 +11,18 @@ Testcases:
 FIXME
 */
 
-class GetFAQCommand extends BotgartCommand {
+class DeleteFAQCommand extends BotgartCommand {
     constructor() {
-        super("getfaq", {
-            aliases: ["getfaq","faq","getrtfm","rtfm"],
+        super("delfaq", {
+            aliases: ["deletefaq","rmfaq","delfaq","deletertfm","rmrtfm","delrtfm"],
+            split: "quoted",
             args: [
                 {
                     id: "key",
                     type: "string"
                 }
-            ]
+            ],
+            userPermissions: ["ADMINISTRATOR"]
         },
         false,  // available per DM
         true // cronable
@@ -28,26 +30,27 @@ class GetFAQCommand extends BotgartCommand {
     }
 
     desc() {
-        return L.get("DESC_GET_FAQ");
+        return L.get("DESC_DEL_FAQ");
     }
 
     checkArgs(args) {
-        return !args || !args.key ? message.util.send(L.get("HELPTEXT_GET_FAQ")) : undefined;
+        return !args || !args.keys || !args.text ? message.util.send(L.get("HELPTEXT_DEL_FAQ")) : undefined;
     }
 
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
-        assertType(args.key, "String");
+        assertType(guild, "Guild");
+        assertType(args.keys, "Array");
+        assertType(args.text, "String");
 
-        let faq = this.client.db.getFAQ(args.key);
-        let response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
-
+        let deleted = this.client.db.deleteFAQ(args.text);
+        let message = deleted ? L.get("FAQ_DELETED") : L.get("FAQ_NOT_DELETED");
         if(message) {
-            message.util.send(response);
+            message.util.send(message);
         } else {
-            responsible.send(response);
+            responsible.send(messag);
         }
     }
 }
 
-module.exports = GetFAQCommand;
+module.exports = DeleteFAQCommand;

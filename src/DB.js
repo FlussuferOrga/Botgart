@@ -58,7 +58,8 @@ class Database {
             text TEXT,
             created_by BIGINT NOT NULL,
             guild BIGINT NOT NULL,
-            created TIMESTAMP DEFAULT (datetime('now','localtime'))
+            created TIMESTAMP DEFAULT (datetime('now','localtime')),
+            UNIQUE(text) ON CONFLICT REPLACE
         )`, 
         `CREATE TABLE IF NOT EXISTS faq_keys(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -68,7 +69,7 @@ class Database {
             guild BIGINT NOT NULL,
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(key) ON CONFLICT REPLACE,
-            FOREIGN KEY(faq_id) REFERENCES faqs(id)
+            FOREIGN KEY(faq_id) REFERENCES faqs(id) ON UPDATE CASCADE
         )`,
         `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys(key)`
         ]; 
@@ -88,12 +89,20 @@ class Database {
     }
 
     deleteFAQ(key) {
-        return this.execute(db => db.prepare(`DELETE FROM faq_keys WHERE key = ?`).run(key));
-        // FIXME delete leftjoin
+        this.execute(db => db.prepare(`DELETE FROM faq_keys WHERE key = ?`).run(key));
+        // clean up FAQs that are not linked to any keyword now.
+        this.execute(db => db.prepare(`
+            DELETE FROM faqs WHERE id IN
+              (SELECT f.id FROM faqs AS f LEFT JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE key IS NULL)
+        `).run());
     }
 
     getFAQ(key) {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.key = ?`).get(key));
+    }
+
+    getFAQs() {
+        return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id`).all());
     }
 
     storeAPIKey(user, guild, key, gw2account) {
@@ -120,12 +129,18 @@ class Database {
     }
 
     deleteKey(key) {
-        this.execute(db => db.prepare(`DELETE FROM registrations WHERE api_key = ?`).run(key));
+        return this.execute(db => {
+            let changes = 0;
+            db.transaction((_) => {
+                db.prepare(`DELETE FROM registrations WHERE api_key = ?`).run(key)
+                changes = db.prepare(`SELECT changes() AS changes`).get().changes;
+            })(null);
+            return changes > 0;
+        });
     }
 
-
     dummy() {
-        return;
+        return; // not testing rn
         let sql = `INSERT INTO registrations(user, api_key, gw2account) VALUES
         (?,?,?),
         (?,?,?)

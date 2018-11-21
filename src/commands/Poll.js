@@ -34,7 +34,8 @@ class PollCommand extends BotgartCommand {
                     //type: "string"
                     type: es => es ? es.split(" ") : []
                 }
-            ]
+            ],
+            userPermissions: ["ADMINISTRATOR"]
         },
         false, // available per DM
         true // cronable
