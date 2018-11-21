@@ -40,7 +40,7 @@ var DE = {
     "DESC_REAUTHENTICATE": "Authentifiziert alle vorhandenen GW2-API-Keys erneut.",
     "DESC_SAY": "Spricht den übergebenen Text im übergebenen Channel.",
     "DESC_HELP": "Dieser Befehl. Listet alle verfügbaren Befehle mit einer kurzen Beschreibung auf.",
-    "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem Teamspeak3-Server (NICHT AKTIV).",
+    "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem Teamspeak3-Server (_NICHT AKTIV_).",
     "DESC_ADD_FAQ": "Fügt den FAQ einen Eintrag hinzu.",
     "DESC_DEL_FAQ": "Entfernt einen Eintrag von den FAQ.",
     "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",

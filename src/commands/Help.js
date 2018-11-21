@@ -33,7 +33,7 @@ class HelpCommand extends BotgartCommand {
         assertType(guild, "Guild");
         let descs = "**Verfügbare Befehle:**\n\n"
                     .concat(Array.from(this.client.commandHandler.modules.values()).map(m => m.desc 
-                        ? "`{0}` (bzw. {1}): {2}".formatUnicorn(
+                        ? "**`{0}`** (bzw. {1}): {2}".formatUnicorn(
                             m.id,
                             m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "),
                             m.desc())
