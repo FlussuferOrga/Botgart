@@ -8,7 +8,9 @@ const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
 /**
 Testcases:
-FIXME
+- missing key -> feedback to user
+- existing key -> bot posts corresponding faq
+- non-existing key -> feedback to user
 */
 
 class GetFAQCommand extends BotgartCommand {

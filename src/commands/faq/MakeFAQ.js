@@ -8,7 +8,10 @@ const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
 /**
 Testcases:
-FIXME
+- create faq properly -> faq is now present in db and available for ,faq
+- use multiple keys -> faq is present in db unter multiply names
+- use already existing keys -> faq is now overridden
+- missing parameters -> error
 */
 
 class MakeFAQCommand extends BotgartCommand {

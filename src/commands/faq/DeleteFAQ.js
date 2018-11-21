@@ -8,7 +8,10 @@ const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
 /**
 Testcases:
-FIXME
+- use proper key for existing faq with multiple keys -> key is properly removed, but faq still available
+- use proper key for existing faq with only one key left -> key is removed as well as whole faq
+- use key that doesn't exist -> user receives corresponding feedback
+- cron: all of the above
 */
 
 class DeleteFAQCommand extends BotgartCommand {

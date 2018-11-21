@@ -6,11 +6,10 @@ const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
-
 const TEASER_LENGTH = 30;
 /**
 Testcases:
-FIXME
+- list faqs -> bot lists all available faqs
 */
 class ListFAQsCommand extends BotgartCommand {
     constructor() {
