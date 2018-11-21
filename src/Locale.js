@@ -27,6 +27,7 @@ var DE = {
     
 
     "HELPTEXT_SAY": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
+    "HELPTEXT_ADD_CRON": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
     "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
     "HELPTEXT_POLL": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
     "HELPTEXT_ADD_FAQ": "Bitte benutze den Befehl mit folgenden Parametern:\n`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",

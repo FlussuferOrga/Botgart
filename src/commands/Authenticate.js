@@ -56,7 +56,7 @@ class AuthenticateCommand extends BotgartCommand {
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
         this.client.guilds.forEach(function(g) {
-            let m = g.members.find(m => m.id === message.author.id);
+            let m = g.members.find(m => m.id == message.author.id);
             if(m) {
                 members.push({"guild": g, "member": m});
             }

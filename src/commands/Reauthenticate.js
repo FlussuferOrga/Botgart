@@ -47,7 +47,7 @@ class ReauthenticateCommand extends BotgartCommand {
                     if(!role) {
                         winston.log("error", "Reauthenticate.js: Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, config.registered_role));
                     } else {
-                        let m = guild.members.find(member => p.user === member.user.id);
+                        let m = guild.members.find(member => p.user == member.user.id);
                         if(m) {
                             winston.log("info", "Reauthenticate.js: Pruning {0}.".formatUnicorn(m.user.username));
                             m.removeRole(role);

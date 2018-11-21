@@ -44,8 +44,12 @@ class MakeCron extends BotgartCommand {
         return L.get("DESC_MAKE_CRON");
     }
 
-    exec(message, args) {
-        if(!message.member) {
+    checkArgs(args) {
+        return !args || !args.schedule || !args.cmd || !args.rest ? L.get("HELPTEXT_ADD_CRON") : undefined;
+    }
+
+    command(message, responsible, guild, args) {
+       if(!message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
         
@@ -63,7 +67,7 @@ class MakeCron extends BotgartCommand {
         }
 
         // crons can not schedule other crons for shenanigans-reasons
-        if(mod.id === this.id) {
+        if(mod.id == this.id) {
             return message.util.send(L.get("CIRCULAR_CRONS"));
         }
 
@@ -90,7 +94,7 @@ class MakeCron extends BotgartCommand {
                     return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid));
                 }
             }
-        });
+        });        
     }
 
     /**

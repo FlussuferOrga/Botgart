@@ -48,12 +48,12 @@ class SayCommand extends BotgartCommand {
         // So the bot could no longer be there. We therefore need to find() the guild
         // again to make sure the bot is still on there.
         let result;
-        let g = this.client.guilds.find(g => g.id === guild.id);
+        let g = this.client.guilds.find(g => g.id == guild.id);
         if(!g) {
             winston.log("error", "Say.js: I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
-            let c = g.channels.find(c => c.id === args.channel.id);
+            let c = g.channels.find(c => c.id == args.channel.id);
             if(!c) {
                 winston.log("error", "Say.js: Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
@@ -78,8 +78,8 @@ class SayCommand extends BotgartCommand {
 
     deserialiseArgs(jsonargs) {
         let args = JSON.parse(jsonargs);
-        let guild = this.client.guilds.find(g => g.id === args.channel.guild);
-        args.channel = guild.channels.find(c => c.id === args.channel.channel);
+        let guild = this.client.guilds.find(g => g.id == args.channel.guild);
+        args.channel = guild.channels.find(c => c.id == args.channel.channel);
         return args;
     }
 }
