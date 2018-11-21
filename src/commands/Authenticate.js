@@ -1,5 +1,5 @@
 const { Command } = require("discord-akairo");
-const winston = require('winston');
+const winston = require("winston");
 const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -85,16 +85,16 @@ class AuthenticateCommand extends BotgartCommand {
                         members.forEach(function(m) {
                             let r = m.guild.roles.find(role => role.name === config.registered_role);
                             if(!r) {
-                                winston.log("error", "Role {0} not found on server {1}. Skipping.".formatUnicorn(config.registered_role, g.name));
+                                winston.log("error", "Authenticate.js: Role {0} not found on server {1}. Skipping.".formatUnicorn(config.registered_role, g.name));
                             } else {
                                 let unique = this.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
                                 if(unique) {
-                                    winston.log("info", "Accepted {0} for {1} on {2}.".formatUnicorn(args.key, m.member.user.username, m.guild.name));
+                                    winston.log("info", "Authenticate.js: Accepted {0} for {1} on {2}.".formatUnicorn(args.key, m.member.user.username, m.guild.name));
                                     m.member.addRole(r);
                                     reply = L.get("KEY_ACCEPTED")
 
                                 } else {
-                                    winston.log("info", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
+                                    winston.log("info", "Authenticate.js: Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
                                     reply = L.get("KEY_NOT_UNIQUE")
                                 }
                             }
@@ -102,11 +102,11 @@ class AuthenticateCommand extends BotgartCommand {
                         })
                     });   
                 } else {
-                    winston.log("info","Declined API key ${args.key}.");
+                    winston.log("info","Authenticate.js: Declined API key ${args.key}.");
                     reply = L.get("KEY_DECLINED");
                 }
             }, err => {
-                winston.log("error","Error occured while validating world.", err);
+                winston.log("error","Authenticate.js: Error occured while validating world.", err);
             });
         }       
     }

@@ -1,5 +1,5 @@
 const config = require("../config.json");
-const winston = require('winston');
+const winston = require("winston");
 const assert = require("assert");
 const { inspect } = require('util');
 const DB = require("./DB.js");

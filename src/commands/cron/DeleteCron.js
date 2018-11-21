@@ -1,5 +1,5 @@
 const { Command } = require("discord-akairo");
-const winston = require('winston');
+const winston = require("winston");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
@@ -73,11 +73,11 @@ class DeleteCronCommand extends BotgartCommand {
             this.client.cronjobs[id].cancel();
             delete this.client.cronjobs[id];
             canceled = true;
-            winston.log("info", "Canceled cronjob with ID {0}.".formatUnicorn(id));
+            winston.log("info", "DeleteCron.js: Canceled cronjob with ID {0}.".formatUnicorn(id));
         }
         if(this.client.db.deleteCronjob(id)) {
             deletedFromDB = true;
-            winston.log("info", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
+            winston.log("info", "DeleteCron.js: Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
         }
         return canceled || deletedFromDB;
     }

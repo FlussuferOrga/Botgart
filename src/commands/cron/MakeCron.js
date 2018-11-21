@@ -1,6 +1,6 @@
 const { Command } = require("discord-akairo");
-const winston = require('winston');
-const schedule = require('node-schedule');
+const winston = require("winston");
+const schedule = require("node-schedule");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -99,15 +99,15 @@ class MakeCron extends BotgartCommand {
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             let guild = this.client.guilds.find(g => g.id = cron.guild);
             if(!guild) {
-                winston.log("error", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
+                winston.log("error", "MakeCron.js: I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
             } else {
                 let responsible = guild.members.find(m => m.user.id == cron.created_by);
                 if(!responsible) {
-                    winston.log("warning", "Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
+                    winston.log("warning", "MakeCron.js: Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
                 }
                 let job = this.scheduleCronjob(cron.schedule, responsible, guild, mod, args);
                 if(!job) {
-                    winston.log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
+                    winston.log("error", "MakeCron.js: Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
                 } else {
                     if(cron.id in this.client.cronjobs && this.client.cronjobs[cron.id]) {
                         // just to be safe, cancel any remaining jobs before rescheduling them
@@ -115,11 +115,11 @@ class MakeCron extends BotgartCommand {
                     }
                     this.client.cronjobs[cron.id] = job;
                     croncount++;
-                    winston.log("info", "Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command));
+                    winston.log("info", "MakeCron.js: Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command));
                 }
             }
         });
-        winston.log("info", "Done rescheduling {0} cronjobs.".formatUnicorn(croncount));
+        winston.log("info", "MakeCron.js: Done rescheduling {0} cronjobs.".formatUnicorn(croncount));
         return croncount;
     }
 

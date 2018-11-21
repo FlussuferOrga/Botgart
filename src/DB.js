@@ -1,5 +1,5 @@
 const Util = require("./Util.js");
-const winston = require('winston');
+const winston = require("winston");
 const sqlite3 = require("better-sqlite3");
 
 // FIXME: resolve objects when loading from db
@@ -13,7 +13,7 @@ class Database {
     execute(f) {
         let db = new sqlite3(this.file, [], err => {
             if(err) {
-                return winston.log("error", "DB open(): {0}".formatUnicorn(err["message"]));
+                return winston.log("error", "DB.js: DB open(): {0}".formatUnicorn(err["message"]));
             }
         });
 
@@ -21,12 +21,12 @@ class Database {
             var res = f(db);
         } catch(err) {
             var res = undefined;
-            winston.log("error", "DB execute: {0}".formatUnicorn(err["message"]));
+            winston.log("error", "DB.js: DB execute: {0}".formatUnicorn(err["message"]));
         }
 
         db.close(err => {
             if(err) {
-                return winston.log("error", "DB close(): {0}".formatUnicorn(err["message"]));
+                return winston.log("error", "DB.js: DB close(): {0}".formatUnicorn(err["message"]));
             }
         });
         return res;

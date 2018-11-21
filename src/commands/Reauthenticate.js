@@ -1,5 +1,5 @@
 const { Command } = require("discord-akairo");
-const winston = require('winston');
+const winston = require("winston");
 const { assertType } = require.main.require("./src/Util.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -41,14 +41,14 @@ class ReauthenticateCommand extends BotgartCommand {
                     r = guild ? guild.roles.find(role => role.name === config.registered_role) : undefined;
                 }
                 if(!guild) {
-                    winston.log("error", "Could not find a guild %s. Have I been kicked?", p.guild.id)
+                    winston.log("error", "Reauthenticate.js: Could not find a guild %s. Have I been kicked?", p.guild.id)
                 } else {
                     if(!r) {
-                        winston.log("error", "Could not find a role named %s on server %s.", guild.name, config.registered_role);
+                        winston.log("error", "Reauthenticate.js: Could not find a role named %s on server %s.", guild.name, config.registered_role);
                     } else {
                         let m = guild.members.find(member => p.user == member.user.id);
                         if(m) {
-                            winston.log("info", "Pruning %s.", m.user.username);
+                            winston.log("info", "Reauthenticate.js: Pruning %s.", m.user.username);
                             m.removeRole(r);
                             m.send(L.get("KEY_INVALIDATED"));
                         }

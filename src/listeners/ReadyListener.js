@@ -1,4 +1,4 @@
-const winston = require('winston');
+const winston = require("winston");
 const { Listener } = require("discord-akairo");
 const Util = require.main.require("./src/Util.js");
 
@@ -11,10 +11,10 @@ class ReadyListener extends Listener {
     }
 
     exec() {
-        winston.log("info", "Bot started!");
+        winston.log("info", "ReadListener.js: Bot started!");
         this.client.db.initSchema();
-        winston.log("info", "Database initialised.");
-        winston.log("info", "Rescheduling cronjobs from database.");
+        winston.log("info", "ReadyListener.js: Database initialised.");
+        winston.log("info", "ReadyListener.js: Rescheduling cronjobs from database.");
         this.client.cronjobs = {};
         this.client.commandHandler.modules.get("makecron").rescheduleCronjobs();
     }
