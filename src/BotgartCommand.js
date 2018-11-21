@@ -31,13 +31,16 @@ class BotgartCommand extends Command {
     * A user could have scheduled a cronjob a week before and since then
     * the bot may have been kicked from the Guild or the channel could have
     * been deleted.
+    * @param {Message} message - Message that triggered this command.
+                                 If the command is run as a cron, this parameter will be null.
+                                 Each command must check the validity of this parameter themselves if needed.
     * @param {User} responsible - the User responsible for this command.
                                   Either caller or whoever created the cronjob this command is running in.
                                   Note the this could fail to resolve and should always be checked for null.
     * @param {Guild} guild - the Guild on which to execute the command.
     * @param {map} args - arguments for the command. Each command specifies the format themselves.
     */
-    command(responsible, guild, args) {
+    command(message, responsible, guild, args) {
         throw "command() not implemented.";
     }
 
@@ -87,7 +90,7 @@ class BotgartCommand extends Command {
         if(errorMessage) {
             return message.util.send(errorMessage);
         }
-        this.command(message.author.user, message.guild, args);
+        this.command(message, message.author.user, message.guild, args);
     }
 }
 

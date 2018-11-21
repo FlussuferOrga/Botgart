@@ -1,19 +1,32 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
 const DB = require.main.require("./src/DB.js");
-const Util = require.main.require("./src/Util.js");
+const { assertType } = require.main.require("./src/Util.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 
+/**
+Testcases:
+- missing parameters -> error
+- regular use -> reauth success
+- remove a formerly valid API key with user still in guild -> key gets unauthenticated, user gets his auth role removed
+- remove a formerly valid API key with user no longer in guild -> key gets unauthenticated
+- cron: all of the above -> reauth success
+*/
 class ReauthenticateCommand extends Command {
     constructor() {
         super("reauthenticate", {
             aliases: ["reauthenticate","reauth"],
             userPermissions: ['ADMINISTRATOR']
-        });
+        },
+        true, // available per DM
+        true // cronable
+        );
     }
 
-    command() {
+    command(message, responsible, guild, args) {
+        assertType(responsible, "User");
+        assertType(guild, "Guild");
         DB.revalidateKeys().then(function(prune) {
             let guild,r;
             prune.filter(p => p !== undefined).forEach(p => {

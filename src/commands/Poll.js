@@ -7,6 +7,15 @@ const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
+/**
+Testcases:
+- missing parameters -> error
+- proper parameters -> poll is created
+- invalid channel -> error
+- empty question -> error?
+- emotes string doesn't contain proper emotes -> error
+- cron: everything of the above
+*/
 class PollCommand extends BotgartCommand {
     constructor() {
         super("poll", {
@@ -30,7 +39,8 @@ class PollCommand extends BotgartCommand {
         });
     }
 
-    command(responsible, guild, args) {
+    command(message, responsible, guild, args) {
+        assertType(responsible, "User");
         assertType(guild, "Guild");
         assertType(args.channel, "TextChannel");
         assertType(args.question, "String");

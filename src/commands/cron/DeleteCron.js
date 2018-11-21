@@ -5,6 +5,14 @@ const DB = require.main.require("./src/DB.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
+/**
+Testcases:
+- missing parameters -> error
+- delete valid cron id -> successfully deletes cron from db and unschedules it
+- delete invalid cron id -> error
+- delete non-numeric cron id -> error
+- cron: anything -> error
+*/
 class DeleteCronCommand extends BotgartCommand {
     constructor() {
         super("deletecron", {
@@ -27,7 +35,10 @@ class DeleteCronCommand extends BotgartCommand {
         return !args || !args.id || !args.id < 0 ? message.util.send(L.get("HELPTEXT_DEL_CRON")) : undefined;
     }
 
-    command(responsible, guild, args) {
+    command(message, responsible, guild, args) {
+        assertType(responsible, "User");
+        assertType(guild, "Guild");
+        assertType(args.id, "int");
         let cid = args.id;
         let deleted = this.deleteCronjob(cid);
         return deleted;

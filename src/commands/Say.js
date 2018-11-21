@@ -7,6 +7,13 @@ const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
+/**
+Testcases:
+- missing parameters -> error
+- regular say -> bot posts text
+- with invalid channel -> error
+- from cron: remove channel bot was supposed to talk in -> error
+*/
 class SayCommand extends BotgartCommand {
     constructor() {
         super("say", {
@@ -26,7 +33,8 @@ class SayCommand extends BotgartCommand {
         });
     }
 
-    command(responsible, guild, args) {
+    command(message, responsible, guild, args) {
+        assertType(responsible, "User");
         assertType(guild, "Guild");
         assertType(args.channel, "TextChannel");
         assertType(args.text, "String");

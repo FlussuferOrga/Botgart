@@ -8,6 +8,7 @@ const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 const {assertType, shallowInspect} = require.main.require("./src/Util.js");
 
+// FIXME: move exec to command
 class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
@@ -135,7 +136,7 @@ class MakeCron extends BotgartCommand {
         assertType(cmd, "Command");
         assertType(args, "Object");
         return schedule.scheduleJob(time, function(m,r,g,as) { 
-            m.command(r,g,as); }.bind(this, cmd, responsible, guild, args));
+            m.command(null,r,g,as); }.bind(this, cmd, responsible, guild, args));
     }
 }
 

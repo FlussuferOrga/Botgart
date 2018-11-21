@@ -7,6 +7,12 @@ const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
+/**
+Testcases:
+- regular use -> bot DMs cron list
+- with no crons in db -> bot DMs nothing
+- cron: anything -> error
+*/
 class ListCronsCommand extends BotgartCommand {
     constructor() {
         super("listcrons", {
@@ -18,7 +24,9 @@ class ListCronsCommand extends BotgartCommand {
         );
     }
 
-    command(responsible, guild, args) {
+    command(message, responsible, guild, args) {
+        assertType(responsible, "User");
+        assertType(guild, "Guild");
         if(!responsible) {
             winston.log("error", "Can not execute lscron without member to reply to. Canceling.");
             return;
