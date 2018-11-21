@@ -9,6 +9,11 @@ const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 const {assertType, shallowInspect} = require.main.require("./src/Util.js");
 
 // FIXME: move exec to command
+/**
+Testcases:
+- schedule cron with id
+- schedule cron with alias
+*/
 class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {

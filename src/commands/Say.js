@@ -17,20 +17,27 @@ Testcases:
 class SayCommand extends BotgartCommand {
     constructor() {
         super("say", {
-            aliases: ["say","speak"],
-            split: "quoted",
-            args: [
-                {
-                    id: "channel",
-                    type: "textChannel"
-                },
-                {
-                    id: "text",
-                    type: "string"
-                }
-            ],
-            userPermissions: ["ADMINISTRATOR"]
-        });
+                aliases: ["say","speak"],
+                split: "quoted",
+                args: [
+                    {
+                        id: "channel",
+                        type: "textChannel"
+                    },
+                    {
+                        id: "text",
+                        type: "string"
+                    }
+                ],
+                userPermissions: ["ADMINISTRATOR"]
+            },
+            false, // available per DM
+            true // cronable
+        );
+    }
+
+    desc() {
+        return L.get("DESC_SAY");
     }
 
     command(message, responsible, guild, args) {

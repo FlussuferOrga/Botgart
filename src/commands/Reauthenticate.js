@@ -4,6 +4,7 @@ const DB = require.main.require("./src/DB.js");
 const { assertType } = require.main.require("./src/Util.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
+const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
 /**
 Testcases:
@@ -13,7 +14,7 @@ Testcases:
 - remove a formerly valid API key with user no longer in guild -> key gets unauthenticated
 - cron: all of the above -> reauth success
 */
-class ReauthenticateCommand extends Command {
+class ReauthenticateCommand extends BotgartCommand {
     constructor() {
         super("reauthenticate", {
             aliases: ["reauthenticate","reauth"],
@@ -22,6 +23,10 @@ class ReauthenticateCommand extends Command {
         true, // available per DM
         true // cronable
         );
+    }
+
+    desc() {
+        return L.get("DESC_REAUTHENTICATE");
     }
 
     command(message, responsible, guild, args) {

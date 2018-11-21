@@ -20,7 +20,17 @@ var DE = {
     "HELPTEXT_SAY_CRON": "Bitte benutze den Befehl mit folgenden Parametern:\n`\"<Cron Zeitangabe>\" <Channel, in dem der Text geschrieben werden soll> \"<Text, der geschrieben werden soll>\"`.",
     "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
     "HELPTEXT_POLL": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
-    "NOT_CRONABLE": "Dieser Befehl kann nicht als Teil eines Cronjobs verwendet werden."
+    "NOT_CRONABLE": "Dieser Befehl kann nicht als Teil eines Cronjobs verwendet werden.",
+    
+    "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
+    "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
+    "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt",
+    "DESC_AUTHENTICATE": "Authentifiziert einen Benutzer mittels eines GW2-API-Keys.",
+    "DESC_POLL": "Erstellt einen Poll mit vorgegebenen Emotes als Abstimmoptionen.",
+    "DESC_REAUTHENTICATE": "Authentifiziert alle vorhandenen GW2-API-Keys erneut.",
+    "DESC_SAY": "Spricht den übergebenen Text im übergebenen Channel.",
+    "DESC_HELP": "Dieser Befehl. Listet alle verfügbaren Befehle mit einer kurzen Beschreibung auf.",
+    "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem Teamspeak3-Server (NICHT AKTIV)."
 }
 
 exports.get = function(key) {

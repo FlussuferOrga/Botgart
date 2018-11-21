@@ -36,7 +36,14 @@ class PollCommand extends BotgartCommand {
                     type: es => es ? es.split(" ") : []
                 }
             ]
-        });
+        },
+        false, // available per DM
+        true // cronable
+        );
+    }
+
+    desc() {
+        return L.get("DESC_POLL");
     }
 
     command(message, responsible, guild, args) {

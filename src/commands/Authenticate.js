@@ -36,6 +36,10 @@ class AuthenticateCommand extends BotgartCommand {
         );
     }
 
+    desc() {
+        return L.get("DESC_AUTHENTICATE");
+    }
+
     command(message, responsible, guild, args) {
         Util.assertType(message, "Message");
         Util.assertType(responsible, "User");

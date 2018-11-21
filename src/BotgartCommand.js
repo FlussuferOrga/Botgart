@@ -8,6 +8,15 @@ class BotgartCommand extends Command {
     }
 
     /**
+    * Creates a decription for this command for help-listing.
+    * Note that "description" is already taken somehow.
+    * returns {string} - description of this command.
+    */
+    desc() {
+        return "";
+    }
+
+    /**
     * Checks the arguments of exec() for validity.
     * Having valid arguments should return undefined
     * (default behaviour), while missing or malformed
@@ -90,7 +99,7 @@ class BotgartCommand extends Command {
         if(errorMessage) {
             return message.util.send(errorMessage);
         }
-        this.command(message, message.author.user, message.guild, args);
+        this.command(message, message.author, message.guild, args);
     }
 }
 

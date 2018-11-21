@@ -31,6 +31,10 @@ class DeleteCronCommand extends BotgartCommand {
         );
     }
 
+    desc() {
+        return L.get("DESC_DEL_CRON");
+    }
+
     checkArgs(args) {
         return !args || !args.id || !args.id < 0 ? message.util.send(L.get("HELPTEXT_DEL_CRON")) : undefined;
     }

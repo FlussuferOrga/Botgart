@@ -24,6 +24,10 @@ class ListCronsCommand extends BotgartCommand {
         );
     }
 
+    desc() {
+        return L.get("DESC_LIST_CRONS");
+    }
+
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
         assertType(guild, "Guild");
