@@ -61,8 +61,7 @@ class ReauthenticateCommand extends BotgartCommand {
         winston.log("info", "Pruning complete.");      
     }
 
-    exec(message) {
-        this.command();
+    postExecHook(message, args, result) {
         return message.util.send(L.get("PRUNING_COMPLETE"));
     }
 }

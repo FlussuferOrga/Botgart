@@ -99,8 +99,20 @@ class BotgartCommand extends Command {
         if(errorMessage) {
             return message.util.send(errorMessage);
         }
-        this.command(message, message.author, message.guild, args);
+        let res = this.command(message, message.author, message.guild, args);
+        return this.postExecHook(message, args, res);
     }
+
+    /**
+    * Optional method that is called in the default implementation of exec().
+    * This is useful for when directly invoking this command on a server should
+    * have slightly different behaviour than doing it from a cron (eg giving the user feedback).
+    * @param {Message} message - the Message as passed to exec().
+    * @param {Map} args - the arguments as passed to exec().
+    * @param {any} result - the result from command().
+    * @returns {any} - is returned to the caller.
+    */
+    postExecHook(message, args, result) {}
 
     /*
     * Convenience method to reply from within a command.
