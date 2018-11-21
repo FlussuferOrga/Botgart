@@ -37,7 +37,7 @@ class DeleteFAQCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.keys || !args.text ? message.util.send(L.get("HELPTEXT_DEL_FAQ")) : undefined;
+        return !args || !args.keys || !args.text ? L.get("HELPTEXT_DEL_FAQ") : undefined;
     }
 
     command(message, responsible, guild, args) {

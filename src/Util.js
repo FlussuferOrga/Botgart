@@ -2,7 +2,6 @@ const config = require("../config.json");
 const winston = require("winston");
 const assert = require("assert");
 const { inspect } = require('util');
-const DB = require("./DB.js");
 const gw2 = require("@cthos/gw2-api");
 const api = new gw2.gw2();
 api.setStorage(new gw2.memStore());

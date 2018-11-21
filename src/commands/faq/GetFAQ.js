@@ -34,7 +34,7 @@ class GetFAQCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.key ? message.util.send(L.get("HELPTEXT_GET_FAQ")) : undefined;
+        return !args || !args.key ? L.get("HELPTEXT_GET_FAQ") : undefined;
     }
 
     command(message, responsible, guild, args) {

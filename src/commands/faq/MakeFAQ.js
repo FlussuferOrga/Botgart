@@ -41,7 +41,7 @@ class MakeFAQCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.keys || !args.text || args.keys.length < 1 ? message.util.send(L.get("HELPTEXT_ADD_FAQ")) : undefined;
+        return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get("HELPTEXT_ADD_FAQ") : undefined;
     }
 
     command(message, responsible, guild, args) {

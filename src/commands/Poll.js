@@ -47,7 +47,7 @@ class PollCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? message.util.send(L.get("HELPTEXT_POLL")) : undefined;
+        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get("HELPTEXT_POLL") : undefined;
     }
 
     serialiseArgs(args) {

@@ -1,6 +1,6 @@
 const { Command } = require("discord-akairo");
 const winston = require("winston");
-const Util = require.main.require("./src/Util.js");
+const { assertType } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");

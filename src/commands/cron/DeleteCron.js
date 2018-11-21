@@ -3,6 +3,7 @@ const winston = require("winston");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+const { assertType } = require.main.require("./src/Util.js");
 
 /**
 Testcases:
@@ -19,8 +20,7 @@ class DeleteCronCommand extends BotgartCommand {
                 args: [
                     {
                         id: "id",
-                        type: "int",
-                        default: ""
+                        type: "integer",
                     }
                 ],
                 userPermissions: ["ADMINISTRATOR"]
@@ -35,13 +35,13 @@ class DeleteCronCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.id || !args.id < 0 ? message.util.send(L.get("HELPTEXT_DEL_CRON")) : undefined;
+        return !args || !args.id || !args.id < 0 ?L.get("HELPTEXT_DEL_CRON") : undefined;
     }
 
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
         assertType(guild, "Guild");
-        assertType(args.id, "int");
+        assertType(args.id, "Number");
         let cid = args.id;
         let deleted = this.deleteCronjob(cid);
         return deleted;
@@ -57,7 +57,7 @@ class DeleteCronCommand extends BotgartCommand {
             return message.util.send(errorMessage);
         }
         
-        let mes = this.command(message.guild, args);
+        let mes = this.command(message, message.author, message.guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
         return message.util.send(mes);
     }
 

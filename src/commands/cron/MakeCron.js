@@ -80,12 +80,13 @@ class MakeCron extends BotgartCommand {
                 if(!job) {
                     return message.util.send(L.get("CRONJOB_NOT_STORED"));
                 } else {
-                    let cid = DB.storeCronjob(schedule, 
+                    let cid = this.client.db.storeCronjob(schedule, 
                                                 mod.id, 
                                                 mod.serialiseArgs(parsedArgs), 
                                                 message.member.user.id, 
                                                 message.guild.id);
                     this.client.cronjobs[cid] = job;
+                    winston.log("info", "MakeCron.js: Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
                     return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid));
                 }
             }
@@ -109,7 +110,7 @@ class MakeCron extends BotgartCommand {
                 if(!responsible) {
                     winston.log("warn", "MakeCron.js: Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
                 }
-                let job = this.scheduleCronjob(cron.schedule, responsible, guild, mod, args);
+                let job = this.scheduleCronjob(cron.schedule, responsible.user, guild, mod, args);
                 if(!job) {
                     winston.log("error", "MakeCron.js: Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
                 } else {
