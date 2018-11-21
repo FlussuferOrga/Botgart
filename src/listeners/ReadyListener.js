@@ -11,7 +11,7 @@ class ReadyListener extends Listener {
     }
 
     exec() {
-        winston.log("info", "ReadListener.js: Bot started!");
+        winston.log("info", "ReadyListener.js: Bot started!");
         this.client.db.initSchema();
         winston.log("info", "ReadyListener.js: Database initialised.");
         winston.log("info", "ReadyListener.js: Rescheduling cronjobs from database.");

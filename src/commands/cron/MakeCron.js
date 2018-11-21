@@ -40,6 +40,10 @@ class MakeCron extends BotgartCommand {
         );
     }
 
+    desc() {
+        return L.get("DESC_MAKE_CRON");
+    }
+
     exec(message, args) {
         if(!message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
@@ -103,7 +107,7 @@ class MakeCron extends BotgartCommand {
             } else {
                 let responsible = guild.members.find(m => m.user.id == cron.created_by);
                 if(!responsible) {
-                    winston.log("warning", "MakeCron.js: Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
+                    winston.log("warn", "MakeCron.js: Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
                 }
                 let job = this.scheduleCronjob(cron.schedule, responsible, guild, mod, args);
                 if(!job) {

@@ -43,7 +43,7 @@ var DE = {
     "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem Teamspeak3-Server (NICHT AKTIV).",
     "DESC_ADD_FAQ": "Fügt den FAQ einen Eintrag hinzu.",
     "DESC_DEL_FAQ": "Entfernt einen Eintrag von den FAQ.",
-    "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der RTFM wieder.",
+    "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf."
 }
 

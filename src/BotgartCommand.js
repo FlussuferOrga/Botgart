@@ -101,6 +101,25 @@ class BotgartCommand extends Command {
         }
         this.command(message, message.author, message.guild, args);
     }
+
+    /*
+    * Convenience method to reply from within a command.
+    * If a message is present, the bot will reply to where
+    * the message was received.
+    * Else, it will send a DM to the responsible person.
+    * This is relevent when a command is scheduled as cron
+    * where a message to reply to is not available.
+    * @param {Message} message - the message to reply to, may be null.
+    * @param {User} responsible - the person responsible for the execution of the command.
+    * @returns {Promise} - the promise for whichever method was executed.
+    */
+    reply(message, responsible, response) {
+        if(message) {
+            return message.channel.send(response);
+        } else {
+            return responsible.send(response);
+        }
+    } 
 }
 
 module.exports = BotgartCommand
