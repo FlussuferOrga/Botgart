@@ -26,7 +26,7 @@ class SayCommand extends BotgartCommand {
         });
     }
 
-    command(guild, args) {
+    command(responsible, guild, args) {
         assertType(guild, "Guild");
         assertType(args.channel, "TextChannel");
         assertType(args.text, "String");

@@ -1,7 +1,7 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
 const DB = require.main.require("./src/DB.js");
-const Util = require.main.require("./src/Util.js");
+const { assertType } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -30,10 +30,11 @@ class PollCommand extends BotgartCommand {
         });
     }
 
-    command(guild, args) {
-        Util.assertType(args.channel, "TextChannel");
-        Util.assertType(args.question, "String");
-        Util.assertType(args.emotes, "Array");
+    command(responsible, guild, args) {
+        assertType(guild, "Guild");
+        assertType(args.channel, "TextChannel");
+        assertType(args.question, "String");
+        assertType(args.emotes, "Array");
 
         args.channel.send(args.question).then(m => {
             // filter empty strings out beforehand

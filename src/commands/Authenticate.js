@@ -5,8 +5,9 @@ const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
+const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
-class AuthenticateCommand extends Command {
+class AuthenticateCommand extends BotgartCommand {
     constructor() {
         super("authenticate", {
             aliases: ["register","authenticate","auth"],
@@ -17,29 +18,27 @@ class AuthenticateCommand extends Command {
                     default: ""
                 }
             ]
-        });
+        },
+        true,  // available per DM
+        false // cronable
+        );
     }
 
-    exec(message, args) {
-        let isDirectMessage = message.member !== undefined;
-        let members = [];
+    command(responsible, guild, args) {
+        let members = []; // plural, as issueing this command through DM takes place on all servers this bot shares with the member
         let reply = "";
-        if(!isDirectMessage) {
-            members.append({"guild": message.member, "member": message.member.guild})
-        } else {
-            // this snippet allows users to authenticate themselves
-            // through a DM and is dedicated to Jey, who is a fucking 
-            // numbnut when it comes to data privacy and posting your
-            // API key in public channels.
-            this.client.guilds.forEach(function(g) {
-                let m = g.members.find(m => m.id === message.author.id);
-                if(m) {
-                    members.push({"guild": g, "member": m});
-                }
-            });
-        }
+        // this snippet allows users to authenticate themselves
+        // through a DM and is dedicated to Jey, who is a fucking 
+        // numbnut when it comes to data privacy and posting your
+        // API key in public channels.
+        this.client.guilds.forEach(function(g) {
+            let m = g.members.find(m => m.id === message.author.id);
+            if(m) {
+                members.push({"guild": g, "member": m});
+            }
+        });
 
-        message.util.send(L.get("CHECKING_KEY"))
+        responsible.send(L.get("CHECKING_KEY"))
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
         let validFormat = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
         if(!validFormat) {
@@ -72,7 +71,7 @@ class AuthenticateCommand extends Command {
                                     reply = L.get("KEY_NOT_UNIQUE")
                                 }
                             }
-                            message.util.send(reply);
+                            responsible.send(reply);
                         })
                     });   
                 } else {
@@ -82,7 +81,11 @@ class AuthenticateCommand extends Command {
             }, err => {
                 winston.log("error","Error occured while validating world.", err);
             });
-        }
+        }       
+    }
+
+    exec(message, args) {
+
     }
 }
 

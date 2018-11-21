@@ -5,18 +5,23 @@ const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
+const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 
-class ListCronsCommand extends Command {
+class ListCronsCommand extends BotgartCommand {
     constructor() {
         super("listcrons", {
-            aliases: ["listcrons","lscrons"],
-            userPermissions: ["ADMINISTRATOR"]
-        });
+                aliases: ["listcrons","lscrons"],
+                userPermissions: ["ADMINISTRATOR"]
+            }, 
+            true, // available per DM
+            false // cronable
+        );
     }
 
-    exec(message) {
-        if(!message.member) {
-            return message.send(L.get("NOT_AVAILABLE_AS_DM"));
+    command(responsible, guild, args) {
+        if(!responsible) {
+            winston.log("error", "Can not execute lscron without member to reply to. Canceling.");
+            return;
         }
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
         let header = format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") + "\n";
@@ -29,11 +34,10 @@ class ListCronsCommand extends Command {
             } else {
                 // message full -> send it and start a new one
                 mes = "```\n" + mes + "\n```";
-                message.author.send(mes);
+                responsible.send(mes);
                 mes = header + line;
             }
-        });
-        message.author.send("```\n" + mes + "\n```");
+        });        
     }
 }
 

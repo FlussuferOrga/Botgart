@@ -35,6 +35,15 @@ exports.getAccountGUID = function(apikey) {
     );
 }
 
+exports.resolveDiscordUser = function(client, uid) {
+    let user = null;
+    let i = 0;
+    while(!user && i < client.guilds.length) {
+        user = client.guilds[i].members.find(m => m.user.id = uid);
+    }
+    return user;
+}
+
 exports.assertType = function(obj, t) {
     let p = obj;
     while(p && p.constructor.name !== t) {

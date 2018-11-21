@@ -8,23 +8,26 @@ const BotgartCommand = require.main.require("./src/BotgartCommand.js");
 class DeleteCronCommand extends BotgartCommand {
     constructor() {
         super("deletecron", {
-            aliases: ["deletecron","rmcron","delcron"],
-            args: [
-                {
-                    id: "id",
-                    type: "int",
-                    default: ""
-                }
-            ],
-            userPermissions: ["ADMINISTRATOR"]
-        }, cronable = false);
+                aliases: ["deletecron","rmcron","delcron"],
+                args: [
+                    {
+                        id: "id",
+                        type: "int",
+                        default: ""
+                    }
+                ],
+                userPermissions: ["ADMINISTRATOR"]
+            }, 
+            false, // available per DM
+            false // cronable
+        );
     }
 
     checkArgs(args) {
         return !args || !args.id || !args.id < 0 ? message.util.send(L.get("HELPTEXT_DEL_CRON")) : undefined;
     }
 
-    command(guild, args) {
+    command(responsible, guild, args) {
         let cid = args.id;
         let deleted = this.deleteCronjob(cid);
         return deleted;

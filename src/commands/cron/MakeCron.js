@@ -11,25 +11,28 @@ const {assertType, shallowInspect} = require.main.require("./src/Util.js");
 class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
-            aliases: ["makecron", "mkcron", "newcron"],
-            split: "quoted",
-            args: [
-                {
-                    id: "schedule",
-                    type: "string",
-                    default: ""
-                },
-                {
-                    id: "cmd",
-                    type: "string" //"commandAlias"
-                },
-                {
-                    id: "args",
-                    match: "rest"
-                }
-            ],
-            userPermissions: ["ADMINISTRATOR"]
-        }, cronable = false);
+                aliases: ["makecron", "mkcron", "newcron"],
+                split: "quoted",
+                args: [
+                    {
+                        id: "schedule",
+                        type: "string",
+                        default: ""
+                    },
+                    {
+                        id: "cmd",
+                        type: "string" //"commandAlias"
+                    },
+                    {
+                        id: "args",
+                        match: "rest"
+                    }
+                ],
+                userPermissions: ["ADMINISTRATOR"]
+            }, 
+            false, // available per DM
+            false // cronable
+        );
     }
 
     exec(message, args) {
@@ -64,7 +67,7 @@ class MakeCron extends BotgartCommand {
             if(checkError !== undefined) {
                 return message.util.send(checkError);
             } else {
-                let job = this.scheduleCronjob(schedule, message.guild, mod, parsedArgs);
+                let job = this.scheduleCronjob(schedule, message.member.user, message.guild, mod, parsedArgs);
                 if(!job) {
                     return message.util.send(L.get("CRONJOB_NOT_STORED"));
                 } else {
@@ -93,7 +96,11 @@ class MakeCron extends BotgartCommand {
             if(!guild) {
                 winston.log("error", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
             } else {
-                let job = this.scheduleCronjob(cron.schedule, guild, mod, args);
+                let responsible = guild.members.find(m => m.user.id == cron.created_by);
+                if(!responsible) {
+                    winston.log("warning", "Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
+                }
+                let job = this.scheduleCronjob(cron.schedule, responsible, guild, mod, args);
                 if(!job) {
                     winston.log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
                 } else {
@@ -115,18 +122,20 @@ class MakeCron extends BotgartCommand {
     * Schedules a new cronjob.
     * That is: it creates a cronjob, no database is involved at this point.
     * @param {string} time - cron string.
+    * @param {User} responsible - who issued the cron.
     * @param {Guild} guild - Guild.
     * @param {Command} cmd - Command-module to execute.
     * @param {Map} args - Args for the command.
     * @returns {scheduleJob}
     */
-    scheduleCronjob(time, guild, cmd, args) {
+    scheduleCronjob(time, responsible, guild, cmd, args) {
         assertType(time, "String");
+        assertType(responsible, "User");
         assertType(guild, "Guild");
         assertType(cmd, "Command");
         assertType(args, "Object");
-        return schedule.scheduleJob(time, function(m,g,as) { 
-            m.command(g, as); }.bind(this, cmd, guild, args));
+        return schedule.scheduleJob(time, function(m,r,g,as) { 
+            m.command(r,g,as); }.bind(this, cmd, responsible, guild, args));
     }
 }
 
