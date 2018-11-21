@@ -1,6 +1,5 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const DB = require.main.require("./src/DB.js");
 const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -38,7 +37,7 @@ class ListCronsCommand extends BotgartCommand {
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
         let header = format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") + "\n";
         let mes = header;
-        DB.getCronjobs().forEach((cron) => {
+        this.client.db.getCronjobs().forEach((cron) => {
             let line = format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
             if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
                 // leave some space for the backticks and additional linebreaks

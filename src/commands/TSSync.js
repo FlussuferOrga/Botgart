@@ -1,7 +1,6 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
 const TeamSpeak = require('node-teamspeak-api');
-const DB = require.main.require("./src/DB.js");
 const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");

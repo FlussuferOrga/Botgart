@@ -1,6 +1,5 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const DB = require.main.require("./src/DB.js");
 const { assertType } = require.main.require("./src/Util.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -32,7 +31,7 @@ class ReauthenticateCommand extends BotgartCommand {
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
         assertType(guild, "Guild");
-        DB.revalidateKeys().then(function(prune) {
+        this.client.db.revalidateKeys().then(function(prune) {
             let guild,r;
             prune.filter(p => p !== undefined).forEach(p => {
                 if(!guild || guild.id != p.guild.id) {
@@ -56,7 +55,7 @@ class ReauthenticateCommand extends BotgartCommand {
                     }
                 }
                 // delete in any case
-                DB.deleteKey(p.api_key);
+                this.client.db.deleteKey(p.api_key);
             });
         });
         winston.log("info", "Pruning complete.");      

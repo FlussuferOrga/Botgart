@@ -1,7 +1,6 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
 const schedule = require('node-schedule');
-const DB = require.main.require("./src/DB.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -95,7 +94,7 @@ class MakeCron extends BotgartCommand {
     */
     rescheduleCronjobs() {
         let croncount = 0;
-        DB.getCronjobs().forEach(cron => {
+        this.client.db.getCronjobs().forEach(cron => {
             let mod = this.client.commandHandler.modules.get(cron.command);
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             let guild = this.client.guilds.find(g => g.id = cron.guild);

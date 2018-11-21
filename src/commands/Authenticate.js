@@ -1,6 +1,5 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const DB = require.main.require("./src/DB.js");
 const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -88,7 +87,7 @@ class AuthenticateCommand extends BotgartCommand {
                             if(!r) {
                                 winston.log("error", "Role {0} not found on server {1}. Skipping.".formatUnicorn(config.registered_role, g.name));
                             } else {
-                                let unique = DB.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
+                                let unique = this.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
                                 if(unique) {
                                     winston.log("info", "Accepted {0} for {1} on {2}.".formatUnicorn(args.key, m.member.user.username, m.guild.name));
                                     m.member.addRole(r);

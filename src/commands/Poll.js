@@ -1,6 +1,5 @@
 const { Command } = require("discord-akairo");
 const winston = require('winston');
-const DB = require.main.require("./src/DB.js");
 const { assertType } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -46,6 +45,23 @@ class PollCommand extends BotgartCommand {
         return L.get("DESC_POLL");
     }
 
+    checkArgs(args) {
+        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? message.util.send(L.get("HELPTEXT_POLL")) : undefined;
+    }
+
+    serialiseArgs(args) {
+        let clone = Object.assign({}, args);
+        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
+        return JSON.stringify(clone);
+    }
+
+    deserialiseArgs(jsonargs) {
+        let args = JSON.parse(jsonargs);
+        let guild = this.client.guilds.find(g => g.id === args.channel.guild);
+        args.channel = guild.channels.find(c => c.id === args.channel.channel);
+        return args;
+    }
+
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
         assertType(guild, "Guild");
@@ -76,22 +92,6 @@ class PollCommand extends BotgartCommand {
         winston.log("info", "Created poll '{0}'.".formatUnicorn(args.question));
     }
 
-    checkArgs(args) {
-        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? message.util.send(L.get("HELPTEXT_POLL")) : undefined;
-    }
-
-    serialiseArgs(args) {
-        let clone = Object.assign({}, args);
-        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
-        return JSON.stringify(clone);
-    }
-
-    deserialiseArgs(jsonargs) {
-        let args = JSON.parse(jsonargs);
-        let guild = this.client.guilds.find(g => g.id === args.channel.guild);
-        args.channel = guild.channels.find(c => c.id === args.channel.channel);
-        return args;
-    }
 }
 
 module.exports = PollCommand;
