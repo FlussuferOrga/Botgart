@@ -27,7 +27,7 @@ class AuthenticateCommand extends BotgartCommand {
                     id: "key",
                     type: "string",
                     default: ""
-                }
+                },
             ]
         },
         true,  // available per DM
@@ -42,10 +42,7 @@ class AuthenticateCommand extends BotgartCommand {
     command(message, responsible, guild, args) {
         Util.assertType(message, "Message");
         Util.assertType(responsible, "User");
-        Util.assertType(guild, "Guild");
-        Util.assertType(args.channel, "TextChannel");
-        Util.assertType(args.question, "String");
-        Util.assertType(args.emotes, "Array");
+        Util.assertType(args.key, "String");
 
         if(!message) {
             winston.log("error", "Authenticate.js: Mandatory message parameter missing. This command can not be issued as cron.");
@@ -72,13 +69,14 @@ class AuthenticateCommand extends BotgartCommand {
             return message.util.send(L.get("KEY_INVALID_FORMAT"));
         } else {
             // try to delete the message for privacy reasons if it is not a direct message
-            if(message && !message.member) {
+            if(message && message.member) {
                 if(message.deletable) {
                     message.delete();
                 } else {
                     message.util.send(L.get("NO_DEL_PERM"));
                 }
             }
+            let that = this;
             Util.validateWorld(args.key).then(isOnWorld => {
                 if(isOnWorld === true) {
                     Util.getAccountGUID(args.key).then(guid => {
@@ -87,23 +85,26 @@ class AuthenticateCommand extends BotgartCommand {
                             if(!r) {
                                 winston.log("error", "Authenticate.js: Role {0} not found on server {1}. Skipping.".formatUnicorn(config.registered_role, g.name));
                             } else {
-                                let unique = this.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
+                                let unique = that.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
                                 if(unique) {
-                                    winston.log("info", "Authenticate.js: Accepted {0} for {1} on {2}.".formatUnicorn(args.key, m.member.user.username, m.guild.name));
-                                    m.member.addRole(r);
+                                    winston.log("info", "Authenticate.js: Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
+                                    m.member.addRole(r).then(
+                                        () => {},
+                                        (err) => winston.log("error", "Error while giving role to user: {0}".formatUnicorn(err.message))
+                                    );
                                     reply = L.get("KEY_ACCEPTED")
-
                                 } else {
                                     winston.log("info", "Authenticate.js: Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
                                     reply = L.get("KEY_NOT_UNIQUE")
                                 }
                             }
-                            responsible.send(reply);
-                        })
+                        });
+                        responsible.send(reply);
                     });   
                 } else {
-                    winston.log("info","Authenticate.js: Declined API key ${args.key}.");
+                    winston.log("info","Authenticate.js: Declined API key {0}.".formatUnicorn(args.key));
                     reply = L.get("KEY_DECLINED");
+                    responsible.send(reply);
                 }
             }, err => {
                 winston.log("error","Authenticate.js: Error occured while validating world.", err);

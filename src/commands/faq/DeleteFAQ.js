@@ -18,7 +18,6 @@ class DeleteFAQCommand extends BotgartCommand {
     constructor() {
         super("delfaq", {
             aliases: ["deletefaq","rmfaq","delfaq","deletertfm","rmrtfm","delrtfm"],
-            split: "quoted",
             args: [
                 {
                     id: "key",
@@ -37,22 +36,18 @@ class DeleteFAQCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.keys || !args.text ? L.get("HELPTEXT_DEL_FAQ") : undefined;
+        return !args || !args.key ? L.get("HELPTEXT_DEL_FAQ") : undefined;
     }
 
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
         assertType(guild, "Guild");
-        assertType(args.keys, "Array");
-        assertType(args.text, "String");
+        assertType(args.key, "String");
 
-        let deleted = this.client.db.deleteFAQ(args.text);
-        let message = deleted ? L.get("FAQ_DELETED") : L.get("FAQ_NOT_DELETED");
-        if(message) {
-            message.util.send(message);
-        } else {
-            responsible.send(messag);
-        }
+        let deleted = this.client.db.deleteFAQ(args.key);
+        let reply = deleted ? L.get("FAQ_DELETED").formatUnicorn(args.key) : L.get("FAQ_NOT_DELETED").formatUnicorn(args.key);
+        this.reply(message, responsible, reply)
+        return deleted;
     }
 }
 

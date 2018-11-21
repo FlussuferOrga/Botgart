@@ -32,12 +32,16 @@ class Database {
         return res;
     }
 
+    // NOTE: https://github.com/orlandov/node-sqlite/issues/17
+    // sqlite3 and node don't work well together in terms of large integers.
+    // Therefore, all big numbers are stored as strings.
+    // As a consequence, === can't be used, when checking them.
     initSchema() {
         let sqls = [
         `CREATE TABLE IF NOT EXISTS registrations(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user BIGINT NOT NULL,
-            guild BIGINT NOT NULL,
+            user TEXT NOT NULL,
+            guild TEXT NOT NULL,
             api_key TEXT NOT NULL,
             gw2account TEXT NOT NULL,
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
@@ -49,15 +53,15 @@ class Database {
             schedule TEXT NOT NULL,
             command TEXT NOT NULL,
             arguments TEXT,
-            created_by BIGINT NOT NULL,
-            guild BIGINT NOT NULL,
+            created_by TEXT NOT NULL,
+            guild TEXT NOT NULL,
             created TIMESTAMP DEFAULT (datetime('now','localtime'))
         )`,
         `CREATE TABLE IF NOT EXISTS faqs(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             text TEXT,
-            created_by BIGINT NOT NULL,
-            guild BIGINT NOT NULL,
+            created_by TEXT NOT NULL,
+            guild TEXT NOT NULL,
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(text) ON CONFLICT REPLACE
         )`, 
@@ -65,8 +69,8 @@ class Database {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             key TEXT NOT NULL,
             faq_id INTEGER,
-            created_by BIGINT NOT NULL,
-            guild BIGINT NOT NULL,
+            created_by TEXT NOT NULL,
+            guild TEXT NOT NULL,
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(key) ON CONFLICT REPLACE,
             FOREIGN KEY(faq_id) REFERENCES faqs(id) ON UPDATE CASCADE
@@ -121,9 +125,7 @@ class Database {
     revalidateKeys() {
         return this.execute(db => 
             Promise.all(
-                db.prepare(`SELECT api_key, guild, user FROM registrations ORDER BY guild`).all().map(r => 
-                    Util.validateWorld(r.api_key).then(isOnWorld => !isOnWorld ? r : undefined)
-                )
+                db.prepare(`SELECT api_key, guild, user FROM registrations ORDER BY guild`).all().map(r => Util.validateWorld(r.api_key).then(isOnWorld => !isOnWorld ? r : undefined))
             )
         );
     }
