@@ -45,7 +45,7 @@ class MakeCron extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.schedule || !args.cmd || !args.rest ? L.get("HELPTEXT_ADD_CRON") : undefined;
+        return !args || !args.schedule || !args.cmd || !args.args ? L.get("HELPTEXT_ADD_CRON") : undefined;
     }
 
     command(message, responsible, guild, args) {
@@ -68,7 +68,7 @@ class MakeCron extends BotgartCommand {
 
         // crons can not schedule other crons for shenanigans-reasons
         if(mod.id == this.id) {
-            return message.util.send(L.get("CIRCULAR_CRONS"));
+            return message.util.send(L.get("CIRCULAR_CRON"));
         }
 
         if(!mod.cronable) {
@@ -106,15 +106,17 @@ class MakeCron extends BotgartCommand {
         this.client.db.getCronjobs().forEach(cron => {
             let mod = this.client.commandHandler.modules.get(cron.command);
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
-            let guild = this.client.guilds.find(g => g.id = cron.guild);
+            let guild = this.client.guilds.find(g => g.id == cron.guild);
             if(!guild) {
                 winston.log("error", "MakeCron.js: I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
             } else {
                 let responsible = guild.members.find(m => m.user.id == cron.created_by);
+                let job;
                 if(!responsible) {
-                    winston.log("warn", "MakeCron.js: Responsible user with ID {0} is no longer present in Guild {1}. Proceeding anyway.".formatUnicorn(cron.created_by, guild.name));
+                    winston.log("warn", "MakeCron.js: Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(cron.created_by, cron.id, guild.name));
+                } else {
+                    job = this.scheduleCronjob(cron.schedule, responsible.user, guild, mod, args);
                 }
-                let job = this.scheduleCronjob(cron.schedule, responsible.user, guild, mod, args);
                 if(!job) {
                     winston.log("error", "MakeCron.js: Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
                 } else {
