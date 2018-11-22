@@ -17,6 +17,8 @@ class ReadyListener extends Listener {
         winston.log("info", "ReadyListener.js: Rescheduling cronjobs from database.");
         this.client.cronjobs = {};
         this.client.commandHandler.modules.get("makecron").rescheduleCronjobs();
+        let help = this.client.commandHandler.modules.get("help").id;
+        this.client.user.setActivity("{0}{1} für Hilfe".formatUnicorn(this.client.options.prefix, help));
     }
 }
 
