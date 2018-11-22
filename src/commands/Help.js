@@ -30,9 +30,18 @@ class HelpCommand extends BotgartCommand {
 
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
-        assertType(guild, "Guild");
+
+        // if this command is issued on a server, only the commands the user can execute
+        // are listed.
+        // Issueing this command through DMs give the full list. This is not a security issue,
+        // since the restricted listing is just a convenience for users to present them with a
+        // more compact help text.
+        let member = guild ? guild.members.find(m => m.id == responsible.id) : undefined;
+        let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         let descs = "**Verfügbare Befehle:**\n\n"
-                    .concat(Array.from(this.client.commandHandler.modules.values()).map(m => m.desc 
+                    .concat(Array.from(this.client.commandHandler.modules.values())
+                        .filter(m => !m.userPermissions || checkPermissions(m.userPermissions))
+                        .map(m => m.desc 
                         ? "**`{0}`** (bzw. {1}): {2}".formatUnicorn(
                             m.id,
                             m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "),
