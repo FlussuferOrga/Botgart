@@ -16,7 +16,7 @@ class ListFAQsCommand extends BotgartCommand {
         super("listfaqs", {
                 aliases: ["listfaqs","lsfaqs","lsrtfms"]
             }, 
-            true, // available per DM
+            false, // available per DM
             false // cronable
         );
     }
@@ -35,7 +35,7 @@ class ListFAQsCommand extends BotgartCommand {
         let format = "{0} | {1}";
         let header = format.formatUnicorn("KEY", "       TEXT      ") + "\n";
         let mes = header;
-        this.client.db.getFAQs().forEach((faq) => {
+        this.client.db.getFAQs(guild.id).forEach((faq) => {
             let t = faq.text.length < TEASER_LENGTH ? faq.text : faq.text.substring(0,TEASER_LENGTH - 3) + "...";
             let line = format.formatUnicorn(faq.key, t) + "\n";
             if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {

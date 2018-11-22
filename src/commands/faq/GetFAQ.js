@@ -41,14 +41,10 @@ class GetFAQCommand extends BotgartCommand {
         assertType(responsible, "User");
         assertType(args.key, "String");
 
-        let faq = this.client.db.getFAQ(args.key);
+        let faq = this.client.db.getFAQ(args.key, guild.id);
         let response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
 
-        if(message) {
-            message.util.send(response);
-        } else {
-            responsible.send(response);
-        }
+        this.reply(message, responsible, response);
     }
 }
 

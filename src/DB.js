@@ -102,12 +102,12 @@ class Database {
         `).run());
     }
 
-    getFAQ(key) {
-        return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.key = ?`).get(key));
+    getFAQ(key, guild) {
+        return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.key = ? AND fk.guild = ?`).get(key, guild));
     }
 
-    getFAQs() {
-        return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id`).all());
+    getFAQs(guild) {
+        return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
 
     storeAPIKey(user, guild, key, gw2account) {
