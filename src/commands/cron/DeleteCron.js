@@ -16,7 +16,7 @@ Testcases:
 class DeleteCronCommand extends BotgartCommand {
     constructor() {
         super("deletecron", {
-                aliases: ["deletecron","rmcron","delcron"],
+                aliases: ["deletecron","rmcron"],
                 args: [
                     {
                         id: "id",

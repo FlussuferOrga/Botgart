@@ -16,7 +16,7 @@ Testcases:
 class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
-                aliases: ["makecron", "mkcron", "newcron"],
+                aliases: ["makecron", "mkcron"],
                 split: "quoted",
                 args: [
                     {

@@ -17,7 +17,7 @@ Testcases:
 class MakeFAQCommand extends BotgartCommand {
     constructor() {
         super("addfaq", {
-            aliases: ["makertfm","makefaq","newrtfm","newfaq","addrtfm","addfaq","mkrtfm","mkfaq"],
+            aliases: ["addfaq","addrtfm"],
             split: "quoted",
             args: [
                 {

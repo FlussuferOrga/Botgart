@@ -14,7 +14,7 @@ Testcases:
 class ListFAQsCommand extends BotgartCommand {
     constructor() {
         super("listfaqs", {
-                aliases: ["listfaqs","lsfaqs","listsrtfms","lsrtfms"]
+                aliases: ["listfaqs","lsfaqs","lsrtfms"]
             }, 
             true, // available per DM
             false // cronable

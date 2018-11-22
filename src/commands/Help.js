@@ -17,7 +17,7 @@ Testcases:
 class HelpCommand extends BotgartCommand {
     constructor() {
         super("help", {
-            aliases: ["help", "commands"],
+            aliases: ["help", "commands", "hilfe"],
         },
         true, // available per DM
         true // cronable

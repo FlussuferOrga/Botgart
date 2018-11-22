@@ -16,8 +16,8 @@ Testcases:
 
 class DeleteFAQCommand extends BotgartCommand {
     constructor() {
-        super("delfaq", {
-            aliases: ["deletefaq","rmfaq","delfaq","deletertfm","rmrtfm","delrtfm"],
+        super("deletefaq", {
+            aliases: ["deletefaq","deletertfm","rmfaq","rmrtfm"],
             args: [
                 {
                     id: "key",
