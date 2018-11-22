@@ -22,7 +22,7 @@ class MakeFAQCommand extends BotgartCommand {
             args: [
                 {
                     id: "keys",
-                    type: es => es ? es.split(";") : []
+                    type: es => es ? es.split(";").filter(e => e) : []
                 },
                 {
                     id: "text",
