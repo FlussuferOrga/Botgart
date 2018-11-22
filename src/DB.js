@@ -73,7 +73,8 @@ class Database {
             guild TEXT NOT NULL,
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(key) ON CONFLICT REPLACE,
-            FOREIGN KEY(faq_id) REFERENCES faqs(id) ON UPDATE CASCADE
+            FOREIGN KEY(faq_id) REFERENCES faqs(id) 
+                ON DELETE CASCADE
         )`,
         `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys(key)`
         ]; 
