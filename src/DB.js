@@ -16,6 +16,7 @@ class Database {
                 return winston.log("error", "DB.js: DB open(): {0}".formatUnicorn(err["message"]));
             }
         });
+        db.pragma("foreign_keys = ON");
 
         try {
             var res = f(db);
@@ -62,8 +63,7 @@ class Database {
             text TEXT,
             created_by TEXT NOT NULL,
             guild TEXT NOT NULL,
-            created TIMESTAMP DEFAULT (datetime('now','localtime')),
-            UNIQUE(text) ON CONFLICT REPLACE
+            created TIMESTAMP DEFAULT (datetime('now','localtime'))
         )`, 
         `CREATE TABLE IF NOT EXISTS faq_keys(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,6 +74,7 @@ class Database {
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(key) ON CONFLICT REPLACE,
             FOREIGN KEY(faq_id) REFERENCES faqs(id) 
+                ON UPDATE CASCADE
                 ON DELETE CASCADE
         )`,
         `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys(key)`
@@ -87,19 +88,23 @@ class Database {
             db.transaction((_) => {
                 db.prepare(`INSERT INTO faqs(created_by, guild, text) VALUES(?,?,?)`).run(user, guild, text);
                 last_id = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-                keys.forEach(k => db.prepare(`INSERT INTO faq_keys(created_by, guild, key, faq_id) VALUES(?,?,?,?)`).run(user, guild, k, last_id));
+                let stmt = db.prepare(`INSERT INTO faq_keys(created_by, guild, key, faq_id) VALUES(?,?,?,?)`);
+                keys.forEach(k => stmt.run(user, guild, k, last_id));
             })(null);
             return last_id;
         });
     }
 
-    deleteFAQ(key) {
-        this.execute(db => db.prepare(`DELETE FROM faq_keys WHERE key = ?`).run(key));
-        // clean up FAQs that are not linked to any keyword now.
-        this.execute(db => db.prepare(`
-            DELETE FROM faqs WHERE id IN
-              (SELECT f.id FROM faqs AS f LEFT JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE key IS NULL)
-        `).run());
+    deleteFAQ(key, guild) {
+        return this.execute(db => {
+            let changes = 0;
+            db.transaction((_) => {
+                db.prepare(`DELETE FROM faq_keys WHERE key = ? AND guild = ?`).run(key, guild)
+                changes = db.prepare(`SELECT changes() AS changes`).get().changes;
+                db.prepare(`DELETE FROM faqs WHERE id IN (SELECT f.id FROM faqs AS f LEFT JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE key IS NULL)`).run();
+            })(null);
+            return changes > 0;
+        });
     }
 
     getFAQ(key, guild) {

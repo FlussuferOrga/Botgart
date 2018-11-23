@@ -44,7 +44,7 @@ class DeleteFAQCommand extends BotgartCommand {
         assertType(guild, "Guild");
         assertType(args.key, "String");
 
-        let deleted = this.client.db.deleteFAQ(args.key);
+        let deleted = this.client.db.deleteFAQ(args.key, guild.id);
         let reply = deleted ? L.get("FAQ_DELETED").formatUnicorn(args.key) : L.get("FAQ_NOT_DELETED").formatUnicorn(args.key);
         this.reply(message, responsible, reply)
         return deleted;
