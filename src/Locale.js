@@ -12,6 +12,7 @@ var DE = {
     "CHECKING_KEY": "Prüfe API-Key...",
     "REG_ROLE_NOT_FOUND": "Die eingestellte Rolle existiert nicht auf dem Server. Bitte informiere einen Administrator.",
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
+    "FIND_DUPES_COMPLETE": "Duplikatsuche abgeschlossen.",
 
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
@@ -46,7 +47,9 @@ var DE = {
     "DESC_ADD_FAQ": "Fügt den FAQ einen Eintrag hinzu.",
     "DESC_DEL_FAQ": "Entfernt einen Eintrag von den FAQ.",
     "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
-    "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf."
+    "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
+    "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen."
+
 }
 
 exports.get = function(key) {

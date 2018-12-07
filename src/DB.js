@@ -186,6 +186,10 @@ class Database {
             return changes > 0;
         });
     }
+
+    findDuplicateRegistrations() {
+        return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
+    }
 }
 
 module.exports = Database;
