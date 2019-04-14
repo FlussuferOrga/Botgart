@@ -1,5 +1,4 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
 const { assertType, shallowInspect } = require.main.require("./src/Util.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -33,6 +32,7 @@ class ReauthenticateCommand extends BotgartCommand {
         assertType(guild, "Guild");
         let that = this;
         this.client.db.revalidateKeys().then(function(prune) {
+            // FIXME!! prune now is a list of tuples (player, assignedRole) where assignedRole is undefined if the player should not have any role
             let guild,role;
             prune.filter(p => p !== undefined).forEach(p => {
                 if(!guild || guild.id != p.guild) {
@@ -42,25 +42,25 @@ class ReauthenticateCommand extends BotgartCommand {
                     role = guild ? guild.roles.find(r => r.name === config.registered_role) : undefined;
                 }
                 if(!guild) {
-                    winston.log("error", "Reauthenticate.js: Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild))
+                    Util.log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild))
                 } else {
                     if(!role) {
-                        winston.log("error", "Reauthenticate.js: Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, config.registered_role));
+                        Util.log("error", "Reauthenticate.js", "Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, config.registered_role));
                     } else {
                         let m = guild.members.find(member => p.user == member.user.id);
                         if(m) {
-                            winston.log("info", "Reauthenticate.js: Pruning {0}.".formatUnicorn(m.user.username));
+                            Util.log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
                             m.removeRole(role);
                             m.send(L.get("KEY_INVALIDATED"));
                         } else {
-                            winston.log("info", "Reauthenticate.js: {0} is no longer part of the guild.".formatUnicorn(p.user));
+                            Util.log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
                         }
                         that.client.db.deleteKey(p.api_key);
                     }
                 }               
             });
         });
-        winston.log("info", "Pruning complete.");      
+        Util.log("info", "Reauthenticate.js", "Pruning complete.");      
     }
 
     postExecHook(message, args, result) {

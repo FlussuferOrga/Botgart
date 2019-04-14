@@ -1,6 +1,5 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
-const { assertType } = require.main.require("./src/Util.js");
+const { assertType, log } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
@@ -31,7 +30,7 @@ class ListCronsCommand extends BotgartCommand {
         assertType(responsible, "User");
         assertType(guild, "Guild");
         if(!responsible) {
-            winston.log("error", "ListCrons.js: Can not execute lscron without member to reply to. Canceling.");
+            log("error", "ListCrons.js", "Can not execute lscron without member to reply to. Canceling.");
             return;
         }
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";

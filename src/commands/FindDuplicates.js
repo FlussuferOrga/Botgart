@@ -1,6 +1,5 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
-const { assertType, shallowInspect } = require.main.require("./src/Util.js");
+const { assertType, shallowInspect, log} = require.main.require("./src/Util.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
@@ -29,12 +28,9 @@ class FindDucplicatesCommand extends BotgartCommand {
         this.client.db.findDuplicateRegistrations().forEach(d => {
             // unknown users are already filtered out. Maybe we want to change that and notify the caller
             let users = d.users.split(",").map(u => guild.members.get(u)).filter(u => u);
-            console.log(typeof users[0]);
-            console.log(d.users.split(","));
-            console.log(typeof guild.members.get(d.users.split(",")[0]));
             responsible.send("{0}: {1}".formatUnicorn(d.gw2account, users.join(", ")));
         });
-        winston.log("info", "Finding duplicates complete.");      
+        log("info", "FindDuplicates.js", "Finding duplicates complete.");      
     }
 
     postExecHook(message, args, result) {

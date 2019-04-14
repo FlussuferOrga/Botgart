@@ -1,5 +1,4 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
 const Util = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -45,7 +44,7 @@ class AuthenticateCommand extends BotgartCommand {
         Util.assertType(args.key, "String");
 
         if(!message) {
-            winston.log("error", "Authenticate.js: Mandatory message parameter missing. This command can not be issued as cron.");
+            Util.log("error", "Authenticate.js", "Mandatory message parameter missing. This command can not be issued as cron.");
             return;
         }
 
@@ -77,37 +76,49 @@ class AuthenticateCommand extends BotgartCommand {
                 }
             }
             let that = this;
-            Util.validateWorld(args.key).then(isOnWorld => {
-                if(isOnWorld === true) {
+            Util.validateWorld(args.key).then(role => {
+                if(role === false) {
+                    Util.log("info", "Authenticate.js", "Declined API key {0}.".formatUnicorn(args.key));
+                    reply = L.get("KEY_DECLINED");
+                    responsible.send(reply);                    
+                } else {
                     Util.getAccountGUID(args.key).then(guid => {
-                        members.forEach(function(m) {
-                            let r = m.guild.roles.find(role => role.name === config.registered_role);
+                        members.forEach(m => {
+                            let r = m.guild.roles.find(role => role.name === role);
                             if(!r) {
-                                winston.log("error", "Authenticate.js: Role {0} not found on server {1}. Skipping.".formatUnicorn(config.registered_role, g.name));
+                                Util.log("error", "Authenticate.js", "Role '{0}'' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
+                                reply = L.get("INTERNAL_ERROR");
                             } else {
                                 let unique = that.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
                                 if(unique) {
-                                    winston.log("info", "Authenticate.js: Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
+                                    Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                     m.member.addRole(r).then(
                                         () => {},
-                                        (err) => winston.log("error", "Error while giving role to user: {0}".formatUnicorn(err.message))
+                                        (err) => Util.log("error", "Authenticate.js", "Error while giving role to user: {0}".formatUnicorn(err.message))
                                     );
                                     reply = L.get("KEY_ACCEPTED")
                                 } else {
-                                    winston.log("info", "Authenticate.js: Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
+                                    Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
                                     reply = L.get("KEY_NOT_UNIQUE")
                                 }
                             }
                         });
                         responsible.send(reply);
                     });   
-                } else {
-                    winston.log("info","Authenticate.js: Declined API key {0}.".formatUnicorn(args.key));
-                    reply = L.get("KEY_DECLINED");
-                    responsible.send(reply);
                 }
             }, err => {
-                winston.log("error","Authenticate.js: Error occured while validating world.", err);
+                switch(err) {
+                    case Util.ERRORS.config_world_duplicate:
+                        Util.log("error", "Authenticate.js", "A world is defined more than once in the config. Please fix the config file.");  
+                        break;
+                    case Util.ERRORS.network_error:
+                        Util.log("error", "Authenticate.js", "Network error while trying to resolve world.");
+                        break;
+                    default:
+                        Util.log("error", "Authenticate.js", "Unexpected error occured while validating world.");
+                        Util.log("error", "Authenticate.js", err);          
+                }
+                responsible.send(L.get("INTERNAL_ERROR"));              
             });
         }       
     }

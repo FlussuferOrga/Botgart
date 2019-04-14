@@ -1,5 +1,4 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
 const { assertType, shallowInspect } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -50,16 +49,16 @@ class SayCommand extends BotgartCommand {
         let result;
         let g = this.client.guilds.find(g => g.id == guild.id);
         if(!g) {
-            winston.log("error", "Say.js: I am not a member of guild {0}.".formatUnicorn(guild.id));
+            Util.log("error", "Say.js", "I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
             let c = g.channels.find(c => c.id == args.channel.id);
             if(!c) {
-                winston.log("error", "Say.js: Can not find a channel {0}.".formatUnicorn(args.channel.id));
+                Util.log("error", "Say.js", "Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
             } else {
                 c.send(args.text);
-                winston.log("info", "Say.js: Executed Say.");
+                Util.log("info", "Say.js", "Executed Say.");
                 result = true;
             }
         }

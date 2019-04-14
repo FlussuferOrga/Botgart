@@ -1,5 +1,4 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
 const { assertType } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -90,7 +89,7 @@ class PollCommand extends BotgartCommand {
             });
         },
         _ => {});
-        winston.log("info", "Poll.js: Created poll '{0}'.".formatUnicorn(args.question));
+        Util.log("info", "Poll.js", "Created poll '{0}'.".formatUnicorn(args.question));
     }
 
 }

@@ -1,5 +1,4 @@
 const { Command } = require("discord-akairo");
-const winston = require("winston");
 const { assertType } = require.main.require("./src/Util.js");
 const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
@@ -53,8 +52,6 @@ class PipeGuildLog extends BotgartCommand {
 
         let guildname = args
 
-        "HELPTEXT_GUILD_LOG". "Bitte benutze den Befehl mit folgenden Parametern:\n`<Name der Gilde>` `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
-
         // if this command is issued on a server, only the commands the user can execute
         // are listed.
         // Issueing this command through DMs give the full list. This is not a security issue,
@@ -80,13 +77,13 @@ class PipeGuildLog extends BotgartCommand {
         ms.forEach(m => {
             this.reply(message, responsible, m).then(
                 () => {},
-                (err) => winston.log("error", err.message) //winston.log("error", "Help.js: help-string exceeds maximum length even after splitting on command-to-command-level. One or more desc-strings seem to be too long.")
+                (err) => Util.log("error", "PipeGuildLog.js", err.message) // help-string exceeds maximum length even after splitting on command-to-command-level. One or more desc-strings seem to be too long.")
             );
         });
         if(ms.length > 1) {
-            winston.log("warn", "Help.js: help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
+            Util.log("warn", "PipeGuildLog.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
         }
     }
 }
 
-module.exports = HelpCommand;
+module.exports = PipeGuildLog;

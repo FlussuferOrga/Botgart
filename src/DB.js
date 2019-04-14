@@ -1,5 +1,4 @@
 const Util = require("./Util.js");
-const winston = require("winston");
 const sqlite3 = require("better-sqlite3");
 
 // FIXME: resolve objects when loading from db
@@ -13,7 +12,7 @@ class Database {
     execute(f) {
         let db = new sqlite3(this.file, [], err => {
             if(err) {
-                return winston.log("error", "DB.js: DB open(): {0}".formatUnicorn(err["message"]));
+                return Util.log("error", "DB.js", "DB open(): {0}".formatUnicorn(err["message"]));
             }
         });
         db.pragma("foreign_keys = ON");
@@ -22,12 +21,12 @@ class Database {
             var res = f(db);
         } catch(err) {
             var res = undefined;
-            winston.log("error", "DB.js: DB execute: {0}".formatUnicorn(err["message"]));
+            Util.log("error", "DB.js", "DB execute: {0}".formatUnicorn(err["message"]));
         }
 
         db.close(err => {
             if(err) {
-                return winston.log("error", "DB.js: DB close(): {0}".formatUnicorn(err["message"]));
+                return Util.log("error", "DB.js", "DB close(): {0}".formatUnicorn(err["message"]));
             }
         });
         return res;
@@ -45,6 +44,7 @@ class Database {
             guild TEXT NOT NULL,
             api_key TEXT NOT NULL,
             gw2account TEXT NOT NULL,
+            registration_role TEXT,
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(user, guild) ON CONFLICT REPLACE,
             UNIQUE(guild, api_key)
@@ -82,6 +82,11 @@ class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
+    patchWorldCol() {
+        let sql = `ALTER TABLE registrations ADD COLUMN registration_role TEXT`;
+
+    }
+
     storeFAQ(user, guild, keys, text) {
         return this.execute(db => {
             let last_id = undefined;
@@ -115,14 +120,13 @@ class Database {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
 
-    storeAPIKey(user, guild, key, gw2account) {
-        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account) VALUES(?,?,?,?)`;
+    storeAPIKey(user, guild, key, gw2account, role) {
+        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, registration_role) VALUES(?,?,?,?,?)`;
         return this.execute(db => {
                     try {
                         db.prepare(sql).run(user, guild, key, gw2account);
                         return true;
                     } catch(err) {
-                        //winston.log("error",err);
                         return false;
                     }
                 });
@@ -131,7 +135,7 @@ class Database {
     revalidateKeys() {
         return this.execute(db => 
             Promise.all(
-                db.prepare(`SELECT api_key, guild, user FROM registrations ORDER BY guild`).all().map(r => Util.validateWorld(r.api_key).then(isOnWorld => !isOnWorld ? r : undefined))
+                db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all().map(r => Util.validateWorld(r.api_key).then(assignedRole => (r, assignedRole)))
             )
         );
     }
