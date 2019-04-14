@@ -13,6 +13,7 @@ var DE = {
     "REG_ROLE_NOT_FOUND": "Die eingestellte Rolle existiert nicht auf dem Server. Bitte informiere einen Administrator.",
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
     "FIND_DUPES_COMPLETE": "Duplikatsuche abgeschlossen.",
+    "GUILD_LOG_COMPLETE": "Gilden-Logbuch erfolgreich abgerufen.",
 
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
@@ -25,6 +26,8 @@ var DE = {
     "FAQ_NOT_DELETED": "Der FAQ-Eintrag für '{0}' konnte nicht gelöscht werden.",
     "FAQ_NOT_FOUND": "Es gibt keinen FAQ-Eintrag zu dem Stichwort '{0}'.",
     "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
+
+    "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
     
 
     "HELPTEXT_SAY": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
@@ -32,8 +35,9 @@ var DE = {
     "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
     "HELPTEXT_POLL": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
     "HELPTEXT_ADD_FAQ": "Bitte benutze den Befehl mit folgenden Parametern:\n`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",
-    "HELPTEXT_GET_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort`",
-    "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort`",
+    "HELPTEXT_GET_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
+    "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
+    "HELPTEXT_GUILD_LOG". "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
 
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
@@ -48,7 +52,8 @@ var DE = {
     "DESC_DEL_FAQ": "Entfernt einen Eintrag von den FAQ.",
     "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
-    "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen."
+    "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
+    "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel."
 
 }
 

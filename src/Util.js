@@ -26,6 +26,16 @@ exports.validateWorld = function(apikey) {
     );  
 }
 
+exports.getOwnedGuilds = function(apikey) {
+    api.setAPIKey(apikey);
+    return undefined; // FIXME
+    //return api.getAccount().then(
+    //   res => new Promise()
+    //   res => new Promise((resolve, reject) => resolve(res.world === config.world_id)),
+    //   res => new Promise((resolve, reject) => resolve(false))
+    //);  
+}
+
 exports.getAccountGUID = function(apikey) {
     api.setAPIKey(apikey);
     return api.getAccount().then(
