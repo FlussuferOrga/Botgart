@@ -37,7 +37,7 @@ var DE = {
     "HELPTEXT_ADD_FAQ": "Bitte benutze den Befehl mit folgenden Parametern:\n`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",
     "HELPTEXT_GET_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
-    "HELPTEXT_GUILD_LOG". "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
+    "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
 
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
