@@ -24,7 +24,7 @@ class BotgartCommand extends Command {
     * This method will be called by cronjobs to validate
     * that commands are executed with proper arguments.
     * @param {Map} args - arguments to the command.
-    * @param {string|undefined} - error-string in case of malformed args, else undefined.
+    * @returns {string|undefined} - error-string in case of malformed args, else undefined.
     */
     checkArgs(args) {
         return undefined;

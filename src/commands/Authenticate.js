@@ -76,50 +76,54 @@ class AuthenticateCommand extends BotgartCommand {
                 }
             }
             let that = this;
-            Util.validateWorld(args.key).then(role => {
-                if(role === false) {
-                    Util.log("info", "Authenticate.js", "Declined API key {0}.".formatUnicorn(args.key));
-                    reply = L.get("KEY_DECLINED");
-                    responsible.send(reply);                    
-                } else {
-                    Util.getAccountGUID(args.key).then(guid => {
-                        members.forEach(m => {
-                            let r = m.guild.roles.find(role => role.name === role);
-                            if(!r) {
-                                Util.log("error", "Authenticate.js", "Role '{0}'' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
-                                reply = L.get("INTERNAL_ERROR");
-                            } else {
-                                let unique = that.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
-                                if(unique) {
-                                    Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
-                                    m.member.addRole(r).then(
-                                        () => {},
-                                        (err) => Util.log("error", "Authenticate.js", "Error while giving role to user: {0}".formatUnicorn(err.message))
-                                    );
-                                    reply = L.get("KEY_ACCEPTED")
+            Util.validateWorld(args.key).then(
+                role => {
+                    if(role === false) {
+                        Util.log("info", "Authenticate.js", "Declined API key {0}.".formatUnicorn(args.key));
+                        reply = L.get("KEY_DECLINED");
+                        responsible.send(reply);                    
+                    } else {
+                        Util.getAccountGUID(args.key).then(guid => {
+                            members.forEach(m => {
+                                let r = m.guild.roles.find(role => role.name === role);
+                                if(!r) {
+                                    Util.log("error", "Authenticate.js", "Role '{0}'' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
+                                    reply = L.get("INTERNAL_ERROR");
                                 } else {
-                                    Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
-                                    reply = L.get("KEY_NOT_UNIQUE")
+                                    let unique = that.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
+                                    if(unique) {
+                                        Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
+                                        // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
+                                        Util.assignServerRole(m.member, null, r);
+                                        //m.member.addRole(r).then(
+                                        //    () => {},
+                                        //    (err) => Util.log("error", "Authenticate.js", "Error while giving role to user: {0}".formatUnicorn(err.message))
+                                        //);
+                                        reply = L.get("KEY_ACCEPTED")
+                                    } else {
+                                        Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
+                                        reply = L.get("KEY_NOT_UNIQUE")
+                                    }
                                 }
-                            }
-                        });
-                        responsible.send(reply);
-                    });   
+                            });
+                            responsible.send(reply);
+                        });   
+                    }
+                }, err => {
+                    switch(err) {
+                        case Util.validateWorld.ERRORS.config_world_duplicate:
+                            Util.log("error", "Authenticate.js", "A world is defined more than once in the config. Please fix the config file.");  
+                            break;
+                        case Util.validateWorld.ERRORS.network_error:
+                            Util.log("error", "Authenticate.js", "Network error while trying to resolve world.");
+                            break;
+                        default:
+                            Util.log("error", "Authenticate.js", "Unexpected error occured while validating world.");
+                            Util.log("error", "Authenticate.js", err);          
+                    }
+                    responsible.send(L.get("INTERNAL_ERROR"));              
                 }
-            }, err => {
-                switch(err) {
-                    case Util.ERRORS.config_world_duplicate:
-                        Util.log("error", "Authenticate.js", "A world is defined more than once in the config. Please fix the config file.");  
-                        break;
-                    case Util.ERRORS.network_error:
-                        Util.log("error", "Authenticate.js", "Network error while trying to resolve world.");
-                        break;
-                    default:
-                        Util.log("error", "Authenticate.js", "Unexpected error occured while validating world.");
-                        Util.log("error", "Authenticate.js", err);          
-                }
-                responsible.send(L.get("INTERNAL_ERROR"));              
-            });
+            );
         }       
     }
 }

@@ -31,35 +31,40 @@ class ReauthenticateCommand extends BotgartCommand {
         assertType(responsible, "User");
         assertType(guild, "Guild");
         let that = this;
-        this.client.db.revalidateKeys().then(function(prune) {
-            // FIXME!! prune now is a list of tuples (player, assignedRole) where assignedRole is undefined if the player should not have any role
-            let guild,role;
-            prune.filter(p => p !== undefined).forEach(p => {
-                if(!guild || guild.id != p.guild) {
-                    // prunes come ordered by guild. This trick allows us to
-                    // find each guild only once.
-                    guild = that.client.guilds.find(g => g.id == p.guild);
-                    role = guild ? guild.roles.find(r => r.name === config.registered_role) : undefined;
-                }
-                if(!guild) {
-                    Util.log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild))
-                } else {
-                    if(!role) {
-                        Util.log("error", "Reauthenticate.js", "Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, config.registered_role));
-                    } else {
-                        let m = guild.members.find(member => p.user == member.user.id);
-                        if(m) {
-                            Util.log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
-                            m.removeRole(role);
-                            m.send(L.get("KEY_INVALIDATED"));
-                        } else {
-                            Util.log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
-                        }
-                        that.client.db.deleteKey(p.api_key);
+        this.client.db.revalidateKeys().then(
+            prune => {
+                // FIXME!! prune now is a list of tuples (player, admittedRole) where admittedRole is undefined if the player should not have any role
+                let guild,role;
+                // p is undefined if Util.validateWorld produced an error. Those can just be skipped (warnings should have been written by validateWorld already)
+                prune.filter(p => p !== undefined).forEach(row => {
+                    let [p,admittedRole] = row;
+
+                    if(!guild || guild.id != p.guild) {
+                        // prunes come ordered by guild. This trick allows us to
+                        // find each guild only once.
+                        guild = that.client.guilds.find(g => g.id == p.guild);
+                        role = guild ? guild.roles.find(r => r.name === admittedRole) : undefined;
                     }
-                }               
-            });
-        });
+                    if(!guild) {
+                        Util.log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild))
+                    } else {
+                        if(!role) {
+                            Util.log("error", "Reauthenticate.js", "Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, admittedRole));
+                        } else {
+                            let m = guild.members.find(member => p.user == member.user.id);
+                            if(m) {
+                                Util.log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
+                                m.removeRole(role);
+                                m.send(L.get("KEY_INVALIDATED"));
+                            } else {
+                                Util.log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
+                            }
+                            that.client.db.deleteKey(p.api_key);
+                        }
+                    }               
+                });
+            }
+        );
         Util.log("info", "Reauthenticate.js", "Pruning complete.");      
     }
 

@@ -132,10 +132,16 @@ class Database {
                 });
     }
 
+    /**
+    * @returns {[({api_key, guild, user, registration_role}, admittedRole|null)]} - a list of tuples, where each tuple holds a user row from the db 
+    *           and the name of the role that user should have
+    */
     revalidateKeys() {
         return this.execute(db => 
+            // FIXME: writeback into the db, make sure people who were removed once don't get notified all the time through revalidations
             Promise.all(
-                db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all().map(r => Util.validateWorld(r.api_key).then(assignedRole => (r, assignedRole)))
+                db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
+                    .map(r => Util.validateWorld(r.api_key).then(admittedRole => [r, admittedRole]))
             )
         );
     }

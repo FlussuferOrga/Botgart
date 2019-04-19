@@ -23,16 +23,14 @@ exports.shallowInspect = function(o) {
 
 /**
 * Tries to validate the passed API key.
-* apikey: valid apikey. No format checking will be done at this point.
-* returns: either
-*           (1) the name of the role the user should be assigned, according to the config (string)
-*           (2) false if the world the user plays on is not qualified to get any role
-*           (3) undefined in case of an error, eg network error
+* @param {string} apikey - valid apikey. No format checking will be done at this point.
+* @returns {string|bool|int} - either
+*           (1) resolves to the name of the role the user should be assigned, according to the config (string)
+*           (2) resolves to false if the world the user plays on is not qualified to get any role
+*           (3) rejects to an error from validateWorld.ERRORS if 
+*                   (a) the world is faulty within the config
+*                   (b) a network error occured
 */
-exports.ERRORS = {
-    "config_world_duplicate": 1,
-    "network_error": 2
-};
 exports.validateWorld = function(apikey) {
     let accepted = config.world_assignments;
     api.authenticate(apikey);
@@ -41,25 +39,63 @@ exports.validateWorld = function(apikey) {
         acc => new Promise((resolve, reject) => {
             let match = config.world_assignments.filter(a => a.world_id === acc.world);
             if(match.length > 1) {
-                return reject(exports.ERRORS.config_world_duplicate);
-                // FIXME: error, config broken
+                // config broken
+                return reject(exports.validateWorld.ERRORS.config_world_duplicate);
             } else if(match.length === 1) {
-                // world allowed -> name of role
+                // world admitted -> name of role the user should have
                 return resolve(match[0].role);
             } else {
-                // world not allowed -> false
+                // world not admitted -> false
                 return resolve(false);
             }
         }),
-        err => new Promise((resolve, reject) => reject(exports.ERRORS.network_error))
+        err => new Promise((resolve, reject) => reject(exports.validateWorld.ERRORS.network_error))
     );
-    // FIXME: return role if any, or undefined
-    //api.setAPIKey(apikey);
-    //return api.getAccount().then(
-    //   res => new Promise((resolve, reject) => resolve(res.world === config.world_id)),
-    //   res => new Promise((resolve, reject) => resolve(false))
-    //);  
 }
+exports.validateWorld.ERRORS = {
+    "config_world_duplicate": 1,
+    "network_error": 2
+};
+
+/**
+* Assigns a role to user if needed. This method can be used for either assigning
+* roles to new users or assigning them new, mutual exclusive ones:
+* assignServerRole(u, A, null): u currently has role A, but should have no role (left server)
+* assignServerRole(u, null, A): u currently has no role, but should have role A (new user)
+* assignServerRole(u, A, B): u currently has role A, but should have role B (changed server to another admitted server)
+* assignServerRole(u, A, A): u already has the role they should have. This is just proper revalidation and will do nothing.
+*
+* @param {GuildMember} member - the member to assign a server role to.
+* @param {Role|null} currentRole - the role the member was assigned last.
+* @param {Role|null} admittedRole - the role the member should actually have.
+* @returns {Role|null} - the role the member is now assigned.
+*/
+exports.assignServerRole = function(member, currentRole, admittedRole) {
+    // FIXME: the asynchronous erroring could leave the user in an undefined state, where the system
+    // assumes him to now have role A, but in fact assigning him role A has failed!
+
+    if(currentRole !== null && admittedRole !== null && currentRole.name === admittedRole.name) {
+        // member already has proper role
+        return admittedRole;
+    }
+
+    if(currentRole !== null) {
+        // remove currentRole
+        member.removeRole(role).then(
+            ()    => Util.log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(role.name, m.displayName)),
+            (err) => Util.log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(role.name, m.displayName, err.message))
+        );
+    }
+
+    if(admittedRole !== null) {
+        // assign admittedRole
+        member.addRole(admittedRole).then(
+            ()    => Util.log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(role.name, m.displayName)),
+            (err) => Util.log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(role.name, m.displayName, err.message))
+        );
+    }
+    return admittedRole;
+};
 
 exports.getOwnedGuilds = function(apikey) {
     api.authenticate(apikey);
