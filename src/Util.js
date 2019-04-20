@@ -146,11 +146,11 @@ const logger = winston.createLogger({
   transports: [
     new winston.transports.Console(),
     new winston.transports.File({
-      filename: 'bot_combined.log',
+      filename: 'log/bot_combined.log',
       level: 'info'
     }),
     new winston.transports.File({
-      filename: 'bot_errors.log',
+      filename: 'log/bot_errors.log',
       level: 'error'
     })
   ]
