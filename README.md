@@ -26,3 +26,13 @@ The root directory holds a `config.json.example`. Copy it to `config.json` and a
 #### Token
 The bot token is how your app knows as which discord account it should connect.
 You can acquire one at the [application section of discord](https://discordapp.com/developers/applications/me).
+
+## Run
+You can run your bot by using 
+
+```
+node index.js
+```
+
+from the root directory of your project. For development, I recommend using [the forever package](https://stackoverflow.com/a/19594679) to restart the bot when you change the source. If you have it installed, you can run the `run_devel.sh`-script to start your bot for development.
+Logs will be written to the `log/`-directory and to the console.
