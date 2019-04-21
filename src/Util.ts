@@ -1,19 +1,20 @@
-const config = require("../config.json");
-const winston = require("winston");
-const assert = require("assert");
-const { inspect } = require('util');
-const gw2 = require("gw2api-client");
-//const api = new gw2.gw2();
-const api = gw2();
+import * as config from "../../config.json";
+import * as discord from "discord.js";
+import * as winston from "winston";
+import * as gw2 from "gw2api-client";
+import * as assert from "assert";
+import { inspect } from "util";
+const api : gw2 = gw2();
+
 //api.setStorage(new gw2.memStore());
-api.schema('2019-03-26T00:00:00Z')
+api.schema('2019-03-26T00:00:00Z');
 api.language('en');
 
-exports.inspect = (x) => {
-    console.log(inspect(x));
-}
+//export function inspect(x: any) : void {
+//    console.log(inspect(x));
+//}
 
-exports.shallowInspect = function(o) {
+export function shallowInspect(o: any): void {
     if(o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));
     } else {
@@ -31,7 +32,7 @@ exports.shallowInspect = function(o) {
 *                   (a) the world is faulty within the config
 *                   (b) a network error occured
 */
-exports.validateWorld = function(apikey) {
+export function validateWorld(apikey: string): Promise<string|boolean|number> {
     let accepted = config.world_assignments;
     api.authenticate(apikey);
     // FIXME: invalid api key
@@ -70,7 +71,7 @@ exports.validateWorld.ERRORS = {
 * @param {Role|null} admittedRole - the role the member should actually have.
 * @returns {Role|null} - the role the member is now assigned.
 */
-exports.assignServerRole = function(member, currentRole, admittedRole) {
+export function assignServerRole(member: discord.GuildMember, currentRole: discord.Role | null, admittedRole: discord.Role | null) : discord.Role | null {
     // FIXME: the asynchronous erroring could leave the user in an undefined state, where the system
     // assumes him to now have role A, but in fact assigning him role A has failed!
 
@@ -81,23 +82,23 @@ exports.assignServerRole = function(member, currentRole, admittedRole) {
 
     if(currentRole !== null) {
         // remove currentRole
-        member.removeRole(role).then(
-            ()    => Util.log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(role.name, m.displayName)),
-            (err) => Util.log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(role.name, m.displayName, err.message))
+        member.removeRole(currentRole).then(
+            ()    => Util.log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(currentRole.name, member.displayName)),
+            (err) => Util.log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
         );
     }
 
     if(admittedRole !== null) {
         // assign admittedRole
         member.addRole(admittedRole).then(
-            ()    => Util.log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(role.name, m.displayName)),
-            (err) => Util.log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(role.name, m.displayName, err.message))
+            ()    => Util.log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(admittedRole.name, member.displayName)),
+            (err) => Util.log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
         );
     }
     return admittedRole;
 };
 
-exports.getOwnedGuilds = function(apikey) {
+export function getOwnedGuilds(apikey: string): any {
     api.authenticate(apikey);
     return undefined; // FIXME
     //return api.getAccount().then(
@@ -107,7 +108,7 @@ exports.getOwnedGuilds = function(apikey) {
     //);  
 }
 
-exports.getAccountGUID = function(apikey) {
+export function getAccountGUID(apikey: string): number | boolean {
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.id)),
@@ -115,16 +116,17 @@ exports.getAccountGUID = function(apikey) {
     );
 }
 
-exports.resolveDiscordUser = function(client, uid) {
+export function resolveDiscordUser(client: discord.Client, uid: string) {
     let user = null;
     let i = 0;
-    while(!user && i < client.guilds.length) {
+    let l = client.guilds.array().length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
+    while(!user && i < l) {
         user = client.guilds[i].members.find(m => m.user.id = uid);
     }
     return user;
 }
 
-exports.assertType = function(obj, t) {
+export function assertType(obj:any, t:string): void {
     let p = obj;
     while(p && p.constructor.name !== t) {
         p = p.__proto__;
@@ -155,7 +157,7 @@ const logger = winston.createLogger({
     })
   ]
 });
-exports.log = function(level, label, message) {
+export function log(level: string, label: string, message: string): winston.Logger {
     return logger.log({
         "label": label,
         "level": level,
@@ -163,17 +165,22 @@ exports.log = function(level, label, message) {
     });
 }
 
+declare global {
+    interface String {
+        formatUnicorn(...fnargs: any[]) : string;
+    }
+}
+
 // taken from https://stackoverflow.com/a/18234317
-String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
-function () {
+String.prototype.formatUnicorn = function (...fnargs: any[]): string {
     "use strict";
     var str = this.toString();
-    if (arguments.length) {
-        var t = typeof arguments[0];
+    if (fnargs.length) {
+        var t = typeof fnargs[0];
         var key;
         var args = ("string" === t || "number" === t) ?
-            Array.prototype.slice.call(arguments)
-            : arguments[0];
+            Array.prototype.slice.call(fnargs)
+            : fnargs[0];
         for (key in args) {
             str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
         }

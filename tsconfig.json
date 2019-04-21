@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "outDir": "./built",
+        "allowJs": true,
+        "target": "es6",
+	"module": "commonjs",
+	"resolveJsonModule": true,
+    "esModuleInterop": true
+    },
+    "include": [
+        "./src/**/*",
+	    ".typings-custom/**/*.ts"
+    ]
+}

@@ -4,7 +4,6 @@ const Const = require.main.require("./src/Const.js");
 const L = require.main.require("./src/Locale.js");
 const config = require.main.require("./config.json");
 const BotgartCommand = require.main.require("./src/BotgartCommand.js");
-
 /**
 Testcases:
 - regular use -> bot DMs cron list
@@ -14,22 +13,19 @@ Testcases:
 class ListCronsCommand extends BotgartCommand {
     constructor() {
         super("listcrons", {
-                aliases: ["listcrons","lscrons"],
-                userPermissions: ["ADMINISTRATOR"]
-            }, 
-            true, // available per DM
-            false // cronable
+            aliases: ["listcrons", "lscrons"],
+            userPermissions: ["ADMINISTRATOR"]
+        }, true, // available per DM
+        false // cronable
         );
     }
-
     desc() {
         return L.get("DESC_LIST_CRONS");
     }
-
     command(message, responsible, guild, args) {
         assertType(responsible, "User");
         assertType(guild, "Guild");
-        if(!responsible) {
+        if (!responsible) {
             log("error", "ListCrons.js", "Can not execute lscron without member to reply to. Canceling.");
             return;
         }
@@ -38,10 +34,11 @@ class ListCronsCommand extends BotgartCommand {
         let mes = header;
         this.client.db.getCronjobs().forEach((cron) => {
             let line = format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
-            if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
+            if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
                 // leave some space for the backticks and additional linebreaks
                 mes += line;
-            } else {
+            }
+            else {
                 // message full -> send it and start a new one
                 mes = "```\n" + mes + "\n```";
                 responsible.send(mes);
@@ -51,5 +48,4 @@ class ListCronsCommand extends BotgartCommand {
         responsible.send("```\n" + mes + "\n```");
     }
 }
-
 module.exports = ListCronsCommand;

@@ -1,7 +1,11 @@
-const { Command } = require("discord-akairo");
+import * as discord from "discord.js";
+import { Command, CommandOptions } from "discord-akairo"; 
 
-class BotgartCommand extends Command {
-    constructor(id, options, availableAsDM = false, cronable = true) {
+export class BotgartCommand extends Command {
+    protected availableAsDM: boolean;
+    protected cronable: boolean;
+
+    constructor(id: string, options: CommandOptions, availableAsDM: boolean = false, cronable: boolean = true) {
         super(id, options);
         this.availableAsDM = availableAsDM;
         this.cronable = cronable;
@@ -10,9 +14,9 @@ class BotgartCommand extends Command {
     /**
     * Creates a decription for this command for help-listing.
     * Note that "description" is already taken somehow.
-    * returns {string} - description of this command.
+    * returns - description of this command.
     */
-    desc() {
+    public desc() {
         return "";
     }
 
@@ -23,10 +27,10 @@ class BotgartCommand extends Command {
     * arguments should result in an error message.
     * This method will be called by cronjobs to validate
     * that commands are executed with proper arguments.
-    * @param {Map} args - arguments to the command.
-    * @returns {string|undefined} - error-string in case of malformed args, else undefined.
+    * @param args - arguments to the command.
+    * @returns error-string in case of malformed args, else undefined.
     */
-    checkArgs(args) {
+    public checkArgs(args: Object): string | undefined {
         return undefined;
     }
 
@@ -49,7 +53,7 @@ class BotgartCommand extends Command {
     * @param {Guild} guild - the Guild on which to execute the command.
     * @param {map} args - arguments for the command. Each command specifies the format themselves.
     */
-    command(message, responsible, guild, args) {
+    public command(message: discord.Message | null , responsible: discord.User | null , guild: discord.Guild | null, args: Object) {
         throw "command() not implemented.";
     }
 
@@ -64,7 +68,7 @@ class BotgartCommand extends Command {
     * @param {Map} args - arguments to serialise to the DB.
     * @returns {string} 
     */
-    serialiseArgs(args) {
+    public serialiseArgs(args: Map<any,any>): string {
         return JSON.stringify(args);
     }
 
@@ -74,7 +78,7 @@ class BotgartCommand extends Command {
     * NOTE: deserialiseArgs may _not_ modify the arguments by reference!
     * @returns {Map}
     */
-    deserialiseArgs(jsonargs) {
+    public deserialiseArgs(jsonargs: string): Map<any,any> {
         return JSON.parse(jsonargs);
     }
 
@@ -90,14 +94,16 @@ class BotgartCommand extends Command {
     * @param {Message} message - message that triggered this command.
     * @param {Object} args - parameters.
     */
-    exec(message, args) {
+    public exec(message: discord.Message, args: Object): void {
         if(!this.availableAsDM && !message.member) {
-            return message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
+            message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
+            return;
         }
 
         let errorMessage = this.checkArgs(args);
         if(errorMessage) {
-            return message.util.send(errorMessage);
+            message.util.send(errorMessage)
+            return;
         }
         let res = this.command(message, message.author, message.guild, args);
         return this.postExecHook(message, args, res);
@@ -112,7 +118,7 @@ class BotgartCommand extends Command {
     * @param {any} result - the result from command().
     * @returns {any} - is returned to the caller.
     */
-    postExecHook(message, args, result) {}
+    public postExecHook(message: discord.Message, args: Object, result: any): any {}
 
     /*
     * Convenience method to reply from within a command.
@@ -123,9 +129,10 @@ class BotgartCommand extends Command {
     * where a message to reply to is not available.
     * @param {Message} message - the message to reply to, may be null.
     * @param {User} responsible - the person responsible for the execution of the command.
+    * @param response - the message text to send to the user. 
     * @returns {Promise} - the promise for whichever method was executed.
     */
-    reply(message, responsible, response) {
+    public reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
         if(message) {
             return message.channel.send(response);
         } else {
@@ -133,5 +140,3 @@ class BotgartCommand extends Command {
         }
     } 
 }
-
-module.exports = BotgartCommand

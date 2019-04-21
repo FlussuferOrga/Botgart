@@ -1,6 +1,5 @@
-import { Listener } from "discord-akairo";
-import * as Util from "./src/Util.js";
-
+const { Listener } = require("discord-akairo");
+const Util = require.main.require("./src/Util.js");
 class ReadyListener extends Listener {
     constructor() {
         super("ready", {
@@ -8,7 +7,6 @@ class ReadyListener extends Listener {
             eventName: "ready"
         });
     }
-
     exec() {
         Util.log("info", "ReadyListener.js", "Bot started!");
         this.client.db.initSchema();
@@ -20,5 +18,4 @@ class ReadyListener extends Listener {
         this.client.user.setActivity("{0}{1} für Hilfe".formatUnicorn(this.client.options.prefix, help));
     }
 }
-
 module.exports = ReadyListener;

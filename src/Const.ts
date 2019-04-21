@@ -1,0 +1,1 @@
+export let MAX_MESSAGE_LENGTH = 2000;
