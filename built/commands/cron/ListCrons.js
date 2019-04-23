@@ -1,16 +1,23 @@
-const { Command } = require("discord-akairo");
-const { assertType, log } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Util_1 = require("../../Util");
+const Const = __importStar(require("../../Const"));
+const L = __importStar(require("../../Locale"));
+const BotgartCommand_1 = require("../../BotgartCommand");
 /**
 Testcases:
 - regular use -> bot DMs cron list
 - with no crons in db -> bot DMs nothing
 - cron: anything -> error
 */
-class ListCronsCommand extends BotgartCommand {
+class ListCronsCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("listcrons", {
             aliases: ["listcrons", "lscrons"],
@@ -23,10 +30,10 @@ class ListCronsCommand extends BotgartCommand {
         return L.get("DESC_LIST_CRONS");
     }
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
+        Util_1.assertType(responsible, "User");
+        Util_1.assertType(guild, "Guild");
         if (!responsible) {
-            log("error", "ListCrons.js", "Can not execute lscron without member to reply to. Canceling.");
+            Util_1.log("error", "ListCrons.js", "Can not execute lscron without member to reply to. Canceling.");
             return;
         }
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
@@ -48,4 +55,4 @@ class ListCronsCommand extends BotgartCommand {
         responsible.send("```\n" + mes + "\n```");
     }
 }
-module.exports = ListCronsCommand;
+exports.ListCronsCommand = ListCronsCommand;

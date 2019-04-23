@@ -1,9 +1,9 @@
-const { Command } = require("discord-akairo");
-const { assertType } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+import { Command } from "discord-akairo";
+import * as Const from "../../Const";
+import * as L from "../../Locale";
+import * as discord from "discord.js";
+import { BotgartClient } from "../../BotgartClient";
+import { BotgartCommand } from "../../BotgartCommand";
 
 /**
 Testcases:
@@ -13,7 +13,7 @@ Testcases:
 - missing parameters -> error
 */
 
-class MakeFAQCommand extends BotgartCommand {
+export class MakeFAQCommand extends BotgartCommand {
     constructor() {
         super("addfaq", {
             aliases: ["addfaq","addrtfm"],
@@ -35,21 +35,16 @@ class MakeFAQCommand extends BotgartCommand {
         );
     }
 
-    desc() {
+    desc(): string {
         return L.get("DESC_ADD_FAQ");
     }
 
-    checkArgs(args) {
+    checkArgs(args): string|undefined {
         return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get("HELPTEXT_ADD_FAQ") : undefined;
     }
 
-    command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        assertType(args.keys, "Array");
-        assertType(args.text, "String");
-
-        this.client.db.storeFAQ(responsible.id, guild.id, args.keys, args.text);
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any) {
+        (<BotgartClient>this.client).db.storeFAQ(responsible.id, guild.id, args.keys, args.text);
         if(message) {
             message.util.send(L.get("FAQ_STORED"));
         } else {
@@ -57,5 +52,3 @@ class MakeFAQCommand extends BotgartCommand {
         }
     }
 }
-
-module.exports = MakeFAQCommand;

@@ -1,6 +1,6 @@
-const { Listener } = require("discord-akairo");
+import { Listener } from "discord-akairo";
 
-class MessageListener extends Listener {
+export class MessageListener extends Listener {
     constructor() {
         super("message", {
             emitter: "client",
@@ -12,5 +12,3 @@ class MessageListener extends Listener {
 
     }
 }
-
-module.exports = MessageListener;

@@ -1,9 +1,11 @@
-const { Command } = require("discord-akairo");
-const Util = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+let config = require("../config.json");
+import { Command } from "discord-akairo";
+import * as Util from "../Util";
+import * as Const from "../Const";
+import * as L from "../Locale";
+import * as discord from "discord.js";
+import { BotgartClient } from "../BotgartClient";
+import { BotgartCommand } from "../BotgartCommand";
 
 /**
 Testcases:
@@ -17,7 +19,7 @@ Testcases:
 - cron: anything -> error
 */
 
-class AuthenticateCommand extends BotgartCommand {
+export class AuthenticateCommand extends BotgartCommand {
     constructor() {
         super("authenticate", {
             aliases: ["register","authenticate","auth"],
@@ -34,15 +36,11 @@ class AuthenticateCommand extends BotgartCommand {
         );
     }
 
-    desc() {
+    desc(): string {
         return L.get("DESC_AUTHENTICATE");
     }
 
-    command(message, responsible, guild, args) {
-        Util.assertType(message, "Message");
-        Util.assertType(responsible, "User");
-        Util.assertType(args.key, "String");
-
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!message) {
             Util.log("error", "Authenticate.js", "Mandatory message parameter missing. This command can not be issued as cron.");
             return;
@@ -65,7 +63,8 @@ class AuthenticateCommand extends BotgartCommand {
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
         let validFormat = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
         if(!validFormat) {
-            return message.util.send(L.get("KEY_INVALID_FORMAT"));
+            message.util.send(L.get("KEY_INVALID_FORMAT"));
+            return;
         } else {
             // try to delete the message for privacy reasons if it is not a direct message
             if(message && message.member) {
@@ -75,7 +74,7 @@ class AuthenticateCommand extends BotgartCommand {
                     message.util.send(L.get("NO_DEL_PERM"));
                 }
             }
-            let that = this;
+            let cl = <BotgartClient>this.client;
             Util.validateWorld(args.key).then(
                 role => {
                     if(role === false) {
@@ -90,7 +89,7 @@ class AuthenticateCommand extends BotgartCommand {
                                     Util.log("error", "Authenticate.js", "Role '{0}'' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
-                                    let unique = that.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
+                                    let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), r);
                                     if(unique) {
                                         Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
@@ -127,5 +126,3 @@ class AuthenticateCommand extends BotgartCommand {
         }       
     }
 }
-
-module.exports = AuthenticateCommand;

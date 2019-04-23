@@ -1,9 +1,9 @@
-import * as config from "../config.json";
 import { Command } from "discord-akairo";
-import { assertType, log } from "../Util";
+import { log } from "../Util";
 import * as Const from "../Const";
 import * as L from "../Locale";
-import BotgartCommand = require.main.require("./src/BotgartCommand.js");
+import * as discord from "discord.js";
+import { BotgartCommand } from "../BotgartCommand";
 
 /**
 Testcases:
@@ -13,7 +13,7 @@ Testcases:
 - run with very long help text (change desc for some commands in Locale) > 2000 chars -> response comes in parts
 - run with one very long help text (change desc for one command in Locale) > 2000 chars -> that command is omitted
 */
-class HelpCommand extends BotgartCommand {
+export class HelpCommand extends BotgartCommand {
     constructor() {
         super("help", {
             aliases: ["help", "commands", "hilfe"],
@@ -23,13 +23,11 @@ class HelpCommand extends BotgartCommand {
         );
     }
 
-    desc() {
+    desc(): string {
         return L.get("DESC_HELP");
     }
 
-    command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         // if this command is issued on a server, only the commands the user can execute
         // are listed.
         // Issueing this command through DMs give the full list. This is not a security issue,
@@ -40,6 +38,7 @@ class HelpCommand extends BotgartCommand {
         let descs = "**Verfügbare Befehle:**\n\n"
                     .concat(Array.from(this.client.commandHandler.modules.values())
                         .filter(m => !m.userPermissions || checkPermissions(m.userPermissions))
+                        .map(m => <BotgartCommand>m)
                         .map(m => m.desc 
                         ? "**`{0}`** (bzw. {1}): {2}".formatUnicorn(
                             m.id,
@@ -63,5 +62,3 @@ class HelpCommand extends BotgartCommand {
         }
     }
 }
-
-module.exports = HelpCommand;

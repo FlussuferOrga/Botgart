@@ -1,5 +1,14 @@
-const Util = require("./Util.js");
-const sqlite3 = require("better-sqlite3");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Util = __importStar(require("./Util.js"));
+const sqlite3 = __importStar(require("better-sqlite3"));
 // FIXME: resolve objects when loading from db
 class Database {
     constructor(file, client) {
@@ -13,11 +22,12 @@ class Database {
             }
         });
         db.pragma("foreign_keys = ON");
+        let res;
         try {
-            var res = f(db);
+            res = f(db);
         }
         catch (err) {
-            var res = undefined;
+            res = undefined;
             Util.log("error", "DB.js", "DB execute: {0}".formatUnicorn(err["message"]));
         }
         db.close(err => {
@@ -179,4 +189,4 @@ class Database {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
     }
 }
-module.exports = Database;
+exports.Database = Database;

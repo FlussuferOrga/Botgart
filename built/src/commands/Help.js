@@ -1,9 +1,16 @@
-const { Command } = require("discord-akairo");
-const { assertType, log } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Util_1 = require("../Util");
+const Const = __importStar(require("../Const"));
+const L = __importStar(require("../Locale"));
+const BotgartCommand_1 = require("../BotgartCommand");
 /**
 Testcases:
 - run in channel -> bot posts a list of commands
@@ -12,7 +19,7 @@ Testcases:
 - run with very long help text (change desc for some commands in Locale) > 2000 chars -> response comes in parts
 - run with one very long help text (change desc for one command in Locale) > 2000 chars -> that command is omitted
 */
-class HelpCommand extends BotgartCommand {
+class HelpCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("help", {
             aliases: ["help", "commands", "hilfe"],
@@ -24,7 +31,7 @@ class HelpCommand extends BotgartCommand {
         return L.get("DESC_HELP");
     }
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
+        Util_1.assertType(responsible, "User");
         // if this command is issued on a server, only the commands the user can execute
         // are listed.
         // Issueing this command through DMs give the full list. This is not a security issue,
@@ -43,11 +50,11 @@ class HelpCommand extends BotgartCommand {
         // As a fallback, we break the message up to contain one command each.
         let ms = descs.length < Const.MAX_MESSAGE_LENGTH ? [descs] : descs.split("\n\n");
         ms.forEach(m => {
-            this.reply(message, responsible, m).then(() => { }, (err) => log("error", "Help.js", err.message) //winston.log("error", "Help.js: help-string exceeds maximum length even after splitting on command-to-command-level. One or more desc-strings seem to be too long.")
+            this.reply(message, responsible, m).then(() => { }, (err) => Util_1.log("error", "Help.js", err.message) //winston.log("error", "Help.js: help-string exceeds maximum length even after splitting on command-to-command-level. One or more desc-strings seem to be too long.")
             );
         });
         if (ms.length > 1) {
-            log("warn", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
+            Util_1.log("warn", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
         }
     }
 }

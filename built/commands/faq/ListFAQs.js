@@ -1,15 +1,22 @@
-const { Command } = require("discord-akairo");
-const { assertType, log } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Util_1 = require("../../Util");
+const Const = __importStar(require("../../Const"));
+const L = __importStar(require("../../Locale"));
+const BotgartCommand_1 = require("../../BotgartCommand");
 const TEASER_LENGTH = 30;
 /**
 Testcases:
 - list faqs -> bot lists all available faqs
 */
-class ListFAQsCommand extends BotgartCommand {
+class ListFAQsCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("listfaqs", {
             aliases: ["listfaqs", "lsfaqs", "lsrtfms"]
@@ -21,10 +28,8 @@ class ListFAQsCommand extends BotgartCommand {
         return L.get("DESC_LIST_FAQS");
     }
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
         if (!responsible) {
-            log("error", "ListFAQs.js", "Can not execute lsfaqs without member to reply to. Canceling.");
+            Util_1.log("error", "ListFAQs.js", "Can not execute lsfaqs without member to reply to. Canceling.");
             return;
         }
         let format = "{0} | {1}";
@@ -47,4 +52,4 @@ class ListFAQsCommand extends BotgartCommand {
         responsible.send("```\n" + mes + "\n```");
     }
 }
-module.exports = ListFAQsCommand;
+exports.ListFAQsCommand = ListFAQsCommand;

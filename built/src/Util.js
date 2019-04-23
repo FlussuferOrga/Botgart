@@ -1,9 +1,15 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const config = require("../../config.json");
-const winston = require("winston");
-const gw2 = require("gw2api-client");
-const assert = require("assert");
+const config = __importStar(require("../../config.json"));
+const winston = __importStar(require("winston"));
+const gw2 = __importStar(require("gw2api-client"));
 const api = gw2();
 //api.setStorage(new gw2.memStore());
 api.schema('2019-03-26T00:00:00Z');
@@ -51,7 +57,7 @@ function validateWorld(apikey) {
     }), err => new Promise((resolve, reject) => reject(exports.validateWorld.ERRORS.network_error)));
 }
 exports.validateWorld = validateWorld;
-exports.validateWorld.ERRORS = {
+validateWorld.ERRORS = {
     "config_world_duplicate": 1,
     "network_error": 2
 };
@@ -77,11 +83,11 @@ function assignServerRole(member, currentRole, admittedRole) {
     }
     if (currentRole !== null) {
         // remove currentRole
-        member.removeRole(currentRole).then(() => Util.log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(currentRole.name, member.displayName)), (err) => Util.log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message)));
+        member.removeRole(currentRole).then(() => log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(currentRole.name, member.displayName)), (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message)));
     }
     if (admittedRole !== null) {
         // assign admittedRole
-        member.addRole(admittedRole).then(() => Util.log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(admittedRole.name, member.displayName)), (err) => Util.log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message)));
+        member.addRole(admittedRole).then(() => log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(admittedRole.name, member.displayName)), (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message)));
     }
     return admittedRole;
 }
@@ -119,7 +125,7 @@ function assertType(obj, t) {
     }
     // if we walked the inheritence up and obj IS a t, then  we must have stopped before we hit NULL.
     // -> p being null implies that obj IS NOT a t.
-    assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
+    //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
 }
 exports.assertType = assertType;
 const logger = winston.createLogger({
@@ -147,7 +153,7 @@ function log(level, label, message) {
 }
 exports.log = log;
 // taken from https://stackoverflow.com/a/18234317
-String.prototype.formatUnicorn = function (fnargs) {
+String.prototype.formatUnicorn = function (...fnargs) {
     "use strict";
     var str = this.toString();
     if (fnargs.length) {

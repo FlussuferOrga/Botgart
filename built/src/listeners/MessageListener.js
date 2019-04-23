@@ -1,5 +1,7 @@
-const { Listener } = require("discord-akairo");
-class MessageListener extends Listener {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const discord_akairo_1 = require("discord-akairo");
+class MessageListener extends discord_akairo_1.Listener {
     constructor() {
         super("message", {
             emitter: "client",
@@ -9,4 +11,4 @@ class MessageListener extends Listener {
     exec(message) {
     }
 }
-module.exports = MessageListener;
+exports.MessageListener = MessageListener;

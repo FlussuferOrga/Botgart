@@ -10,6 +10,10 @@ Botgart has been converted to [Typescript](https://en.wikipedia.org/wiki/TypeScr
 sudo npm install -g typescript
 ```
 
+Only ever edit the Typescript source in the `src/` directory, not the Javascript files in `built/`. Even if you do write plain Javascript (you should not), put it in the `src/` directory. The transpiler will just copy `.js`-files and only transpile `.ts`-files.
+After making your changes, call `tsc` from the root directory to transpile your code into the `built/`-directory, which can be run as a Node project (see below).
+
+
 ### Dependencies
 All dependencies are aggregated in `package.json` and can be installed by using 
 
@@ -34,5 +38,7 @@ You can run your bot by using
 node index.js
 ```
 
-from the root directory of your project. For development, I recommend using [the forever package](https://stackoverflow.com/a/19594679) to restart the bot when you change the source. If you have it installed, you can run the `run_devel.sh`-script to start your bot for development.
+from the `built/` directory of your project. 
+Don't forget to transpile your code after making changes to the `src/` directory.
+For development, I recommend using [the forever package](https://stackoverflow.com/a/19594679) to restart the bot when the transpiler has finished. If you have it installed, you can run the `run_devel.sh`-script to start your bot for development.
 Logs will be written to the `log/`-directory and to the console.

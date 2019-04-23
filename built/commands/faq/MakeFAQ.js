@@ -1,9 +1,14 @@
-const { Command } = require("discord-akairo");
-const { assertType } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const L = __importStar(require("../../Locale"));
+const BotgartCommand_1 = require("../../BotgartCommand");
 /**
 Testcases:
 - create faq properly -> faq is now present in db and available for ,faq
@@ -11,7 +16,7 @@ Testcases:
 - use already existing keys -> faq is now overridden
 - missing parameters -> error
 */
-class MakeFAQCommand extends BotgartCommand {
+class MakeFAQCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("addfaq", {
             aliases: ["addfaq", "addrtfm"],
@@ -38,10 +43,6 @@ class MakeFAQCommand extends BotgartCommand {
         return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get("HELPTEXT_ADD_FAQ") : undefined;
     }
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        assertType(args.keys, "Array");
-        assertType(args.text, "String");
         this.client.db.storeFAQ(responsible.id, guild.id, args.keys, args.text);
         if (message) {
             message.util.send(L.get("FAQ_STORED"));
@@ -51,4 +52,4 @@ class MakeFAQCommand extends BotgartCommand {
         }
     }
 }
-module.exports = MakeFAQCommand;
+exports.MakeFAQCommand = MakeFAQCommand;

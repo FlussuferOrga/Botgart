@@ -1,24 +1,27 @@
-const config = require("../config.json");
-const winston = require("winston");
-const assert = require("assert");
-const { inspect } = require('util');
-const gw2 = require("gw2api-client");
-//const api = new gw2.gw2();
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+let config = require("../../config.json");
+const winston = __importStar(require("winston"));
+const gw2 = __importStar(require("gw2api-client"));
 const api = gw2();
-//api.setStorage(new gw2.memStore());
 api.schema('2019-03-26T00:00:00Z');
 api.language('en');
-exports.inspect = (x) => {
-    console.log(inspect(x));
-};
-exports.shallowInspect = function (o) {
+function shallowInspect(o) {
     if (o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));
     }
     else {
         console.log(o);
     }
-};
+}
+exports.shallowInspect = shallowInspect;
 /**
 * Tries to validate the passed API key.
 * @param {string} apikey - valid apikey. No format checking will be done at this point.
@@ -29,7 +32,7 @@ exports.shallowInspect = function (o) {
 *                   (a) the world is faulty within the config
 *                   (b) a network error occured
 */
-exports.validateWorld = function (apikey) {
+function validateWorld(apikey) {
     let accepted = config.world_assignments;
     api.authenticate(apikey);
     // FIXME: invalid api key
@@ -48,8 +51,9 @@ exports.validateWorld = function (apikey) {
             return resolve(false);
         }
     }), err => new Promise((resolve, reject) => reject(exports.validateWorld.ERRORS.network_error)));
-};
-exports.validateWorld.ERRORS = {
+}
+exports.validateWorld = validateWorld;
+validateWorld.ERRORS = {
     "config_world_duplicate": 1,
     "network_error": 2
 };
@@ -66,7 +70,7 @@ exports.validateWorld.ERRORS = {
 * @param {Role|null} admittedRole - the role the member should actually have.
 * @returns {Role|null} - the role the member is now assigned.
 */
-exports.assignServerRole = function (member, currentRole, admittedRole) {
+function assignServerRole(member, currentRole, admittedRole) {
     // FIXME: the asynchronous erroring could leave the user in an undefined state, where the system
     // assumes him to now have role A, but in fact assigning him role A has failed!
     if (currentRole !== null && admittedRole !== null && currentRole.name === admittedRole.name) {
@@ -75,15 +79,17 @@ exports.assignServerRole = function (member, currentRole, admittedRole) {
     }
     if (currentRole !== null) {
         // remove currentRole
-        member.removeRole(role).then(() => Util.log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(role.name, m.displayName)), (err) => Util.log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(role.name, m.displayName, err.message)));
+        member.removeRole(currentRole).then(() => log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(currentRole.name, member.displayName)), (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message)));
     }
     if (admittedRole !== null) {
         // assign admittedRole
-        member.addRole(admittedRole).then(() => Util.log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(role.name, m.displayName)), (err) => Util.log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(role.name, m.displayName, err.message)));
+        member.addRole(admittedRole).then(() => log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(admittedRole.name, member.displayName)), (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message)));
     }
     return admittedRole;
-};
-exports.getOwnedGuilds = function (apikey) {
+}
+exports.assignServerRole = assignServerRole;
+;
+function getOwnedGuilds(apikey) {
     api.authenticate(apikey);
     return undefined; // FIXME
     //return api.getAccount().then(
@@ -91,28 +97,33 @@ exports.getOwnedGuilds = function (apikey) {
     //   res => new Promise((resolve, reject) => resolve(res.world === config.world_id)),
     //   res => new Promise((resolve, reject) => resolve(false))
     //);  
-};
-exports.getAccountGUID = function (apikey) {
+}
+exports.getOwnedGuilds = getOwnedGuilds;
+function getAccountGUID(apikey) {
     api.authenticate(apikey);
     return api.account().get().then(res => new Promise((resolve, reject) => resolve(res.id)), res => new Promise((resolve, reject) => resolve(false)));
-};
-exports.resolveDiscordUser = function (client, uid) {
+}
+exports.getAccountGUID = getAccountGUID;
+function resolveDiscordUser(client, uid) {
     let user = null;
     let i = 0;
-    while (!user && i < client.guilds.length) {
+    let l = client.guilds.array().length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
+    while (!user && i < l) {
         user = client.guilds[i].members.find(m => m.user.id = uid);
     }
     return user;
-};
-exports.assertType = function (obj, t) {
+}
+exports.resolveDiscordUser = resolveDiscordUser;
+function assertType(obj, t) {
     let p = obj;
     while (p && p.constructor.name !== t) {
         p = p.__proto__;
     }
     // if we walked the inheritence up and obj IS a t, then  we must have stopped before we hit NULL.
     // -> p being null implies that obj IS NOT a t.
-    assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
-};
+    //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
+}
+exports.assertType = assertType;
 const logger = winston.createLogger({
     format: winston.format.combine(winston.format.timestamp(), winston.format.splat(), winston.format.simple(), winston.format.printf(({ level, label, message, timestamp }) => {
         return `${timestamp} ${level} [${label}]: ${message}`;
@@ -129,27 +140,27 @@ const logger = winston.createLogger({
         })
     ]
 });
-exports.log = function (level, label, message) {
+function log(level, label, message) {
     return logger.log({
         "label": label,
         "level": level,
         "message": message
     });
-};
+}
+exports.log = log;
 // taken from https://stackoverflow.com/a/18234317
-String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
-    function () {
-        "use strict";
-        var str = this.toString();
-        if (arguments.length) {
-            var t = typeof arguments[0];
-            var key;
-            var args = ("string" === t || "number" === t) ?
-                Array.prototype.slice.call(arguments)
-                : arguments[0];
-            for (key in args) {
-                str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-            }
+String.prototype.formatUnicorn = function (...fnargs) {
+    "use strict";
+    var str = this.toString();
+    if (fnargs.length) {
+        var t = typeof fnargs[0];
+        var key;
+        var args = ("string" === t || "number" === t) ?
+            Array.prototype.slice.call(fnargs)
+            : fnargs[0];
+        for (key in args) {
+            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
         }
-        return str;
-    };
+    }
+    return str;
+};

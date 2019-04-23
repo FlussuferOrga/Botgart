@@ -1,8 +1,16 @@
-const { Command } = require("discord-akairo");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
-const { assertType, log } = require.main.require("./src/Util.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+let config = require.main.require("./config.json");
+const L = __importStar(require("../../Locale"));
+const BotgartCommand_1 = require("../../BotgartCommand");
+const Util_1 = require("../../Util");
 /**
 Testcases:
 - missing parameters -> error
@@ -11,7 +19,7 @@ Testcases:
 - delete non-numeric cron id -> error
 - cron: anything -> error
 */
-class DeleteCronCommand extends BotgartCommand {
+class DeleteCronCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("deletecron", {
             aliases: ["deletecron", "rmcron"],
@@ -30,15 +38,10 @@ class DeleteCronCommand extends BotgartCommand {
         return L.get("DESC_DEL_CRON");
     }
     checkArgs(args) {
-        return !args || !args.id || !args.id < 0 ? L.get("HELPTEXT_DEL_CRON") : undefined;
+        return !args || args.id || args.id < 0 ? L.get("HELPTEXT_DEL_CRON") : undefined;
     }
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        assertType(args.id, "Number");
-        let cid = args.id;
-        let deleted = this.deleteCronjob(cid);
-        return deleted;
+        return this.deleteCronjob(args.id);
     }
     exec(message, args) {
         if (!message.member) {
@@ -59,17 +62,18 @@ class DeleteCronCommand extends BotgartCommand {
     deleteCronjob(id) {
         let canceled = false;
         let deletedFromDB = false;
-        if (id in this.client.cronjobs) {
-            this.client.cronjobs[id].cancel();
-            delete this.client.cronjobs[id];
+        let cl = this.client;
+        if (id in cl.cronjobs) {
+            cl.cronjobs[id].cancel();
+            delete cl.cronjobs[id];
             canceled = true;
-            log("info", "DeleteCron.js", "Canceled cronjob with ID {0}.".formatUnicorn(id));
+            Util_1.log("info", "DeleteCron.js", "Canceled cronjob with ID {0}.".formatUnicorn(id));
         }
-        if (this.client.db.deleteCronjob(id)) {
+        if (cl.db.deleteCronjob(id)) {
             deletedFromDB = true;
-            log("info", "DeleteCron.js", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
+            Util_1.log("info", "DeleteCron.js", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
         }
         return canceled || deletedFromDB;
     }
 }
-module.exports = DeleteCronCommand;
+exports.DeleteCronCommand = DeleteCronCommand;

@@ -1,9 +1,10 @@
-const { Command } = require("discord-akairo");
-const { assertType } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+import { Command } from "discord-akairo";
+import { assertType } from "../../Util";
+import * as Const from "../../Const";
+import * as L from "../../Locale";
+import * as discord from "discord.js";
+import { BotgartClient } from "../../BotgartClient";
+import { BotgartCommand } from "../../BotgartCommand";
 
 /**
 Testcases:
@@ -12,7 +13,7 @@ Testcases:
 - non-existing key -> feedback to user
 */
 
-class GetFAQCommand extends BotgartCommand {
+export class GetFAQCommand extends BotgartCommand {
     constructor() {
         super("getfaq", {
             aliases: ["getfaq","faq","getrtfm","rtfm"],
@@ -28,23 +29,17 @@ class GetFAQCommand extends BotgartCommand {
         );
     }
 
-    desc() {
+    desc(): string {
         return L.get("DESC_GET_FAQ");
     }
 
-    checkArgs(args) {
+    checkArgs(args): string|undefined {
         return !args || !args.key ? L.get("HELPTEXT_GET_FAQ") : undefined;
     }
 
-    command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(args.key, "String");
-
-        let faq = this.client.db.getFAQ(args.key, guild.id);
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+        let faq = (<BotgartClient>this.client).db.getFAQ(args.key, guild.id);
         let response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
-
         this.reply(message, responsible, response);
     }
 }
-
-module.exports = GetFAQCommand;

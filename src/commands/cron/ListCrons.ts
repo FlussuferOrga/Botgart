@@ -1,8 +1,8 @@
-import * as config from "../../config.json";
 import { Command } from "discord-akairo";
 import { assertType, log } from "../../Util";
 import * as Const from "../../Const";
 import * as L from "../../Locale";
+import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as discord from "discord.js";
 
@@ -37,7 +37,7 @@ export class ListCronsCommand extends BotgartCommand {
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
         let header = format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") + "\n";
         let mes = header;
-        this.client.db.getCronjobs().forEach((cron) => {
+        (<BotgartClient>this.client).db.getCronjobs().forEach((cron) => {
             let line = format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
             if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
                 // leave some space for the backticks and additional linebreaks
@@ -52,5 +52,3 @@ export class ListCronsCommand extends BotgartCommand {
         responsible.send("```\n" + mes + "\n```");
     }
 }
-
-module.exports = ListCronsCommand;

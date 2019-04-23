@@ -1,8 +1,15 @@
-const { Command } = require("discord-akairo");
-const { assertType, shallowInspect } = require.main.require("./src/Util.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Util_1 = require("../Util");
+const L = __importStar(require("../Locale"));
+const BotgartCommand_1 = require("../BotgartCommand");
 /**
 Testcases:
 - missing parameters -> error
@@ -11,7 +18,7 @@ Testcases:
 - remove a formerly valid API key with user no longer in guild -> key gets unauthenticated
 - cron: all of the above -> reauth success
 */
-class ReauthenticateCommand extends BotgartCommand {
+class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("reauthenticate", {
             aliases: ["reauthenticate", "reauth"],
@@ -24,10 +31,8 @@ class ReauthenticateCommand extends BotgartCommand {
         return L.get("DESC_REAUTHENTICATE");
     }
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        let that = this;
-        this.client.db.revalidateKeys().then(prune => {
+        let cl = this.client;
+        cl.db.revalidateKeys().then(prune => {
             // FIXME!! prune now is a list of tuples (player, admittedRole) where admittedRole is undefined if the player should not have any role
             let guild, role;
             // p is undefined if Util.validateWorld produced an error. Those can just be skipped (warnings should have been written by validateWorld already)
@@ -36,35 +41,35 @@ class ReauthenticateCommand extends BotgartCommand {
                 if (!guild || guild.id != p.guild) {
                     // prunes come ordered by guild. This trick allows us to
                     // find each guild only once.
-                    guild = that.client.guilds.find(g => g.id == p.guild);
+                    guild = cl.guilds.find(g => g.id == p.guild);
                     role = guild ? guild.roles.find(r => r.name === admittedRole) : undefined;
                 }
                 if (!guild) {
-                    Util.log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild));
+                    Util_1.log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild));
                 }
                 else {
                     if (!role) {
-                        Util.log("error", "Reauthenticate.js", "Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, admittedRole));
+                        Util_1.log("error", "Reauthenticate.js", "Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, admittedRole));
                     }
                     else {
                         let m = guild.members.find(member => p.user == member.user.id);
                         if (m) {
-                            Util.log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
+                            Util_1.log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
                             m.removeRole(role);
                             m.send(L.get("KEY_INVALIDATED"));
                         }
                         else {
-                            Util.log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
+                            Util_1.log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
                         }
-                        that.client.db.deleteKey(p.api_key);
+                        cl.db.deleteKey(p.api_key);
                     }
                 }
             });
         });
-        Util.log("info", "Reauthenticate.js", "Pruning complete.");
+        Util_1.log("info", "Reauthenticate.js", "Pruning complete.");
     }
     postExecHook(message, args, result) {
         return message.util.send(L.get("PRUNING_COMPLETE"));
     }
 }
-module.exports = ReauthenticateCommand;
+exports.ReauthenticateCommand = ReauthenticateCommand;

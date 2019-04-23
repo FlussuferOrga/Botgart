@@ -1,6 +1,8 @@
-const { Listener } = require("discord-akairo");
-const Util = require.main.require("./src/Util.js");
-class ReadyListener extends Listener {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const discord_akairo_1 = require("discord-akairo");
+const Util_1 = require("../Util");
+class ReadyListener extends discord_akairo_1.Listener {
     constructor() {
         super("ready", {
             emitter: "client",
@@ -8,14 +10,14 @@ class ReadyListener extends Listener {
         });
     }
     exec() {
-        Util.log("info", "ReadyListener.js", "Bot started!");
-        this.client.db.initSchema();
-        Util.log("info", "ReadyListener.js", "Database initialised.");
-        Util.log("info", "ReadyListener.js", "Rescheduling cronjobs from database.");
-        this.client.cronjobs = {};
-        this.client.commandHandler.modules.get("makecron").rescheduleCronjobs();
+        Util_1.log("info", "ReadyListener.js", "Bot started!");
+        let cl = this.client;
+        cl.db.initSchema();
+        Util_1.log("info", "ReadyListener.js", "Database initialised.");
+        Util_1.log("info", "ReadyListener.js", "Rescheduling cronjobs from database.");
+        cl.commandHandler.modules.get("makecron").rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
-        this.client.user.setActivity("{0}{1} für Hilfe".formatUnicorn(this.client.options.prefix, help));
+        cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
     }
 }
-module.exports = ReadyListener;
+exports.ReadyListener = ReadyListener;

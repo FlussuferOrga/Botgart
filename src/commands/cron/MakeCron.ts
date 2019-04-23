@@ -1,4 +1,3 @@
-import config from "../../../config.json";
 import { Command } from "discord-akairo";
 import * as schedule from "node-schedule";
 import * as Const from "../../Const";
@@ -156,5 +155,3 @@ export class MakeCron extends BotgartCommand {
             m.command(null,r,g,as); }.bind(this, cmd, responsible, guild, args));
     }
 }
-
-module.exports = MakeCron;

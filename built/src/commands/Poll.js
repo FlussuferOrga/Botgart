@@ -1,9 +1,15 @@
-const { Command } = require("discord-akairo");
-const { assertType } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const L = __importStar(require("../Locale"));
+const BotgartCommand_1 = require("../BotgartCommand");
+const Util_1 = require("../Util");
 /**
 Testcases:
 - missing parameters -> error
@@ -13,7 +19,7 @@ Testcases:
 - emotes string doesn't contain proper emotes -> error
 - cron: everything of the above
 */
-class PollCommand extends BotgartCommand {
+class PollCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("poll", {
             aliases: ["poll", "vote"],
@@ -76,7 +82,8 @@ class PollCommand extends BotgartCommand {
                 });
             });
         }, _ => { });
-        Util.log("info", "Poll.js", "Created poll '{0}'.".formatUnicorn(args.question));
+        Util_1.log("info", "Poll.js", "Created poll '{0}'.".formatUnicorn(args.question));
     }
 }
+exports.PollCommand = PollCommand;
 module.exports = PollCommand;

@@ -1,9 +1,9 @@
-const { Command } = require("discord-akairo");
-const { assertType, shallowInspect } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+import * as discord from "discord.js";
+import { Command } from "discord-akairo";
+import { log } from "../Util";
+import * as Const from "../Const";
+import * as L from "../Locale";
+import { BotgartCommand } from "../BotgartCommand";
 
 /**
 Testcases:
@@ -39,26 +39,22 @@ class SayCommand extends BotgartCommand {
     }
 
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        assertType(args.channel, "TextChannel");
-        assertType(args.text, "String");
         // Note that this callback could take place long after the cron was scheduled.
         // So the bot could no longer be there. We therefore need to find() the guild
         // again to make sure the bot is still on there.
         let result;
         let g = this.client.guilds.find(g => g.id == guild.id);
         if(!g) {
-            Util.log("error", "Say.js", "I am not a member of guild {0}.".formatUnicorn(guild.id));
+            log("error", "Say.js", "I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
-            let c = g.channels.find(c => c.id == args.channel.id);
+            let c:discord.TextChannel = <discord.TextChannel>g.channels.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
             if(!c) {
-                Util.log("error", "Say.js", "Can not find a channel {0}.".formatUnicorn(args.channel.id));
+                log("error", "Say.js", "Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
             } else {
                 c.send(args.text);
-                Util.log("info", "Say.js", "Executed Say.");
+                log("info", "Say.js", "Executed Say.");
                 result = true;
             }
         }

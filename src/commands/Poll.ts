@@ -1,9 +1,8 @@
-const { Command } = require("discord-akairo");
-const { assertType } = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+import { Command } from  "discord-akairo";
+import * as Const from "../Const";
+import * as L from "../Locale";
+import { BotgartCommand } from "../BotgartCommand";
+import { log } from "../Util";
 
 /**
 Testcases:
@@ -14,7 +13,7 @@ Testcases:
 - emotes string doesn't contain proper emotes -> error
 - cron: everything of the above
 */
-class PollCommand extends BotgartCommand {
+export class PollCommand extends BotgartCommand {
     constructor() {
         super("poll", {
             aliases: ["poll","vote"],
@@ -63,12 +62,6 @@ class PollCommand extends BotgartCommand {
     }
 
     command(message, responsible, guild, args) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        assertType(args.channel, "TextChannel");
-        assertType(args.question, "String");
-        assertType(args.emotes, "Array");
-
         args.channel.send(args.question).then(m => {
             // filter empty strings out beforehand
             args.emotes.filter(react => react).forEach(react => {
@@ -89,9 +82,6 @@ class PollCommand extends BotgartCommand {
             });
         },
         _ => {});
-        Util.log("info", "Poll.js", "Created poll '{0}'.".formatUnicorn(args.question));
+        log("info", "Poll.js", "Created poll '{0}'.".formatUnicorn(args.question));
     }
-
 }
-
-module.exports = PollCommand;

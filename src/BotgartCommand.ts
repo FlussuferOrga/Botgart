@@ -1,4 +1,5 @@
 import * as discord from "discord.js";
+import * as L from "./Locale";
 import { Command, CommandOptions } from "discord-akairo"; 
 
 export class BotgartCommand extends Command {
@@ -53,7 +54,7 @@ export class BotgartCommand extends Command {
     * @param {Guild} guild - the Guild on which to execute the command.
     * @param {map} args - arguments for the command. Each command specifies the format themselves.
     */
-    public command(message: discord.Message | null , responsible: discord.User | null , guild: discord.Guild | null, args: Object) {
+    public command(message: discord.Message | null , responsible: discord.User | null , guild: discord.Guild | null, args: Object): any {
         throw "command() not implemented.";
     }
 

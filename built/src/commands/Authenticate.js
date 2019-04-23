@@ -1,9 +1,15 @@
-const { Command } = require("discord-akairo");
-const Util = require.main.require("./src/Util.js");
-const Const = require.main.require("./src/Const.js");
-const L = require.main.require("./src/Locale.js");
-const config = require.main.require("./config.json");
-const BotgartCommand = require.main.require("./src/BotgartCommand.js");
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const Util = __importStar(require("../Util"));
+const L = __importStar(require("../Locale"));
+const BotgartCommand_1 = require("../BotgartCommand");
 /**
 Testcases:
 - missing parameters -> error
@@ -15,7 +21,7 @@ Testcases:
 - all of the above with missing authenticate role -> error
 - cron: anything -> error
 */
-class AuthenticateCommand extends BotgartCommand {
+class AuthenticateCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("authenticate", {
             aliases: ["register", "authenticate", "auth"],
@@ -69,7 +75,7 @@ class AuthenticateCommand extends BotgartCommand {
                     message.util.send(L.get("NO_DEL_PERM"));
                 }
             }
-            let that = this;
+            let cl = this.client;
             Util.validateWorld(args.key).then(role => {
                 if (role === false) {
                     Util.log("info", "Authenticate.js", "Declined API key {0}.".formatUnicorn(args.key));
@@ -85,7 +91,7 @@ class AuthenticateCommand extends BotgartCommand {
                                 reply = L.get("INTERNAL_ERROR");
                             }
                             else {
-                                let unique = that.client.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid);
+                                let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), r);
                                 if (unique) {
                                     Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                     // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
@@ -122,4 +128,4 @@ class AuthenticateCommand extends BotgartCommand {
         }
     }
 }
-module.exports = AuthenticateCommand;
+exports.AuthenticateCommand = AuthenticateCommand;

@@ -1,7 +1,7 @@
-const { Listener } = require("discord-akairo");
-var L = require("../Locale.js");
+import { Listener } from  "discord-akairo";
+import * as L from "../Locale.js";
 
-class JoinListener extends Listener {
+export class JoinListener extends Listener {
     constructor() {
         super("guildMemberAdd", {
             emitter: "client",
@@ -15,5 +15,3 @@ class JoinListener extends Listener {
         }
     }
 }
-
-module.exports = JoinListener;
