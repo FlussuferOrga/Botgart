@@ -39,4 +39,6 @@ node built/index.js
 from the `built/` directory of your project. 
 Don't forget to transpile your code after making changes to the `src/` directory.
 For development, I recommend using [the forever package](https://stackoverflow.com/a/19594679) to restart the bot when the transpiler has finished. If you have it installed, you can run the `run_devel.sh`-script to start your bot for development.
-Logs will be written to the `log/`-directory and to the console.
+
+## Logging
+Logs will be written to the `log/`-directory and to the console. Logfiles are cummulative and should be cleared manually from time to time.
