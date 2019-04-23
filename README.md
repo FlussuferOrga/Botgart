@@ -42,3 +42,10 @@ For development, I recommend using [the forever package](https://stackoverflow.c
 
 ## Logging
 Logs will be written to the `log/`-directory and to the console. Logfiles are cummulative and should be cleared manually from time to time.
+
+## Dependencies
+Botgart uses several dependencies (that are automatically installed in one of the above steps) to make our lives easier:
+
+- discord.js handles the basic interaction with Discord and provides most of the classes https://discord.js.org/#/
+- discord-akairo adds additional functionality for bots, like easy to use commands and listeners https://discord-akairo.github.io/#/
+- gw2api-client offers a wrapper around the GW2-API (and is apparently used by sites like gw2efficiency!) https://github.com/queicherius/gw2api-client
