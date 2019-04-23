@@ -12,7 +12,7 @@ Testcases:
 - with invalid channel -> error
 - from cron: remove channel bot was supposed to talk in -> error
 */
-class SayCommand extends BotgartCommand {
+export class SayCommand extends BotgartCommand {
     constructor() {
         super("say", {
                 aliases: ["say","speak"],

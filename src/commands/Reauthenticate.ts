@@ -70,3 +70,5 @@ export class ReauthenticateCommand extends BotgartCommand {
         return message.util.send(L.get("PRUNING_COMPLETE"));
     }
 }
+
+module.exports = ReauthenticateCommand;

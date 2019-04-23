@@ -77,3 +77,4 @@ class DeleteCronCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.DeleteCronCommand = DeleteCronCommand;
+module.exports = DeleteCronCommand;

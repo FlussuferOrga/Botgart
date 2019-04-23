@@ -80,4 +80,5 @@ class SayCommand extends BotgartCommand_1.BotgartCommand {
         return args;
     }
 }
+exports.SayCommand = SayCommand;
 module.exports = SayCommand;

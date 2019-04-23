@@ -12,7 +12,7 @@ Testcases:
 - schedule cron with id
 - schedule cron with alias
 */
-export class MakeCron extends BotgartCommand {
+export class MakeCronCommand extends BotgartCommand {
     constructor() {
         super("makecron", {
                 aliases: ["makecron", "mkcron"],
@@ -155,3 +155,5 @@ export class MakeCron extends BotgartCommand {
             m.command(null,r,g,as); }.bind(this, cmd, responsible, guild, args));
     }
 }
+
+module.exports = MakeCronCommand;

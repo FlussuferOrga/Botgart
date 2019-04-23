@@ -52,3 +52,5 @@ export class ListCronsCommand extends BotgartCommand {
         responsible.send("```\n" + mes + "\n```");
     }
 }
+
+module.exports = ListCronsCommand;

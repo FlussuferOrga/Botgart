@@ -16,11 +16,7 @@ class Database {
         this.client = client;
     }
     execute(f) {
-        let db = new sqlite3(this.file, [], err => {
-            if (err) {
-                return Util.log("error", "DB.js", "DB open(): {0}".formatUnicorn(err["message"]));
-            }
-        });
+        let db = sqlite3.default(this.file, null);
         db.pragma("foreign_keys = ON");
         let res;
         try {
@@ -30,11 +26,7 @@ class Database {
             res = undefined;
             Util.log("error", "DB.js", "DB execute: {0}".formatUnicorn(err["message"]));
         }
-        db.close(err => {
-            if (err) {
-                return Util.log("error", "DB.js", "DB close(): {0}".formatUnicorn(err["message"]));
-            }
-        });
+        db.close();
         return res;
     }
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17

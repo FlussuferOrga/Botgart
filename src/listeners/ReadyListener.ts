@@ -1,7 +1,7 @@
 import { Listener } from "discord-akairo";
 import { log } from "../Util";
 import { BotgartClient } from "../BotgartClient";
-import { MakeCron } from "../commands/cron/MakeCron";
+import { MakeCronCommand } from "../commands/cron/MakeCron";
 
 export class ReadyListener extends Listener {
     constructor() {
@@ -17,8 +17,10 @@ export class ReadyListener extends Listener {
         cl.db.initSchema();
         log("info", "ReadyListener.js", "Database initialised.");
         log("info", "ReadyListener.js", "Rescheduling cronjobs from database.");
-        (<MakeCron>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
+        (<MakeCronCommand>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
         cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
     }
 }
+
+module.exports = ReadyListener;

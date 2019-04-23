@@ -15,3 +15,5 @@ export class JoinListener extends Listener {
         }
     }
 }
+
+module.exports = JoinListener;

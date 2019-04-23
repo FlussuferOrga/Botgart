@@ -126,3 +126,5 @@ export class AuthenticateCommand extends BotgartCommand {
         }       
     }
 }
+
+module.exports = AuthenticateCommand;

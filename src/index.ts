@@ -11,4 +11,6 @@ const client = new BotgartClient({
     commandUtilLifetime: 600000
 }, "./db/database.db");
 
+console.log("Starting up...");
 client.login(config.token);
+console.log("Started up...");

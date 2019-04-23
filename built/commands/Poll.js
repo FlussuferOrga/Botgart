@@ -81,3 +81,4 @@ class PollCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.PollCommand = PollCommand;
+module.exports = PollCommand;

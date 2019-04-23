@@ -45,3 +45,4 @@ class DeleteFAQCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.DeleteFAQCommand = DeleteFAQCommand;
+module.exports = DeleteFAQCommand;

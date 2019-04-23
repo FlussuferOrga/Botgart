@@ -85,3 +85,5 @@ export class PollCommand extends BotgartCommand {
         log("info", "Poll.js", "Created poll '{0}'.".formatUnicorn(args.question));
     }
 }
+
+module.exports = PollCommand;

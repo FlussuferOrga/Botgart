@@ -53,3 +53,4 @@ class MakeFAQCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.MakeFAQCommand = MakeFAQCommand;
+module.exports = MakeFAQCommand;

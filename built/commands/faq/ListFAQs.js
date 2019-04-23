@@ -53,3 +53,4 @@ class ListFAQsCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.ListFAQsCommand = ListFAQsCommand;
+module.exports = ListFAQsCommand;

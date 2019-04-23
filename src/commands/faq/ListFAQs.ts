@@ -49,3 +49,5 @@ export class ListFAQsCommand extends BotgartCommand {
         responsible.send("```\n" + mes + "\n```");    
     }
 }
+
+module.exports = ListFAQsCommand;

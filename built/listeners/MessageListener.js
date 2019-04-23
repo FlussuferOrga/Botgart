@@ -12,3 +12,4 @@ class MessageListener extends discord_akairo_1.Listener {
     }
 }
 exports.MessageListener = MessageListener;
+module.exports = MessageListener;

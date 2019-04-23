@@ -17,7 +17,7 @@ Testcases:
 - run with very long help text (change desc for some commands in Locale) > 2000 chars -> response comes in parts
 - run with one very long help text (change desc for one command in Locale) > 2000 chars -> that command is omitted
 */
-class PipeGuildLog extends BotgartCommand_1.BotgartCommand {
+class PipeGuildLogCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("pipeguildlog", {
             aliases: ["glog"],
@@ -50,4 +50,5 @@ class PipeGuildLog extends BotgartCommand_1.BotgartCommand {
     command(message, responsible, guild, args) {
     }
 }
-exports.PipeGuildLog = PipeGuildLog;
+exports.PipeGuildLogCommand = PipeGuildLogCommand;
+module.exports = PipeGuildLogCommand;

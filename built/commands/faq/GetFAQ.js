@@ -42,3 +42,4 @@ class GetFAQCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.GetFAQCommand = GetFAQCommand;
+module.exports = GetFAQCommand;

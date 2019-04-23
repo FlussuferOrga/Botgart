@@ -21,3 +21,4 @@ class ReadyListener extends discord_akairo_1.Listener {
     }
 }
 exports.ReadyListener = ReadyListener;
+module.exports = ReadyListener;

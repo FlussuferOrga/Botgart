@@ -79,3 +79,5 @@ export class DeleteCronCommand extends BotgartCommand {
         return canceled || deletedFromDB;
     }
 }
+
+module.exports = DeleteCronCommand;

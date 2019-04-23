@@ -23,3 +23,4 @@ class JoinListener extends discord_akairo_1.Listener {
     }
 }
 exports.JoinListener = JoinListener;
+module.exports = JoinListener;

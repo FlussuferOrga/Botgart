@@ -56,3 +56,4 @@ class ListCronsCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.ListCronsCommand = ListCronsCommand;
+module.exports = ListCronsCommand;

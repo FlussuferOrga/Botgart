@@ -46,3 +46,5 @@ export class DeleteFAQCommand extends BotgartCommand {
         return deleted;
     }
 }
+
+module.exports = DeleteFAQCommand;

@@ -9,6 +9,7 @@
   "author": "Daniel O'Grady",
   "license": "ISC",
   "dependencies": {
+    "@types/better-sqlite3": "^5.2.3",
     "assert": "^1.4.1",
     "better-sqlite3": "^5.4.0",
     "discord-akairo": "^7.5.6",

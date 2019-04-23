@@ -12,3 +12,5 @@ export class MessageListener extends Listener {
 
     }
 }
+
+module.exports = MessageListener;

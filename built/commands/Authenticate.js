@@ -128,3 +128,4 @@ class AuthenticateCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.AuthenticateCommand = AuthenticateCommand;
+module.exports = AuthenticateCommand;

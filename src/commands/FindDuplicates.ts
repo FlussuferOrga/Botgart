@@ -34,3 +34,5 @@ export class FindDuplicatesCommand extends BotgartCommand {
         return message.util.send(L.get("FIND_DUPES_COMPLETE"));
     }
 }
+
+module.exports = FindDuplicatesCommand;

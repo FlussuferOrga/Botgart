@@ -36,3 +36,4 @@ class FindDuplicatesCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.FindDuplicatesCommand = FindDuplicatesCommand;
+module.exports = FindDuplicatesCommand;

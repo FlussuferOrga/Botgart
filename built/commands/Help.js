@@ -59,3 +59,4 @@ class HelpCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.HelpCommand = HelpCommand;
+module.exports = HelpCommand;

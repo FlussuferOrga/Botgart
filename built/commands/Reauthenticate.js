@@ -73,3 +73,4 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
     }
 }
 exports.ReauthenticateCommand = ReauthenticateCommand;
+module.exports = ReauthenticateCommand;

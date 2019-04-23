@@ -43,3 +43,5 @@ export class GetFAQCommand extends BotgartCommand {
         this.reply(message, responsible, response);
     }
 }
+
+module.exports = GetFAQCommand;
