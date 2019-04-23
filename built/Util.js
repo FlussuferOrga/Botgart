@@ -7,9 +7,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-let config = require("../../config.json");
+let config = require.main.require("../config.json");
 const winston = __importStar(require("winston"));
-const gw2 = __importStar(require("gw2api-client"));
+const gw2 = require("gw2api-client");
 const api = gw2();
 api.schema('2019-03-26T00:00:00Z');
 api.language('en');
@@ -150,7 +150,6 @@ function log(level, label, message) {
 exports.log = log;
 // taken from https://stackoverflow.com/a/18234317
 String.prototype.formatUnicorn = function (...fnargs) {
-    "use strict";
     var str = this.toString();
     if (fnargs.length) {
         var t = typeof fnargs[0];

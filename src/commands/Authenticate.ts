@@ -1,4 +1,4 @@
-let config = require("../config.json");
+let config = require.main.require("../config.json");
 import { Command } from "discord-akairo";
 import * as Util from "../Util";
 import * as Const from "../Const";

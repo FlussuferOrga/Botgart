@@ -1,10 +1,11 @@
-let config = require("../../config.json");
+let config = require.main.require("../config.json");
 import * as discord from "discord.js";
 import * as winston from "winston";
-import * as gw2 from "gw2api-client";
+//import * as gw2 from "gw2api-client";
 import * as assert from "assert";
 import { inspect } from "util";
-const api : gw2 = gw2();
+const gw2 = require("gw2api-client");
+const api = gw2();
 
 api.schema('2019-03-26T00:00:00Z');
 api.language('en');
@@ -168,7 +169,6 @@ declare global {
 
 // taken from https://stackoverflow.com/a/18234317
 String.prototype.formatUnicorn = function (...fnargs: any[]): string {
-    "use strict";
     var str = this.toString();
     if (fnargs.length) {
         var t = typeof fnargs[0];

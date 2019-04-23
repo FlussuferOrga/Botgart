@@ -7,7 +7,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-let config = require("../config.json");
+let config = require.main.require("../config.json");
 const Util = __importStar(require("../Util"));
 const L = __importStar(require("../Locale"));
 const BotgartCommand_1 = require("../BotgartCommand");
