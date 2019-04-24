@@ -19,6 +19,7 @@
     "node-teamspeak-api": "^1.0.0",
     "sequelize": "^4.43.2",
     "sqlite": "^3.0.3",
+    "string-similarity": "^3.0.0",
     "typescript": "^3.4.5",
     "winston": "^3.2.1"
   }
