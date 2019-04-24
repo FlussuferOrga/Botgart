@@ -36,16 +36,17 @@ You can run your bot by using
 node built/index.js
 ```
 
-from the `built/` directory of your project. 
+from the root directory of your project. 
 Don't forget to transpile your code after making changes to the `src/` directory.
 For development, I recommend using [the forever package](https://stackoverflow.com/a/19594679) to restart the bot when the transpiler has finished. If you have it installed, you can run the `run_devel.sh`-script to start your bot for development.
 
 ## Logging
-Logs will be written to the `log/`-directory and to the console. Logfiles are cummulative and should be cleared manually from time to time.
+Logs will be written to the `log/`-directory and to the console. Logfiles are cummulative and should be cleared manually from time to time. Use `Util.log(level:string, prefix:string, message:string)` to log messages yourself. See below (winston) for more information on logging.
 
 ## Dependencies
 Botgart uses several dependencies (that are automatically installed in one of the above steps) to make our lives easier:
 
-- discord.js handles the basic interaction with Discord and provides most of the classes https://discord.js.org/#/
-- discord-akairo adds additional functionality for bots, like easy to use commands and listeners https://discord-akairo.github.io/#/
-- gw2api-client offers a wrapper around the GW2-API (and is apparently used by sites like gw2efficiency!) https://github.com/queicherius/gw2api-client
+- [discord.js](https://discord.js.org/#/) handles the basic interaction with Discord and provides most of the classes 
+- [discord-akairo](https://discord-akairo.github.io/#/) adds additional functionality for bots, like easy to use commands and listeners 
+- [gw2api-client](https://github.com/queicherius/gw2api-client) offers a wrapper around the GW2-API (and is apparently used by sites like gw2efficiency!)
+- [winston](https://github.com/winstonjs/winston) is a general purpose logger. See the documentation for available logging levels
