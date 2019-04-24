@@ -104,7 +104,7 @@ function resolveWvWObjective(objectiveInput, mapInput) {
         let objectives = res
             .filter(o => ["BlueHome", "RedHome", "GreenHome", "Center"].includes(o.map_type))
             .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
-            .map((o => [o.name, o]))
+            .map(o => [o.name, o])
             .reduce((acc, [k, v]) => { acc[k] = v; return acc; });
         let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
         return new Promise((resolve, reject) => {
