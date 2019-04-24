@@ -99,12 +99,13 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
 /**
 * Tries to resolve user input to a proper (localised) objective name.
 *
-* @param userInput - whatever the user inputs
+* @param objectiveInput - whatever the user inputs as the objective name
+* @param mapInput - whatever the user inputs as the map name. Optional, if nothing is put here, ambiguities on alpine borderlands may occur 
 * @returns a Promise resolving to either 
-*    [<resolved objective name>:string,<map id>:number, <objective id>:string] if we found a promising match
-*    [<original user input>:string, null, null] if no match could be found
+*    [<resolved objective name>:string, <resolved map name>:string, <map id>:number, <objective id>:string] if we found a promising match
+*    [<original user objective input>:string, <original user map input>: string, null, null] if no match could be found
 */
-export function resolveWvWObjective(userInput: string): Promise<[string,number,string]|[string,null,null]> {
+export function resolveWvWObjective(objectiveInput: string, mapInput?: string): Promise<[string,string,number,string]|[string,string,null,null]> {
     return api.language("de").wvw().objectives().all().then(
         res => {
             let objectives = res
@@ -112,12 +113,12 @@ export function resolveWvWObjective(userInput: string): Promise<[string,number,s
                              .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
                              .map((o => [o.name, o]))
                              .reduce((acc, [k,v]) => { acc[k] = v; return acc; });
-            let best = stringSimilarity.findBestMatch(userInput, Object.keys(objectives)).bestMatch;
+            let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
 
             return new Promise((resolve, reject) => {
                 resolve((best.target === "0" && best.rating === 0) 
-                    ? [userInput, null, null]
-                    : [best.target, objectives[best.target].map_id, objectives[best.target].id])
+                    ? [objectiveInput, mapInput, null, null]
+                    : [best.target, mapInput, objectives[best.target].map_id, objectives[best.target].id])
             });        
         });
 }
