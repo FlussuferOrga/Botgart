@@ -4,6 +4,8 @@ import * as winston from "winston";
 //import * as gw2 from "gw2api-client";
 import * as assert from "assert";
 import { inspect } from "util";
+import * as stringSimilarity from "string-similarity";
+
 const gw2 = require("gw2api-client");
 const api = gw2();
 
@@ -93,6 +95,32 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
     }
     return admittedRole;
 };
+
+/**
+* Tries to resolve user input to a proper (localised) objective name.
+*
+* @param userInput - whatever the user inputs
+* @returns a Promise resolving to either 
+*    [<resolved objective name>:string,<map id>:number, <objective id>:string] if we found a promising match
+*    [<original user input>:string, null, null] if no match could be found
+*/
+export function resolveWvWObjective(userInput: string): Promise<[string,number,string]|[string,null,null]> {
+    return api.language("de").wvw().objectives().all().then(
+        res => {
+            let objectives = res
+                             .filter(o => ["BlueHome", "RedHome", "GreenHome", "Center"].includes(o.map_type))
+                             .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
+                             .map((o => [o.name, o]))
+                             .reduce((acc, [k,v]) => { acc[k] = v; return acc; });
+            let best = stringSimilarity.findBestMatch(userInput, Object.keys(objectives)).bestMatch;
+
+            return new Promise((resolve, reject) => {
+                resolve((best.target === "0" && best.rating === 0) 
+                    ? [userInput, null, null]
+                    : [best.target, objectives[best.target].map_id, objectives[best.target].id])
+            });        
+        });
+}
 
 export function getOwnedGuilds(apikey: string): any {
     api.authenticate(apikey);

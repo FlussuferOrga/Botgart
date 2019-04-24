@@ -9,6 +9,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 let config = require.main.require("../config.json");
 const winston = __importStar(require("winston"));
+const stringSimilarity = __importStar(require("string-similarity"));
 const gw2 = require("gw2api-client");
 const api = gw2();
 api.schema('2019-03-26T00:00:00Z');
@@ -89,6 +90,23 @@ function assignServerRole(member, currentRole, admittedRole) {
 }
 exports.assignServerRole = assignServerRole;
 ;
+function resolveWvWObjective(userInput) {
+    return api.language("de").wvw().objectives().all()
+        .then(res => {
+        let objectives = res
+            .filter(o => ["BlueHome", "RedHome", "GreenHome", "Center"].includes(o.map_type))
+            .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
+            .map((o => [o.name, o]))
+            .reduce((acc, [k, v]) => { acc[k] = v; return acc; });
+        let best = stringSimilarity.findBestMatch(userInput, Object.keys(objectives)).bestMatch;
+        return new Promise((resolve, reject) => {
+            resolve((best.target === "0" && best.rating === 0)
+                ? [userInput, null, null]
+                : [best.target, objectives[best.target].map_id, objectives[best.target].id]);
+        });
+    });
+}
+exports.resolveWvWObjective = resolveWvWObjective;
 function getOwnedGuilds(apikey) {
     api.authenticate(apikey);
     return undefined; // FIXME

@@ -1,5 +1,5 @@
 import { Listener } from "discord-akairo";
-import { log } from "../Util";
+import { log, resolveWvWObjective } from "../Util";
 import { BotgartClient } from "../BotgartClient";
 import { MakeCronCommand } from "../commands/cron/MakeCron";
 
@@ -20,6 +20,12 @@ export class ReadyListener extends Listener {
         (<MakeCronCommand>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
         cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
+
+
+        //resolveWvWObjective("bucht")
+        //.then(
+        //    (res) => console.log("result", res)
+        //);
     }
 }
 
