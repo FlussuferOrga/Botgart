@@ -96,13 +96,13 @@ export class BotgartCommand extends Command {
     * @param {Object} args - parameters.
     */
     public exec(message: discord.Message, args: Object): void {
-        if(!this.availableAsDM && !message.member) {
+        if(!this.availableAsDM && !message.member && message.util) {
             message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
 
         let errorMessage = this.checkArgs(args);
-        if(errorMessage) {
+        if(errorMessage && message.util) {
             message.util.send(errorMessage)
             return;
         }

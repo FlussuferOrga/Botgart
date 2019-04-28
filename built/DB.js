@@ -16,7 +16,7 @@ class Database {
         this.client = client;
     }
     execute(f) {
-        let db = sqlite3.default(this.file, null);
+        let db = sqlite3.default(this.file, undefined);
         db.pragma("foreign_keys = ON");
         let res;
         try {

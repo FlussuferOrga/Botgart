@@ -14,10 +14,10 @@ export class Database {
     }
 
     execute<T>(f: (sqlite3) => T): T|undefined  {
-        let db: sqlite3.Database = sqlite3.default(this.file, null);
+        let db: sqlite3.Database = sqlite3.default(this.file, undefined);
         db.pragma("foreign_keys = ON");
 
-        let res: T;
+        let res: T|undefined;
         try {
             res = f(db);
         } catch(err) {
@@ -97,7 +97,7 @@ export class Database {
         });
     }
 
-    deleteFAQ(key: string, guild: string): boolean {
+    deleteFAQ(key: string, guild: string): boolean|undefined {
         return this.execute(db => {
             let changes = 0;
             db.transaction((_) => {
@@ -117,7 +117,7 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
 
-    storeAPIKey(user: string, guild: string, key: string, gw2account: string, role: string): boolean {
+    storeAPIKey(user: string, guild: string, key: string, gw2account: string, role: string): boolean|undefined {
         let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, registration_role) VALUES(?,?,?,?,?)`;
         return this.execute(db => {
                     try {
@@ -143,7 +143,7 @@ export class Database {
         );
     }
 
-    deleteKey(key: string): boolean {
+    deleteKey(key: string): boolean|undefined {
         return this.execute(db => {
             let changes = 0;
             db.transaction((_) => {
@@ -183,7 +183,7 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT * FROM cronjobs`).all());
     }
 
-    deleteCronjob(id: number): boolean {
+    deleteCronjob(id: number): boolean|undefined {
         return this.execute(db => {
             let changes = 0;
             db.transaction((_) => {

@@ -18,10 +18,8 @@ class ReadyListener extends discord_akairo_1.Listener {
         cl.commandHandler.modules.get("makecron").rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
         cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
-        //resolveWvWObjective("bucht")
-        //.then(
-        //    (res) => console.log("result", res)
-        //);
+        Util_1.resolveWvWObjective("bucht", "blaue")
+            .then((res) => console.log("result", res));
     }
 }
 exports.ReadyListener = ReadyListener;

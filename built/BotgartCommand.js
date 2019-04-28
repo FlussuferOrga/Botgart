@@ -94,12 +94,12 @@ class BotgartCommand extends discord_akairo_1.Command {
     * @param {Object} args - parameters.
     */
     exec(message, args) {
-        if (!this.availableAsDM && !message.member) {
+        if (!this.availableAsDM && !message.member && message.util) {
             message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
         let errorMessage = this.checkArgs(args);
-        if (errorMessage) {
+        if (errorMessage && message.util) {
             message.util.send(errorMessage);
             return;
         }

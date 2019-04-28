@@ -100,21 +100,50 @@ exports.assignServerRole = assignServerRole;
 *    [<original user objective input>:string, <original user map input>: string, null, null] if no match could be found
 */
 function resolveWvWObjective(objectiveInput, mapInput) {
-    return api.language("de").wvw().objectives().all().then(res => {
+    return api.language("de").wvw().objectives().all().then(res => resolveWvWMap(mapInput)
+        .then(([resolved, wvwMap]) => {
+        let mapFilter = resolved ? [wvwMap] : ["BlueHome", "RedHome", "GreenHome", "Center"];
         let objectives = res
-            .filter(o => ["BlueHome", "RedHome", "GreenHome", "Center"].includes(o.map_type))
+            .filter(o => mapFilter.includes(o.map_type))
             .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
             .map(o => [o.name, o])
             .reduce((acc, [k, v]) => { acc[k] = v; return acc; });
         let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
         return new Promise((resolve, reject) => {
-            resolve((best.target === "0" && best.rating === 0)
-                ? [objectiveInput, mapInput, null, null]
-                : [best.target, mapInput, objectives[best.target].map_id, objectives[best.target].id]);
+            resolve(best.rating === 0
+                ? [objectiveInput, wvwMap, null, null]
+                : [best.target, wvwMap, objectives[best.target].map_id, objectives[best.target].id]);
         });
-    });
+    }));
 }
 exports.resolveWvWObjective = resolveWvWObjective;
+let mapAliasesPairs = [
+    ["Center", ["ebg", "ewige", "es"]],
+    ["BlueHome", ["blaue", "bgl", "bbl"]],
+    ["GreenHome", ["grüne", "ggl", "gbl"]],
+    ["RedHome", ["rote", "rgl", "rbl", "wüste", "dessert"]]
+    //["homes",    ["home"]] // FIXME: re-enable and if resolved string === "home", look up current colour of homes
+];
+let mapAliases = mapAliasesPairs
+    .reduce((acc, [k, vs]) => { vs.map(v => acc[v] = k); return acc; }, {});
+/**
+* Tries to resolve the given user input to a standard world name.
+*
+* @param userInput - what the user typed as string for the map name
+* @returns a Promise resolving to a pair to either [true, the resolved name], [false, the original user input]
+*/
+function resolveWvWMap(userInput) {
+    if (userInput === null || userInput === undefined) {
+        return new Promise((resolve, reject) => resolve([false, null]));
+    }
+    else {
+        let best = stringSimilarity.findBestMatch(userInput, Object.keys(mapAliases)).bestMatch;
+        return (best.rating === 0)
+            ? new Promise((resolve, reject) => resolve([false, userInput]))
+            : new Promise((resolve, reject) => resolve([true, mapAliases[best.target]]));
+    }
+}
+exports.resolveWvWMap = resolveWvWMap;
 function getOwnedGuilds(apikey) {
     api.authenticate(apikey);
     return undefined; // FIXME
