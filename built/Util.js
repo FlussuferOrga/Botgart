@@ -107,7 +107,7 @@ function resolveWvWObjective(objectiveInput, mapInput) {
             .filter(o => mapFilter.includes(o.map_type))
             .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
             .map(o => [o.name, o])
-            .reduce((acc, [k, v]) => { acc[k] = v; return acc; });
+            .reduce((acc, [k, v]) => { acc[k] = v; return acc; }, {});
         let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
         return new Promise((resolve, reject) => {
             resolve(best.rating === 0
@@ -119,10 +119,10 @@ function resolveWvWObjective(objectiveInput, mapInput) {
 exports.resolveWvWObjective = resolveWvWObjective;
 let mapAliasesPairs = [
     ["Center", ["ebg", "ewige", "es"]],
-    ["BlueHome", ["blaue", "bgl", "bbl"]],
-    ["GreenHome", ["grüne", "ggl", "gbl"]],
-    ["RedHome", ["rote", "rgl", "rbl", "wüste", "dessert"]]
-    //["homes",    ["home"]] // FIXME: re-enable and if resolved string === "home", look up current colour of homes
+    ["BlueHome", ["blaue", "blue", "bgl", "bbl"]],
+    ["GreenHome", ["grüne", "green", "ggl", "gbl"]],
+    ["RedHome", ["rote", "red", "rgl", "rbl", "wüste", "dessert"]],
+    ["homes", ["home", "homes", "heimat"]]
 ];
 let mapAliases = mapAliasesPairs
     .reduce((acc, [k, vs]) => { vs.map(v => acc[v] = k); return acc; }, {});
@@ -130,20 +130,54 @@ let mapAliases = mapAliasesPairs
 * Tries to resolve the given user input to a standard world name.
 *
 * @param userInput - what the user typed as string for the map name
-* @returns a Promise resolving to a pair to either [true, the resolved name], [false, the original user input]
+* @returns a Promise resolving to a pair to either
+*        [true, the resolved name] (special case, strings akin to "home" are resolved to the current home map, as specified in the config)
+*      , [false, the original user input]
 */
 function resolveWvWMap(userInput) {
-    if (userInput === null || userInput === undefined) {
-        return new Promise((resolve, reject) => resolve([false, null]));
-    }
-    else {
+    let res = new Promise((resolve, reject) => resolve([false, null]));
+    if (userInput !== null && userInput !== undefined) {
         let best = stringSimilarity.findBestMatch(userInput, Object.keys(mapAliases)).bestMatch;
-        return (best.rating === 0)
-            ? new Promise((resolve, reject) => resolve([false, userInput]))
-            : new Promise((resolve, reject) => resolve([true, mapAliases[best.target]]));
+        if (best.rating === 0) {
+            // could not resolve to anything
+            res = new Promise((resolve, reject) => resolve([false, userInput]));
+        }
+        else {
+            let m = mapAliases[best.target];
+            if (m === "homes") {
+                // resolve home colour
+                res = resolveMatchColour(config.home_id).then(home => new Promise((resolve, reject) => resolve([true, mapAliases[home]])));
+            }
+            else {
+                // resolved properly
+                res = new Promise((resolve, reject) => resolve([true, m]));
+            }
+        }
     }
+    return res;
 }
 exports.resolveWvWMap = resolveWvWMap;
+/**
+* Finds the colour of a world specified by its ID in its current matchup.
+*
+* @param worldId - the ID of the world to find the colour for
+* @returns Promise "red", "blue" or "green" if it could be resolved or Promise<null> if the ID could not be resolved.
+*/
+function resolveMatchColour(worldId) {
+    return api.wvw().matches().overview().world(worldId).then(matchUp => {
+        let home = Object.keys(matchUp.all_worlds)
+            .map(k => matchUp.all_worlds[k].includes(worldId) ? k : null)
+            .filter(x => x !== null);
+        if (home.length !== 1) {
+            log("error", "Util.js", "Expected to find world with ID = {0} in exactly one team. But found it in {1} teams.".formatUnicorn(worldId, home.length));
+        }
+        return home[0];
+    }, err => {
+        log("error", "Util.js", "Error '{0}' when trying to resolve colour for world with ID = {1}".formatUnicorn(err.content.text, worldId));
+        return null;
+    });
+}
+exports.resolveMatchColour = resolveMatchColour;
 function getOwnedGuilds(apikey) {
     api.authenticate(apikey);
     return undefined; // FIXME
