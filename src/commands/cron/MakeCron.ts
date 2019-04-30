@@ -2,6 +2,7 @@ import { Command } from "discord-akairo";
 import * as schedule from "node-schedule";
 import * as Const from "../../Const";
 import * as L from "../../Locale";
+import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import {assertType, shallowInspect, log} from "../../Util";
@@ -145,14 +146,10 @@ export class MakeCronCommand extends BotgartCommand {
     * @param {Map} args - Args for the command.
     * @returns {scheduleJob}
     */
-    scheduleCronjob(time, responsible, guild, cmd, args) {
-        assertType(time, "String");
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
-        assertType(cmd, "Command");
-        assertType(args, "Object");
+    scheduleCronjob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: any): any {
         return schedule.scheduleJob(time, function(m,r,g,as) { 
-            m.command(null,r,g,as); }.bind(this, cmd, responsible, guild, args));
+                m.command(null,r,g,as); 
+            }.bind(this, cmd, responsible, guild, args));
     }
 }
 
