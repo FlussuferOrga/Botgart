@@ -38,7 +38,7 @@ class DeleteCronCommand extends BotgartCommand_1.BotgartCommand {
         return L.get("DESC_DEL_CRON");
     }
     checkArgs(args) {
-        return !args || args.id || args.id < 0 ? L.get("HELPTEXT_DEL_CRON") : undefined;
+        return args === undefined || args.id === undefined || args.id < 0 ? L.get("HELPTEXT_DEL_CRON") : undefined;
     }
     command(message, responsible, guild, args) {
         return this.deleteCronjob(args.id);
@@ -48,6 +48,7 @@ class DeleteCronCommand extends BotgartCommand_1.BotgartCommand {
             return message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
         let errorMessage = this.checkArgs(args);
+        console.log(errorMessage);
         if (errorMessage) {
             return message.util.send(errorMessage);
         }

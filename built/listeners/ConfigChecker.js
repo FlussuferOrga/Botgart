@@ -109,11 +109,11 @@ class ReadyListener extends discord_akairo_1.Listener {
             Util_1.log("error", "ConfigChecker.js", "Error while validating config entry '{0}': {1}".formatUnicorn(k, errors[k]));
         }
         if (errors) {
-            Util_1.log("crit", "ConfigChecker.js", "Config contains invalid entries. Shutting down preventively. Please fix the config according to the log.");
+            Util_1.log("crit", "ConfigChecker.js", "config.json contains invalid entries. Shutting down preventively. Please fix the config according to the log.");
             process.exit(1);
         }
         else {
-            Util_1.log("info", "ConfigChecker.js", "Done checking config.json.");
+            Util_1.log("info", "ConfigChecker.js", "Done checking config.json. No errors detected.");
         }
     }
 }

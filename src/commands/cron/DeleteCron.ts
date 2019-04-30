@@ -36,7 +36,7 @@ export class DeleteCronCommand extends BotgartCommand {
     }
 
     checkArgs(args: any): string|undefined {
-        return !args || args.id || args.id < 0 ?L.get("HELPTEXT_DEL_CRON") : undefined;
+        return args === undefined || args.id === undefined || args.id < 0 ?L.get("HELPTEXT_DEL_CRON") : undefined;
     }
 
     command(message: discord.Message , responsible: discord.User, guild: discord.Guild, args: any): boolean {

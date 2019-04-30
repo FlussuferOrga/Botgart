@@ -85,7 +85,7 @@ class MakeCronCommand extends BotgartCommand_1.BotgartCommand {
                     let cid = cl.db.storeCronjob(schedule, mod.id, mod.serialiseArgs(parsedArgs), message.member.user.id, message.guild.id);
                     cl.cronjobs[cid] = job;
                     Util_1.log("info", "MakeCron.js", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
-                    return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid));
+                    return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
                 }
             }
         });
@@ -141,11 +141,6 @@ class MakeCronCommand extends BotgartCommand_1.BotgartCommand {
     * @returns {scheduleJob}
     */
     scheduleCronjob(time, responsible, guild, cmd, args) {
-        Util_1.assertType(time, "String");
-        Util_1.assertType(responsible, "User");
-        Util_1.assertType(guild, "Guild");
-        Util_1.assertType(cmd, "Command");
-        Util_1.assertType(args, "Object");
         return schedule.scheduleJob(time, function (m, r, g, as) {
             m.command(null, r, g, as);
         }.bind(this, cmd, responsible, guild, args));

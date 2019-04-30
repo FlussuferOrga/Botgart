@@ -92,7 +92,7 @@ export class MakeCronCommand extends BotgartCommand {
                                                 message.guild.id);
                     cl.cronjobs[cid] = job;
                     log("info", "MakeCron.js", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
-                    return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid));
+                    return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
                 }
             }
         });        

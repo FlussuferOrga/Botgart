@@ -17,7 +17,7 @@ exports.DE = {
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
     "FIND_DUPES_COMPLETE": "Duplikatsuche abgeschlossen.",
     "GUILD_LOG_COMPLETE": "Gilden-Logbuch erfolgreich abgerufen.",
-    "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}.",
+    "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
     "CRONJOB_DELETED": "Der Cronjob wurde gelöscht.",
     "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden.",
