@@ -111,11 +111,13 @@ export function resolveWvWObjective(objectiveInput: string, mapInput?: string): 
             .then(([resolved, wvwMap]) => {
                 let mapFilter = resolved ? [wvwMap] : ["BlueHome", "RedHome", "GreenHome", "Center"];
                 let objectives = res
+                                 .filter(o => o.map_id != 94) // filter out the obsolete red alpine borderland
                                  .filter(o => mapFilter.includes(o.map_type))
                                  .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
                                  .map(o => [o.name, o])
                                  .reduce((acc, [k,v]) => { acc[k] = v; return acc; }, {});
                 let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
+                console.log(objectives);
                 return new Promise((resolve, reject) => {
                     resolve(best.rating === 0
                         ? [objectiveInput, wvwMap, null, null]
