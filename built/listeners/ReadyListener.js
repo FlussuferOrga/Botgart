@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_akairo_1 = require("discord-akairo");
 const Util_1 = require("../Util");
+const Locale_1 = require("../Locale");
 class ReadyListener extends discord_akairo_1.Listener {
     constructor() {
         super("ready", {
@@ -18,8 +19,7 @@ class ReadyListener extends discord_akairo_1.Listener {
         cl.commandHandler.modules.get("makecron").rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
         cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
-        Util_1.resolveWvWObjective("bucht", "home")
-            .then((res) => console.log("result", res));
+        console.log(Locale_1.get("TEST"));
     }
 }
 exports.ReadyListener = ReadyListener;

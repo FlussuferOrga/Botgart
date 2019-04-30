@@ -50,10 +50,11 @@ exports.DE = {
     "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
-    "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel."
+    "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
+    "TEST": "dies ist nut ein test {0} {1} {2}"
 };
-function get(key) {
-    return key in exports.DE ? exports.DE[key] : key;
+function get(key, args) {
+    return key in exports.DE ? exports.DE[key].formatUnicorn(args) : key;
 }
 exports.get = get;
 ;

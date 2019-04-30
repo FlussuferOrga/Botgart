@@ -110,7 +110,6 @@ function resolveWvWObjective(objectiveInput, mapInput) {
             .map(o => [o.name, o])
             .reduce((acc, [k, v]) => { acc[k] = v; return acc; }, {});
         let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
-        console.log(objectives);
         return new Promise((resolve, reject) => {
             resolve(best.rating === 0
                 ? [objectiveInput, wvwMap, null, null]

@@ -2,6 +2,7 @@ import { Listener } from "discord-akairo";
 import { log, resolveWvWObjective, resolveWvWMap, resolveMatchColour } from "../Util";
 import { BotgartClient } from "../BotgartClient";
 import { MakeCronCommand } from "../commands/cron/MakeCron";
+import { get } from "../Locale";
 
 export class ReadyListener extends Listener {
     constructor() {
@@ -19,12 +20,7 @@ export class ReadyListener extends Listener {
         log("info", "ReadyListener.js", "Rescheduling cronjobs from database.");
         (<MakeCronCommand>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
-        cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
-
-        resolveWvWObjective("bucht", "home")
-        .then(
-            (res) => console.log("result", res)
-        );
+        cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));           
     }
 }
 

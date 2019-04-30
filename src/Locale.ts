@@ -55,10 +55,17 @@ export let DE : Object = {
     "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
-    "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel."
-
+    "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
 }
 
-export function get(key) {
-    return key in DE ? DE[key] : key;
+/**
+* Tries to resolve the passed key into a locale string. 
+* 
+* @param key - the key to get the locale string for
+* @param args - optional, the arguments that are to be formatted into the resolved string
+* @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders. 
+*          If no locale string could be found, the key is returned instead.
+*/
+export function get(key: string, args?: string[]): string {
+    return key in DE ? DE[key].formatUnicorn(args) : key;
 };
