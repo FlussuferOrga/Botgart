@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 let config = require.main.require("../config.json");
 const discord_akairo_1 = require("discord-akairo");
+const Util_1 = require("../Util");
 class ReadyListener extends discord_akairo_1.Listener {
     constructor() {
         super("disabler", {
@@ -11,19 +12,22 @@ class ReadyListener extends discord_akairo_1.Listener {
     }
     exec() {
         let disabler = function (x, xs) {
+            let d = 0;
             let mod = xs.modules.get(x);
             if (mod === undefined) {
-                log("warn", "ReadyListener.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
+                Util_1.log("warn", "ReadyListener.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
             }
             else {
-                mod.disable(); // yields a boolean, but why would this fail?
-                log("info", "ReadyListener.js", "Disabled module '{0}'.".formatUnicorn(x));
+                d = mod.disable() ? 1 : 0; // yields a boolean, but why would this fail?
+                Util_1.log("info", "ReadyListener.js", "Disabled module '{0}'.".formatUnicorn(x));
             }
+            return d;
         };
-        config.disabled.listeners.forEach(l => disabler(l, this.client.listenerHandler));
-        config.disabled.inhibitors.forEach(l => disabler(l, this.client.inhibitorHandler));
-        config.disabled.commands.forEach(l => disabler(l, this.client.commandHandler));
-        console.log("disabled");
+        let disabled = 0;
+        disabled += config.disabled.listeners.reduce((acc, l) => acc + disabler(l, this.client.listenerHandler), 0);
+        disabled += config.disabled.inhibitors.reduce((acc, l) => acc + disabler(l, this.client.inhibitorHandler), 0);
+        disabled += config.disabled.commands.reduce((acc, l) => acc + disabler(l, this.client.commandHandler), 0);
+        Util_1.log("info", "Disabler.js", "Done disabling {0} modules as specified by the config.".formatUnicorn(disabled));
     }
 }
 exports.ReadyListener = ReadyListener;
