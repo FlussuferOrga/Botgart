@@ -19,19 +19,6 @@ class ReadyListener extends discord_akairo_1.Listener {
         cl.commandHandler.modules.get("makecron").rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
         cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
-        let disabler = function (x, xs) {
-            let mod = xs.modules.get(x);
-            if (mod === undefined) {
-                Util_1.log("warn", "ReadyListener.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
-            }
-            else {
-                mod.disable(); // yields a boolean, but why would this fail?
-                Util_1.log("info", "ReadyListener.js", "Disabled module '{0}'.".formatUnicorn(x));
-            }
-        };
-        config.disabled.listeners.forEach(l => disabler(l, this.client.listenerHandler));
-        config.disabled.inhibitors.forEach(l => disabler(l, this.client.inhibitorHandler));
-        config.disabled.commands.forEach(l => disabler(l, this.client.commandHandler));
     }
 }
 exports.ReadyListener = ReadyListener;
