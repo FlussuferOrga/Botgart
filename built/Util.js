@@ -215,6 +215,7 @@ function assertType(obj, t) {
 }
 exports.assertType = assertType;
 const logger = winston.createLogger({
+    levels: winston.config.syslog.levels,
     format: winston.format.combine(winston.format.timestamp(), winston.format.splat(), winston.format.simple(), winston.format.printf(({ level, label, message, timestamp }) => {
         return `${timestamp} ${level} [${label}]: ${message}`;
     })),

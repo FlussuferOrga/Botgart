@@ -230,6 +230,7 @@ export function assertType(obj:any, t:string): void {
 }
 
 const logger = winston.createLogger({
+  levels: winston.config.syslog.levels,
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.splat(),
