@@ -9,5 +9,10 @@
         "port": 10011,
         "user": "admin",
         "password": "secret" 
+    },
+    "disabled": {
+        "listeners": [],
+        "commands": [],
+        "inhibitors": []
     }
 }

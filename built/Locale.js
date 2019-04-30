@@ -51,8 +51,15 @@ exports.DE = {
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
-    "TEST": "dies ist nut ein test {0} {1} {2}"
 };
+/**
+* Tries to resolve the passed key into a locale string.
+*
+* @param key - the key to get the locale string for
+* @param args - optional, the arguments that are to be formatted into the resolved string
+* @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders.
+*          If no locale string could be found, the key is returned instead.
+*/
 function get(key, args) {
     return key in exports.DE ? exports.DE[key].formatUnicorn(args) : key;
 }
