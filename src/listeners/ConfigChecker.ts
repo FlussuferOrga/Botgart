@@ -2,20 +2,34 @@ let config = require.main.require("../config.json");
 import { Listener } from "discord-akairo";
 import { log } from "../Util";
 import * as validate from "validate.js";
+const gw2 = require("gw2api-client");
+const api = gw2();
 
 validate.validators.isArray = (value, options, key, attributes) => { 
-    options.message = options.message || (x => "not an array."); 
-    return validate.isArray(value) ? null : options.message(value); 
+    let m = options.message || (x => "not an array."); 
+    return validate.isArray(value) ? null : m(value); 
 };
 
 validate.validators.all = (value, options, key, attributes) => {
-    options.message = options.message || (x => "not all elements passed the qualification citerion.");
-    return value.reduce((acc, x) => acc && options.func(x), true) ? null : options.message(value);
+    let m = options.message || (x => "{0} did not pass the specified criterion.".formatUnicorn(JSON.stringify(x)));
+    let f = options.func;
+    let [errs, passed] = value.reduce(([errs, acc], x) => [f(x) ? errs : errs.concat([m(x)])
+                                                              ,acc && f(x)]
+                                                          ,[[], true]);
+    return passed ? null : errs;
 };
 
 validate.validators.any = (value, options, key, attributes) => {
     options.message = options.message || (x => "not a single element passed the qualification criterion.");
     return value.reduce((acc, x) => acc || options.func(x), false) ? null : options.message(value);
+};
+
+validate.validators.isValidWorld = (value, options, key, attributes) => {
+    options = options || {};
+    let m = options.message || (x => "world with ID {0} could not be resolved.".formatUnicorn(x));
+    return api.worlds().all().then(
+        ws => new Promise(
+            (resolve, reject) => resolve(ws.filter(w => w.id === value).length > 0 ? null : m(value))));
 };
 
 export class ReadyListener extends Listener {
@@ -71,17 +85,27 @@ export class ReadyListener extends Listener {
             presence: true,
             isArray: {},
             all: {
-                func: x =>  undefined === validate.validate(x, {
-                                "world_id": {
-                                    presence: true,
-                                    numericality: {
-                                        strict: true
+                func: x => [
+                                // synchronous checks
+                                validate.validate(x, {
+                                    world_id: {
+                                        presence: true,
+                                        numericality: {
+                                            strict: true
+                                        }                                  
+                                    },
+                                    role: {
+                                        presence: true
                                     }
-                                },
-                                "role": {
-                                    presence: true
-                                }
-                            })
+                                }),
+                                // async checks
+                                validate.async(x, {
+                                    world_id: {
+                                        isValidWorld: {},                                  
+                                    },
+                                }).then(_ => null) // no errors
+                                  .catch(err => err) // could not be resolved
+                            ]
             }
           },
         disabled: {

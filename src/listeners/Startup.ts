@@ -5,7 +5,7 @@ import { BotgartClient } from "../BotgartClient";
 import { MakeCronCommand } from "../commands/cron/MakeCron";
 import { get } from "../Locale";
 
-export class ReadyListener extends Listener {
+export class Startup extends Listener {
     constructor() {
         super("ready", {
             emitter: "client",
@@ -14,15 +14,15 @@ export class ReadyListener extends Listener {
     }
 
     exec() {
-        log("info", "ReadyListener.js", "Bot started!");
+        log("info", "Startup.js", "Bot started!");
         let cl: BotgartClient = <BotgartClient>this.client;
         cl.db.initSchema();
-        log("info", "ReadyListener.js", "Database initialised.");
-        log("info", "ReadyListener.js", "Rescheduling cronjobs from database.");
+        log("info", "Startup.js", "Database initialised.");
+        log("info", "Startup.js", "Rescheduling cronjobs from database.");
         (<MakeCronCommand>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
         cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
     }
 }
 
-module.exports = ReadyListener;
+module.exports = Startup;

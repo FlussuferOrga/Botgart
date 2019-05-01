@@ -48,7 +48,6 @@ class DeleteCronCommand extends BotgartCommand_1.BotgartCommand {
             return message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
         let errorMessage = this.checkArgs(args);
-        console.log(errorMessage);
         if (errorMessage) {
             return message.util.send(errorMessage);
         }
