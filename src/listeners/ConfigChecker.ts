@@ -13,15 +13,28 @@ validate.validators.isArray = (value, options, key, attributes) => {
 validate.validators.all = (value, options, key, attributes) => {
     let m = options.message || (x => "{0} did not pass the specified criterion.".formatUnicorn(JSON.stringify(x)));
     let f = options.func;
-    let [errs, passed] = value.reduce(([errs, acc], x) => [f(x) ? errs : errs.concat([m(x)])
-                                                              ,acc && f(x)]
-                                                          ,[[], true]);
-    return passed ? null : errs;
+
+    let errs = [];
+    value.forEach(v => {
+        let res = f(v);
+        if(res !== undefined) {
+            errs.push(res);
+        }
+    });
+    return errs.length === 0 ? null : errs;
 };
 
+validate.validators.allAsync = (value, options, key, attributes) => new Promise((resolve, reject) => Promise.all(validate.validators.all(value, options, key, attributes))
+    .then(
+        res => { let errs = res.filter(r => r !== null); resolve(errs.length === 0 ? null : errs) }
+    )
+    .catch(
+        err => console.log("erroooooor", err))
+);
+
 validate.validators.any = (value, options, key, attributes) => {
-    options.message = options.message || (x => "not a single element passed the qualification criterion.");
-    return value.reduce((acc, x) => acc || options.func(x), false) ? null : options.message(value);
+    let m = options.message || (x => "not a single element passed the qualification criterion.");
+    return value.reduce((acc, x) => acc || options.func(x), false) ? null : m(value);
 };
 
 validate.validators.isValidWorld = (value, options, key, attributes) => {
@@ -32,7 +45,7 @@ validate.validators.isValidWorld = (value, options, key, attributes) => {
             (resolve, reject) => resolve(ws.filter(w => w.id === value).length > 0 ? null : m(value))));
 };
 
-export class ReadyListener extends Listener {
+export class ConfigChecker extends Listener {
     constructor() {
         super("configchecker", {
             emitter: "client",
@@ -85,9 +98,7 @@ export class ReadyListener extends Listener {
             presence: true,
             isArray: {},
             all: {
-                func: x => [
-                                // synchronous checks
-                                validate.validate(x, {
+                func: x => validate.validate(x, {
                                     world_id: {
                                         presence: true,
                                         numericality: {
@@ -97,15 +108,7 @@ export class ReadyListener extends Listener {
                                     role: {
                                         presence: true
                                     }
-                                }),
-                                // async checks
-                                validate.async(x, {
-                                    world_id: {
-                                        isValidWorld: {},                                  
-                                    },
-                                }).then(_ => null) // no errors
-                                  .catch(err => err) // could not be resolved
-                            ]
+                                })
             }
           },
         disabled: {
@@ -125,21 +128,49 @@ export class ReadyListener extends Listener {
         }
         };
 
-        let errors = validate.validate(config, constraints); 
-        for(let k in errors) {
-            log("error", "ConfigChecker.js", "Error while validating config entry '{0}': {1}".formatUnicorn(k, errors[k]));
-        }
-        if(errors) {
-            log("crit", "ConfigChecker.js", "config.json contains invalid entries. Shutting down preventively. Please fix the config according to the log.");
-            process.exit(1);
-        } else {
-            log("info", "ConfigChecker.js", "Done checking config.json. No errors detected.");    
-        }
-        
+        let asyncConstraints =  {
+            home_id: {
+                isValidWorld: {}
+            },
+            world_assignments: {
+                allAsync: {
+                    func: x =>  validate.async(x, {
+                                    world_id: {
+                                        isValidWorld: {},                                  
+                                    },
+                                }).then(_ => null) // no errors
+                                  .catch(err => err) // could not be resolved 
+                }
+                                
+            }
+        };
+
+        let handleErrors = errors => {
+            for(let k in errors) {
+                log("error", "ConfigChecker.js", "Error while validating config entry '{0}': {1}".formatUnicorn(k, JSON.stringify(errors[k])));
+            }
+            if(errors) {
+                log("crit", "ConfigChecker.js", "config.json contains invalid entries. Shutting down preventively. Please fix the config according to the log.");
+            } else {
+                log("info", "ConfigChecker.js", "Done checking config.json. No errors detected.");    
+            }
+            return errors !== undefined;
+        };
+
+        let shutDown = handleErrors(validate.validate(config, constraints));
+        validate.async(config, asyncConstraints).then(
+            _ => null,
+            errs => {
+                shutDown = shutDown || handleErrors(errs);
+                if(shutDown) {
+                    process.exit(1);
+                }
+            }
+        );
     }
 }
 
-module.exports = ReadyListener;
+module.exports = ConfigChecker;
 
 /*
 
