@@ -15,12 +15,14 @@ validate.validators.all = (value, options, key, attributes) => {
     let f = options.func;
 
     let errs = [];
-    value.forEach(v => {
-        let res = f(v);
-        if(res !== undefined) {
-            errs.push(res);
-        }
-    });
+    if(Array.isArray(value)) {
+        value.forEach(v => {
+            let res = f(v);
+            if(res !== undefined) {
+                errs.push(res);
+            }
+        });
+    }
     return errs.length === 0 ? null : errs;
 };
 
