@@ -74,6 +74,12 @@ export class Database {
                 ON UPDATE CASCADE
                 ON DELETE CASCADE
         )`,
+        `CREATE TABLE IF NOT EXISTS tap_reminder(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            objective TEXT NOT NULL,
+            objective_id INTEGER,
+            created TIMESTAMP DEFAULT (datetime('now','localtime'))
+        )`,
         `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys(key)`
         ]; 
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
@@ -197,4 +203,21 @@ export class Database {
     findDuplicateRegistrations(): any {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
     }
+
+    storeTapReminder(objective: string, objective_id: number): number|undefined {
+        let sql = `INSERT INTO tap_reminder(objective) VALUES (?);`;
+        return this.execute(db => {
+            let last_id = undefined;
+            db.transaction((_) => {
+                db.prepare(sql).run(objective);
+                last_id = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            })(null);
+            return last_id;
+        });
+    }
+
+    getTapReminder(): any {
+        return this.execute(db => db.prepare(`SELECT * FROM tap_reminder;`).all());
+    }
+
 }

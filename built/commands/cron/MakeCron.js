@@ -73,6 +73,7 @@ class MakeCronCommand extends BotgartCommand_1.BotgartCommand {
         return mod.parse(cmdargs, message).then(parsedArgs => {
             let checkError = mod.checkArgs(parsedArgs);
             if (checkError !== undefined) {
+                // The scheduled command cannot be executed, wrong arguments.
                 return message.util.send(checkError);
             }
             else {

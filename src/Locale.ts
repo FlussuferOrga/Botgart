@@ -30,6 +30,9 @@ export let DE : Object = {
     "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
 
     "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
+
+    "TAPREMINDER_STORED": "Ich habe eine Erinnerung für \"{0}\" hinzugefügt.",
+    "TAPREMINDER_REMIND": "@Tapper \"{0}\" muss getappt werden.",
     
 
     "HELPTEXT_SAY": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
@@ -40,6 +43,7 @@ export let DE : Object = {
     "HELPTEXT_GET_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
+    "HELPTEXT_TAP_REMINDER": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<objective>`\".",
 
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
@@ -56,6 +60,8 @@ export let DE : Object = {
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
+    "DESC_TAP_REMINDER": "Erinnert dich in ~50 Minuten die Siege zu tappen.",
+
 }
 
 /**

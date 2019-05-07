@@ -104,8 +104,9 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
 * @returns a Promise resolving to either 
 *    [<resolved objective name>:string, <resolved map name>:string, <map id>:number, <objective id>:string] if we found a promising match
 *    [<original user objective input>:string, <original user map input>: string, null, null] if no match could be found
+TODO: Map ID und Name kann beim return theoretisch entfernt werden, da sowieso durch objective ID eindeutig.
 */
-export function resolveWvWObjective(objectiveInput: string, mapInput?: string): Promise<[string,string,number,string]|[string,string,null,null]> {
+export function resolveWvWObjective(objectiveInput: string, mapInput?: string): Promise<[string,string,number,string, string]|[string,string,null,null, null]> {
     return api.language("de").wvw().objectives().all().then(
         res => resolveWvWMap(mapInput)
             .then(([resolved, wvwMap]) => {
@@ -118,9 +119,9 @@ export function resolveWvWObjective(objectiveInput: string, mapInput?: string): 
                                  .reduce((acc, [k,v]) => { acc[k] = v; return acc; }, {});
                 let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
                 return new Promise((resolve, reject) => {
-                    resolve(best.rating === 0
-                        ? [objectiveInput, wvwMap, null, null]
-                        : [best.target, wvwMap, objectives[best.target].map_id, objectives[best.target].id])
+                    resolve((best.rating === 0 || best.target.toLowerCase().indexOf(objectiveInput.toLowerCase()) == -1)
+                        ? [objectiveInput, wvwMap, null, null, null]
+                        : [best.target, wvwMap, objectives[best.target].map_id, objectives[best.target].id, objectives[best.target].type])
                 });
             })
         );

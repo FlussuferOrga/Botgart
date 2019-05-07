@@ -21,12 +21,14 @@ validate.validators.all = (value, options, key, attributes) => {
     let m = options.message || (x => "{0} did not pass the specified criterion.".formatUnicorn(JSON.stringify(x)));
     let f = options.func;
     let errs = [];
-    value.forEach(v => {
-        let res = f(v);
-        if (res !== undefined) {
-            errs.push(res);
-        }
-    });
+    if (Array.isArray(value)) {
+        value.forEach(v => {
+            let res = f(v);
+            if (res !== undefined) {
+                errs.push(res);
+            }
+        });
+    }
     return errs.length === 0 ? null : errs;
 };
 validate.validators.allAsync = (value, options, key, attributes) => new Promise((resolve, reject) => Promise.all(validate.validators.all(value, options, key, attributes))
@@ -180,4 +182,4 @@ module.exports = ConfigChecker;
         "inhibitors": []
     }
 }
-*/ 
+*/
