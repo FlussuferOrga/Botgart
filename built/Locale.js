@@ -51,6 +51,7 @@ exports.DE = {
     "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
+    "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
 };
 /**
 * Tries to resolve the passed key into a locale string.

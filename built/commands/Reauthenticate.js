@@ -41,13 +41,20 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
                     // prunes come ordered by guild. This trick allows us to
                     // find each guild only once.
                     guild = cl.guilds.find(g => g.id == p.guild);
-                    admittedRole = guild ? guild.roles.find(r => r.name === admittedRoleName) : undefined;
-                    currentRole = guild ? guild.roles.find(r => r.name === currentRoleName) : undefined;
                 }
                 if (!guild) {
                     Util_1.log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild));
                 }
                 else {
+                    admittedRole = guild.roles.find(r => r.name === admittedRoleName);
+                    currentRole = guild.roles.find(r => r.name === currentRoleName);
+                    // FIXME: break out
+                    if (!admittedRole) {
+                        Util_1.log("error", "Reauthenticate.js", "Can not find a role {0} to assign.".formatUnicorn(admittedRoleName));
+                    }
+                    if (!currentRole) {
+                        Util_1.log("error", "Reauthenticate.js", "Can not find a role {0} that should be currently used.".formatUnicorn(currentRoleName));
+                    }
                     let m = guild.members.find(member => p.user == member.user.id);
                     if (!m) {
                         Util_1.log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));

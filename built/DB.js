@@ -81,6 +81,9 @@ class Database {
     patchWorldCol() {
         let sql = `ALTER TABLE registrations ADD COLUMN registration_role TEXT`;
     }
+    getDesignatedRoles() {
+        return this.execute(db => db.prepare(`SELECT user, guild, registration_role FROM registrations ORDER BY guild`).all());
+    }
     storeFAQ(user, guild, keys, text) {
         return this.execute(db => {
             let last_id = undefined;

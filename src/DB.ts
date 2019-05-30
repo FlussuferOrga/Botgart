@@ -84,6 +84,10 @@ export class Database {
 
     }
 
+    getDesignatedRoles() {
+        return this.execute(db => db.prepare(`SELECT user, guild, registration_role FROM registrations ORDER BY guild`).all());
+    }
+
     storeFAQ(user: string, guild: string, keys: [string], text: string): number|undefined {
         return this.execute(db => {
             let last_id = undefined;
