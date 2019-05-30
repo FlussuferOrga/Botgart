@@ -48,7 +48,7 @@ export class MakeCronCommand extends BotgartCommand {
         return !args || !args.schedule || !args.cmd || !args.args ? L.get("HELPTEXT_ADD_CRON") : undefined;
     }
 
-    command(message, responsible, guild, args) {
+    command(message, responsible, guild, args, bla=false) {
        if(!message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
         }

@@ -49,13 +49,30 @@ class TapReminder extends BotgartCommand {
         const user_objective = args.objective;
 
         resolveWvWObjective(user_objective).then(([objective, map, obj_id, map_id, obj_type]) => {
+
+            let cron_mod = this.client.commandHandler.modules["makecron"] || Array.from(this.client.commandHandler.modules.values()).find(m => m.aliases.includes("makecron")); 
             let say_mod = this.client.commandHandler.modules["say"] || Array.from(this.client.commandHandler.modules.values()).find(m => m.aliases.includes("say"));
             let objective_name : string = objective != null ? objective : user_objective;
             const say_text : string = L.get("TAPREMINDER_REMIND").formatUnicorn(objective_name);
             if( !(message.channel instanceof discord.TextChannel) )
                 return;
             let current_channel : discord.TextChannel = message.channel;
-            const cmd_args : string = "#"+current_channel + " \"" + say_text+"\"";
+            let exec_time : Date = new Date();
+            exec_time.setMinutes(exec_time.getMinutes()+type_minutes[obj_type])
+            const cmd_args : string = "\""+exec_time+ "\" ,say #"+current_channel + " \"" + say_text+"\"";
+
+            var args: { [id: string] : any } = {
+                "schedule": exec_time.toString(),
+                "cmd": "say",
+                "args": current_channel+" \""+say_text+"\""
+            }
+            console.log(args)
+            let cronargs_error = cron_mod.checkArgs(args);
+            if( cronargs_error !== undefined ) {
+                return message.util.send(cronargs_error);
+            }
+            cron_mod.command(message,responsible,guild,args); 
+            return;
 
             if(!say_mod) {
                 return message.util.send(L.get("NO_SUCH_COMMAND").formatUnicorn("say"));
@@ -69,8 +86,6 @@ class TapReminder extends BotgartCommand {
                     // The scheduled command cannot be executed, wrong arguments.
                     return message.util.send(checkError);
                 }
-                let exec_time : Date = new Date();
-                exec_time.setMinutes(exec_time.getMinutes()+type_minutes[obj_type])
     
                 let schedule = this.scheduleTapReminder(exec_time, message.member.user, message.guild, say_mod, parsedArgs);
                 if( !schedule )
