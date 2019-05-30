@@ -31,6 +31,7 @@ export let DE : Object = {
 
     "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 
+    "TAPREMINDER_NOT_STORED": "Der Tapreminder konnte nicht hinzugefügt werden.",
     "TAPREMINDER_STORED": "Ich habe eine Erinnerung für \"{0}\" hinzugefügt.",
     "TAPREMINDER_REMIND": "@Tapper {0} muss getappt werden.",
     

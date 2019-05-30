@@ -37,8 +37,8 @@ class TapReminder extends BotgartCommand_1.BotgartCommand {
     }
     command(message, responsible, guild, args) {
         var type_minutes = {
-            "Camp": 55,
-            "Tower": 53,
+            "Camp": 50,
+            "Tower": 50,
             "Keep": 50,
             "null": 1,
         };
@@ -67,8 +67,12 @@ class TapReminder extends BotgartCommand_1.BotgartCommand {
             if (cronargs_error !== undefined) {
                 return message.util.send(cronargs_error);
             }
-            cron_mod.command(message, responsible, guild, args);
-            return;
+            let cron_id = cron_mod.command(message, responsible, guild, args, true);
+            if (cron_id < 0) {
+                return message.util.send(L.get("TAPREMINDER_NOT_STORED"));
+            }
+            return message.util.send(L.get("TAPREMINDER_STORED").formatUnicorn(objective_name));
+            return message.util.send("Tapreminder stored with id {0}".formatUnicorn(cron_id));
             if (!say_mod) {
                 return message.util.send(L.get("NO_SUCH_COMMAND").formatUnicorn("say"));
             }

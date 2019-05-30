@@ -48,7 +48,17 @@ class MakeCronCommand extends BotgartCommand_1.BotgartCommand {
     checkArgs(args) {
         return !args || !args.schedule || !args.cmd || !args.args ? L.get("HELPTEXT_ADD_CRON") : undefined;
     }
-    command(message, responsible, guild, args) {
+    /**
+    * Executes the command.
+    * @returns {int} - Error Code:
+    * >0 - Cronjob ID
+    * -1 - NO_SUCH_COMMAND
+    * -2 - CIRCULAR_CRON
+    * -3 - NOT_CRONABLE
+    * -4 - The scheduled command cannot be executed, wrong arguments
+    * -5 - CRONJOB_NOT_STORED
+    */
+    command(message, responsible, guild, args, internal_call = false) {
         if (!message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
@@ -61,32 +71,39 @@ class MakeCronCommand extends BotgartCommand_1.BotgartCommand {
         // So we look for the command for ourselves from a plain string.
         let mod = this.client.commandHandler.modules[cmd] || Array.from(this.client.commandHandler.modules.values()).find(m => m.aliases.includes(cmd));
         if (!mod) {
-            return message.util.send(L.get("NO_SUCH_COMMAND").formatUnicorn(cmd));
+            message.util.send(L.get("NO_SUCH_COMMAND").formatUnicorn(cmd));
+            return -1;
         }
         // crons can not schedule other crons for shenanigans-reasons
         if (mod.id == this.id) {
-            return message.util.send(L.get("CIRCULAR_CRON"));
+            message.util.send(L.get("CIRCULAR_CRON"));
+            return -2;
         }
         if (!mod.cronable) {
-            return message.util.send(L.get("NOT_CRONABLE"));
+            message.util.send(L.get("NOT_CRONABLE"));
+            return -3;
         }
         return mod.parse(cmdargs, message).then(parsedArgs => {
             let checkError = mod.checkArgs(parsedArgs);
             if (checkError !== undefined) {
                 // The scheduled command cannot be executed, wrong arguments.
-                return message.util.send(checkError);
+                message.util.send(checkError);
+                return -4;
             }
             else {
                 let cl = this.client;
                 let job = this.scheduleCronjob(schedule, message.member.user, message.guild, mod, parsedArgs);
                 if (!job) {
-                    return message.util.send(L.get("CRONJOB_NOT_STORED"));
+                    message.util.send(L.get("CRONJOB_NOT_STORED"));
+                    return -5;
                 }
                 else {
                     let cid = cl.db.storeCronjob(schedule, mod.id, mod.serialiseArgs(parsedArgs), message.member.user.id, message.guild.id);
                     cl.cronjobs[cid] = job;
                     Util_1.log("info", "MakeCron.js", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
-                    return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
+                    if (!internal_call)
+                        message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
+                    return cid;
                 }
             }
         });

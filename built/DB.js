@@ -160,8 +160,6 @@ class Database {
         ]));
     }
     storeCronjob(schedule, command, args, creator, guild) {
-        console.log(schedule);
-        schedule = "Bla";
         let sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?,?,?,?,?)`;
         return this.execute(db => {
             let last_id = undefined;

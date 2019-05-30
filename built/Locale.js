@@ -28,6 +28,7 @@ exports.DE = {
     "FAQ_NOT_FOUND": "Es gibt keinen FAQ-Eintrag zu dem Stichwort '{0}'.",
     "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
     "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
+    "TAPREMINDER_NOT_STORED": "Der Tapreminder konnte nicht hinzugefügt werden.",
     "TAPREMINDER_STORED": "Ich habe eine Erinnerung für \"{0}\" hinzugefügt.",
     "TAPREMINDER_REMIND": "@Tapper {0} muss getappt werden.",
     "HELPTEXT_SAY": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
