@@ -12,6 +12,11 @@ const api = gw2();
 api.schema('2019-03-26T00:00:00Z');
 api.language('en');
 
+// retry some times and be polite about it
+api.fetch.retry((tries) => tries <= 5)
+api.fetch.retryWait(tries => tries * 100)
+
+
 export function shallowInspect(o: any): void {
     if(o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));
@@ -29,6 +34,7 @@ export function shallowInspect(o: any): void {
 *           (3) rejects to an error from validateWorld.ERRORS if 
 *                   (a) the world is faulty within the config
 *                   (b) a network error occured
+*                   (c) the key is structurally valid, but not known to the API (invalid key)
 */
 export function validateWorld(apikey: string): Promise<string|boolean|number> {
     let accepted = config.world_assignments;
@@ -48,12 +54,19 @@ export function validateWorld(apikey: string): Promise<string|boolean|number> {
                 return resolve(false);
             }
         }),
-        err => new Promise((resolve, reject) => reject(exports.validateWorld.ERRORS.network_error))
+        err => new Promise((resolve, reject) => {
+            if(err.content.text === "invalid key") {
+                reject(exports.validateWorld.ERRORS.invalid_key);
+            } else {
+                reject(exports.validateWorld.ERRORS.network_error);
+            }
+        })
     );
 }
 validateWorld.ERRORS = {
     "config_world_duplicate": 1,
-    "network_error": 2
+    "network_error": 2,
+    "invalid_key": 3
 };
 
 /**
@@ -81,16 +94,16 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
     if(currentRole !== null) {
         // remove currentRole
         member.removeRole(currentRole).then(
-            ()    => log("info", "Util.js", "Assigned role {0} to user {1}".formatUnicorn(currentRole.name, member.displayName)),
-            (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
+            ()    => log("info", "Util.js", "Removed role {0} from user {1}".formatUnicorn(currentRole.name, member.displayName)),
+            (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
         );
     }
 
     if(admittedRole !== null) {
         // assign admittedRole
         member.addRole(admittedRole).then(
-            ()    => log("error", "Util.js", "Removed role {0} from user {1}".formatUnicorn(admittedRole.name, member.displayName)),
-            (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
+            ()    => log("info", "Util.js", "Gave role {0} to user {1}".formatUnicorn(admittedRole.name, member.displayName)),
+            (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
         );
     }
     return admittedRole;

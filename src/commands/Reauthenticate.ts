@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import { log } from "../Util";
+import { log, validateWorld, assignServerRole } from "../Util";
 import * as L from "../Locale";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
@@ -31,34 +31,37 @@ export class ReauthenticateCommand extends BotgartCommand {
         let cl = <BotgartClient>this.client;
         cl.db.revalidateKeys().then(
             prune => {
-                // FIXME!! prune now is a list of tuples (player, admittedRole) where admittedRole is undefined if the player should not have any role
-                let guild,role;
-                // p is undefined if Util.validateWorld produced an error. Those can just be skipped (warnings should have been written by validateWorld already)
-                prune.filter(p => p !== undefined).forEach(row => {
-                    let [p,admittedRole] = row;
+                let guild, currentRole, admittedRole;
+                prune.forEach(row => {
+                    let [p,admittedRoleName] = row;
+                    let currentRoleName = p.registration_role;
 
                     if(!guild || guild.id != p.guild) {
                         // prunes come ordered by guild. This trick allows us to
                         // find each guild only once.
                         guild = cl.guilds.find(g => g.id == p.guild);
-                        role = guild ? guild.roles.find(r => r.name === admittedRole) : undefined;
+                        admittedRole = guild ? guild.roles.find(r => r.name === admittedRoleName) : undefined;
+                        currentRole  = guild ? guild.roles.find(r => r.name === currentRoleName) : undefined;
                     }
                     if(!guild) {
                         log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild))
                     } else {
-                        if(!role) {
-                            log("error", "Reauthenticate.js", "Could not find a role named '{0}' on server {1}.".formatUnicorn(guild.name, admittedRole));
+                        let m = guild.members.find(member => p.user == member.user.id);
+                        if(!m) {
+                            log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
                         } else {
-                            let m = guild.members.find(member => p.user == member.user.id);
-                            if(m) {
+                            if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
+                                // user should be pruned: user has either transed (false) or deleted their key (invalid key)
                                 log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
-                                m.removeRole(role);
+                                m.removeRole(currentRole);
+                                cl.db.deleteKey(p.api_key);
                                 m.send(L.get("KEY_INVALIDATED"));
                             } else {
-                                log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
+                                // user transed to another admitted server -> update role
+                                assignServerRole(m, currentRole, admittedRole);
                             }
-                            cl.db.deleteKey(p.api_key);
                         }
+                        
                     }               
                 });
             }

@@ -121,9 +121,10 @@ export class Database {
         let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, registration_role) VALUES(?,?,?,?,?)`;
         return this.execute(db => {
                     try {
-                        db.prepare(sql).run(user, guild, key, gw2account);
+                        db.prepare(sql).run(user, guild, key, gw2account, role);
                         return true;
                     } catch(err) {
+                        Util.log("error", "DB.js", "Error while trying to store API key: {0}.".formatUnicorn(err.message));
                         return false;
                     }
                 });
@@ -131,14 +132,29 @@ export class Database {
 
     /**
     * @returns {[({api_key, guild, user, registration_role}, admittedRole|null)]} - a list of tuples, where each tuple holds a user row from the db 
-    *           and the name of the role that user should have
+    *           and the name of the role that user should have.
     */
     revalidateKeys(): any {
         return this.execute(db => 
-            // FIXME: writeback into the db, make sure people who were removed once don't get notified all the time through revalidations
             Promise.all(
                 db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
-                    .map(r => Util.validateWorld(r.api_key).then(admittedRole => [r, admittedRole]))
+                    .map(r => Util.validateWorld(r.api_key).then(
+                        admittedRole => [r, admittedRole],
+                        error => {
+                            if(error === Util.validateWorld.ERRORS.invalid_key) {
+                                // while this was an actual error when initially registering (=> tell user their key is invalid),
+                                // in the context of revalidation this is actually a valid case: the user must have given a valid key
+                                // upon registration (or else it would not have ended up in the DB) and has now deleted the key
+                                // => remove the validation role from the user
+                                return [r,false];
+                            } else {
+                                Util.log("error", "DB.js", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
+                                return undefined;
+                            }
+                        }
+                    ))
+                    // filter out users for which we encountered errors
+                    .filter(r => r !== undefined)
             )
         );
     }

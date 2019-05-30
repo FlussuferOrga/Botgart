@@ -84,20 +84,16 @@ export class AuthenticateCommand extends BotgartCommand {
                     } else {
                         Util.getAccountGUID(args.key).then(guid => {
                             members.forEach(m => {
-                                let r = m.guild.roles.find(role => role.name === role);
+                                let r = m.guild.roles.find(r => r.name === role);
                                 if(!r) {
-                                    Util.log("error", "Authenticate.js", "Role '{0}'' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
+                                    Util.log("error", "Authenticate.js", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
-                                    let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), r);
+                                    let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), r.name);
                                     if(unique) {
                                         Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                         Util.assignServerRole(m.member, null, r);
-                                        //m.member.addRole(r).then(
-                                        //    () => {},
-                                        //    (err) => Util.log("error", "Authenticate.js", "Error while giving role to user: {0}".formatUnicorn(err.message))
-                                        //);
                                         reply = L.get("KEY_ACCEPTED")
                                     } else {
                                         Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
@@ -112,15 +108,21 @@ export class AuthenticateCommand extends BotgartCommand {
                     switch(err) {
                         case Util.validateWorld.ERRORS.config_world_duplicate:
                             Util.log("error", "Authenticate.js", "A world is defined more than once in the config. Please fix the config file.");  
+                            responsible.send(L.get("INTERNAL_ERROR"));
                             break;
                         case Util.validateWorld.ERRORS.network_error:
                             Util.log("error", "Authenticate.js", "Network error while trying to resolve world.");
+                            responsible.send(L.get("INTERNAL_ERROR"));
+                            break;
+                         case Util.validateWorld.ERRORS.invalid_key:
+                            Util.log("error", "Authenticate.js", "Invalid key: {0}".formatUnicorn(args.key));
+                            responsible.send(L.get("KEY_DECLINED"));
                             break;
                         default:
                             Util.log("error", "Authenticate.js", "Unexpected error occured while validating world.");
-                            Util.log("error", "Authenticate.js", err);          
+                            Util.log("error", "Authenticate.js", err);
+                            responsible.send(L.get("INTERNAL_ERROR"));
                     }
-                    responsible.send(L.get("INTERNAL_ERROR"));              
                 }
             );
         }       
