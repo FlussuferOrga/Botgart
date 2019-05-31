@@ -50,3 +50,6 @@ Botgart uses several dependencies (that are automatically installed in one of th
 - [discord-akairo](https://discord-akairo.github.io/#/) adds additional functionality for bots, like easy to use commands and listeners 
 - [gw2api-client](https://github.com/queicherius/gw2api-client) offers a wrapper around the GW2-API (and is apparently used by sites like gw2efficiency!)
 - [winston](https://github.com/winstonjs/winston) is a general purpose logger. See the documentation for available logging levels
+
+## Backups
+The `db/` directory contains a script `make_backup.sh` for seven-day-rotating database backups. The script can either be run manually or be added as a cron, as described on (the site I have taken the script from)[https://www.zzzzzzzzz.net/daily-backup-sqlite3-database-shell-script/].
