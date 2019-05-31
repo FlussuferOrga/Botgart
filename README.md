@@ -52,4 +52,4 @@ Botgart uses several dependencies (that are automatically installed in one of th
 - [winston](https://github.com/winstonjs/winston) is a general purpose logger. See the documentation for available logging levels
 
 ## Backups
-The `db/` directory contains a script `make_backup.sh` for seven-day-rotating database backups. The script can either be run manually or be added as a cron, as described on (the site I have taken the script from)[https://www.zzzzzzzzz.net/daily-backup-sqlite3-database-shell-script/].
+The `db/` directory contains a script `make_backup.sh` for seven-day-rotating database backups in the directory `db/bak/`. The script can either be run manually or be added as a cron, as described on [the site I have taken the script from](https://www.zzzzzzzzz.net/daily-backup-sqlite3-database-shell-script/).
