@@ -30,9 +30,10 @@ export class ReauthenticateCommand extends BotgartCommand {
     command(message, responsible, guild, args) {
         let cl = <BotgartClient>this.client;
         cl.db.revalidateKeys().then(
-            update => {
+            update => {                    
                 let guild, currentRole, admittedRole;
-                update.forEach(row => {
+                // filter out users for which we encountered errors
+                update.filter(r => r !== undefined).forEach(row => {
                     let [p,admittedRoleName] = row;
                     let currentRoleName = p.registration_role;
 
@@ -46,29 +47,31 @@ export class ReauthenticateCommand extends BotgartCommand {
                     } else {
                         admittedRole = guild.roles.find(r => r.name === admittedRoleName);
                         currentRole  = guild.roles.find(r => r.name === currentRoleName);
-                        // FIXME: break out
                         if(!admittedRole) {
                             log("error", "Reauthenticate.js", "Can not find a role {0} to assign.".formatUnicorn(admittedRoleName));
                         }
                         if(!currentRole) {
                             log("error", "Reauthenticate.js", "Can not find a role {0} that should be currently used.".formatUnicorn(currentRoleName));
                         }
-                        let m = guild.members.find(member => p.user == member.user.id);
-                        if(!m) {
-                            log("info", "Reauthenticate.js", "{0} is no longer part of the guild.".formatUnicorn(p.user));
-                        } else {
-                            if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
-                                // user should be pruned: user has either transed (false) or deleted their key (invalid key)
-                                log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
-                                m.removeRole(currentRole);
+                        if(admittedRole && currentRole) {
+                            let m = guild.members.find(member => p.user == member.user.id);
+                            if(!m) {
+                                log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
                                 cl.db.deleteKey(p.api_key);
                                 m.send(L.get("KEY_INVALIDATED"));
                             } else {
-                                // user transed to another admitted server -> update role
-                                assignServerRole(m, currentRole, admittedRole);
+                                if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
+                                    // user should be pruned: user has either transed (false) or deleted their key (invalid key)
+                                    log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
+                                    m.removeRole(currentRole);
+                                    cl.db.deleteKey(p.api_key);
+                                    m.send(L.get("KEY_INVALIDATED"));
+                                } else {
+                                    // user transed to another admitted server -> update role
+                                    assignServerRole(m, currentRole, admittedRole);
+                                }
                             }
                         }
-                        
                     }               
                 });
             }

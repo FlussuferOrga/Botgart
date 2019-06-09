@@ -79,11 +79,6 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    patchWorldCol(): void {
-        let sql = `ALTER TABLE registrations ADD COLUMN registration_role TEXT`;
-
-    }
-
     getDesignatedRoles() {
         return this.execute(db => db.prepare(`SELECT user, guild, registration_role FROM registrations ORDER BY guild`).all());
     }
@@ -135,10 +130,10 @@ export class Database {
     }
 
     /**
-    * @returns {[({api_key, guild, user, registration_role}, admittedRole|null)]} - a list of tuples, where each tuple holds a user row from the db 
-    *           and the name of the role that user should have.
+    * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db 
+    *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
     */
-    revalidateKeys(): any {
+    revalidateKeys(): Promise<any> {
         return this.execute(db => 
             Promise.all(
                 db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
@@ -157,8 +152,6 @@ export class Database {
                             }
                         }
                     ))
-                    // filter out users for which we encountered errors
-                    .filter(r => r !== undefined)
             )
         );
     }

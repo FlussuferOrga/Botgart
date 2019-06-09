@@ -55,6 +55,7 @@ function validateWorld(apikey) {
             return resolve(false);
         }
     }), err => new Promise((resolve, reject) => {
+        log("error", "Util.js", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(err));
         if (err.content.text === "invalid key") {
             return reject(exports.validateWorld.ERRORS.invalid_key);
         }
