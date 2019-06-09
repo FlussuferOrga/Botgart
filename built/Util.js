@@ -261,7 +261,7 @@ String.prototype.formatUnicorn = function (...fnargs) {
             Array.prototype.slice.call(fnargs)
             : fnargs[0];
         for (key in args) {
-            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), JSON.stringify(args[key]));
         }
     }
     return str;
