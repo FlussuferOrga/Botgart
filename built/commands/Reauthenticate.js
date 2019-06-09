@@ -32,9 +32,9 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
     }
     command(message, responsible, guild, args) {
         let cl = this.client;
-        cl.db.revalidateKeys().then(prune => {
+        cl.db.revalidateKeys().then(update => {
             let guild, currentRole, admittedRole;
-            prune.forEach(row => {
+            update.forEach(row => {
                 let [p, admittedRoleName] = row;
                 let currentRoleName = p.registration_role;
                 if (!guild || guild.id != p.guild) {

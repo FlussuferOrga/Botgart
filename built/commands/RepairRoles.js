@@ -12,10 +12,9 @@ const L = __importStar(require("../Locale"));
 const BotgartCommand_1 = require("../BotgartCommand");
 /**
 Testcases:
-- run without any changes -> nothing happens
-- remove role from user manually after registration -> users should get their roles back
-- remove role from server -> error
-
+- run without any changes -> nothing happens (no output either)
+- remove role from user manually after registration -> users should get their roles back (output on console)
+- remove role from server -> error on console
 */
 class RepairRolesCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {

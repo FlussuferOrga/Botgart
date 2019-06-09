@@ -39,7 +39,6 @@ export function shallowInspect(o: any): void {
 export function validateWorld(apikey: string): Promise<string|boolean|number> {
     let accepted = config.world_assignments;
     api.authenticate(apikey);
-    // FIXME: invalid api key
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
             let match = config.world_assignments.filter(a => a.world_id === acc.world);
@@ -56,9 +55,9 @@ export function validateWorld(apikey: string): Promise<string|boolean|number> {
         }),
         err => new Promise((resolve, reject) => {
             if(err.content.text === "invalid key") {
-                reject(exports.validateWorld.ERRORS.invalid_key);
+                return reject(exports.validateWorld.ERRORS.invalid_key);
             } else {
-                reject(exports.validateWorld.ERRORS.network_error);
+                return reject(exports.validateWorld.ERRORS.network_error);
             }
         })
     );

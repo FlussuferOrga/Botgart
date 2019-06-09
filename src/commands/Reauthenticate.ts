@@ -30,9 +30,9 @@ export class ReauthenticateCommand extends BotgartCommand {
     command(message, responsible, guild, args) {
         let cl = <BotgartClient>this.client;
         cl.db.revalidateKeys().then(
-            prune => {
+            update => {
                 let guild, currentRole, admittedRole;
-                prune.forEach(row => {
+                update.forEach(row => {
                     let [p,admittedRoleName] = row;
                     let currentRoleName = p.registration_role;
 
