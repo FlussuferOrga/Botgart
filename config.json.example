@@ -1,9 +1,9 @@
 {
-    "ownerID": "1111111111111",
+    "owner_id": "1111111111111",
     "prefix": ",",
     "token": "xxxxxxxxx",
     "home_id": 2202,
-    "role_assignments": [{"world": 2202, "role": "rolename (must exist!)"}],
+    "world_assignments": [{"world": 2202, "role": "rolename (must exist!)"}],
     "ts": {
         "ip": "127.0.01",
         "port": 10011,
