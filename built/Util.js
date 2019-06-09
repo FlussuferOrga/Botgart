@@ -55,7 +55,7 @@ function validateWorld(apikey) {
             return resolve(false);
         }
     }), err => new Promise((resolve, reject) => {
-        log("error", "Util.js", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(err));
+        log("error", "Util.js", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
         if (err.content.text === "invalid key") {
             return reject(exports.validateWorld.ERRORS.invalid_key);
         }
@@ -261,7 +261,7 @@ String.prototype.formatUnicorn = function (...fnargs) {
             Array.prototype.slice.call(fnargs)
             : fnargs[0];
         for (key in args) {
-            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), JSON.stringify(args[key]));
+            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
         }
     }
     return str;
