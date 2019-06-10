@@ -15,7 +15,7 @@ export class ReadyListener extends Listener {
             let d = 0;
             let mod = xs.modules.get(x);
             if(mod === undefined) {
-                log("warn", "ReadyListener.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
+                log("warning", "ReadyListener.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
             } else {
                 d = mod.disable() ? 1 : 0; // yields a boolean, but why would this fail?
                 log("info", "ReadyListener.js", "Disabled module '{0}'.".formatUnicorn(x));
