@@ -31,7 +31,7 @@ validate.validators.allAsync = (value, options, key, attributes) => new Promise(
         res => { let errs = res.filter(r => r !== null); resolve(errs.length === 0 ? null : errs) }
     )
     .catch(
-        err => console.log("erroooooor", err))
+        err => console.log("Error while validating config file", err))
 );
 
 validate.validators.any = (value, options, key, attributes) => {

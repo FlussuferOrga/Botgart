@@ -33,7 +33,7 @@ validate.validators.all = (value, options, key, attributes) => {
 };
 validate.validators.allAsync = (value, options, key, attributes) => new Promise((resolve, reject) => Promise.all(validate.validators.all(value, options, key, attributes))
     .then(res => { let errs = res.filter(r => r !== null); resolve(errs.length === 0 ? null : errs); })
-    .catch(err => console.log("erroooooor", err)));
+    .catch(err => console.log("Error while validating config file", err)));
 validate.validators.any = (value, options, key, attributes) => {
     let m = options.message || (x => "not a single element passed the qualification criterion.");
     return value.reduce((acc, x) => acc || options.func(x), false) ? null : m(value);
