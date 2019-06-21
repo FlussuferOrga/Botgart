@@ -6,6 +6,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import {assertType, shallowInspect, log, resolveWvWObjective} from "../Util";
+import {DeleteCronCommand} from "../commands/cron/DeleteCron";
 
 class TapReminder extends BotgartCommand {
     constructor() {
@@ -36,11 +37,11 @@ class TapReminder extends BotgartCommand {
 
 
     command(message : discord.Message, responsible, guild, args) {
-        var type_minutes: { [id: string] : number } = {
+        const type_minutes: { [id: string] : number } = {
             "Camp": 50,
             "Tower": 50,
             "Keep": 50,
-            "null": 1,
+            null: 1,
         }
        if(!message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
@@ -57,9 +58,10 @@ class TapReminder extends BotgartCommand {
                 return;
             let current_channel : discord.TextChannel = message.channel;
             let exec_time : Date = new Date();
+            console.log(obj_type)
             exec_time.setMinutes(exec_time.getMinutes()+type_minutes[obj_type])
 
-            var args: { [id: string] : any } = {
+            const args: { [id: string] : any } = {
                 "schedule": exec_time.toString(),
                 "cmd": "say",
                 "args": current_channel+" \""+say_text+"\""
@@ -72,9 +74,20 @@ class TapReminder extends BotgartCommand {
             if( cron_id < 0 ) {
                 return message.util.send(L.get("TAPREMINDER_NOT_STORED"));
             }
-            return message.util.send(L.get("TAPREMINDER_STORED").formatUnicorn(objective_name));
+            let cl = <BotgartClient>this.client;
+            let existing_cron_id = cl.db.getExistingCronID(objective_name);
+            if ( existing_cron_id !== undefined ) {
+                // Stop Cron
+                DeleteCronCommand.deleteCronjob(existing_cron_id, <BotgartClient>this.client);
+                // TapReminder Table entry should be removed automatically due to DELETE CASCADE.
+            }
+            cl.db.deleteTapReminder();
+            cl.db.storeTapReminder(cron_id, objective_name);
+            return message.util.send(L.get("TAPREMINDER_STORED").formatUnicorn(objective_name));;
             // TODO Add Tapreminder Table (cron_id, objective_name)
             // TODO Remove Tapreminder if already exists by objective_name
+            // SELECT  * From Tapreminder WHERE DATE < 1h  delete these and cron ids
+
         });
     }
 }

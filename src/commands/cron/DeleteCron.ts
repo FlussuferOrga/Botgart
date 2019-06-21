@@ -40,7 +40,7 @@ export class DeleteCronCommand extends BotgartCommand {
     }
 
     command(message: discord.Message , responsible: discord.User, guild: discord.Guild, args: any): boolean {
-        return this.deleteCronjob(args.id);
+        return DeleteCronCommand.deleteCronjob(args.id, <BotgartClient>this.client);
     }
 
     exec(message: discord.Message, args: any): Promise<discord.Message | discord.Message[]> {
@@ -62,10 +62,9 @@ export class DeleteCronCommand extends BotgartCommand {
     * @param {int} id - ID of the cronjob to delete
     * @returns {boolean} - whether the cron was deleted from either DB or schedule.
     */
-    deleteCronjob(id: number): boolean {
+    static deleteCronjob(id: number, cl: BotgartClient): boolean {
         let canceled = false;
         let deletedFromDB = false;
-        let cl = <BotgartClient>this.client;
         if(id in cl.cronjobs) {
             cl.cronjobs[id].cancel();
             delete cl.cronjobs[id];

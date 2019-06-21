@@ -75,10 +75,13 @@ export class Database {
                 ON DELETE CASCADE
         )`,
         `CREATE TABLE IF NOT EXISTS tap_reminder(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            cron_id INTEGER ,
             objective TEXT NOT NULL,
-            objective_id INTEGER,
-            created TIMESTAMP DEFAULT (datetime('now','localtime'))
+            created TIMESTAMP DEFAULT (datetime('now','localtime')),
+            UNIQUE(objective) ON CONFLICT REPLACE,
+            FOREIGN KEY(cron_id) REFERENCES cronjobs(id)
+                ON UPDATE CASCADE
+                ON DELETE CASCADE
         )`,
         `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys(key)`
         ]; 
@@ -204,8 +207,8 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
     }
 
-    storeTapReminder(objective: string, objective_id: number): number|undefined {
-        let sql = `INSERT INTO tap_reminder(objective) VALUES (?);`;
+    storeTapReminder(cron_id: number, objective: string): number|undefined {
+        let sql = `INSERT INTO tap_reminder(cron_id, objective) VALUES (?);`;
         return this.execute(db => {
             let last_id = undefined;
             db.transaction((_) => {
@@ -215,9 +218,29 @@ export class Database {
             return last_id;
         });
     }
+    deleteTapReminder() {
+        let sql = `DELETE FROM cronjobs WHERE id IN (SELECT cron_id FROM tap_reminder WHERE created < Datetime('now', '-1 hours', 'localtime'));`;
+        sql += "DELETE FROM tap_reminder WHERE created < Datetime('now', '-1 hours', 'localtime');"
+        //Wird die Transaction hier benötigt?
+        return this.execute(db => {
+            db.transaction((_) => {
+                db.prepare(sql).run();
+            })(null);
+            return;
+        });
+    }
 
     getTapReminder(): any {
         return this.execute(db => db.prepare(`SELECT * FROM tap_reminder;`).all());
+    }
+    getExistingCronID(objective): number|undefined {
+        return this.execute(db => {
+            let cron_id = undefined;
+            db.transaction((_) => {
+                cron_id = db.prepare(`SELECT cron_id WHERE objective = ?`).get(objective).cron_id;
+            })(null);
+            return cron_id;
+        });
     }
 
 }
