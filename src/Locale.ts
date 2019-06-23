@@ -16,6 +16,8 @@ export let DE : Object = {
     "PRUNING_COMPLETE": "API-Keys wurden erfolgreich re-validiert.",
     "FIND_DUPES_COMPLETE": "Duplikatsuche abgeschlossen.",
     "GUILD_LOG_COMPLETE": "Gilden-Logbuch erfolgreich abgerufen.",
+    "PERMANENT_ROLE_ADD_SUCC": "Die permanente Rolle wurde erfolgreich hinzugefügt.",
+    "PERMANENT_ROLE_ADD_FAIL": "Die permanente Rolle konnte nicht hinzugefügt werden.",
 
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
@@ -40,6 +42,7 @@ export let DE : Object = {
     "HELPTEXT_GET_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
+    "HELPTEXT_ADD_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`@user` `@role`",
 
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
@@ -57,6 +60,7 @@ export let DE : Object = {
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
     "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
+    "DESC_ADD_PERMAROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird."
 }
 
 /**
