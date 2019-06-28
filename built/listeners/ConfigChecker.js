@@ -45,7 +45,7 @@ validate.validators.isValidWorld = (value, options, key, attributes) => {
 };
 class ConfigChecker extends discord_akairo_1.Listener {
     constructor() {
-        super("configchecker", {
+        super("ConfigChecker", {
             emitter: "client",
             eventName: "ready"
         });

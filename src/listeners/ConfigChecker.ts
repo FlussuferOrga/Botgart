@@ -49,7 +49,7 @@ validate.validators.isValidWorld = (value, options, key, attributes) => {
 
 export class ConfigChecker extends Listener {
     constructor() {
-        super("configchecker", {
+        super("ConfigChecker", {
             emitter: "client",
             eventName: "ready"
         });

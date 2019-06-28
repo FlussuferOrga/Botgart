@@ -11,7 +11,7 @@ const discord_akairo_1 = require("discord-akairo");
 const L = __importStar(require("../Locale.js"));
 class JoinListener extends discord_akairo_1.Listener {
     constructor() {
-        super("guildMemberAdd", {
+        super("JoinListener", {
             emitter: "client",
             eventName: "guildMemberAdd"
         });

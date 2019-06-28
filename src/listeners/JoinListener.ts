@@ -3,7 +3,7 @@ import * as L from "../Locale.js";
 
 export class JoinListener extends Listener {
     constructor() {
-        super("guildMemberAdd", {
+        super("JoinListener", {
             emitter: "client",
             eventName: "guildMemberAdd"
         });

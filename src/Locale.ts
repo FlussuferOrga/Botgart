@@ -1,3 +1,68 @@
+export let EN : Object = {
+    "INTERNAL_ERROR": "An internal error occured. Please contact an administrator about this.",
+
+    "WELCOME": "Welcome to the Riverside-Discord. :)\n Much of this server isn't accessible to for guests. Please authenticate using an API-key:\n\n1. Visit https://account.arena.net/applications\n2. Click 'new key'\n3. Post `,auth` followed by your new key per direct message (this window) to me.\n\nEg: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
+    "NO_SUCH_COMMAND": "I don't know the command '{0}' you gave me.",
+    "NOT_AVAILABLE_AS_DM": "This command is not usable as direct message. Please try it again within a server.",
+    "NOT_CRONABLE": "This command can not be used a cronjob.",
+    "NO_DEL_PERM": "I could not delete your last message. Please remove it yourself for security reasons.",
+    "KEY_INVALID_FORMAT": "Please give me a valid API-key. You can acquire one at https://account.arena.net/.",
+    "KEY_ACCEPTED": "Welcome, friend! Please read up on the information in INFOCENTER, to use this Discord properly. :)",
+    "KEY_DECLINED": "The account you gave me is not situated on a valid server or the API-key is invalid.",
+    "KEY_NOT_UNIQUE": "The API-key you gave me is already in use. Please generate a new key.\nRemove the old key at https://account.arena.net/, if you don't know about it being used.",
+    "KEY_INVALIDATED": "Hi!\nThe API-key you gave me is no longer considered valid.\nI thereby remove your access for the internal channels. You can re-register any time with a valid API-key.",
+    "CHECKING_KEY": "Checking API-key...",
+    "REG_ROLE_NOT_FOUND": "The assigned role does not exist. Please inform an administrator about this.",
+    "PRUNING_COMPLETE": "API-keys have been re-validated successfully.",
+    "FIND_DUPES_COMPLETE": "Duplicate search complete.",
+    "GUILD_LOG_COMPLETE": "Guild log has successfully be retrieved.",
+    "PERMANENT_ROLE_ADD_SUCC": "Permanent role has successfully been added.",
+    "PERMANENT_ROLE_ADD_FAIL": "Permanent role could not be added.",
+
+    "CRONJOB_STORED": "Your cronjob has been saved with ID {0}. Next execution: {1}.",
+    "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
+    "CRONJOB_DELETED": "The cronjob has been deleted.",
+    "CRONJOB_NOT_DELETED": "The cronjob could not be deleted.",
+    
+    "FAQ_STORED": "The FAQ entry has been created.",
+    "FAQ_NOT_STORED": "The FAQ-entry could not be created.",
+    "FAQ_DELETED": "The FAQ entry for '{0}' has been deleted.",
+    "FAQ_NOT_DELETED": "The FAQ entry for '{0}' could not be deleted.",
+    "FAQ_NOT_FOUND": "There is no FAQ-entry for the keyword '{0}'.",
+    "CIRCULAR_CRON": "Cronjobs can not be recursive for security reasons.",
+
+    "GUILD_LOG_PERMISSION_FAIL": "I need the API-key of a guild leader to retrieve the guild log.",
+    
+
+    "HELPTEXT_SAY": "Please use the command with the following parameters:\n`<Channel, in which the bot should speak> \"<Text to speak>\"`.",
+    "HELPTEXT_ADD_CRON": "Please use the command with the following parameters:\n\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Command to execute>`\" `<Parameters for that command as specified by the help text>`.",
+    "HELPTEXT_DEL_CRON": "Please use the command with the following parameter:\n`<ID of the cronjob to delete>`\nIDs of all cronjobs can be found with the `lscrons`-command.",
+    "HELPTEXT_POLL": "Please use the command with the following parameters:\n`<Channel to create the poll in> \"<Question for the poll>\" \"<Emotes available for voting>\"`.",
+    "HELPTEXT_ADD_FAQ": "Please use the command with the following parameters:\n`\"<Keywords to link to the entry, separated with semicolons (;)>` `\"<FAQ text>\"`.",
+    "HELPTEXT_GET_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
+    "HELPTEXT_DEL_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
+    "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
+    "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
+
+    "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
+    "DESC_LIST_CRONS": "Lists all cronjobs.",
+    "DESC_MAKE_CRON": "Creates a new cronjob for the given timestamp.",
+    "DESC_AUTHENTICATE": "Authenticates the user with a GW2-API-key.",
+    "DESC_POLL": "Creates a poll with preselected emotes for voting.",
+    "DESC_REAUTHENTICATE": "Re-authenticates all GW2-API-keys again.",
+    "DESC_SAY": "Speaks the given text in a channel.",
+    "DESC_HELP": "This command. Lists all available commands with a short description.",
+    "DESC_TS_SYNC": "Syncs all roles with the TS3-Server (_INACTIVE_).",
+    "DESC_ADD_FAQ": "Adds a new FAQ entry.",
+    "DESC_DEL_FAQ": "Removes an entry from the FAQ.",
+    "DESC_GET_FAQ": "Gives the FAQ entry to a keyword.",
+    "DESC_LIST_FAQS": "Lists all FAQ entries.",
+    "DESC_FIND_DUPES": "Finds all Discord users sharing one GW2 account..",
+    "DESC_GUILD_LOG": "Pipes the guild log of a guild to a Discord channel.",
+    "DESC_REPAIR_ROLES": "Gives all users the role they have been assigned as per the database.",
+    "DESC_ADD_PERMAROLE": "Permanently gives a user a role he will be assigned even if he rejoins the server."
+}
+
 export let DE : Object = {
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
 
@@ -46,7 +111,7 @@ export let DE : Object = {
 
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
-    "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt",
+    "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt.",
     "DESC_AUTHENTICATE": "Authentifiziert einen Benutzer mittels eines GW2-API-Keys.",
     "DESC_POLL": "Erstellt einen Poll mit vorgegebenen Emotes als Abstimmoptionen.",
     "DESC_REAUTHENTICATE": "Authentifiziert alle vorhandenen GW2-API-Keys erneut.",
@@ -72,5 +137,8 @@ export let DE : Object = {
 *          If no locale string could be found, the key is returned instead.
 */
 export function get(key: string, args?: string[]): string {
-    return key in DE ? DE[key].formatUnicorn(args) : key;
+    let sde = key in DE ? DE[key].formatUnicorn(args) : key;
+    let sen = key in EN ? EN[key].formatUnicorn(args) : key;
+    return ":flag_de: {0}\n:flag_gb: {1}".formatUnicorn(sde, sen);
+    //return key in DE ? DE[key].formatUnicorn(args) : key;
 };

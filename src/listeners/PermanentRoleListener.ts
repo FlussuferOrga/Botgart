@@ -5,7 +5,7 @@ import { log } from "../Util";
 
 export class PermanentRoleListener extends Listener {
     constructor() {
-        super("guildMemberAdd", {
+        super("PermanentRoleListener", {
             emitter: "client",
             eventName: "guildMemberAdd"
         });

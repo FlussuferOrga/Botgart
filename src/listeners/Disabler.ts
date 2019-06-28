@@ -2,9 +2,9 @@ let config = require.main.require("../config.json");
 import { Listener } from "discord-akairo";
 import { log } from "../Util";
 
-export class ReadyListener extends Listener {
+export class Disabler extends Listener {
     constructor() {
-        super("disabler", {
+        super("Disabler", {
             emitter: "client",
             eventName: "ready"
         });
@@ -15,10 +15,10 @@ export class ReadyListener extends Listener {
             let d = 0;
             let mod = xs.modules.get(x);
             if(mod === undefined) {
-                log("warning", "ReadyListener.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
+                log("warning", "Disabler.js", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
             } else {
                 d = mod.disable() ? 1 : 0; // yields a boolean, but why would this fail?
-                log("info", "ReadyListener.js", "Disabled module '{0}'.".formatUnicorn(x));
+                log("info", "Disabler.js", "Disabled module '{0}'.".formatUnicorn(x));
             }
             return d;
         };
@@ -30,4 +30,4 @@ export class ReadyListener extends Listener {
     }
 }
 
-module.exports = ReadyListener;
+module.exports = Disabler;

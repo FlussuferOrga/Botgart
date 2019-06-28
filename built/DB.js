@@ -78,6 +78,10 @@ class Database {
         ];
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
+    getGW2Accounts(accnames) {
+        return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created WHERE gw2account IN (?)`)
+            .run(accnames.join(",")).all());
+    }
     getDesignatedRoles() {
         return this.execute(db => db.prepare(`SELECT user, guild, registration_role FROM registrations ORDER BY guild`).all());
     }
@@ -187,6 +191,22 @@ class Database {
             })(null);
             return changes > 0;
         });
+    }
+    storePermanentRole(user, guild, role) {
+        let sql = `INSERT INTO permanent_roles(guild, user, role) VALUES(?,?,?)`;
+        return this.execute(db => {
+            try {
+                db.prepare(sql).run(guild, user, role);
+                return true;
+            }
+            catch (err) {
+                Util.log("error", "DB.js", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                return false;
+            }
+        });
+    }
+    getPermanentRoles(user, guild) {
+        return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).run(guild, user).all());
     }
     findDuplicateRegistrations() {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
