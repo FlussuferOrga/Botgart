@@ -171,7 +171,6 @@ export class Database {
                                 }
                             }
                         );
-                        console.log("start")
                         await Timeout.set(REAUTH_DELAY);
                         release();
                         return res;

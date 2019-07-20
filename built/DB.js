@@ -172,7 +172,6 @@ class Database {
                         return undefined;
                     }
                 });
-                console.log("start");
                 yield await_timeout_1.default.set(REAUTH_DELAY);
                 release();
                 return res;
