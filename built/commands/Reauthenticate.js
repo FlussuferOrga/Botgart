@@ -60,7 +60,6 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
                         if (!m) {
                             Util_1.log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
                             cl.db.deleteKey(p.api_key);
-                            m.send(L.get("KEY_INVALIDATED"));
                         }
                         else {
                             if (admittedRoleName === false || admittedRoleName === Util_1.validateWorld.ERRORS.invalid_key) {

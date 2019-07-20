@@ -58,7 +58,6 @@ export class ReauthenticateCommand extends BotgartCommand {
                             if(!m) {
                                 log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
                                 cl.db.deleteKey(p.api_key);
-                                m.send(L.get("KEY_INVALIDATED"));
                             } else {
                                 if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
                                     // user should be pruned: user has either transed (false) or deleted their key (invalid key)
