@@ -22,6 +22,8 @@ const Util = __importStar(require("./Util.js"));
 const sqlite3 = __importStar(require("better-sqlite3"));
 const await_timeout_1 = __importDefault(require("await-timeout"));
 const await_semaphore_1 = require("await-semaphore");
+const REAUTH_DELAY = 5000;
+const REAUTH_MAX_PARALLEL_REQUESTS = 3;
 // FIXME: resolve objects when loading from db
 class Database {
     constructor(file, client) {
@@ -146,12 +148,14 @@ class Database {
         });
     }
     /**
+    * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
+    * politeness mechanisms and will take quite some time!
     * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db
     *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
     */
     revalidateKeys() {
         return __awaiter(this, void 0, void 0, function* () {
-            var semaphore = new await_semaphore_1.Semaphore(3);
+            var semaphore = new await_semaphore_1.Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
             return this.execute(db => Promise.all(db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
                 .map((r) => __awaiter(this, void 0, void 0, function* () {
                 let release = yield semaphore.acquire();
@@ -169,7 +173,7 @@ class Database {
                     }
                 });
                 console.log("start");
-                yield await_timeout_1.default.set(5000);
+                yield await_timeout_1.default.set(REAUTH_DELAY);
                 release();
                 return res;
             }))));
