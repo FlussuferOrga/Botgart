@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -17,6 +25,14 @@ api.language('en');
 // retry some times and be polite about it
 api.fetch.retry(tries => tries <= 5);
 api.fetch.retryWait(tries => tries * 3000);
+function asyncForEach(array, callback) {
+    return __awaiter(this, void 0, void 0, function* () {
+        for (let i = 0; i < array.length; i++) {
+            yield callback(array[i], i, array);
+        }
+    });
+}
+exports.asyncForEach = asyncForEach;
 function shallowInspect(o) {
     if (o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));
@@ -206,6 +222,11 @@ function getAccountGUID(apikey) {
     return api.account().get().then(res => new Promise((resolve, reject) => resolve(res.id)), res => new Promise((resolve, reject) => resolve(false)));
 }
 exports.getAccountGUID = getAccountGUID;
+function getAccountName(apikey) {
+    api.authenticate(apikey);
+    return api.account().get().then(res => new Promise((resolve, reject) => resolve(res.name)), res => new Promise((resolve, reject) => resolve(false)));
+}
+exports.getAccountName = getAccountName;
 function resolveDiscordUser(client, uid) {
     let user = null;
     let i = 0;

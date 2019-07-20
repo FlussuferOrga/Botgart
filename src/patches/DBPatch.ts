@@ -13,13 +13,17 @@ export class DBPatch extends Patch {
         this.connection = sqlite3.default(this.db.file, undefined);
     }
 
+    protected async commit(): Promise<void> { this.dbcommit(); }
+
+    protected async rollback(): Promise<void> { this.dbrollback(); }
+
     protected tableExists(name: string): boolean {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").all(name).length > 0;
     }
 
     protected columnExists(table: string, column: string): boolean {
         return this.connection.prepare("PRAGMA table_info(registrations)").all()
-            .filter(col => col.name === "registration_role").length > 0;
+            .filter(col => col.name === column).length > 0;
     }
 
     protected dbbegin(): void {

@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -15,12 +23,18 @@ class DBPatch extends Patch_js_1.Patch {
         this.db = db;
         this.connection = sqlite3.default(this.db.file, undefined);
     }
+    commit() {
+        return __awaiter(this, void 0, void 0, function* () { this.dbcommit(); });
+    }
+    rollback() {
+        return __awaiter(this, void 0, void 0, function* () { this.dbrollback(); });
+    }
     tableExists(name) {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").all(name).length > 0;
     }
     columnExists(table, column) {
         return this.connection.prepare("PRAGMA table_info(registrations)").all()
-            .filter(col => col.name === "registration_role").length > 0;
+            .filter(col => col.name === column).length > 0;
     }
     dbbegin() {
         this.connection.prepare("BEGIN").run();

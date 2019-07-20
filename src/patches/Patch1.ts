@@ -11,13 +11,13 @@ export class Patch1 extends DBPatch {
         super(db);
     }
 
-    protected satisfied(): boolean { 
+    protected async satisfied(): Promise<boolean> { 
         return this.columnExists("registrations", "registration_role");
     }
 
-    protected checkPreconditions(): boolean { return this.tableExists("registrations"); }
+    protected async checkPreconditions(): Promise<boolean> { return this.tableExists("registrations"); }
 
-    protected apply(): void {
+    protected async apply(): Promise<void> {
         this.dbbegin();
         this.connection.pragma("foreign_keys = OFF");
         // adding a column with NOT NULL constraint to an existing
@@ -47,7 +47,7 @@ export class Patch1 extends DBPatch {
         this.connection.pragma("foreign_keys = ON");
     }
 
-    public revert(): void {
+    public async revert(): Promise<void> {
         this.dbbegin();
         this.connection.pragma("foreign_keys = OFF");
         // adding a column with NOT NULL constraint to an existing
@@ -76,8 +76,4 @@ export class Patch1 extends DBPatch {
         this.connection.pragma("foreign_keys = ON");
         this.dbcommit();
     }
-
-    protected commit(): void { this.dbcommit(); }
-
-    protected rollback(): void { this.dbrollback(); }
 }

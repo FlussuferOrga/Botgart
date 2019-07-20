@@ -16,6 +16,11 @@ api.language('en');
 api.fetch.retry(tries => tries <= 5)
 api.fetch.retryWait(tries => tries * 3000)
 
+export async function asyncForEach(array, callback) {
+  for (let i = 0; i < array.length; i++) {
+    await callback(array[i], i, array);
+  }
+}
 
 export function shallowInspect(o: any): void {
     if(o instanceof Object) {
@@ -218,6 +223,14 @@ export function getAccountGUID(apikey: string): Promise<number|boolean> {
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.id)),
+        res => new Promise((resolve, reject) => resolve(false))
+    );
+}
+
+export function getAccountName(apikey: string): Promise<string|boolean> {
+    api.authenticate(apikey);
+    return api.account().get().then(
+        res => new Promise((resolve, reject) => resolve(res.name)),
         res => new Promise((resolve, reject) => resolve(false))
     );
 }

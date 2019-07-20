@@ -10,11 +10,11 @@ export class Patch2 extends DBPatch {
         super(db);
     }
 
-    protected satisfied(): boolean { 
+    protected async satisfied(): Promise<boolean> { 
         return this.tableExists("permanent_roles");
     }
 
-    protected apply(): void {
+    protected async apply(): Promise<void> {
         this.dbbegin();
         this.connection.prepare(`
             CREATE TABLE IF NOT EXISTS permanent_roles (
@@ -27,13 +27,9 @@ export class Patch2 extends DBPatch {
         )`).run();
     }
 
-    public revert(): void {
+    public async revert(): Promise<void> {
         this.dbbegin();
         this.connection.prepare(`DROP TABLE IF EXISTS permanent_roles`).run();
         this.dbcommit();
     }
-
-    protected commit(): void { this.dbcommit(); }
-
-    protected rollback(): void { this.dbrollback(); }
 }

@@ -155,7 +155,7 @@ class Database {
     */
     revalidateKeys() {
         return __awaiter(this, void 0, void 0, function* () {
-            var semaphore = new await_semaphore_1.Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
+            let semaphore = new await_semaphore_1.Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
             return this.execute(db => Promise.all(db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
                 .map((r) => __awaiter(this, void 0, void 0, function* () {
                 let release = yield semaphore.acquire();

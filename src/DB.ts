@@ -2,7 +2,7 @@ import * as Util from "./Util.js";
 import * as sqlite3 from "better-sqlite3";
 import { BotgartClient } from "./BotgartClient";
 import Timeout from "await-timeout";
-import {Semaphore} from 'await-semaphore';
+import {Semaphore} from "await-semaphore";
 
 const REAUTH_DELAY : number = 5000;
 const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
@@ -150,7 +150,7 @@ export class Database {
     *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
     */
     async revalidateKeys(): Promise<any> {
-        var semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
+        let semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
         return this.execute(db => 
             Promise.all(
                 db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
