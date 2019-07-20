@@ -53,7 +53,7 @@ export class ReauthenticateCommand extends BotgartCommand {
                         if(!currentRole) {
                             log("error", "Reauthenticate.js", "Can not find a role {0} that should be currently used.".formatUnicorn(currentRoleName));
                         }
-                        if(admittedRole && currentRole) {
+                        if((admittedRole || admittedRoleName === false) && currentRole) { // admittedRoleName === false means: user must be pruned
                             let m = guild.members.find(member => p.user == member.user.id);
                             if(!m) {
                                 log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
