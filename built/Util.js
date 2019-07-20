@@ -15,8 +15,8 @@ const api = gw2();
 api.schema('2019-03-26T00:00:00Z');
 api.language('en');
 // retry some times and be polite about it
-api.fetch.retry((tries) => tries <= 5);
-api.fetch.retryWait(tries => tries * 100);
+api.fetch.retry(tries => tries <= 5);
+api.fetch.retryWait(tries => { console.log("retrying for time: " + tries); return tries * 1000; });
 function shallowInspect(o) {
     if (o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));

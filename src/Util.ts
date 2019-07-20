@@ -13,8 +13,8 @@ api.schema('2019-03-26T00:00:00Z');
 api.language('en');
 
 // retry some times and be polite about it
-api.fetch.retry((tries) => tries <= 5)
-api.fetch.retryWait(tries => tries * 100)
+api.fetch.retry(tries => tries <= 5)
+api.fetch.retryWait(tries => {console.log("retrying for time: " + tries); return tries * 3000})
 
 
 export function shallowInspect(o: any): void {

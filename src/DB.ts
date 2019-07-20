@@ -1,6 +1,11 @@
 import * as Util from "./Util.js";
 import * as sqlite3 from "better-sqlite3";
 import { BotgartClient } from "./BotgartClient";
+import Timeout from "await-timeout";
+import {Semaphore} from 'await-semaphore';
+
+const REAUTH_DELAY : number = 5000;
+const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
 
 // FIXME: resolve objects when loading from db
 
@@ -27,6 +32,10 @@ export class Database {
 
         db.close();
         return res;
+    }
+
+    async executeAsync<T>(f: (sqlite) => T): Promise<T|undefined> {
+        return this.execute(f);
     }
 
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
@@ -135,28 +144,38 @@ export class Database {
     }
 
     /**
+    * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
+    * politeness mechanisms and will take quite some time!
     * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db 
     *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
     */
-    revalidateKeys(): Promise<any> {
+    async revalidateKeys(): Promise<any> {
+        var semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
         return this.execute(db => 
             Promise.all(
                 db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
-                    .map(r => Util.validateWorld(r.api_key).then(
-                        admittedRole => [r, admittedRole],
-                        error => {
-                            if(error === Util.validateWorld.ERRORS.invalid_key) {
-                                // while this was an actual error when initially registering (=> tell user their key is invalid),
-                                // in the context of revalidation this is actually a valid case: the user must have given a valid key
-                                // upon registration (or else it would not have ended up in the DB) and has now deleted the key
-                                // => remove the validation role from the user
-                                return [r,false];
-                            } else {
-                                Util.log("error", "DB.js", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
-                                return undefined;
+                    .map(async r => {
+                        let release = await semaphore.acquire();
+                        let res = await Util.validateWorld(r.api_key).then(
+                            admittedRole => [r, admittedRole],
+                            error => {
+                                if(error === Util.validateWorld.ERRORS.invalid_key) {
+                                    // while this was an actual error when initially registering (=> tell user their key is invalid),
+                                    // in the context of revalidation this is actually a valid case: the user must have given a valid key
+                                    // upon registration (or else it would not have ended up in the DB) and has now deleted the key
+                                    // => remove the validation role from the user
+                                    return [r,false];
+                                } else {
+                                    Util.log("error", "DB.js", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
+                                    return undefined;
+                                }
                             }
-                        }
-                    ))
+                        );
+                        console.log("start")
+                        await Timeout.set(REAUTH_DELAY);
+                        release();
+                        return res;
+                    })
             )
         );
     }

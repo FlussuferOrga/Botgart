@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -6,9 +14,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const Util = __importStar(require("./Util.js"));
 const sqlite3 = __importStar(require("better-sqlite3"));
+const await_timeout_1 = __importDefault(require("await-timeout"));
+const await_semaphore_1 = require("await-semaphore");
 // FIXME: resolve objects when loading from db
 class Database {
     constructor(file, client) {
@@ -28,6 +41,11 @@ class Database {
         }
         db.close();
         return res;
+    }
+    executeAsync(f) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.execute(f);
+        });
     }
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
     // sqlite3 and node don't work well together in terms of large integers.
@@ -132,20 +150,30 @@ class Database {
     *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
     */
     revalidateKeys() {
-        return this.execute(db => Promise.all(db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
-            .map(r => Util.validateWorld(r.api_key).then(admittedRole => [r, admittedRole], error => {
-            if (error === Util.validateWorld.ERRORS.invalid_key) {
-                // while this was an actual error when initially registering (=> tell user their key is invalid),
-                // in the context of revalidation this is actually a valid case: the user must have given a valid key
-                // upon registration (or else it would not have ended up in the DB) and has now deleted the key
-                // => remove the validation role from the user
-                return [r, false];
-            }
-            else {
-                Util.log("error", "DB.js", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
-                return undefined;
-            }
-        }))));
+        return __awaiter(this, void 0, void 0, function* () {
+            var semaphore = new await_semaphore_1.Semaphore(3);
+            return this.execute(db => Promise.all(db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
+                .map((r) => __awaiter(this, void 0, void 0, function* () {
+                let release = yield semaphore.acquire();
+                let res = yield Util.validateWorld(r.api_key).then(admittedRole => [r, admittedRole], error => {
+                    if (error === Util.validateWorld.ERRORS.invalid_key) {
+                        // while this was an actual error when initially registering (=> tell user their key is invalid),
+                        // in the context of revalidation this is actually a valid case: the user must have given a valid key
+                        // upon registration (or else it would not have ended up in the DB) and has now deleted the key
+                        // => remove the validation role from the user
+                        return [r, false];
+                    }
+                    else {
+                        Util.log("error", "DB.js", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
+                        return undefined;
+                    }
+                });
+                console.log("start");
+                yield await_timeout_1.default.set(5000);
+                release();
+                return res;
+            }))));
+        });
     }
     deleteKey(key) {
         return this.execute(db => {
