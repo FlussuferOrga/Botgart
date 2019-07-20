@@ -11,7 +11,6 @@ class TS3Listener extends discord_akairo_1.Listener {
             emitter: "client",
             eventName: "ready"
         });
-        console.log("there");
     }
     exec() {
         return;

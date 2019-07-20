@@ -11,7 +11,6 @@ export class TS3Listener extends Listener {
             emitter: "client",
             eventName: "ready"
         });
-        console.log("there");
     }
 
     exec() {

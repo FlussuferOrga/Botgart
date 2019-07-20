@@ -10,7 +10,7 @@ const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
 // FIXME: resolve objects when loading from db
 
 export class Database {
-    private file: string;
+    readonly file: string;
     private client: BotgartClient;
 
     constructor(file: string, client: BotgartClient) {
