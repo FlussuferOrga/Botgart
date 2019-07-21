@@ -22,7 +22,7 @@ export class DBPatch extends Patch {
     }
 
     protected columnExists(table: string, column: string): boolean {
-        return this.connection.prepare("PRAGMA table_info(registrations)").all()
+        return this.connection.prepare("PRAGMA table_info("+table+")").all() // can't use prepared parameters for some reason in this instance
             .filter(col => col.name === column).length > 0;
     }
 

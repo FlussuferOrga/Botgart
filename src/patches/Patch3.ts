@@ -7,6 +7,8 @@ import {Semaphore} from "await-semaphore";
 * Adds the account-name column to the registrations table and populates it.
 */
 export class Patch3 extends DBPatch {
+    private oldCount: number;
+
     constructor(db: Database) {
         super(db);
     }
@@ -33,6 +35,7 @@ export class Patch3 extends DBPatch {
 
     protected async apply(): Promise<void> {
         let con = this.connection;
+        this.oldCount = this.connection.prepare(`SELECT COUNT(*) AS c FROM registrations`).get().c
         this.dbbegin();
         con.pragma("foreign_keys = OFF");
         // adding a column with NOT NULL constraint to an existing
@@ -53,8 +56,6 @@ export class Patch3 extends DBPatch {
         )`).run();
 
         await this.resolveAccountNames(con.prepare(`SELECT * FROM registrations`).all());
-        
-        return;
         // delete old table and rename new one
         con.prepare(`DROP TABLE registrations`).run();
         con.prepare(`ALTER TABLE new_registrations RENAME TO registrations`).run();
@@ -62,13 +63,12 @@ export class Patch3 extends DBPatch {
     }
 
     public async checkPostconditions(): Promise<boolean> {
-        const oldCount = this.connection.prepare(`SELECT COUNT(*) AS c FROM registrations`).get().c
-        const newCount = this.connection.prepare(`SELECT COUNT(*) AS c FROM new_registrations`).get().c
-        const post = oldCount === newCount;
+        const newCount = this.connection.prepare(`SELECT COUNT(*) AS c FROM registrations`).get().c
+        const post = this.oldCount === newCount;
         if(!post) {
-            log("error", "Patch3.js", "Expected equal number of entries for old and new table. But old table had {0} entries while new has {1}. Reverting.".formatUnicorn(oldCount, newCount));
+            log("error", "Patch3.js", "Expected equal number of entries for old and new table. But old table had {0} entries while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
         }
-        return ;
+        return post;
     }
 
     public async revert(): Promise<void> {
@@ -92,7 +92,7 @@ export class Patch3 extends DBPatch {
         )`).run();
         this.connection.prepare(`
             INSERT INTO new_registrations(id, user, guild, api_key, gw2account, registration_role, created)
-            SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, r.registered_role, r.created 
+            SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, r.registration_role, r.created 
             FROM registrations AS r 
         `).run();
 

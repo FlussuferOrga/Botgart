@@ -22,7 +22,7 @@ const args = commandlineargs.default([
 ]);
 
 // this is an in-order list of all patches
-const allPatches = ["Patch1", "Patch2"]
+const allPatches = ["Patch1", "Patch2", "Patch3"]
 
 function startBot() {
     console.log("Starting up...");
@@ -41,25 +41,32 @@ function resolvePatch(patchname: string): Patch|null {
     return patch; 
 }
 
-function applyPatch(patchname: string, revert:boolean = false) {
+async function applyPatch(patchname: string, revert:boolean = false) {
     let patch = resolvePatch(patchname);
     if(patch) {
         if(revert) {
             console.log("Reverting patch...");
-            patch.revert();
+            await patch.revert();
             console.log("Patch reversion done.")
         } else {
             console.log("Applying patch...");
-            patch.execute();
+            await patch.execute();
             console.log("Patch application done.")
         }      
     }
 }
 
+async function applyPatches(patches: string[], revert: boolean = false) {
+    let ps = args.revert === true ? patches.reverse() : patches;
+    for (let p of ps) {
+        await applyPatch(p, args.revert === true);
+    }    
+}
+
 if(args.patchall) {
-    allPatches.forEach(p => applyPatch(p, args.revert === true));
+    applyPatches(allPatches, args.revert === true)
 }else if(args.patch) {
-    args.patch.forEach(p => applyPatch(p, args.revert === true));
+    applyPatches(args.patch, args.revert === true);
 } else {
     startBot();    
 }

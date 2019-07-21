@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -27,7 +35,7 @@ const args = commandlineargs.default([
     { name: "revert", type: Boolean },
 ]);
 // this is an in-order list of all patches
-const allPatches = ["Patch1", "Patch2"];
+const allPatches = ["Patch1", "Patch2", "Patch3"];
 function startBot() {
     console.log("Starting up...");
     client.login(config.token);
@@ -45,25 +53,35 @@ function resolvePatch(patchname) {
     return patch;
 }
 function applyPatch(patchname, revert = false) {
-    let patch = resolvePatch(patchname);
-    if (patch) {
-        if (revert) {
-            console.log("Reverting patch...");
-            patch.revert();
-            console.log("Patch reversion done.");
+    return __awaiter(this, void 0, void 0, function* () {
+        let patch = resolvePatch(patchname);
+        if (patch) {
+            if (revert) {
+                console.log("Reverting patch...");
+                yield patch.revert();
+                console.log("Patch reversion done.");
+            }
+            else {
+                console.log("Applying patch...");
+                yield patch.execute();
+                console.log("Patch application done.");
+            }
         }
-        else {
-            console.log("Applying patch...");
-            patch.execute();
-            console.log("Patch application done.");
+    });
+}
+function applyPatches(patches, revert = false) {
+    return __awaiter(this, void 0, void 0, function* () {
+        let ps = args.revert === true ? patches.reverse() : patches;
+        for (let p of ps) {
+            yield applyPatch(p, args.revert === true);
         }
-    }
+    });
 }
 if (args.patchall) {
-    allPatches.forEach(p => applyPatch(p, args.revert === true));
+    applyPatches(allPatches, args.revert === true);
 }
 else if (args.patch) {
-    args.patch.forEach(p => applyPatch(p, args.revert === true));
+    applyPatches(args.patch, args.revert === true);
 }
 else {
     startBot();

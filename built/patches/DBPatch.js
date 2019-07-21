@@ -33,7 +33,7 @@ class DBPatch extends Patch_js_1.Patch {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").all(name).length > 0;
     }
     columnExists(table, column) {
-        return this.connection.prepare("PRAGMA table_info(registrations)").all()
+        return this.connection.prepare("PRAGMA table_info(" + table + ")").all() // can't use prepared parameters for some reason in this instance
             .filter(col => col.name === column).length > 0;
     }
     dbbegin() {
