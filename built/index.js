@@ -18,6 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 let config = require("../config.json");
 const BotgartClient_1 = require("./BotgartClient");
 const commandlineargs = __importStar(require("command-line-args"));
+const fs = __importStar(require("fs"));
 const client = new BotgartClient_1.BotgartClient({
     ownerID: config.owner_id,
     prefix: config.prefix,
@@ -33,6 +34,7 @@ const args = commandlineargs.default([
     { name: "patch", type: String, multiple: true },
     { name: "patchall", type: Boolean },
     { name: "revert", type: Boolean },
+    { name: "updateconfig", type: Boolean }
 ]);
 // this is an in-order list of all patches
 const allPatches = ["Patch1", "Patch2", "Patch3"];
@@ -77,7 +79,25 @@ function applyPatches(patches, revert = false) {
         }
     });
 }
-if (args.patchall) {
+function updateConfig(configFileName, defaultsFileName) {
+    const fixBlock = (src, dst) => {
+        Object.entries(src).forEach(t => {
+            const k = t[0];
+            const v = t[1];
+            if (!dst.hasOwnProperty(k)) {
+                dst[k] = v;
+            }
+        });
+    };
+    const defaults = JSON.parse(fs.readFileSync(defaultsFileName, "utf-8")); // 
+    const currentConfig = JSON.parse(fs.readFileSync(configFileName, "utf-8")); // 
+    console.log(Object.assign(defaults, currentConfig));
+}
+if (args.updateconfig) {
+    // disabled
+    //updateConfig("config.json", "config.json.example");
+}
+else if (args.patchall) {
     applyPatches(allPatches, args.revert === true);
 }
 else if (args.patch) {

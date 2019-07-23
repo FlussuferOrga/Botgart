@@ -4,11 +4,15 @@
     "token": "xxxxxxxxx",
     "home_id": 2202,
     "world_assignments": [{"world_id": 2202, "role": "rolename (must exist!)"}],
-    "ts": {
-        "ip": "127.0.01",
-        "port": 10011,
-        "user": "admin",
-        "password": "secret" 
+    "ts_listener": {
+        "ip": "127.0.0.1",
+        "port": 10137,
+        "channel_delay": 300,
+        "user_delay": 300,
+        "grace_period": 60,
+        "broadcast_channel": "raid announcements",
+        "ping_role": "Raiders",
+        "commander_role": "Commander"
     },
     "disabled": {
         "listeners": [],

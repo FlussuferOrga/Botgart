@@ -55,7 +55,8 @@ exports.EN = {
     "DESC_FIND_DUPES": "Finds all Discord users sharing one GW2 account..",
     "DESC_GUILD_LOG": "Pipes the guild log of a guild to a Discord channel.",
     "DESC_REPAIR_ROLES": "Gives all users the role they have been assigned as per the database.",
-    "DESC_ADD_PERMAROLE": "Permanently gives a user a role he will be assigned even if he rejoins the server."
+    "DESC_ADD_PERMAROLE": "Permanently gives a user a role he will be assigned even if he rejoins the server.",
+    "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}"
 };
 exports.DE = {
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
@@ -112,7 +113,8 @@ exports.DE = {
     "DESC_FIND_DUPES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
     "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
-    "DESC_ADD_PERMAROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird."
+    "DESC_ADD_PERMAROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird.",
+    "COMMANDER_TAG_UP": "{0} hat im Teamspeak-channel '{1}' einen Raid gestartet! {2}"
 };
 /**
 * Tries to resolve the passed key into a locale string.

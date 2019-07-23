@@ -2,6 +2,7 @@ let config = require("../config.json");
 import { BotgartClient } from  "./BotgartClient";
 import { Patch } from "./patches/Patch.js";
 import * as commandlineargs from "command-line-args";
+import * as fs from "fs";
 
 const client = new BotgartClient({
     ownerID: config.owner_id,
@@ -19,6 +20,7 @@ const args = commandlineargs.default([
   { name: "patch", type: String, multiple: true},
   { name: "patchall", type: Boolean },
   { name: "revert", type: Boolean },
+  { name: "updateconfig", type: Boolean}
 ]);
 
 // this is an in-order list of all patches
@@ -63,9 +65,28 @@ async function applyPatches(patches: string[], revert: boolean = false) {
     }    
 }
 
-if(args.patchall) {
+function updateConfig(configFileName: string, defaultsFileName: string) {
+
+    const fixBlock = (src,dst) => {
+        Object.entries(src).forEach(t => {
+            const k = t[0];
+            const v = t[1];
+            if(!dst.hasOwnProperty(k)) {
+                dst[k] = v;  
+            }
+        });
+    };
+    const defaults = JSON.parse(fs.readFileSync(defaultsFileName, "utf-8")); // 
+    const currentConfig = JSON.parse(fs.readFileSync(configFileName, "utf-8")); // 
+    console.log(Object.assign(defaults, currentConfig));
+}
+
+if(args.updateconfig) {
+    // disabled
+    //updateConfig("config.json", "config.json.example");
+} else if(args.patchall) {
     applyPatches(allPatches, args.revert === true)
-}else if(args.patch) {
+} else if(args.patch) {
     applyPatches(args.patch, args.revert === true);
 } else {
     startBot();    

@@ -22,6 +22,10 @@ export async function asyncForEach(array, callback) {
   }
 }
 
+export function setMinus<T>(s1: Iterable<T>, s2: Set<T>) {
+    return new Set(Array.from(s1).filter(x => !s2.has(x)));
+}
+
 export function shallowInspect(o: any): void {
     if(o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));

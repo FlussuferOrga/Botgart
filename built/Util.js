@@ -33,6 +33,10 @@ function asyncForEach(array, callback) {
     });
 }
 exports.asyncForEach = asyncForEach;
+function setMinus(s1, s2) {
+    return new Set(Array.from(s1).filter(x => !s2.has(x)));
+}
+exports.setMinus = setMinus;
 function shallowInspect(o) {
     if (o instanceof Object) {
         Object.keys(o).forEach(k => console.log(k, o[k] ? o[k].constructor.name : typeof o));

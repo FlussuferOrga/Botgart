@@ -38,6 +38,15 @@ export class Database {
         return this.execute(f);
     }
 
+    public getUserByAccountName(accountName: string) {
+        return this.execute(db => db.prepare(
+                `SELECT id, user, guild, api_key, gw2account, registration_role, account_name, created 
+                 FROM registrations 
+                 WHERE account_name = ? 
+                 ORDER BY created DESC`
+            ).get(accountName));
+    }
+
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
     // sqlite3 and node don't work well together in terms of large integers.
     // Therefore, all big numbers are stored as strings.
