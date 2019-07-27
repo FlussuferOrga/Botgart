@@ -4,12 +4,16 @@ import { log, setMinus } from "../Util";
 import { BotgartClient } from "../BotgartClient";
 import * as L from "../Locale.js";
 import * as discord from "discord.js";
+import Timeout from "await-timeout";
 const gw2 = require("gw2api-client");
 const api = gw2();
 const net = require("net");
 
+const RECONNECT_TIMER_MS = 30000;
+
 export class TS3Listener extends Listener {
     private socket: any; // net.Socket;
+    private connected: boolean;
     private ip: string;
     private port: number;
     private broadcastChannel: string;
@@ -28,6 +32,7 @@ export class TS3Listener extends Listener {
             eventName: "ready"
         });
         this.socket = new net.Socket();
+        this.connected = false;
         this.ip = config.ts_listener.ip;
         this.port = config.ts_listener.port;
         this.broadcastChannel = config.ts_listener.broadcast_channel;
@@ -39,6 +44,59 @@ export class TS3Listener extends Listener {
         this.activeCommanders = {};
         this.users = {};
         this.channels = {};
+
+        const that = this;
+
+        this.socket.on("connect", () => {
+            log("info", "TS3Listener.js", "Successfully connected to TS3-Server on {0}:{1}".formatUnicorn(that.ip, that.port));
+            that.connected = true;
+            // client.write('Hello, server! Love, Client.');
+        });
+
+
+        this.socket.on("data", (raw) => {
+            const data = JSON.parse(raw);
+            const now = new Date();
+            const taggedDown = setMinus(Object.keys(that.activeCommanders), new Set<string>(data.commanders.map(c => c.ts_cluid)));
+            that.client.guilds.forEach(g => {
+                data.commanders.forEach(c => {
+                    let account  = c.account_name; // for lookup
+                    let uid      = c.ts_cluid; // for this.users
+                    let username = c.ts_display_name; // for broadcast
+                    let channel  = c.ts_channel_name; // for broadcast and this.channels
+                    
+                    if(!(uid in that.users)) {
+                        // user was newly discovered as tagged up -> save user
+                        that.users[uid] = now;
+                    }
+                    let userLast = that.users[uid];
+                    if(uid in that.activeCommanders) {
+                        // user is still tagged up -> update timestamp
+                        that.users[uid] = now;
+                    } else if(now.getTime() - userLast.getTime() > that.userDelay) {
+                        // user has recently tagged up but is not marked as active commander yet -> check if his grace period is up
+                        that.tagUp(g, account, uid, username, channel);
+                    }    
+                });
+                taggedDown.forEach(tduid => {
+                    that.tagDown(g, tduid, that.activeCommanders[tduid]);
+                })
+            });
+
+            //client.destroy(); // kill client after server's response
+        });
+
+        this.socket.on("close", () => {
+            that.connected = false;
+            log("info", "TS3Listener.js", "(Re)connection to TS3-Server failed. Will attempt reconnect in {0} milliseconds".formatUnicorn(RECONNECT_TIMER_MS));
+            setTimeout(async () => {
+                await this.connect().catch(e => {});
+            }, RECONNECT_TIMER_MS);
+        });
+
+        this.socket.on("error", (e) => {
+            //console.log(e);
+        }); 
     }
 
     /**
@@ -93,60 +151,12 @@ export class TS3Listener extends Listener {
         delete this.activeCommanders[tsUID];
     }
 
-    private connect() {
-        const that = this;
-        this.socket.connect(that.port, that.ip, function() {
-            log("info", "TS3Listener.js", "Successfully connected to TS3-Server on {0}:{1}".formatUnicorn(that.ip, that.port));
-            // client.write('Hello, server! Love, Client.');
-        });
-
-        this.socket.on("data", function(data) {
-            data = JSON.parse(data);
-            const now = new Date();
-            console.log(data);
-            const taggedDown = setMinus(Object.keys(that.activeCommanders), new Set<string>(data.commanders.map(c => c.ts_cluid)));
-            that.client.guilds.forEach(g => {
-                data.commanders.forEach(c => {
-                    let account  = c.account_name; // for lookup
-                    let uid      = c.ts_cluid; // for this.users
-                    let username = c.ts_display_name; // for broadcast
-                    let channel  = c.ts_channel_name; // for broadcast and this.channels
-                    
-                    if(!(uid in that.users)) {
-                        // user was newly discovered as tagged up -> save user
-                        that.users[uid] = now;
-                    }
-                    let userLast = that.users[uid];
-                    if(uid in that.activeCommanders) {
-                        // user is still tagged up -> update timestamp
-                        that.users[uid] = now;
-                    } else if(now.getTime() - userLast.getTime() > that.userDelay) {
-                        // user has recently tagged up but is not marked as active commander yet -> check if his grace period is up
-                        that.tagUp(g, account, uid, username, channel);
-                    }    
-                });
-                taggedDown.forEach(tduid => {
-                    that.tagDown(g, tduid, that.activeCommanders[tduid]);
-                })
-            });
-
-            //client.destroy(); // kill client after server's response
-        });
-
-        this.socket.on("close", function() {
-            console.log("Connection closed");
-        });        
+    private async connect() {
+        this.socket.connect(this.port, this.ip);   
     }
 
     exec() {
-        console.log("connecting");
-        try {
-            this.connect();
-            console.log("connected");
-        } catch(e) {
-            console.log(e);
-            // pass
-        }
+        this.connect();
     }    
 }
 
