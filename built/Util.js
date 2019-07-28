@@ -265,6 +265,10 @@ const logger = winston.createLogger({
         new winston.transports.File({
             filename: 'log/bot_errors.log',
             level: 'error'
+        }),
+        new winston.transports.File({
+            filename: '/tmp/botgart_debug.log',
+            level: 'debug'
         })
     ]
 });
