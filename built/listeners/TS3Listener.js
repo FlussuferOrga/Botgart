@@ -23,7 +23,28 @@ const discord = __importStar(require("discord.js"));
 const gw2 = require("gw2api-client");
 const api = gw2();
 const net = require("net");
-const RECONNECT_TIMER_MS = 5000;
+const RECONNECT_TIMER_MS = 30000;
+/*
+                 tag up
+    +---------------------------------+
+    |                                 v
++---+---+   +--------+  delay     +---+--+
+|unknown|   |cooldown+----------->+tag_up|
++-------+   +-----+--+            +---+--+
+                  ^                   | grace period
+           tag up |                   v
+            +-----+--+            +---+-----+
+            |tag_down+<-----------+commander|
+            +--------+  tag down  +---------+
+
+*/
+var CommanderState;
+(function (CommanderState) {
+    CommanderState[CommanderState["COOLDOWN"] = 0] = "COOLDOWN";
+    CommanderState[CommanderState["TAG_UP"] = 1] = "TAG_UP";
+    CommanderState[CommanderState["COMMANDER"] = 2] = "COMMANDER";
+    CommanderState[CommanderState["TAG_DOWN"] = 3] = "TAG_DOWN";
+})(CommanderState || (CommanderState = {}));
 class TS3Listener extends discord_akairo_1.Listener {
     constructor() {
         super("ts3listener", {
@@ -45,12 +66,13 @@ class TS3Listener extends discord_akairo_1.Listener {
         this.channels = {};
         const that = this;
         this.socket.on("connect", () => {
-            Util_1.log("info", "TS3Listener.js", "Successfully connected to TS3-Server on {0}:{1}".formatUnicorn(that.ip, that.port));
+            Util_1.log("info", "TS3Listener.js", "Successfully connected to TS3-Bot on {0}:{1}".formatUnicorn(that.ip, that.port));
             that.connected = true;
             // client.write('Hello, server! Love, Client.');
         });
         this.socket.on("data", (raw) => {
             const data = JSON.parse(raw);
+            Util_1.log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             const now = new Date();
             const taggedDown = Util_1.setMinus(Object.keys(that.activeCommanders), new Set(data.commanders.map(c => c.ts_cluid)));
             that.client.guilds.forEach(g => {
@@ -60,28 +82,63 @@ class TS3Listener extends discord_akairo_1.Listener {
                     let username = c.ts_display_name; // for broadcast
                     let channel = c.ts_channel_name; // for broadcast and this.channels
                     if (!(uid in that.users)) {
-                        // user was newly discovered as tagged up -> save user
-                        that.users[uid] = now;
+                        // user was newly discovered as tagged up -> save user without cooldown
+                        that.users[uid] = [now, CommanderState.TAG_UP];
+                        Util_1.log("debug", "TS3Listener.js", "Moving newly discovered {0} to TAG_UP state.".formatUnicorn(username));
                     }
-                    let userLast = that.users[uid];
-                    if (uid in that.activeCommanders) {
-                        // user is still tagged up -> update timestamp
-                        that.users[uid] = now;
+                    let [userLastTime, state] = that.users[uid];
+                    switch (state) {
+                        case CommanderState.TAG_UP:
+                            // user tagged up and is waiting to gain commander status
+                            if (now.getTime() - userLastTime.getTime() > that.gracePeriod) {
+                                that.users[uid] = [now, CommanderState.COMMANDER];
+                                that.tagUp(g, account, uid, username, channel);
+                                Util_1.log("debug", "TS3Listener.js", "Moving {0} from TAG_UP to COMMANDER state.".formatUnicorn(username));
+                            }
+                            break;
+                        case CommanderState.COOLDOWN:
+                            // user tagged up again too quickly -> wait out delay and then go into TAG_UP
+                            if (now.getTime() - userLastTime.getTime() > that.userDelay) {
+                                that.users[uid] = [now, CommanderState.TAG_UP];
+                                Util_1.log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN to TAG_UP state.".formatUnicorn(username));
+                            }
+                            break;
+                        case CommanderState.TAG_DOWN:
+                            // user raided before, but tagged down in between
+                            // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
+                            if (now.getTime() - userLastTime.getTime() > that.userDelay) {
+                                that.users[uid] = [now, CommanderState.TAG_UP];
+                                Util_1.log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to TAG_UP state.".formatUnicorn(username));
+                            }
+                            else {
+                                that.users[uid] = [userLastTime, CommanderState.COOLDOWN];
+                                Util_1.log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to COOLDOWN state.".formatUnicorn(username));
+                            }
+                            break;
+                        case CommanderState.COMMANDER:
+                            // still raiding -> update timestamp
+                            that.users[uid] = [now, state];
+                            break;
                     }
-                    else if (now.getTime() - userLast.getTime() > that.userDelay) {
-                        // user has recently tagged up but is not marked as active commander yet -> check if his grace period is up
-                        that.tagUp(g, account, uid, username, channel);
-                    }
+                    //if(uid in that.activeCommanders) {
+                    //    // user is still tagged up -> update timestamp
+                    //    that.users[uid] = [now,state];
+                    //} else if(now.getTime() - userLastTime.getTime() > that.userDelay) {
+                    //    // user has recently tagged up but is not marked as active commander yet -> check if his grace period is up
+                    //    that.tagUp(g, account, uid, username, channel);
+                    //}    
                 });
                 taggedDown.forEach(tduid => {
+                    that.users[tduid] = [now, CommanderState.TAG_DOWN];
                     that.tagDown(g, tduid, that.activeCommanders[tduid]);
+                    Util_1.log("debug", "TS3Listener.js", "Moving {0} from TAG_UP or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
                 });
             });
             //client.destroy(); // kill client after server's response
         });
         this.socket.on("close", () => {
             that.connected = false;
-            Util_1.log("info", "TS3Listener.js", "(Re)connection to TS3-Server failed. Will attempt reconnect in {0} milliseconds".formatUnicorn(RECONNECT_TIMER_MS));
+            Util_1.log("info", "TS3Listener.js", "(Re)connection to TS3-Bot failed. Will attempt reconnect in {0} milliseconds".formatUnicorn(RECONNECT_TIMER_MS));
             setTimeout(() => __awaiter(this, void 0, void 0, function* () {
                 yield this.connect().catch(e => { });
             }), RECONNECT_TIMER_MS);
@@ -118,7 +175,7 @@ class TS3Listener extends discord_akairo_1.Listener {
             let mes = L.get("COMMANDER_TAG_UP", [username, channel, pingRole ? pingRole.toString() : ""]);
             dchan.send(mes);
         }
-        this.activeCommanders[tsUID] = username;
+        this.activeCommanders[tsUID] = account;
     }
     /**
     * Makes the user tag down in a Discord-guild. That is:
@@ -132,7 +189,7 @@ class TS3Listener extends discord_akairo_1.Listener {
             let crole = g.roles.find(r => r.name === this.commanderRole);
             let duser = g.members.find(m => m.id === registration.user);
             if (crole && duser) {
-                Util_1.log("info", "TS3Listener.js", "Tagging down {0} in {1}.".formatUnicorn(duser.nickname, g.name));
+                Util_1.log("info", "TS3Listener.js", "Tagging down {0} in {1}.".formatUnicorn(duser.displayName, g.name));
                 duser.removeRole(crole).catch(e => {
                     Util_1.log("warning", "TS3Listener.js", "Could not remove role '{0}' from user '{1}'' which was expected to be there. Maybe someone else already removed it.".formatUnicorn(this.commanderRole, duser.nickname));
                 });
