@@ -29,6 +29,9 @@ class DBPatch extends Patch_js_1.Patch {
     rollback() {
         return __awaiter(this, void 0, void 0, function* () { this.dbrollback(); });
     }
+    viewExists(name) {
+        return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='view' AND name=?").all(name).length > 0;
+    }
     tableExists(name) {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").all(name).length > 0;
     }

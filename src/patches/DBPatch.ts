@@ -17,6 +17,10 @@ export class DBPatch extends Patch {
 
     protected async rollback(): Promise<void> { this.dbrollback(); }
 
+    protected viewExists(name: string): boolean {
+        return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='view' AND name=?").all(name).length > 0;
+    }
+
     protected tableExists(name: string): boolean {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?").all(name).length > 0;
     }

@@ -25,18 +25,36 @@ const api = gw2();
 const net = require("net");
 const RECONNECT_TIMER_MS = 30000;
 /*
+*********************************************************************************
                  tag up
     +---------------------------------+
     |                                 v
 +---+---+   +--------+  delay     +---+--+
-|unknown|   |cooldown+----------->+tag_up|
+|unknown|   |COOLDOWN+----------->+TAG_UP|
 +-------+   +-----+--+            +---+--+
                   ^                   | grace period
            tag up |                   v
             +-----+--+            +---+-----+
-            |tag_down+<-----------+commander|
+            |TAG_DOWN+<-----------+COMMANDER|
             +--------+  tag down  +---------+
 
+
+Note that there is also an uncovered case:
+the transition from anywhere to TAG_DOWN only happens, if
+the user tags down when they are already in COMMANDER state.
+That means having a user tag down while in COOLDOWN or TAG_UP
+places them in a bit of a limbo state, resulting in them staying on
+the exact state where they have left off. This is not an actial problem.
+The "worst case" here could be the following:
+
+imagine the delay being set to 30 minutes.
+Now, an active player P commands for a while,
+tags down and up again, playing P in COOLDOWN.
+They then tag down immediately and play tagless for two hours.
+Then, they decide to tag up again, resuming in COOLDOWN.
+But since their last known timestep is two hours old, they will leave that
+state immediately on the next tag to become TAG_UP.
+*********************************************************************************
 */
 var CommanderState;
 (function (CommanderState) {
@@ -120,18 +138,11 @@ class TS3Listener extends discord_akairo_1.Listener {
                             that.users[uid] = [now, state];
                             break;
                     }
-                    //if(uid in that.activeCommanders) {
-                    //    // user is still tagged up -> update timestamp
-                    //    that.users[uid] = [now,state];
-                    //} else if(now.getTime() - userLastTime.getTime() > that.userDelay) {
-                    //    // user has recently tagged up but is not marked as active commander yet -> check if his grace period is up
-                    //    that.tagUp(g, account, uid, username, channel);
-                    //}    
                 });
                 taggedDown.forEach(tduid => {
                     that.users[tduid] = [now, CommanderState.TAG_DOWN];
                     that.tagDown(g, tduid, that.activeCommanders[tduid]);
-                    Util_1.log("debug", "TS3Listener.js", "Moving {0} from TAG_UP or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
+                    Util_1.log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
                 });
             });
             //client.destroy(); // kill client after server's response

@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EN = {
     "INTERNAL_ERROR": "An internal error occured. Please contact an administrator about this.",
+    "NOT_PERMITTED": "You do not have the required permissions to execute this command.",
+    "PERMISSION_SET_TO": "Permission for `{0}` for command `{1}` set to **{2}**.",
     "WELCOME": "Welcome to the Riverside-Discord. :)\n Much of this server isn't accessible to for guests. Please authenticate using an API-key:\n\n1. Visit https://account.arena.net/applications\n2. Click 'new key'\n3. Post `,auth` followed by your new key per direct message (this window) to me.\n\nEg: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
     "NO_SUCH_COMMAND": "I don't know the command '{0}' you gave me.",
     "NOT_AVAILABLE_AS_DM": "This command is not usable as direct message. Please try it again within a server.",
@@ -30,6 +32,7 @@ exports.EN = {
     "FAQ_NOT_FOUND": "There is no FAQ-entry for the keyword '{0}'.",
     "CIRCULAR_CRON": "Cronjobs can not be recursive for security reasons.",
     "GUILD_LOG_PERMISSION_FAIL": "I need the API-key of a guild leader to retrieve the guild log.",
+    "HELPTEXT_PERMIT": "Please use the command with the following parameters:\n`\"<name or alias of a command>\" \"<snowflake or name of the player or role (MUST EXIST)>\" <numerical permission value, positive to allow, negative to disallow>`",
     "HELPTEXT_SAY": "Please use the command with the following parameters:\n`<Channel, in which the bot should speak> \"<Text to speak>\"`.",
     "HELPTEXT_ADD_CRON": "Please use the command with the following parameters:\n\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Command to execute>`\" `<Parameters for that command as specified by the help text>`.",
     "HELPTEXT_DEL_CRON": "Please use the command with the following parameter:\n`<ID of the cronjob to delete>`\nIDs of all cronjobs can be found with the `lscrons`-command.",
@@ -39,6 +42,7 @@ exports.EN = {
     "HELPTEXT_DEL_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
     "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
+    "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
     "DESC_LIST_CRONS": "Lists all cronjobs.",
     "DESC_MAKE_CRON": "Creates a new cronjob for the given timestamp.",
@@ -60,6 +64,8 @@ exports.EN = {
 };
 exports.DE = {
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
+    "NOT_PERMITTED": "Du hast nicht die nötigen Berechtigungen um diesen Befehl auszuführen.",
+    "PERMISSION_SET_TO": "Berechtigung für `{0}` auf Befehl `{1}` ist jetzt **{2}**.",
     "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste `,auth ` gefolgt von deinem neuen Schlüssel per Direktnachricht (dieses Fenster) an mich.\n\nZ.B: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
     "NO_SUCH_COMMAND": "Den von dir angegebenen Befehl '{0}' kenne ich nicht.",
     "NOT_AVAILABLE_AS_DM": "Dieser Befehl ist per Privatnachricht nicht nutzbar. Bitte versuche es auf einem Server erneut.",
@@ -88,6 +94,7 @@ exports.DE = {
     "FAQ_NOT_FOUND": "Es gibt keinen FAQ-Eintrag zu dem Stichwort '{0}'.",
     "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
     "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
+    "HELPTEXT_PERMIT": "Bitte benutze den Befehle mit folgenden Parametern:\n`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
     "HELPTEXT_SAY": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
     "HELPTEXT_ADD_CRON": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
     "HELPTEXT_DEL_CRON": "Bitte benutze den Befehl mit folgendem Parameter:\n`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
@@ -97,6 +104,7 @@ exports.DE = {
     "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
     "HELPTEXT_ADD_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`@user` `@role`",
+    "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
     "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt.",

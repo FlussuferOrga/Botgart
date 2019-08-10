@@ -104,6 +104,37 @@ class Database {
         ];
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
+    checkPermission(command, uid, roles, gid) {
+        roles.push(uid);
+        let permission = this.execute(db => db.prepare(`
+            SELECT 
+              SUM(value) AS permission
+            FROM 
+              command_permissions
+            WHERE
+              command = ?
+              AND guild = ?
+              AND receiver IN (?)
+              AND type IN ('user','role') -- avoid messups with users named "everyone"
+            `).get(command, gid, roles.join(",")).permission);
+        return [permission > 0, permission];
+    }
+    setPermission(command, receiver, type, value, gid) {
+        return this.execute(db => {
+            let perm = undefined;
+            db.transaction((_) => {
+                db.prepare(`INSERT INTO command_permissions(command, receiver, type, guild, value) 
+                    VALUES(?,?,?,?,?)
+                    ON CONFLICT(command, receiver) DO UPDATE SET
+                      value = ?`).run(command, receiver, type, gid, value, value);
+                perm = db.prepare(`
+                         SELECT SUM(value) AS perm 
+                         FROM command_permissions 
+                         WHERE command = ? AND guild = ? AND receiver = ?`).get(command, gid, receiver).perm;
+            })(null);
+            return perm;
+        });
+    }
     getGW2Accounts(accnames) {
         return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created WHERE gw2account IN (?)`)
             .run(accnames.join(",")).all());

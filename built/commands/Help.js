@@ -24,7 +24,8 @@ class HelpCommand extends BotgartCommand_1.BotgartCommand {
         super("help", {
             aliases: ["help", "commands", "hilfe"],
         }, true, // available per DM
-        true // cronable
+        true, // cronable
+        1 // everyone permission
         );
     }
     desc() {
@@ -54,7 +55,7 @@ class HelpCommand extends BotgartCommand_1.BotgartCommand {
             );
         });
         if (ms.length > 1) {
-            Util_1.log("warn", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
+            Util_1.log("warning", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
         }
     }
 }

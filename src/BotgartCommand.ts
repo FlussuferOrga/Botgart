@@ -1,21 +1,58 @@
+let config = require("../config.json");
 import * as discord from "discord.js";
 import * as L from "./Locale";
+import { BotgartClient } from "./BotgartClient";
 import { Command, CommandOptions } from "discord-akairo"; 
 
+export enum PermissionTypes {
+    user = "user",
+    role = "role",
+    other = "other"
+}
 export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
+    protected everyonePermission: number;
 
-    constructor(id: string, options: CommandOptions, availableAsDM: boolean = false, cronable: boolean = true) {
+    constructor(id: string, options: CommandOptions, availableAsDM: boolean = false, cronable: boolean = true, everyonePermission: number = 0) {
         super(id, options);
         this.availableAsDM = availableAsDM;
         this.cronable = cronable;
+        this.everyonePermission = everyonePermission;
+        //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
+    }
+
+    /**
+    * Checks whether a user is allowed to execute a command.
+    * That's the case if either the user is the bot owner (set in config)
+    * or when the sum of permissions granted to the user personally,
+    * or all the rules the user has is greater than zero. Example:
+    * User A has two roles R and S. User A has 0 permission power on command C.
+    * The roles R and S have -5 and 10 permission power on C respetctivly. 
+    * The special role everyone has permission power 1. 
+    * In sum, A has: 0 + (-5) + 10 + 1 = 6 permission power. So they will
+    * be allowed to execute C.
+    * Note that this check takes place _in addition_ to the Akairo check
+    * userPermissions and clientPermissions, which is very limited as it
+    * is bound to the boolean permissions Discord gives out 
+    * (i.e. "user is admin", "user can use external emotes" etc...).
+    * Those three checks are logically conjuncted with AND, so they must all pass.
+    * @param user - the user for which to check the permissions.
+    * @returns - true, if this function thinks the user is allowed to execute the command.
+    * 
+    */
+    public isAllowed(user: (discord.GuildMember|discord.User)) {
+        const uid = user.id;
+        const gid = user instanceof discord.GuildMember ? user.guild.id : null;
+        const roles = user instanceof discord.GuildMember ? user.roles.map(r => r.id) : [];
+        const [allowed, perm] = (<BotgartClient>this.client).db.checkPermission(this.constructor.name, uid, roles, gid);
+        return uid === config.owner_id || allowed || perm + this.everyonePermission > 0;
     }
 
     /**
     * Creates a decription for this command for help-listing.
     * Note that "description" is already taken somehow.
-    * returns - description of this command.
+    * @returns - description of this command.
     */
     public desc() {
         return "";
@@ -106,6 +143,13 @@ export class BotgartCommand extends Command {
             message.util.send(errorMessage)
             return;
         }
+
+        let causer = message.member || message.author;
+        if(!this.isAllowed(causer)) {
+            message.util.send(L.get("NOT_PERMITTED"));
+            return;
+        }
+
         let res = this.command(message, message.author, message.guild, args);
         return this.postExecHook(message, args, res);
     }

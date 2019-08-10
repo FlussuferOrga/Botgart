@@ -19,7 +19,8 @@ export class HelpCommand extends BotgartCommand {
             aliases: ["help", "commands", "hilfe"],
         },
         true, // available per DM
-        true // cronable
+        true, // cronable
+        1 // everyone permission
         );
     }
 
@@ -58,7 +59,7 @@ export class HelpCommand extends BotgartCommand {
             );
         });
         if(ms.length > 1) {
-            log("warn", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
+            log("warning", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
         }
     }
 }
