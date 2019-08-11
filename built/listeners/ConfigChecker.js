@@ -14,7 +14,7 @@ const validate = __importStar(require("validate.js"));
 const gw2 = require("gw2api-client");
 const api = gw2();
 validate.validators.isArray = (value, options, key, attributes) => {
-    let m = options.message || (x => "not an array.");
+    const m = options.message || (x => "not an array.");
     return validate.isArray(value) ? null : m(value);
 };
 validate.validators.all = (value, options, key, attributes) => {
@@ -51,6 +51,7 @@ class ConfigChecker extends discord_akairo_1.Listener {
         });
     }
     exec() {
+        // function(value, attribute, validatorOptions, attributes, globalOptions)
         var constraints = {
             owner_ids: {
                 presence: true,
@@ -60,22 +61,14 @@ class ConfigChecker extends discord_akairo_1.Listener {
                 presence: true,
                 format: {
                     pattern: /.+$/,
-                    message: function (value, attribute, validatorOptions, attributes, globalOptions) {
-                        return validate.format("^%{pref} is not a valid prefix", {
-                            pref: value
-                        });
-                    }
+                    message: (v, a, vos, as, gos) => validate.format("^%{pref} is not a valid prefix", { pref: v })
                 }
             },
             token: {
                 presence: true,
                 format: {
                     pattern: /.+$/,
-                    message: function (value, attribute, validatorOptions, attributes, globalOptions) {
-                        return validate.format("^%{tok} is not a valid token", {
-                            tok: value
-                        });
-                    }
+                    message: (v, a, vos, as, gos) => validate.format("^%{tok} is not a valid token", { tok: v })
                 }
             },
             home_id: {

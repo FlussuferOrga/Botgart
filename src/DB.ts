@@ -127,17 +127,19 @@ export class Database {
 
     checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean,number] {
         roles.push(uid);
-        let permission = this.execute(db => db.prepare(`
-            SELECT 
-              SUM(value) AS permission
-            FROM 
-              command_permissions
-            WHERE
-              command = ?
-              AND guild = ?
-              AND receiver IN (?)
-              AND type IN ('user','role') -- avoid messups with users named "everyone"
-            `).get(command, gid, roles.join(",")).permission);
+        const params = '?,'.repeat(roles.length).slice(0, -1);
+        let permission = this.execute(db => 
+            db.prepare(`
+                SELECT 
+                  SUM(value) AS permission
+                FROM 
+                  command_permissions
+                WHERE
+                  command = ?
+                  AND guild = ?
+                  AND receiver IN (${params})
+                  AND type IN ('user','role') -- avoid messups with users named "everyone"
+            `).get([command, gid].concat(roles)).permission);
         return [permission > 0, permission];
     }
 
