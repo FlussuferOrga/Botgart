@@ -42,7 +42,6 @@ export class Patch4 extends DBPatch {
               GROUP BY 
                 cp.command, cp.receiver, cp.type, cp.guild
             `).run();
-        this.dbcommit();
     }
 
     public async revert(): Promise<void> {
