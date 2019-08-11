@@ -49,7 +49,6 @@ class BotgartCommand extends discord_akairo_1.Command {
         const gid = user instanceof discord.GuildMember ? user.guild.id : null;
         const roles = user instanceof discord.GuildMember ? user.roles.map(r => r.id) : [];
         const [allowed, perm] = this.client.db.checkPermission(this.constructor.name, uid, roles, gid);
-        console.log(this.everyonePermission);
         return this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0;
     }
     /**

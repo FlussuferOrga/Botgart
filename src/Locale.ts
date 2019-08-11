@@ -20,6 +20,8 @@ export let EN : Object = {
     "GUILD_LOG_COMPLETE": "Guild log has successfully be retrieved.",
     "PERMANENT_ROLE_ADD_SUCC": "Permanent role has successfully been added.",
     "PERMANENT_ROLE_ADD_FAIL": "Permanent role could not be added.",
+    "WHOIS_EMPTY_RESULT": "No results found.",
+    "WHOIS_RESULTS": "The following possible results were found:",
 
     "CRONJOB_STORED": "Your cronjob has been saved with ID {0}. Next execution: {1}.",
     "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
@@ -45,6 +47,7 @@ export let EN : Object = {
     "HELPTEXT_DEL_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
     "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
+    "HELPTEXT_WHOIS": "Please use the command with the following parameters:\n`<part of an account- or discord-name (at least three characters!)>`",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -64,6 +67,7 @@ export let EN : Object = {
     "DESC_GUILD_LOG": "Pipes the guild log of a guild to a Discord channel.",
     "DESC_REPAIR_ROLES": "Gives all users the role they have been assigned as per the database.",
     "DESC_ADD_PERMAROLE": "Permanently gives a user a role he will be assigned even if he rejoins the server.",
+    "DESC_WHOIS": "Looks up the pair of Discord name and ingame name.",
 
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}"
 }
@@ -90,6 +94,8 @@ export let DE : Object = {
     "GUILD_LOG_COMPLETE": "Gilden-Logbuch erfolgreich abgerufen.",
     "PERMANENT_ROLE_ADD_SUCC": "Die permanente Rolle wurde erfolgreich hinzugefügt.",
     "PERMANENT_ROLE_ADD_FAIL": "Die permanente Rolle konnte nicht hinzugefügt werden.",
+    "WHOIS_EMPTY_RESULT": "Keine Treffer gefunden.",
+    "WHOIS_RESULTS": "Die folgenden möglichen Treffern wurden gefunden:",
 
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
@@ -114,7 +120,8 @@ export let DE : Object = {
     "HELPTEXT_GET_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
-    "HELPTEXT_ADD_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`@user` `@role`",
+    "HELPTEXT_ADD_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<@user>` `<@role>`",
+    "HELPTEXT_WHOIS": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
 
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -134,6 +141,7 @@ export let DE : Object = {
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
     "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
     "DESC_ADD_PERMAROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird.",
+    "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
 
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-channel '{1}' einen Raid gestartet! {2}"
 }

@@ -1,5 +1,6 @@
 import * as Util from "./Util.js";
 import * as sqlite3 from "better-sqlite3";
+import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { PermissionTypes } from "./BotgartCommand";
 import Timeout from "await-timeout";
@@ -97,6 +98,31 @@ export class Database {
         `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys(key)`
         ]; 
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
+    }
+
+    whois(searchString: string, discordCandidates: discord.User[]): {"discord_user": string, "account_name": string}[] {
+        return this.execute(db => {
+            db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
+            const stmt = db.prepare(`INSERT INTO whois(discord_id) VALUES(?)`);
+            discordCandidates.forEach(dc => stmt.run(dc.id));
+            return db.prepare(`
+                SELECT
+                    user         AS discord_user,
+                    account_name AS account_name
+                FROM 
+                    registrations AS r 
+                    JOIN whois AS w 
+                      ON w.discord_id = r.user
+                UNION 
+                SELECT 
+                    user         AS discord_user, 
+                    account_name AS account_name
+                FROM 
+                    registrations 
+                WHERE 
+                    LOWER(account_name) LIKE ('%' || ? || '%')
+            `).all(searchString.toLowerCase());
+        });
     }
 
     checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean,number] {

@@ -104,6 +104,30 @@ class Database {
         ];
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
+    whois(searchString, discordCandidates) {
+        return this.execute(db => {
+            db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
+            const stmt = db.prepare(`INSERT INTO whois(discord_id) VALUES(?)`);
+            discordCandidates.forEach(dc => stmt.run(dc.id));
+            return db.prepare(`
+                SELECT
+                    user         AS discord_user,
+                    account_name AS account_name
+                FROM 
+                    registrations AS r 
+                    JOIN whois AS w 
+                      ON w.discord_id = r.user
+                UNION 
+                SELECT 
+                    user         AS discord_user, 
+                    account_name AS account_name
+                FROM 
+                    registrations 
+                WHERE 
+                    LOWER(account_name) LIKE ('%' || ? || '%')
+            `).all(searchString.toLowerCase());
+        });
+    }
     checkPermission(command, uid, roles, gid) {
         roles.push(uid);
         let permission = this.execute(db => db.prepare(`
