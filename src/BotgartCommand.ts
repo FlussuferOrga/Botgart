@@ -150,15 +150,15 @@ export class BotgartCommand extends Command {
             return;
         }
 
-        let errorMessage = this.checkArgs(args);
-        if(errorMessage && message.util) {
-            message.util.send(errorMessage)
-            return;
-        }
-
         let causer = message.member || message.author;
         if(!this.isAllowed(causer)) {
             message.util.send(L.get("NOT_PERMITTED"));
+            return;
+        }
+
+        let errorMessage = this.checkArgs(args);
+        if(errorMessage && message.util) {
+            message.util.send(errorMessage)
             return;
         }
 

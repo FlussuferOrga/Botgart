@@ -145,14 +145,14 @@ class BotgartCommand extends discord_akairo_1.Command {
             message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
-        let errorMessage = this.checkArgs(args);
-        if (errorMessage && message.util) {
-            message.util.send(errorMessage);
-            return;
-        }
         let causer = message.member || message.author;
         if (!this.isAllowed(causer)) {
             message.util.send(L.get("NOT_PERMITTED"));
+            return;
+        }
+        let errorMessage = this.checkArgs(args);
+        if (errorMessage && message.util) {
+            message.util.send(errorMessage);
             return;
         }
         let res = this.command(message, message.author, message.guild, args);
