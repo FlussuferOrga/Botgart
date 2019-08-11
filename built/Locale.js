@@ -88,7 +88,7 @@ exports.DE = {
     "PERMANENT_ROLE_ADD_SUCC": "Die permanente Rolle wurde erfolgreich hinzugefügt.",
     "PERMANENT_ROLE_ADD_FAIL": "Die permanente Rolle konnte nicht hinzugefügt werden.",
     "WHOIS_EMPTY_RESULT": "Keine Treffer gefunden.",
-    "WHOIS_RESULTS": "Die folgenden möglichen Treffern wurden gefunden:",
+    "WHOIS_RESULTS": "Die folgenden möglichen Treffer wurden gefunden:",
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
     "CRONJOB_DELETED": "Der Cronjob wurde gelöscht.",
