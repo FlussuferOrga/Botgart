@@ -49,7 +49,19 @@ class BotgartCommand extends discord_akairo_1.Command {
         const gid = user instanceof discord.GuildMember ? user.guild.id : null;
         const roles = user instanceof discord.GuildMember ? user.roles.map(r => r.id) : [];
         const [allowed, perm] = this.client.db.checkPermission(this.constructor.name, uid, roles, gid);
-        return uid === config.owner_id || allowed || perm + this.everyonePermission > 0;
+        return this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0;
+    }
+    /**
+    * Checks, if the passed user is an owner.
+    * Owners are identified by their discord id (string of digits).
+    * Multiple owners can be assigned in the config.
+    * Users are allowed to execute every command.
+    * @param user - the user to check.
+    * @returns - true, if the user is an owner.
+    */
+    isOwner(user) {
+        console.log(config.owner_ids, user.id);
+        return config.owner_ids === user.id || Array.isArray(config.owner_ids) && config.owner_ids.includes(user.id);
     }
     /**
     * Creates a decription for this command for help-listing.

@@ -56,7 +56,7 @@ export class PermitCommand extends BotgartCommand {
         },
         false, // available per DM
         true, // cronable
-        1
+        0
         );
     }
 

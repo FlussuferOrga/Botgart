@@ -1,5 +1,5 @@
 {
-    "owner_id": "1111111111111",
+    "owner_ids": ["1111111111111"],
     "prefix": ",",
     "token": "xxxxxxxxx",
     "home_id": 2202,

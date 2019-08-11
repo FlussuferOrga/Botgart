@@ -62,7 +62,7 @@ class PermitCommand extends BotgartCommand_1.BotgartCommand {
             userPermissions: ["ADMINISTRATOR"]
         }, false, // available per DM
         true, // cronable
-        1);
+        0);
     }
     checkArgs(args) {
         return !args || !args.command || !args.receiver || args.value === undefined ? L.get("HELPTEXT_PERMIT") : undefined;
