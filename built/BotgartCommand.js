@@ -49,6 +49,7 @@ class BotgartCommand extends discord_akairo_1.Command {
         const gid = user instanceof discord.GuildMember ? user.guild.id : null;
         const roles = user instanceof discord.GuildMember ? user.roles.map(r => r.id) : [];
         const [allowed, perm] = this.client.db.checkPermission(this.constructor.name, uid, roles, gid);
+        console.log(this.everyonePermission);
         return this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0;
     }
     /**
@@ -60,7 +61,6 @@ class BotgartCommand extends discord_akairo_1.Command {
     * @returns - true, if the user is an owner.
     */
     isOwner(user) {
-        console.log(config.owner_ids, user.id);
         return config.owner_ids === user.id || Array.isArray(config.owner_ids) && config.owner_ids.includes(user.id);
     }
     /**

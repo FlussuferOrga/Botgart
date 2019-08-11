@@ -42,7 +42,7 @@ export class Patch4 extends DBPatch {
               GROUP BY 
                 cp.command, cp.receiver, cp.type, cp.guild
             `).run();
-    }
+      }
 
     public async revert(): Promise<void> {
         this.dbbegin();

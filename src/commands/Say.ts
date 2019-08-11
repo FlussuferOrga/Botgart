@@ -30,7 +30,8 @@ export class SayCommand extends BotgartCommand {
                 userPermissions: ["ADMINISTRATOR"]
             },
             false, // available per DM
-            true // cronable
+            true, // cronable
+            0, // everyone permission
         );
     }
 

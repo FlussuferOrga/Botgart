@@ -25,7 +25,8 @@ export class GetFAQCommand extends BotgartCommand {
             ]
         },
         false,  // available per DM
-        true // cronable
+        true, // cronable
+        1 // everyone permission
         );
     }
 

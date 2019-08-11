@@ -21,7 +21,8 @@ class ListFAQsCommand extends BotgartCommand_1.BotgartCommand {
         super("listfaqs", {
             aliases: ["listfaqs", "lsfaqs", "lsrtfms"]
         }, false, // available per DM
-        false // cronable
+        false, // cronable
+        1 // everyone permissions
         );
     }
     desc() {

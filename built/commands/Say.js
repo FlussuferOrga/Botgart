@@ -35,8 +35,8 @@ class SayCommand extends BotgartCommand_1.BotgartCommand {
             ],
             userPermissions: ["ADMINISTRATOR"]
         }, false, // available per DM
-        true // cronable
-        );
+        true, // cronable
+        0);
     }
     desc() {
         return L.get("DESC_SAY");

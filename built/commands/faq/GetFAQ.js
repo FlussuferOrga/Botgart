@@ -26,7 +26,8 @@ class GetFAQCommand extends BotgartCommand_1.BotgartCommand {
                 }
             ]
         }, false, // available per DM
-        true // cronable
+        true, // cronable
+        1 // everyone permission
         );
     }
     desc() {

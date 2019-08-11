@@ -52,16 +52,9 @@ class ConfigChecker extends discord_akairo_1.Listener {
     }
     exec() {
         var constraints = {
-            owner_id: {
+            owner_ids: {
                 presence: true,
-                format: {
-                    pattern: /^\d+$/,
-                    message: function (value, attribute, validatorOptions, attributes, globalOptions) {
-                        return validate.format("^%{num} is not a valid owner ID", {
-                            num: value
-                        });
-                    }
-                }
+                isArray: {},
             },
             prefix: {
                 presence: true,
