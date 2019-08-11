@@ -49,7 +49,6 @@ class Patch4 extends DBPatch_js_1.DBPatch {
               GROUP BY 
                 cp.command, cp.receiver, cp.type, cp.guild
             `).run();
-            this.dbcommit();
         });
     }
     revert() {
