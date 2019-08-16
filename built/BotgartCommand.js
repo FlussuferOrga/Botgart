@@ -26,6 +26,12 @@ class BotgartCommand extends discord_akairo_1.Command {
         //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
     }
     /**
+    * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
+    */
+    getBotgartClient() {
+        return this.client;
+    }
+    /**
     * Checks whether a user is allowed to execute a command.
     * That's the case if either the user is the bot owner (set in config)
     * or when the sum of permissions granted to the user personally,

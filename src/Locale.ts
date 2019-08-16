@@ -48,6 +48,7 @@ export let EN : Object = {
     "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
     "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
     "HELPTEXT_WHOIS": "Please use the command with the following parameters:\n`<part of an account- or discord-name (at least three characters!)>`",
+    "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -68,6 +69,7 @@ export let EN : Object = {
     "DESC_REPAIR_ROLES": "Gives all users the role they have been assigned as per the database.",
     "DESC_ADD_PERMAROLE": "Permanently gives a user a role he will be assigned even if he rejoins the server.",
     "DESC_WHOIS": "Looks up the pair of Discord name and ingame name.",
+    "DESC_DISCORD_LOG": "Sets up the connection between an event-type and a Discord-text-channel.",
 
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}"
 }
@@ -122,6 +124,7 @@ export let DE : Object = {
     "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
     "HELPTEXT_ADD_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<@user>` `<@role>`",
     "HELPTEXT_WHOIS": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
+    "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
 
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -142,6 +145,7 @@ export let DE : Object = {
     "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
     "DESC_ADD_PERMAROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird.",
     "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
+    "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
 
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-channel '{1}' einen Raid gestartet! {2}"
 }

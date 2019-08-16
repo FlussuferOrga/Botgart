@@ -23,6 +23,13 @@ export class BotgartCommand extends Command {
     }
 
     /**
+    * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
+    */
+    protected getBotgartClient(): BotgartClient {
+        return <BotgartClient>this.client;
+    }
+
+    /**
     * Checks whether a user is allowed to execute a command.
     * That's the case if either the user is the bot owner (set in config)
     * or when the sum of permissions granted to the user personally,

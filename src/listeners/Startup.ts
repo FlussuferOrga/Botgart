@@ -21,7 +21,7 @@ export class Startup extends Listener {
         log("info", "Startup.js", "Rescheduling cronjobs from database.");
         (<MakeCronCommand>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
         let help = this.client.commandHandler.modules.get("help").id;
-        cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));
+        cl.user.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.akairoOptions.prefix, help));       
     }
 }
 

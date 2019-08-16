@@ -100,6 +100,19 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
+    logChannels(guild: discord.Guild, type: string): string[] {
+        return this.execute(db => db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")
+                                    .all(guild.id, type).map(c => c.channel));
+    }
+
+    addLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): void {
+        this.execute(db => db.prepare("INSERT INTO discord_log_channels(guild, type, channel) VALUES(?,?,?)").run(guild.id, type, channel.id));
+    }
+
+    removeLogChannel(guild: discord.Guild, type: string): void {
+        this.execute(db => db.prepare("DELETE FROM discord_log_channels WHERE guild = ? AND type = ?").run(guild.id, type));
+    }
+
     whois(searchString: string, discordCandidates: discord.User[]): {"discord_user": string, "account_name": string}[] {
         return this.execute(db => {
             db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
