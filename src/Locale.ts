@@ -19,7 +19,9 @@ export let EN : Object = {
     "FIND_DUPES_COMPLETE": "Duplicate search complete.",
     "GUILD_LOG_COMPLETE": "Guild log has successfully be retrieved.",
     "PERMANENT_ROLE_ADD_SUCC": "Permanent role has successfully been added.",
-    "PERMANENT_ROLE_ADD_FAIL": "Permanent role could not be added.",
+    "PERMANENT_ROLE_ADD_FAIL": "Permanent role could not be added. Maybe the role is already permanent for that user.",
+    "PERMANENT_ROLE_RM_SUCC": "Permanent role was successfully removed.",
+    "PERMANENT_ROLE_RM_FAIL": "Permanent role could not be removed.",
     "WHOIS_EMPTY_RESULT": "No results found.",
     "WHOIS_RESULTS": "The following possible results were found:",
     "DLOG_AUTH": "User {0} with ingame account `{1}` has been authorised with role {2}.",
@@ -49,6 +51,7 @@ export let EN : Object = {
     "HELPTEXT_DEL_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
     "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
+    "HELPTEXT_RM_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
     "HELPTEXT_WHOIS": "Please use the command with the following parameters:\n`<part of an account- or discord-name (at least three characters!)>`",
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
 
@@ -70,6 +73,7 @@ export let EN : Object = {
     "DESC_GUILD_LOG": "Pipes the guild log of a guild to a Discord channel.",
     "DESC_REPAIR_ROLES": "Gives all users the role they have been assigned as per the database.",
     "DESC_ADD_PERMAROLE": "Permanently gives a user a role he will be assigned even if he rejoins the server.",
+    "DESC_RM_PERMAROLE": "Removes a permanent role from a user, so that they won't have it assigned again upon rejoining the server.",
     "DESC_WHOIS": "Looks up the pair of Discord name and ingame name.",
     "DESC_DISCORD_LOG": "Sets up the connection between an event-type and a Discord-text-channel.",
 
@@ -97,7 +101,9 @@ export let DE : Object = {
     "FIND_DUPES_COMPLETE": "Duplikatsuche abgeschlossen.",
     "GUILD_LOG_COMPLETE": "Gilden-Logbuch erfolgreich abgerufen.",
     "PERMANENT_ROLE_ADD_SUCC": "Die permanente Rolle wurde erfolgreich hinzugefügt.",
-    "PERMANENT_ROLE_ADD_FAIL": "Die permanente Rolle konnte nicht hinzugefügt werden.",
+    "PERMANENT_ROLE_ADD_FAIL": "Die permanente Rolle konnte nicht hinzugefügt werden. Möglicherweise ist diese Rolle bereits permanent dem Benutzer zugewiesen.",
+    "PERMANENT_ROLE_RM_SUCC": "Die permanente Rolle wurde erfolgreich entfernt.",
+    "PERMANENT_ROLE_RM_FAIL": "Die permanente Rolle konnte nicht entfernt werden.",
     "WHOIS_EMPTY_RESULT": "Keine Treffer gefunden.",
     "WHOIS_RESULTS": "Die folgenden möglichen Treffer wurden gefunden:",
     "DLOG_AUTH": "Benutzer {0} mit dem Ingame-Account `{1}` wurde mit der Rolle {2} autorisiert.",
@@ -127,6 +133,7 @@ export let DE : Object = {
     "HELPTEXT_DEL_FAQ": "Bitte benutze den Befehl mit folgendem Parameter:\n`<Schüsselwort>`",
     "HELPTEXT_GUILD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
     "HELPTEXT_ADD_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<@user>` `<@role>`",
+    "HELPTEXT_RM_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<@user>` `<@role>`",
     "HELPTEXT_WHOIS": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
     "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
 
@@ -148,6 +155,7 @@ export let DE : Object = {
     "DESC_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
     "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
     "DESC_ADD_PERMAROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird.",
+    "DESC_RM_PERMAROLE": "Löst eine permanente Rolle von einem Benutzer, sodass diese ihm beim Betreten des Servers nicht automatisch erneut zugewiesen wird.",
     "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
     "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
 

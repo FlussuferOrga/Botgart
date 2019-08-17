@@ -3,7 +3,7 @@ import { Database } from "../DB.js";
 import { DBPatch } from "./DBPatch.js";
 
 /**
-* Adds the command_permissions table.
+* Adds the discord_log_channels table.
 */
 export class Patch5 extends DBPatch {
     constructor(db: Database) {

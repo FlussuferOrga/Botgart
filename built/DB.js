@@ -309,7 +309,20 @@ class Database {
         });
     }
     getPermanentRoles(user, guild) {
-        return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).run(guild, user).all());
+        return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).all(guild, user).map(r => r.role));
+    }
+    deletePermanentRole(user, guild, role) {
+        let sql = `DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?`;
+        return this.execute(db => {
+            try {
+                db.prepare(sql).run(guild, user, role);
+                return true;
+            }
+            catch (err) {
+                Util.log("error", "DB.js", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                return false;
+            }
+        });
     }
     findDuplicateRegistrations() {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());

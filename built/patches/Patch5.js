@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const DBPatch_js_1 = require("./DBPatch.js");
 /**
-* Adds the command_permissions table.
+* Adds the discord_log_channels table.
 */
 class Patch5 extends DBPatch_js_1.DBPatch {
     constructor(db) {

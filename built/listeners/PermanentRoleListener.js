@@ -10,7 +10,6 @@ class PermanentRoleListener extends discord_akairo_1.Listener {
         });
     }
     exec(member) {
-        return;
         let cl = this.client;
         let g = member.guild;
         cl.db.getPermanentRoles(member.user.id, g.id).forEach(roleName => {

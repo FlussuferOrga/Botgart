@@ -12,7 +12,6 @@ export class PermanentRoleListener extends Listener {
     }
 
     exec(member) {
-        return;
         let cl = <BotgartClient>this.client;
         let g = member.guild;
         cl.db.getPermanentRoles(member.user.id, g.id).forEach(roleName => {
@@ -23,7 +22,6 @@ export class PermanentRoleListener extends Listener {
             } else {
                 log("warning", "PermanentRoleListener.js", "No role with name '{0}' was found on this server, which was configured as permanent role for user {1}. Skipping.".formatUnicorn(roleName, member.user.username));
             }
-            
         });
     }
 }

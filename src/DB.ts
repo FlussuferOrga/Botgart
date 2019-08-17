@@ -330,8 +330,21 @@ export class Database {
                 });
     }
 
-    getPermanentRoles(user: string, guild: string) : [string] {
-        return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).run(guild, user).all());
+    getPermanentRoles(user: string, guild: string) : string[] {
+        return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).all(guild, user).map(r => r.role));
+    }
+
+    deletePermanentRole(user: string, guild: string, role: string): boolean {
+        let sql = `DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?`;
+        return this.execute(db => {
+                    try {
+                        db.prepare(sql).run(guild, user, role);
+                        return true;
+                    } catch(err) {
+                        Util.log("error", "DB.js", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                        return false;
+                    }
+                });        
     }
 
     findDuplicateRegistrations(): any {
