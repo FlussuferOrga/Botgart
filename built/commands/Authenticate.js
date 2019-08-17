@@ -1,4 +1,12 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -83,21 +91,30 @@ class AuthenticateCommand extends BotgartCommand_1.BotgartCommand {
                     responsible.send(reply);
                 }
                 else {
-                    Util.getAccountGUID(args.key).then(guid => {
-                        members.forEach(m => {
+                    Util.getAccountGUID(args.key).then((guid) => __awaiter(this, void 0, void 0, function* () {
+                        yield Util.asyncForEach(members, (m) => __awaiter(this, void 0, void 0, function* () {
                             let r = m.guild.roles.find(r => r.name === role);
                             if (!r) {
                                 Util.log("error", "Authenticate.js", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                 reply = L.get("INTERNAL_ERROR");
                             }
                             else {
-                                let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), r.name);
+                                let accountName = yield Util.getAccountName(args.key);
+                                let i = 3;
+                                while (accountName === false && i > 0) {
+                                    accountName = yield Util.getAccountName(args.key);
+                                    i--;
+                                }
+                                if (accountName === false) {
+                                    Util.log("warning", "Authenticate.js", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
+                                    accountName = null;
+                                }
+                                let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                 if (unique) {
                                     Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                     // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                     Util.assignServerRole(m.member, null, r);
-                                    const accountName = "UNKNOWN"; // FIXME: #27
-                                    cl.discordLog(guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]));
+                                    cl.discordLog(m.guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]), false);
                                     reply = L.get("KEY_ACCEPTED");
                                 }
                                 else {
@@ -105,9 +122,9 @@ class AuthenticateCommand extends BotgartCommand_1.BotgartCommand {
                                     reply = L.get("KEY_NOT_UNIQUE");
                                 }
                             }
-                        });
+                        }));
                         responsible.send(reply);
-                    });
+                    }));
                 }
             }, err => {
                 switch (err) {

@@ -30,10 +30,9 @@ export class BotgartClient extends AkairoClient {
     */
     discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels = this.db.getLogChannels(guild, type);
-        if(!channels && !disposable) {
+        if(channels.length === 0 && disposable === false) {
             log("debug", "BotgartClient.js", "Expected channel for type '{0}' for not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
-            console.log(JSON.stringify(channels));
             channels.forEach(cid => {
             const channel: discord.GuildChannel = guild.channels.find(c => c.id === cid);
             if(!channel) {
@@ -41,7 +40,7 @@ export class BotgartClient extends AkairoClient {
             } else if(!(channel instanceof discord.TextChannel)) {
                 log("error", "BotgartClient.js", "Channel '{0}' in guild '{1}' to log type '{2}' was found, but appears to be a voice channel. Skipping.".formatUnicorn(cid, guild.name, type));
             } else {
-                (<discord.TextChannel>channel).sendMessage(message);
+                (<discord.TextChannel>channel).send(message);
             }
         });    
         }

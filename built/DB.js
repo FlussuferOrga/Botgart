@@ -143,7 +143,7 @@ class Database {
         const params = '?,'.repeat(roles.length).slice(0, -1);
         let permission = this.execute(db => db.prepare(`
                 SELECT 
-                  SUM(value) AS permission
+                  TOTAL(value) AS permission -- total() returns 0.0 for the sum of [null]
                 FROM 
                   command_permissions
                 WHERE
@@ -206,11 +206,11 @@ class Database {
     getFAQs(guild) {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
-    storeAPIKey(user, guild, key, gw2account, role) {
-        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, registration_role) VALUES(?,?,?,?,?)`;
+    storeAPIKey(user, guild, key, gw2account, accountName, role) {
+        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role) VALUES(?,?,?,?,?,?)`;
         return this.execute(db => {
             try {
-                db.prepare(sql).run(user, guild, key, gw2account, role);
+                db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
                 return true;
             }
             catch (err) {

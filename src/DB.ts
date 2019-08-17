@@ -144,7 +144,7 @@ export class Database {
         let permission = this.execute(db => 
             db.prepare(`
                 SELECT 
-                  SUM(value) AS permission
+                  TOTAL(value) AS permission -- total() returns 0.0 for the sum of [null]
                 FROM 
                   command_permissions
                 WHERE
@@ -217,11 +217,11 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
 
-    storeAPIKey(user: string, guild: string, key: string, gw2account: string, role: string): boolean|undefined {
-        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, registration_role) VALUES(?,?,?,?,?)`;
+    storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean|undefined {
+        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role) VALUES(?,?,?,?,?,?)`;
         return this.execute(db => {
                     try {
-                        db.prepare(sql).run(user, guild, key, gw2account, role);
+                        db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
                         return true;
                     } catch(err) {
                         Util.log("error", "DB.js", "Error while trying to store API key: {0}.".formatUnicorn(err.message));

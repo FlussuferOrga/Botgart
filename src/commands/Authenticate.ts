@@ -85,20 +85,29 @@ export class AuthenticateCommand extends BotgartCommand {
                         reply = L.get("KEY_DECLINED");
                         responsible.send(reply);                    
                     } else {
-                        Util.getAccountGUID(args.key).then(guid => {
-                            members.forEach(m => {
+                        Util.getAccountGUID(args.key).then(async guid => {
+                            await Util.asyncForEach(members, async m => {
                                 let r = m.guild.roles.find(r => r.name === role);
                                 if(!r) {
                                     Util.log("error", "Authenticate.js", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
-                                    let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), r.name);
+                                    let accountName = await Util.getAccountName(args.key);
+                                    let i = 3;
+                                    while(accountName === false && i > 0) {
+                                        accountName = await Util.getAccountName(args.key);
+                                        i--;
+                                    }
+                                    if(accountName === false) {
+                                        Util.log("warning", "Authenticate.js", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
+                                        accountName = null;
+                                    }
+                                    let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if(unique) {
                                         Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                         Util.assignServerRole(m.member, null, r);
-                                        const accountName = "UNKNOWN"; // FIXME: #27
-                                        cl.discordLog(guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]));
+                                        cl.discordLog(m.guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]), false);
                                         reply = L.get("KEY_ACCEPTED")
                                     } else {
                                         Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
