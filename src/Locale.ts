@@ -22,6 +22,8 @@ export let EN : Object = {
     "PERMANENT_ROLE_ADD_FAIL": "Permanent role could not be added.",
     "WHOIS_EMPTY_RESULT": "No results found.",
     "WHOIS_RESULTS": "The following possible results were found:",
+    "DLOG_AUTH": "User {0} with ingame account {1} has been authorised with role {2}.",
+    "DLOG_UNAUTH": "User {0} with ingame account {1} has been de-authorised and lost their role {2}.",
 
     "CRONJOB_STORED": "Your cronjob has been saved with ID {0}. Next execution: {1}.",
     "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
@@ -98,6 +100,8 @@ export let DE : Object = {
     "PERMANENT_ROLE_ADD_FAIL": "Die permanente Rolle konnte nicht hinzugefügt werden.",
     "WHOIS_EMPTY_RESULT": "Keine Treffer gefunden.",
     "WHOIS_RESULTS": "Die folgenden möglichen Treffer wurden gefunden:",
+    "DLOG_AUTH": "Benutzer {0} mit dem Ingame-Account {1} wurde mit der Rolle {2} autorisiert.",
+    "DLOG_UNAUTH": "Benutzer {0} mit dem Ingame-Account {1} wurde ent-autorisiert und hat die Rolle {2} verloren.",
 
     "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
     "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",

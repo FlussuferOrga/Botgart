@@ -20,6 +20,8 @@ Testcases:
 */
 
 export class AuthenticateCommand extends BotgartCommand {
+    private static readonly LOG_TYPE_AUTH : string = "auth";
+
     constructor() {
         super("authenticate", {
             aliases: ["register","authenticate","auth"],
@@ -95,6 +97,8 @@ export class AuthenticateCommand extends BotgartCommand {
                                         Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                         Util.assignServerRole(m.member, null, r);
+                                        const accountName = "UNKNOWN"; // FIXME: #27
+                                        cl.discordLog(guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]));
                                         reply = L.get("KEY_ACCEPTED")
                                     } else {
                                         Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));

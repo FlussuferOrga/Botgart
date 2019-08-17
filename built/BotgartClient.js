@@ -33,7 +33,7 @@ class BotgartClient extends discord_akairo_1.AkairoClient {
     * @param disposable (optional, default: true) - if no channel can be found to log the message, it will be written to the debug-log as fallback.
     */
     discordLog(guild, type, message, disposable = true) {
-        const channels = this.db.logChannels(guild, type);
+        const channels = this.db.getLogChannels(guild, type);
         if (!channels && !disposable) {
             Util_js_1.log("debug", "BotgartClient.js", "Expected channel for type '{0}' for not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         }

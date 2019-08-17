@@ -104,7 +104,7 @@ class Database {
         ];
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
-    logChannels(guild, type) {
+    getLogChannels(guild, type) {
         return this.execute(db => db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")
             .all(guild.id, type).map(c => c.channel));
     }
@@ -228,7 +228,7 @@ class Database {
     revalidateKeys() {
         return __awaiter(this, void 0, void 0, function* () {
             let semaphore = new await_semaphore_1.Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
-            return this.execute(db => Promise.all(db.prepare(`SELECT api_key, guild, user, registration_role FROM registrations ORDER BY guild`).all()
+            return this.execute(db => Promise.all(db.prepare(`SELECT api_key, guild, user, registration_role, account_name FROM registrations ORDER BY guild`).all()
                 .map((r) => __awaiter(this, void 0, void 0, function* () {
                 let release = yield semaphore.acquire();
                 let res = yield Util.validateWorld(r.api_key).then(admittedRole => [r, admittedRole], error => {

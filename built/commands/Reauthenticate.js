@@ -31,7 +31,7 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
         return L.get("DESC_REAUTHENTICATE");
     }
     command(message, responsible, guild, args) {
-        let cl = this.client;
+        let cl = this.getBotgartClient();
         cl.db.revalidateKeys().then(update => {
             let guild, currentRole, admittedRole;
             // filter out users for which we encountered errors
@@ -59,6 +59,7 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
                         let m = guild.members.find(member => p.user == member.user.id);
                         if (!m) {
                             Util_1.log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
+                            cl.discordLog(guild, ReauthenticateCommand.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [Util_1.formatUserPing(p.user), p.account_name, p.registration_role]));
                             cl.db.deleteKey(p.api_key);
                         }
                         else {
@@ -67,6 +68,7 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
                                 Util_1.log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
                                 m.removeRole(currentRole);
                                 cl.db.deleteKey(p.api_key);
+                                cl.discordLog(guild, ReauthenticateCommand.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [Util_1.formatUserPing(p.user), p.account_name, p.registration_role]));
                                 m.send(L.get("KEY_INVALIDATED"));
                             }
                             else {
@@ -84,5 +86,6 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
         return message.util.send(L.get("PRUNING_COMPLETE"));
     }
 }
+ReauthenticateCommand.LOG_TYPE_UNAUTH = "unauth";
 exports.ReauthenticateCommand = ReauthenticateCommand;
 module.exports = ReauthenticateCommand;

@@ -96,6 +96,8 @@ class AuthenticateCommand extends BotgartCommand_1.BotgartCommand {
                                     Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                     // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                     Util.assignServerRole(m.member, null, r);
+                                    const accountName = "UNKNOWN"; // FIXME: #27
+                                    cl.discordLog(guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]));
                                     reply = L.get("KEY_ACCEPTED");
                                 }
                                 else {
@@ -130,5 +132,6 @@ class AuthenticateCommand extends BotgartCommand_1.BotgartCommand {
         }
     }
 }
+AuthenticateCommand.LOG_TYPE_AUTH = "auth";
 exports.AuthenticateCommand = AuthenticateCommand;
 module.exports = AuthenticateCommand;

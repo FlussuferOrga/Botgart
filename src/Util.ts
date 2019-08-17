@@ -16,6 +16,10 @@ api.language('en');
 api.fetch.retry(tries => tries <= 5)
 api.fetch.retryWait(tries => tries * 3000)
 
+export function formatUserPing(uid: string) {
+    return "<@{0}>".formatUnicorn(uid);
+}
+
 export async function asyncForEach(array, callback) {
   for (let i = 0; i < array.length; i++) {
     await callback(array[i], i, array);
