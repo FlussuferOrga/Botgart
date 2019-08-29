@@ -140,6 +140,9 @@ class BotgartCommand extends discord_akairo_1.Command {
     * 1. Deny DM-execution (if the command is not available as DM, which most are not).
     * 2. Check, if the arguments are not only syntactically, but semantically correct, if not, error out.
     * 3. Call command().
+    * 4. Call postExecHook() with the result of command()
+    *
+    * Whereas croned commands only call command() and nothing else.
     *
     * This behaviour can of course be overridden on a case-to-case basis.
     *

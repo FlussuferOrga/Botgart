@@ -54,6 +54,7 @@ export let EN : Object = {
     "HELPTEXT_RM_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
     "HELPTEXT_WHOIS": "Please use the command with the following parameters:\n`<part of an account- or discord-name (at least three characters!)>`",
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
+    "HELPTEXT_PRUNE": "Please use the command with the following parameters:\n`<number of days to be considered inactive (1 <= n <= 30)>` `<text the pruned members should receive as private message>`",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -76,6 +77,7 @@ export let EN : Object = {
     "DESC_RM_PERMAROLE": "Removes a permanent role from a user, so that they won't have it assigned again upon rejoining the server.",
     "DESC_WHOIS": "Looks up the pair of Discord name and ingame name.",
     "DESC_DISCORD_LOG": "Sets up the connection between an event-type and a Discord-text-channel.",
+    "DESC_PRUNE": "Prunes inactive users without roles.",
 
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}"
 }
@@ -136,6 +138,7 @@ export let DE : Object = {
     "HELPTEXT_RM_PERMAROLE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<@user>` `<@role>`",
     "HELPTEXT_WHOIS": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
     "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
+    "HELPTEXT_PRUNE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
 
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -158,8 +161,9 @@ export let DE : Object = {
     "DESC_RM_PERMAROLE": "Löst eine permanente Rolle von einem Benutzer, sodass diese ihm beim Betreten des Servers nicht automatisch erneut zugewiesen wird.",
     "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
     "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
+    "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
 
-    "COMMANDER_TAG_UP": "{0} hat im Teamspeak-channel '{1}' einen Raid gestartet! {2}"
+    "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}"
 }
 
 /**
