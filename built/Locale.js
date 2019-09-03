@@ -76,7 +76,12 @@ exports.EN = {
     "DESC_DISCORD_LOG": "Sets up the connection between an event-type and a Discord-text-channel.",
     "DESC_PRUNE": "Prunes inactive users without roles.",
     "DESC_RESETLEAD": "Creates a post for commanders to roster.",
-    "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}"
+    "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
+    "RED_BORDERLANDS": "Red Borderlands",
+    "BLUE_BORDERLANDS": "Blue Borderlands",
+    "GREEN_BORDERLANDS": "Green Borderlands",
+    "ETERNAL_BATTLEGROUNDS": "Eternal Battlegrounds",
+    "RESETLEAD_HEADER": "React with one of these emotes to set yourself as reset lead. React with ❌ to withdraw your lead."
 };
 exports.DE = {
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
@@ -154,7 +159,12 @@ exports.DE = {
     "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
     "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
     "DESC_RESETLEAD": "Erstellt einen Post, mithilfe dessen Kommandeure Rostern können.",
-    "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}"
+    "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
+    "RED_BORDERLANDS": "Rote Grenzlande",
+    "BLUE_BORDERLANDS": "Blaue Grenzlande",
+    "GREEN_BORDERLANDS": "Grüne Grenzlande",
+    "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
+    "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur einzutragen. Reagiere mit ❌ um dich wieder auszutragen."
 };
 /**
 * Tries to resolve the passed key into a locale string.
@@ -164,10 +174,13 @@ exports.DE = {
 * @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders.
 *          If no locale string could be found, the key is returned instead.
 */
-function get(key, args) {
-    let sde = key in exports.DE ? exports.DE[key].formatUnicorn(args) : key;
-    let sen = key in exports.EN ? exports.EN[key].formatUnicorn(args) : key;
-    return ":flag_de: {0}\n:flag_gb: {1}".formatUnicorn(sde, sen);
+function get(key, args, separator = "\n", flags = true) {
+    const sde = key in exports.DE ? exports.DE[key].formatUnicorn(args) : key;
+    const sen = key in exports.EN ? exports.EN[key].formatUnicorn(args) : key;
+    const flagde = flags ? ":flag_de: " : "";
+    const flagen = flags ? ":flag_gb: " : "";
+    return `${flagde}${sde}${separator}${flagen}${sen}`;
+    //return ":flag_de: {0}{1}:flag_gb: {2}".formatUnicorn(sde, separator, sen);
     //return key in DE ? DE[key].formatUnicorn(args) : key;
 }
 exports.get = get;

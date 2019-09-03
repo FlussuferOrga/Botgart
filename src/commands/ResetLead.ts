@@ -11,8 +11,80 @@ import { BotgartCommand } from "../BotgartCommand";
 Testcases:
 
 */
+class WvWMap {
+    static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS");
+    static readonly BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS");
+    static readonly GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS");
+    static readonly EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS");
+
+    static getMaps(): WvWMap[] {
+        return [WvWMap.RedBorderlands, WvWMap.BlueBorderlands, WvWMap.GreenBorderlands, WvWMap.EternalBattlegrounds];
+    }
+
+    static getMapByEmote(emote: string): WvWMap {
+        return WvWMap.getMaps().filter(m => m.emote === emote)[0] // yields undefined if no match
+    }
+
+    public readonly emote: string;
+    public readonly name: string;
+    public readonly resetLeads: Set<string>;
+
+    public getLocalisedName(separator = "\n", flags = true): string {
+        return L.get(this.name, [], separator, flags);
+    }
+
+    private constructor(emote: string, name: string) {
+        this.emote = emote;
+        this.name = name;
+        this.resetLeads = new Set<string>();
+    }
+}
+
+class Roster {
+    private leads: {[key: string] : WvWMap};
+
+    constructor() {
+        this.leads = {};
+        for(const m of WvWMap.getMaps()) {
+            this.leads[m.name] = m;
+        }
+    }
+
+    public addLead(map: WvWMap, player: string): void {
+        this.leads[map.name].resetLeads.add(player);
+    }
+
+    public removeLead(map: WvWMap, player: string): void {
+        if(map === undefined) {
+            for(const m in this.leads) {
+                this.leads[m].resetLeads.delete(player);
+            }
+        } else {
+            this.leads[map.name].resetLeads.delete(player)    
+        }
+        
+    }
+
+    public toRichEmbed(): discord.RichEmbed {
+        const re = new discord.RichEmbed()
+            .setColor("#ff0000")
+            .setTitle("Reset Roster")
+            .setAuthor("Len")
+            .setDescription(L.get("RESETLEAD_HEADER"))
+            .addBlankField();
+        for(const mname in this.leads) {
+            const m = this.leads[mname];
+            re.addField("{0} {1}".formatUnicorn(m.emote, m.getLocalisedName(" | ", false)), m.resetLeads.size === 0 ? "-" : Array.from(m.resetLeads).join(", "));
+        }
+        return re;
+    }
+
+
+}
 
 export class ResetLeadCommand extends BotgartCommand {
+    private messages: {[key: string]: Roster};
+
     constructor() {
         super("resetlead", {
             aliases: ["resetlead"],
@@ -28,14 +100,7 @@ export class ResetLeadCommand extends BotgartCommand {
         false,  // available per DM
         true // cronable
         );
-    }
-
-    init(cl: BotgartClient): void {
-        console.log("REG");
-        this.client.on("messageReactionAdd", (mr,u) => {
-            console.log("REACT");
-            console.log(mr);
-        });
+        this.messages = {};
     }
 
     desc(): string {
@@ -47,6 +112,32 @@ export class ResetLeadCommand extends BotgartCommand {
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+        const roster = new Roster();
+        (<discord.TextChannel>args.channel).send(roster.toRichEmbed())
+        .then(async (mes: discord.Message) => {
+            const cancel = "❌"; // cross
+            const emotes = WvWMap.getMaps().map(m => m.emote);
+            emotes.push(cancel); 
+            for(const e of emotes) {
+                await mes.react(e);
+            }
+
+            const col = mes.createReactionCollector(e => emotes.includes(e.emoji.name) , {});
+            col.on("collect", (r) => {
+                const m = WvWMap.getMapByEmote(r.emoji.name);
+                r.users.filter(u => u.id !== this.client.user.id).map(u => {
+                    if(!m) {
+                        // no map has been found -> X -> user wants to remove themselves from roster
+                        roster.removeLead(undefined, u.username);
+                    } else {
+                        roster.addLead(m, u.username);
+                    }
+                    r.remove(u);
+                });
+                mes.edit(roster.toRichEmbed());
+            });
+        });
+
 
     }
 }
