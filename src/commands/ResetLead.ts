@@ -42,8 +42,10 @@ class WvWMap {
 
 class Roster {
     private leads: {[key: string] : WvWMap};
+    private weekNumber: number;
 
-    constructor() {
+    constructor(weekNumber: number) {
+        this.weekNumber = weekNumber;
         this.leads = {};
         for(const m of WvWMap.getMaps()) {
             this.leads[m.name] = m;
@@ -68,13 +70,13 @@ class Roster {
     public toRichEmbed(): discord.RichEmbed {
         const re = new discord.RichEmbed()
             .setColor("#ff0000")
-            .setTitle("Reset Roster")
-            .setAuthor("Len")
+            .setAuthor("Reset Commander Roster")
+            .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
             .setDescription(L.get("RESETLEAD_HEADER"))
-            .addBlankField();
         for(const mname in this.leads) {
             const m = this.leads[mname];
-            re.addField("{0} {1}".formatUnicorn(m.emote, m.getLocalisedName(" | ", false)), m.resetLeads.size === 0 ? "-" : Array.from(m.resetLeads).join(", "));
+            re.addField("{0} {1}".formatUnicorn(m.emote, m.getLocalisedName(" | ", false)), m.resetLeads.size === 0 ? "-" : Array.from(m.resetLeads).join(", "))
+            .addBlankField();;
         }
         return re;
     }
@@ -92,6 +94,11 @@ export class ResetLeadCommand extends BotgartCommand {
                 {
                     id: "channel",
                     type: "channel"
+                }, 
+                {
+                    id: "weekNumber",
+                    type: "integer",
+                    default: undefined
                 }
             ],
             userPermissions: ["ADMINISTRATOR"]
@@ -112,7 +119,10 @@ export class ResetLeadCommand extends BotgartCommand {
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        const roster = new Roster();
+        const currentWeek = Util.getNumberOfWeek();
+        const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
+        const roster = new Roster(rosterWeek);
+
         (<discord.TextChannel>args.channel).send(roster.toRichEmbed())
         .then(async (mes: discord.Message) => {
             const cancel = "❌"; // cross
@@ -137,8 +147,6 @@ export class ResetLeadCommand extends BotgartCommand {
                 mes.edit(roster.toRichEmbed());
             });
         });
-
-
     }
 }
 

@@ -18,7 +18,7 @@ export class BotgartClient extends AkairoClient {
                     (<BotgartCommand>m).init(this);
                 }
             });
-        })
+        });
     }
 
     /**

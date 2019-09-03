@@ -81,7 +81,8 @@ exports.EN = {
     "BLUE_BORDERLANDS": "Blue Borderlands",
     "GREEN_BORDERLANDS": "Green Borderlands",
     "ETERNAL_BATTLEGROUNDS": "Eternal Battlegrounds",
-    "RESETLEAD_HEADER": "React with one of these emotes to set yourself as reset lead. React with ❌ to withdraw your lead."
+    "RESETLEAD_HEADER": "React with one of these emotes to set yourself as reset lead. React with ❌ to withdraw your lead.",
+    "WEEK_NUMBER": "Week Number",
 };
 exports.DE = {
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
@@ -164,7 +165,8 @@ exports.DE = {
     "BLUE_BORDERLANDS": "Blaue Grenzlande",
     "GREEN_BORDERLANDS": "Grüne Grenzlande",
     "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
-    "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur einzutragen. Reagiere mit ❌ um dich wieder auszutragen."
+    "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur einzutragen. Reagiere mit ❌ um dich wieder auszutragen.",
+    "WEEK_NUMBER": "Kalenderwoche"
 };
 /**
 * Tries to resolve the passed key into a locale string.

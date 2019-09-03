@@ -17,6 +17,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 let config = require.main.require("../config.json");
+const Util = __importStar(require("../Util"));
 const L = __importStar(require("../Locale"));
 const discord = __importStar(require("discord.js"));
 const BotgartCommand_1 = require("../BotgartCommand");
@@ -45,7 +46,8 @@ WvWMap.BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS");
 WvWMap.GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS");
 WvWMap.EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS");
 class Roster {
-    constructor() {
+    constructor(weekNumber) {
+        this.weekNumber = weekNumber;
         this.leads = {};
         for (const m of WvWMap.getMaps()) {
             this.leads[m.name] = m;
@@ -67,13 +69,14 @@ class Roster {
     toRichEmbed() {
         const re = new discord.RichEmbed()
             .setColor("#ff0000")
-            .setTitle("Reset Roster")
-            .setAuthor("Len")
-            .setDescription(L.get("RESETLEAD_HEADER"))
-            .addBlankField();
+            .setAuthor("Reset Commander Roster")
+            .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
+            .setDescription(L.get("RESETLEAD_HEADER"));
         for (const mname in this.leads) {
             const m = this.leads[mname];
-            re.addField("{0} {1}".formatUnicorn(m.emote, m.getLocalisedName(" | ", false)), m.resetLeads.size === 0 ? "-" : Array.from(m.resetLeads).join(", "));
+            re.addField("{0} {1}".formatUnicorn(m.emote, m.getLocalisedName(" | ", false)), m.resetLeads.size === 0 ? "-" : Array.from(m.resetLeads).join(", "))
+                .addBlankField();
+            ;
         }
         return re;
     }
@@ -86,6 +89,11 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
                 {
                     id: "channel",
                     type: "channel"
+                },
+                {
+                    id: "weekNumber",
+                    type: "integer",
+                    default: undefined
                 }
             ],
             userPermissions: ["ADMINISTRATOR"]
@@ -101,7 +109,9 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
         return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get("HELPTEXT_RESETLEAD") : undefined;
     }
     command(message, responsible, guild, args) {
-        const roster = new Roster();
+        const currentWeek = Util.getNumberOfWeek();
+        const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
+        const roster = new Roster(rosterWeek);
         args.channel.send(roster.toRichEmbed())
             .then((mes) => __awaiter(this, void 0, void 0, function* () {
             const cancel = "❌"; // cross
