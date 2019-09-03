@@ -1,4 +1,5 @@
 import { AkairoClient } from "discord-akairo";
+import { BotgartCommand } from "./BotgartCommand.js";
 import { Database } from "./DB.js";
 import * as discord from "discord.js";
 import { log } from "./Util.js";
@@ -11,6 +12,13 @@ export class BotgartClient extends AkairoClient {
         super(options, {});
         this.db = new Database(dbfile, this);  
         this.cronjobs = {};
+        this.on("ready", () => {
+            this.commandHandler.modules.forEach(m => {
+                if(m instanceof BotgartCommand) {
+                    (<BotgartCommand>m).init(this);
+                }
+            });
+        })
     }
 
     /**

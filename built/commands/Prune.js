@@ -39,7 +39,7 @@ class PruneCommand extends BotgartCommand_1.BotgartCommand {
         return L.get("DESC_PRUNE");
     }
     checkArgs(args) {
-        return !args || args.days === undefined || args.days < 0 || args.days > 30 ? L.get("HELPTEXT_PRUNE") : undefined;
+        return !args || args.days === undefined || args.days < 1 || args.days > 30 ? L.get("HELPTEXT_PRUNE") : undefined;
     }
     command(message, responsible, guild, args) {
         return guild.pruneMembers(args.days, false, args.message)
@@ -57,6 +57,6 @@ class PruneCommand extends BotgartCommand_1.BotgartCommand {
         return result.then(m => message.util.send(m)).catch(console.error);
     }
 }
-PruneCommand.LOG_TYPE_AUTH = "auth";
 exports.PruneCommand = PruneCommand;
+PruneCommand.LOG_TYPE_AUTH = "auth";
 module.exports = PruneCommand;

@@ -86,6 +86,6 @@ class ReauthenticateCommand extends BotgartCommand_1.BotgartCommand {
         return message.util.send(L.get("PRUNING_COMPLETE"));
     }
 }
-ReauthenticateCommand.LOG_TYPE_UNAUTH = "unauth";
 exports.ReauthenticateCommand = ReauthenticateCommand;
+ReauthenticateCommand.LOG_TYPE_UNAUTH = "unauth";
 module.exports = ReauthenticateCommand;

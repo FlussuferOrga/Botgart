@@ -26,6 +26,14 @@ class BotgartCommand extends discord_akairo_1.Command {
         //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
     }
     /**
+    * Used to execute code after the client.ready event has been thrown.
+    * Especially useful if the referenced client object (parameter) must be used, which
+    * is not available within the constructor.
+    * @param client - the client after throwing the ready event.
+    */
+    init(client) {
+    }
+    /**
     * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
     */
     getBotgartClient() {

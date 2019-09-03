@@ -23,6 +23,16 @@ export class BotgartCommand extends Command {
     }
 
     /**
+    * Used to execute code after the client.ready event has been thrown.
+    * Especially useful if the referenced client object (parameter) must be used, which 
+    * is not available within the constructor.
+    * @param client - the client after throwing the ready event.
+    */
+    public init(client: BotgartClient): void {
+
+    }
+
+    /**
     * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
     */
     protected getBotgartClient(): BotgartClient {

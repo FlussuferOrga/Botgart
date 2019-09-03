@@ -39,12 +39,12 @@ class HelpCommand extends BotgartCommand_1.BotgartCommand {
         // more compact help text.
         let member = guild ? guild.members.find(m => m.id == responsible.id) : undefined;
         let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
-        let descs = "**Verfügbare Befehle:**\n\n"
+        let descs = "**COMMANDS:**\n\n"
             .concat(Array.from(this.client.commandHandler.modules.values())
             .filter(m => !m.userPermissions || checkPermissions(m.userPermissions))
             .map(m => m)
             .map(m => m.desc
-            ? "**`{0}`** (bzw. {1}): {2}".formatUnicorn(m.id, m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "), m.desc())
+            ? "**`{0}`** ({1}): {2}".formatUnicorn(m.id, m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "), m.desc())
             : m.id).join("\n\n"));
         // when having too many active commands, we could very well reach
         // the maximum message length from all the descriptions.
