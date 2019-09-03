@@ -3,6 +3,7 @@ import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { PermissionTypes } from "./BotgartCommand";
+import * as ResetLead from "./commands/ResetLead";
 import Timeout from "await-timeout";
 import {Semaphore} from "await-semaphore";
 
@@ -100,6 +101,69 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
+    addRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message) {
+        return this.execute(db => {
+            db.transaction((_) => {
+                const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ?`).get(guild.id, roster.weekNumber);
+                let rosterId = current ? current.rrid : undefined;
+                if(rosterId === undefined) {
+                    // completely new roster -> create new roster and store ID
+                    db.prepare(`INSERT INTO reset_rosters(week_number, guild, channel, message) VALUES(?,?,?,?)`)
+                      .run(roster.weekNumber, guild.id, message.channel.id, message.id);
+                    rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;    
+                } else {
+                    // there is already a roster entry -> drop all leaders and insert the current state
+                    db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
+                }                
+                let stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map) VALUES(?,?,?)`);
+                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader, map));
+            })(null);
+        });
+    }
+
+    async getRosterPost(guild: discord.Guild, weekNumber: number) 
+          : Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]> {
+        let postExists = false;
+        const roster = new ResetLead.Roster(weekNumber);
+        const entries = this.execute(db => db.prepare(`
+            SELECT 
+                rr.reset_roster_id,
+                rr.guild,
+                rr.channel,
+                rr.message,
+                rl.player,
+                rl.map
+            FROM 
+                reset_rosters AS rr 
+                JOIN reset_leaders AS rl 
+                  ON rr.reset_roster_id = rl.reset_roster_id
+            WHERE 
+                rr.guild = ?
+                AND rr.week_number = ?`)
+            .all(guild.id, weekNumber));
+        entries.forEach(r => roster.addLead(ResetLead.WvWMap.getMapByName(r.map), r.player));
+
+        let channel: discord.TextChannel;
+        let message: discord.Message;
+        if(entries.length > 0) {
+            channel = await <discord.TextChannel>guild.channels.find(c => c.id === entries[0].channel);
+            if(channel) {
+                try {
+                    message = await (<discord.TextChannel>channel).fetchMessage(entries[0].message);    
+                    postExists = true;
+                } catch(e) {
+                    postExists = false;
+                }
+            }            
+            if(!postExists) {
+                // there was a roster in the DB to which there is no accessible roster-post left -> delete from db!
+                this.execute(db => db.prepare(`DELETE FROM reset_rosters WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
+            }
+        }
+        
+        return entries && postExists ? [roster, channel, message] : [undefined,undefined,undefined];
+    }
+
     getLogChannels(guild: discord.Guild, type: string): string[] {
         return this.execute(db => db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")
                                     .all(guild.id, type).map(c => c.channel));
@@ -186,14 +250,14 @@ export class Database {
 
     storeFAQ(user: string, guild: string, keys: [string], text: string): number|undefined {
         return this.execute(db => {
-            let last_id = undefined;
+            let lastId = undefined;
             db.transaction((_) => {
                 db.prepare(`INSERT INTO faqs(created_by, guild, text) VALUES(?,?,?)`).run(user, guild, text);
-                last_id = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                lastId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
                 let stmt = db.prepare(`INSERT INTO faq_keys(created_by, guild, key, faq_id) VALUES(?,?,?,?)`);
-                keys.forEach(k => stmt.run(user, guild, k, last_id));
+                keys.forEach(k => stmt.run(user, guild, k, lastId));
             })(null);
-            return last_id;
+            return lastId;
         });
     }
 
@@ -287,18 +351,17 @@ export class Database {
             100, '4A820A42-000D-3B46-91B9-F7E664FEBAAEB321BE57-5FB1-4DF2-85A7-B88DD2202076',"asd", 
             230947151931375617, '4A820A42-000D-3B46-91B9-F7E664FEBAAEB321BE57-5FB1-4DF2-85A7-000000000000',"dsa"
             ]));
-
     }
 
     storeCronjob(schedule: string, command: string, args: string, creator: string, guild: string) : number|undefined {
         let sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?,?,?,?,?)`;
         return this.execute(db => {
-            let last_id = undefined;
+            let lastId = undefined;
             db.transaction((_) => {
                 db.prepare(sql).run(schedule, command, args, creator, guild);
-                last_id = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                lastId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
             })(null);
-            return last_id;
+            return lastId;
         });
     }
 

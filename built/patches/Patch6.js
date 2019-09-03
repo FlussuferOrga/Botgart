@@ -31,12 +31,14 @@ class Patch6 extends DBPatch_js_1.DBPatch {
               week_number INTEGER NOT NULL,
               guild TEXT NOT NULL,
               channel TEXT NOT NULL,
-              message TEXT NOT NULL         
+              message TEXT NOT NULL,
+              UNIQUE(guild, week_number)         
             )`).run();
             this.connection.prepare(`
             CREATE TABLE reset_leaders(
               reset_leader_id INTEGER PRIMARY KEY AUTOINCREMENT,
               reset_roster_id INTEGER,
+              map TEXT NOT NULL,
               player TEXT NOT NULL,
               FOREIGN KEY(reset_roster_id) REFERENCES reset_rosters(reset_roster_id)
                 ON UPDATE CASCADE
