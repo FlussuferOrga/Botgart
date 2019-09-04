@@ -43,6 +43,7 @@ class HelpCommand extends BotgartCommand_1.BotgartCommand {
             .concat(Array.from(this.client.commandHandler.modules.values())
             .filter(m => !m.userPermissions || checkPermissions(m.userPermissions))
             .map(m => m)
+            .sort((m1, m2) => m1.id < m2.id ? -1 : 1)
             .map(m => m.desc
             ? "**`{0}`** ({1}): {2}".formatUnicorn(m.id, m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "), m.desc())
             : m.id).join("\n\n"));

@@ -40,6 +40,7 @@ export class HelpCommand extends BotgartCommand {
                     .concat(Array.from(this.client.commandHandler.modules.values())
                         .filter(m => !m.userPermissions || checkPermissions(m.userPermissions))
                         .map(m => <BotgartCommand>m)
+                        .sort((m1,m2) => m1.id < m2.id ? -1 : 1)
                         .map(m => m.desc 
                         ? "**`{0}`** ({1}): {2}".formatUnicorn(
                             m.id,
