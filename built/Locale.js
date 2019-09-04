@@ -87,6 +87,7 @@ exports.EN = {
     "GREEN_BORDERLANDS": "Green Borderlands",
     "ETERNAL_BATTLEGROUNDS": "Eternal Battlegrounds",
     "RESETLEAD_HEADER": "React with one of these emotes to set yourself as reset lead. React with ❌ to withdraw your lead.",
+    "ROSTER_EXISTS": "There is already a roster for that week: {0}",
     "WEEK_NUMBER": "Week Number",
 };
 exports.DE = {
@@ -175,6 +176,7 @@ exports.DE = {
     "GREEN_BORDERLANDS": "Grüne Grenzlande",
     "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
     "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur einzutragen. Reagiere mit ❌ um dich wieder auszutragen.",
+    "ROSTER_EXISTS": "Es gibt bereits ein Roster für diese Woche: {0}",
     "WEEK_NUMBER": "Kalenderwoche"
 };
 /**

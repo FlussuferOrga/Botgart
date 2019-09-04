@@ -35,7 +35,6 @@ export class WvWMap {
 
     public readonly emote: string;
     public readonly name: string;
-    public readonly resetLeads: Set<string>;
 
     public getLocalisedName(separator = "\n", flags = true): string {
         return L.get(this.name, [], separator, flags);
@@ -44,26 +43,26 @@ export class WvWMap {
     private constructor(emote: string, name: string) {
         this.emote = emote;
         this.name = name;
-        this.resetLeads = new Set<string>();
     }
 }
 
 export class Roster {
-    public readonly leads: {[key: string] : WvWMap};
+    public readonly leads: {[key: string] : [WvWMap, Set<string>]};
     public readonly weekNumber: number;
 
     public constructor(weekNumber: number) {
         this.weekNumber = weekNumber;
         this.leads = {};
         for(const m of WvWMap.getMaps()) {
-            this.leads[m.name] = m;
+            this.leads[m.name] = [m, new Set<string>()];
         }
     }
 
     public getLeaders(): [WvWMap, string][] {
         const leaders = [];
         for(const m of WvWMap.getMaps()) {
-            for(const l of this.leads[m.name].resetLeads) {
+            const [wvwmap, leads] = this.leads[m.name];
+            for(const l of leads) {
                 leaders.push([m.name, l]);
             }
         }
@@ -71,16 +70,18 @@ export class Roster {
     }
 
     public addLead(map: WvWMap, player: string): void {
-        this.leads[map.name].resetLeads.add(player);
+        if(map && map.name in this.leads) {
+            this.leads[map.name][1].add(player);
+        }
     }
 
     public removeLead(map: WvWMap, player: string): void {
         if(map === undefined) {
             for(const m in this.leads) {
-                this.leads[m].resetLeads.delete(player);
+                this.leads[m][1].delete(player);
             }
         } else {
-            this.leads[map.name].resetLeads.delete(player)    
+            this.leads[map.name][1].delete(player)    
         }
         
     }
@@ -92,8 +93,8 @@ export class Roster {
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
             .setDescription(L.get("RESETLEAD_HEADER"))
         for(const mname in this.leads) {
-            const m = this.leads[mname];
-            re.addField("{0} {1}".formatUnicorn(m.emote, m.getLocalisedName(" | ", false)), m.resetLeads.size === 0 ? "-" : Array.from(m.resetLeads).join(", "))
+            const [wvwmap, leads] = this.leads[mname];
+            re.addField("{0} {1}".formatUnicorn(wvwmap.emote, wvwmap.getLocalisedName(" | ", false)), leads.size === 0 ? "-" : Array.from(leads).join(", "))
               .addBlankField();
         }
         return re;
@@ -138,7 +139,6 @@ export class ResetLeadCommand extends BotgartCommand {
     }
 
     public init(client: BotgartClient): void {
-        //client.guilds.forEach(g => console.log("HERE", client.db.getActiveRosters(g)));
         client.guilds.forEach(g => Promise.all(client.db.getActiveRosters(g))
                                    .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
                                                    .forEach(([dbRoster, dbChannel, dbMessage]) => this.watchMessage(dbMessage, dbRoster))));
@@ -148,17 +148,20 @@ export class ResetLeadCommand extends BotgartCommand {
         const col = message.createReactionCollector(e => this.emotes.includes(e.emoji.name) , {});
         col.on("collect", (r) => {
             const m = WvWMap.getMapByEmote(r.emoji.name);
-            r.users.filter(u => u.id !== this.client.user.id).map(u => {
-                if(!m) {
-                    // no map has been found -> X -> user wants to remove themselves from roster
-                    roster.removeLead(undefined, Util.formatUserPing(u.id));
-                } else {
-                    roster.addLead(m, Util.formatUserPing(u.id));
-                }
-                r.remove(u);
-            });
-            message.edit(roster.toRichEmbed());
-            this.getBotgartClient().db.addRosterPost(message.guild, roster, message); // save whenever someone reacts
+            const notme = r.users.filter(u => u.id !== this.client.user.id);
+            if(notme.size > 0) { // make sure to not save the post four times upon creation due to the initial emotes
+                notme.map(u => {
+                    if(!m) {
+                        // no map has been found -> X -> user wants to remove themselves from roster
+                        roster.removeLead(undefined, Util.formatUserPing(u.id));
+                    } else {
+                        roster.addLead(m, Util.formatUserPing(u.id));
+                    }
+                    r.remove(u);
+                });
+                message.edit(roster.toRichEmbed());
+                this.getBotgartClient().db.addRosterPost(message.guild, roster, message); // save whenever someone reacts
+            }
         });
     }
 
@@ -181,6 +184,7 @@ export class ResetLeadCommand extends BotgartCommand {
             } else {
                 // there is already a roster-post for this guild+week -> do nothing, log warning
                 Util.log("warning", "ResetLead.js", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
+                this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
     }

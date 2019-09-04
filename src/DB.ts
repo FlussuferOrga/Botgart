@@ -134,6 +134,7 @@ export class Database {
         const entries = this.execute(db => db.prepare(`
             SELECT 
                 rr.reset_roster_id,
+                rr.week_number,
                 rr.guild,
                 rr.channel,
                 rr.message,
@@ -141,7 +142,7 @@ export class Database {
                 rl.map
             FROM 
                 reset_rosters AS rr 
-                JOIN reset_leaders AS rl 
+                LEFT JOIN reset_leaders AS rl 
                   ON rr.reset_roster_id = rl.reset_roster_id
             WHERE 
                 rr.guild = ?
