@@ -33,7 +33,7 @@ export class Patch6 extends DBPatch {
               player TEXT NOT NULL,
               FOREIGN KEY(reset_roster_id) REFERENCES reset_rosters(reset_roster_id)
                 ON UPDATE CASCADE
-                ON DELETE CASCADE              
+                ON DELETE CASCADE
             )`).run();
       }
 

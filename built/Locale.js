@@ -1,4 +1,5 @@
 "use strict";
+//import { WvWMap } from "./commands/resetlead/ResetLead";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EN = {
     "INTERNAL_ERROR": "An internal error occured. Please contact an administrator about this.",
@@ -53,6 +54,8 @@ exports.EN = {
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
     "HELPTEXT_PRUNE": "Please use the command with the following parameters:\n`<number of days to be considered inactive (1 <= n <= 30)>` `<text the pruned members should receive as private message>`",
     "HELPTEXT_RESETLEAD": "Please use the command with the following parameters:\n`<Channel, in which the post should be created>`",
+    //"HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>` `<{0}>`".formatUnicorn(WvWMap.getMaps().map(m => m.name).join(" | ")),
+    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>`",
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
     "DESC_LIST_CRONS": "Lists all cronjobs.",
@@ -76,6 +79,8 @@ exports.EN = {
     "DESC_DISCORD_LOG": "Sets up the connection between an event-type and a Discord-text-channel.",
     "DESC_PRUNE": "Prunes inactive users without roles.",
     "DESC_RESETLEAD": "Creates a post for commanders to roster.",
+    "DESC_ADD_RESETLEAD": "Manually adds a player as reset lead.",
+    "DESC_REMOVE_RESETLEAD": "Manually removes a player as reset lead.",
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
     "RED_BORDERLANDS": "Red Borderlands",
     "BLUE_BORDERLANDS": "Blue Borderlands",
@@ -137,6 +142,8 @@ exports.DE = {
     "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
     "HELPTEXT_PRUNE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
     "HELPTEXT_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Post erstellt werden soll>`",
+    //"HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>` `<{0}>`".formatUnicorn(WvWMap.getMaps().map(m => m.name).join(" | ")),
+    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>`",
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
     "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
@@ -160,6 +167,8 @@ exports.DE = {
     "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
     "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
     "DESC_RESETLEAD": "Erstellt einen Post, mithilfe dessen Kommandeure Rostern können.",
+    "DESC_ADD_RESETLEAD": "Fügt manuell einen Spieler als Reset-Kommandeur hinzu.",
+    "DESC_REMOVE_RESETLEAD": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
     "RED_BORDERLANDS": "Rote Grenzlande",
     "BLUE_BORDERLANDS": "Blaue Grenzlande",

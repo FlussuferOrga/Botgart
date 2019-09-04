@@ -21,7 +21,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Util = __importStar(require("./Util.js"));
 const sqlite3 = __importStar(require("better-sqlite3"));
-const ResetLead = __importStar(require("./commands/ResetLead"));
+const ResetLead = __importStar(require("./commands/resetlead/ResetLead"));
 const await_timeout_1 = __importDefault(require("await-timeout"));
 const await_semaphore_1 = require("await-semaphore");
 const REAUTH_DELAY = 5000;
@@ -126,6 +126,11 @@ class Database {
             })(null);
         });
     }
+    getActiveRosters(guild) {
+        return this.execute(db => db.prepare(`SELECT rr.week_number AS wn FROM reset_rosters AS rr WHERE week_number >= ? AND guild = ?`)
+            .all(Util.getNumberOfWeek(), guild.id)
+            .map(row => this.getRosterPost(guild, row.wn)));
+    }
     getRosterPost(guild, weekNumber) {
         return __awaiter(this, void 0, void 0, function* () {
             let postExists = false;
@@ -162,6 +167,7 @@ class Database {
                 }
                 if (!postExists) {
                     // there was a roster in the DB to which there is no accessible roster-post left -> delete from db!
+                    this.execute(db => db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
                     this.execute(db => db.prepare(`DELETE FROM reset_rosters WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
                 }
             }

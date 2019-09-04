@@ -1,11 +1,11 @@
 let config = require.main.require("../config.json");
 import { Command, Listener } from "discord-akairo";
-import * as Util from "../Util";
-import * as Const from "../Const";
-import * as L from "../Locale";
+import * as Util from "../../Util";
+import * as Const from "../../Const";
+import * as L from "../../Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
+import { BotgartClient } from "../../BotgartClient";
+import { BotgartCommand } from "../../BotgartCommand";
 
 /**
 Testcases:
@@ -19,6 +19,10 @@ export class WvWMap {
 
     static getMaps(): WvWMap[] {
         return [WvWMap.RedBorderlands, WvWMap.BlueBorderlands, WvWMap.GreenBorderlands, WvWMap.EternalBattlegrounds];
+    }
+
+    static getMapNames(): string[] {
+        return WvWMap.getMaps().map(m => m.name);
     }
 
     static getMapByEmote(emote: string): WvWMap {
@@ -98,6 +102,7 @@ export class Roster {
 
 export class ResetLeadCommand extends BotgartCommand {
     private messages: {[key: string]: Roster};
+    private emotes: string[];
 
     constructor() {
         super("resetlead", {
@@ -120,6 +125,8 @@ export class ResetLeadCommand extends BotgartCommand {
         true // cronable
         );
         this.messages = {};
+        this.emotes = WvWMap.getMaps().map(m => m.emote);
+        this.emotes.push("❌"); // cross
     }
 
     desc(): string {
@@ -128,7 +135,32 @@ export class ResetLeadCommand extends BotgartCommand {
 
     checkArgs(args) {
         return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get("HELPTEXT_RESETLEAD") : undefined;
+    }
+
+    public init(client: BotgartClient): void {
+        //client.guilds.forEach(g => console.log("HERE", client.db.getActiveRosters(g)));
+        client.guilds.forEach(g => Promise.all(client.db.getActiveRosters(g))
+                                   .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
+                                                   .forEach(([dbRoster, dbChannel, dbMessage]) => this.watchMessage(dbMessage, dbRoster))));
     }    
+
+    private watchMessage(message: discord.Message, roster: Roster): void {
+        const col = message.createReactionCollector(e => this.emotes.includes(e.emoji.name) , {});
+        col.on("collect", (r) => {
+            const m = WvWMap.getMapByEmote(r.emoji.name);
+            r.users.filter(u => u.id !== this.client.user.id).map(u => {
+                if(!m) {
+                    // no map has been found -> X -> user wants to remove themselves from roster
+                    roster.removeLead(undefined, Util.formatUserPing(u.id));
+                } else {
+                    roster.addLead(m, Util.formatUserPing(u.id));
+                }
+                r.remove(u);
+            });
+            message.edit(roster.toRichEmbed());
+            this.getBotgartClient().db.addRosterPost(message.guild, roster, message); // save whenever someone reacts
+        });
+    }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const currentWeek = Util.getNumberOfWeek();
@@ -140,29 +172,11 @@ export class ResetLeadCommand extends BotgartCommand {
                 const roster = new Roster(rosterWeek);
                 (<discord.TextChannel>args.channel).send(roster.toRichEmbed())
                 .then(async (mes: discord.Message) => {
-                    const cancel = "❌"; // cross
-                    const emotes = WvWMap.getMaps().map(m => m.emote);
-                    emotes.push(cancel); 
-                    for(const e of emotes) {
+                    for(const e of this.emotes) {
                         await mes.react(e);
                     }
                     this.getBotgartClient().db.addRosterPost(message.guild, roster, mes); // initial save
-
-                    const col = mes.createReactionCollector(e => emotes.includes(e.emoji.name) , {});
-                    col.on("collect", (r) => {
-                        const m = WvWMap.getMapByEmote(r.emoji.name);
-                        r.users.filter(u => u.id !== this.client.user.id).map(u => {
-                            if(!m) {
-                                // no map has been found -> X -> user wants to remove themselves from roster
-                                roster.removeLead(undefined, u.username);
-                            } else {
-                                roster.addLead(m, u.username);
-                            }
-                            r.remove(u);
-                        });
-                        mes.edit(roster.toRichEmbed());
-                        this.getBotgartClient().db.addRosterPost(message.guild, roster, mes); // save whenever someone reacts
-                    });
+                    this.watchMessage(mes, roster);
                 });            
             } else {
                 // there is already a roster-post for this guild+week -> do nothing, log warning

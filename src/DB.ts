@@ -3,7 +3,7 @@ import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { PermissionTypes } from "./BotgartCommand";
-import * as ResetLead from "./commands/ResetLead";
+import * as ResetLead from "./commands/resetlead/ResetLead";
 import Timeout from "await-timeout";
 import {Semaphore} from "await-semaphore";
 
@@ -121,6 +121,12 @@ export class Database {
         });
     }
 
+    getActiveRosters(guild: discord.Guild): Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]>[] {
+        return this.execute(db => db.prepare(`SELECT rr.week_number AS wn FROM reset_rosters AS rr WHERE week_number >= ? AND guild = ?`)
+                                    .all(Util.getNumberOfWeek(), guild.id)
+                                    .map(row => this.getRosterPost(guild, row.wn)));
+    }
+
     async getRosterPost(guild: discord.Guild, weekNumber: number) 
           : Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]> {
         let postExists = false;
@@ -157,6 +163,7 @@ export class Database {
             }            
             if(!postExists) {
                 // there was a roster in the DB to which there is no accessible roster-post left -> delete from db!
+                this.execute(db => db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
                 this.execute(db => db.prepare(`DELETE FROM reset_rosters WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
             }
         }

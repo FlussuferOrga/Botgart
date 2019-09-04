@@ -17,10 +17,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 let config = require.main.require("../config.json");
-const Util = __importStar(require("../Util"));
-const L = __importStar(require("../Locale"));
+const Util = __importStar(require("../../Util"));
+const L = __importStar(require("../../Locale"));
 const discord = __importStar(require("discord.js"));
-const BotgartCommand_1 = require("../BotgartCommand");
+const BotgartCommand_1 = require("../../BotgartCommand");
 /**
 Testcases:
 
@@ -33,6 +33,9 @@ class WvWMap {
     }
     static getMaps() {
         return [WvWMap.RedBorderlands, WvWMap.BlueBorderlands, WvWMap.GreenBorderlands, WvWMap.EternalBattlegrounds];
+    }
+    static getMapNames() {
+        return WvWMap.getMaps().map(m => m.name);
     }
     static getMapByEmote(emote) {
         return WvWMap.getMaps().filter(m => m.emote === emote)[0]; // yields undefined if no match
@@ -114,12 +117,38 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
         true // cronable
         );
         this.messages = {};
+        this.emotes = WvWMap.getMaps().map(m => m.emote);
+        this.emotes.push("❌"); // cross
     }
     desc() {
         return L.get("DESC_RESETLEAD");
     }
     checkArgs(args) {
         return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get("HELPTEXT_RESETLEAD") : undefined;
+    }
+    init(client) {
+        //client.guilds.forEach(g => console.log("HERE", client.db.getActiveRosters(g)));
+        client.guilds.forEach(g => Promise.all(client.db.getActiveRosters(g))
+            .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
+            .forEach(([dbRoster, dbChannel, dbMessage]) => this.watchMessage(dbMessage, dbRoster))));
+    }
+    watchMessage(message, roster) {
+        const col = message.createReactionCollector(e => this.emotes.includes(e.emoji.name), {});
+        col.on("collect", (r) => {
+            const m = WvWMap.getMapByEmote(r.emoji.name);
+            r.users.filter(u => u.id !== this.client.user.id).map(u => {
+                if (!m) {
+                    // no map has been found -> X -> user wants to remove themselves from roster
+                    roster.removeLead(undefined, Util.formatUserPing(u.id));
+                }
+                else {
+                    roster.addLead(m, Util.formatUserPing(u.id));
+                }
+                r.remove(u);
+            });
+            message.edit(roster.toRichEmbed());
+            this.getBotgartClient().db.addRosterPost(message.guild, roster, message); // save whenever someone reacts
+        });
     }
     command(message, responsible, guild, args) {
         const currentWeek = Util.getNumberOfWeek();
@@ -130,29 +159,11 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
                 const roster = new Roster(rosterWeek);
                 args.channel.send(roster.toRichEmbed())
                     .then((mes) => __awaiter(this, void 0, void 0, function* () {
-                    const cancel = "❌"; // cross
-                    const emotes = WvWMap.getMaps().map(m => m.emote);
-                    emotes.push(cancel);
-                    for (const e of emotes) {
+                    for (const e of this.emotes) {
                         yield mes.react(e);
                     }
                     this.getBotgartClient().db.addRosterPost(message.guild, roster, mes); // initial save
-                    const col = mes.createReactionCollector(e => emotes.includes(e.emoji.name), {});
-                    col.on("collect", (r) => {
-                        const m = WvWMap.getMapByEmote(r.emoji.name);
-                        r.users.filter(u => u.id !== this.client.user.id).map(u => {
-                            if (!m) {
-                                // no map has been found -> X -> user wants to remove themselves from roster
-                                roster.removeLead(undefined, u.username);
-                            }
-                            else {
-                                roster.addLead(m, u.username);
-                            }
-                            r.remove(u);
-                        });
-                        mes.edit(roster.toRichEmbed());
-                        this.getBotgartClient().db.addRosterPost(message.guild, roster, mes); // save whenever someone reacts
-                    });
+                    this.watchMessage(mes, roster);
                 }));
             }
             else {
