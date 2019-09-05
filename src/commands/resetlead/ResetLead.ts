@@ -86,9 +86,21 @@ export class Roster {
         
     }
 
+    private emptyMaps(): WvWMap[] {
+        return Object.keys(this.leads).filter(k => this.leads[k][1].size === 0).map(k => this.leads[k][0]);
+    }
+
+    private emptyMapCount(): number {
+        return this.emptyMaps().length;
+    }
+
+    private getColour(): string {
+        return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
+    }
+
     public toRichEmbed(): discord.RichEmbed {
         const re = new discord.RichEmbed()
-            .setColor("#ff0000")
+            .setColor(this.getColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
             .setDescription(L.get("RESETLEAD_HEADER"))

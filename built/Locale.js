@@ -167,7 +167,7 @@ exports.DE = {
     "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
     "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
     "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
-    "DESC_RESETLEAD": "Erstellt einen Post, mithilfe dessen Kommandeure Rostern können.",
+    "DESC_RESETLEAD": "Erstellt einen Post, mithilfe dessen Kommandeure rostern können.",
     "DESC_ADD_RESETLEAD": "Fügt manuell einen Spieler als Reset-Kommandeur hinzu.",
     "DESC_REMOVE_RESETLEAD": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",

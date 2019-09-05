@@ -29,7 +29,8 @@ export class AddResetLeadCommand extends BotgartCommand {
                 },
                 {
                     id: "weekNumber",
-                    type: "integer"
+                    type: "integer",
+                    default: -1
                 },
                 {
                     id: "map",
@@ -54,7 +55,9 @@ export class AddResetLeadCommand extends BotgartCommand {
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        
+        if(args.weekNumber < 0) {
+            args.weekNumber = Util.getNumberOfWeek();
+        }
     }
 }
 
