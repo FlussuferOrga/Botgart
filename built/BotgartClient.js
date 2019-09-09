@@ -17,6 +17,7 @@ class BotgartClient extends discord_akairo_1.AkairoClient {
         super(options, {});
         this.db = new DB_js_1.Database(dbfile, this);
         this.cronjobs = {};
+        this.rosters = {};
         this.on("ready", () => {
             this.commandHandler.modules.forEach(m => {
                 if (m instanceof BotgartCommand_js_1.BotgartCommand) {
@@ -24,6 +25,12 @@ class BotgartClient extends discord_akairo_1.AkairoClient {
                 }
             });
         });
+    }
+    getRoster(weekNumber) {
+        return weekNumber in this.rosters ? this.rosters[weekNumber] : [undefined, undefined, undefined];
+    }
+    setRoster(weekNumber, guild, message, roster) {
+        this.rosters[weekNumber] = [guild, message, roster];
     }
     /**
     * Logs a string to a Discord-text-channel. For each type, one or more channels

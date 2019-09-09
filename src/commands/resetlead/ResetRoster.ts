@@ -6,6 +6,8 @@ import * as L from "../../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
+import EventEmitter = require("events");
+
 
 /**
 Testcases:
@@ -46,11 +48,12 @@ export class WvWMap {
     }
 }
 
-export class Roster {
+export class Roster extends EventEmitter {
     public readonly leads: {[key: string] : [WvWMap, Set<string>]};
     public readonly weekNumber: number;
 
     public constructor(weekNumber: number) {
+        super();
         this.weekNumber = weekNumber;
         this.leads = {};
         for(const m of WvWMap.getMaps()) {
@@ -72,6 +75,7 @@ export class Roster {
     public addLead(map: WvWMap, player: string): void {
         if(map && map.name in this.leads) {
             this.leads[map.name][1].add(player);
+            this.emit("addleader", this, map, player);
         }
     }
 
@@ -79,9 +83,11 @@ export class Roster {
         if(map === undefined) {
             for(const m in this.leads) {
                 this.leads[m][1].delete(player);
+                this.emit("removeleader", this, m, player);
             }
         } else {
-            this.leads[map.name][1].delete(player)    
+            this.leads[map.name][1].delete(player)  
+            this.emit("removeleader", this, map, player);  
         }
         
     }
@@ -94,13 +100,13 @@ export class Roster {
         return this.emptyMaps().length;
     }
 
-    private getColour(): string {
+    private getEmbedColour(): string {
         return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
     }
 
     public toRichEmbed(): discord.RichEmbed {
         const re = new discord.RichEmbed()
-            .setColor(this.getColour())
+            .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
             .setDescription(L.get("RESETLEAD_HEADER"))
@@ -113,13 +119,13 @@ export class Roster {
     }
 }
 
-export class ResetLeadCommand extends BotgartCommand {
+export class ResetRosterCommand extends BotgartCommand {
     private messages: {[key: string]: Roster};
     private emotes: string[];
 
     constructor() {
-        super("resetlead", {
-            aliases: ["resetlead"],
+        super("resetroster", {
+            aliases: ["resetroster"],
             args: [
                 {
                     id: "channel",
@@ -151,18 +157,33 @@ export class ResetLeadCommand extends BotgartCommand {
     }
 
     public init(client: BotgartClient): void {
-        client.guilds.forEach(g => Promise.all(client.db.getActiveRosters(g))
-                                   .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
-                                                   .forEach(([dbRoster, dbChannel, dbMessage]) => this.watchMessage(dbMessage, dbRoster))));
+        client.guilds.forEach(
+            g => Promise.all(client.db.getActiveRosters(g))
+                .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
+                   .forEach(([dbRoster, dbChannel, dbMessage]) => {
+                       client.setRoster(dbRoster.weekNumber, dbChannel.guild, dbMessage, dbRoster);
+                       this.watchRoster(dbRoster);
+                       this.watchMessage(dbMessage, dbRoster);
+                    })));
     }    
 
+    private watchRoster(roster: Roster): void {
+        const cl = this.getBotgartClient();
+        const [guild, message, _] = cl.getRoster(roster.weekNumber);
+        const refresh = (r: Roster, map: string, p: string) => {
+            cl.db.upsertRosterPost(guild, r, message);
+            message.edit(r.toRichEmbed());
+        };
+        roster.on("addleader", refresh);
+        roster.on("removeleader", refresh);
+    }
+
     private watchMessage(message: discord.Message, roster: Roster): void {
-        const col = message.createReactionCollector(e => this.emotes.includes(e.emoji.name) , {});
-        col.on("collect", (r) => {
-            const m = WvWMap.getMapByEmote(r.emoji.name);
-            const notme = r.users.filter(u => u.id !== this.client.user.id);
-            if(notme.size > 0) { // make sure to not save the post four times upon creation due to the initial emotes
-                notme.map(u => {
+        Util.log("debug", "ResetRoster.js", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
+        message.createReactionCollector(e => 
+            this.emotes.includes(e.emoji.name) , {}).on("collect", (r) => {
+                const m = WvWMap.getMapByEmote(r.emoji.name);
+                r.users.filter(u => u.id !== this.client.user.id).map(u => { // reactions coming from anyone but the bot
                     if(!m) {
                         // no map has been found -> X -> user wants to remove themselves from roster
                         roster.removeLead(undefined, Util.formatUserPing(u.id));
@@ -171,16 +192,12 @@ export class ResetLeadCommand extends BotgartCommand {
                     }
                     r.remove(u);
                 });
-                message.edit(roster.toRichEmbed());
-                this.getBotgartClient().db.addRosterPost(message.guild, roster, message); // save whenever someone reacts
-            }
-        });
+            });
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const currentWeek = Util.getNumberOfWeek();
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
-
         this.getBotgartClient().db.getRosterPost(guild, rosterWeek).then(([dbRoster, dbChannel, dbMessage]) => {
             if(dbRoster === undefined) {
                 // no roster for this guild+week -> create one
@@ -190,9 +207,11 @@ export class ResetLeadCommand extends BotgartCommand {
                     for(const e of this.emotes) {
                         await mes.react(e);
                     }
-                    this.getBotgartClient().db.addRosterPost(message.guild, roster, mes); // initial save
+                    this.getBotgartClient().setRoster(roster.weekNumber, mes.guild, message, roster);
+                    this.getBotgartClient().db.upsertRosterPost(message.guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
-                });            
+                    this.watchRoster(roster);
+                });
             } else {
                 // there is already a roster-post for this guild+week -> do nothing, log warning
                 Util.log("warning", "ResetLead.js", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
@@ -202,7 +221,7 @@ export class ResetLeadCommand extends BotgartCommand {
     }
 }
 
-module.exports = ResetLeadCommand;
+module.exports = ResetRosterCommand;
 exports.Roster = Roster;
 module.exports.Roster = Roster;
 module.exports.WvWMap = WvWMap;

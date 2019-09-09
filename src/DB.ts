@@ -3,7 +3,7 @@ import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { PermissionTypes } from "./BotgartCommand";
-import * as ResetLead from "./commands/resetlead/ResetLead";
+import * as ResetLead from "./commands/resetlead/ResetRoster";
 import Timeout from "await-timeout";
 import {Semaphore} from "await-semaphore";
 
@@ -101,7 +101,7 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    addRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message) {
+    upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message) {
         return this.execute(db => {
             db.transaction((_) => {
                 const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ?`).get(guild.id, roster.weekNumber);

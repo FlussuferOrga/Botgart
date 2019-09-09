@@ -21,7 +21,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Util = __importStar(require("./Util.js"));
 const sqlite3 = __importStar(require("better-sqlite3"));
-const ResetLead = __importStar(require("./commands/resetlead/ResetLead"));
+const ResetLead = __importStar(require("./commands/resetlead/ResetRoster"));
 const await_timeout_1 = __importDefault(require("await-timeout"));
 const await_semaphore_1 = require("await-semaphore");
 const REAUTH_DELAY = 5000;
@@ -106,7 +106,7 @@ class Database {
         ];
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
-    addRosterPost(guild, roster, message) {
+    upsertRosterPost(guild, roster, message) {
         return this.execute(db => {
             db.transaction((_) => {
                 const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ?`).get(guild.id, roster.weekNumber);

@@ -3,15 +3,18 @@ import { BotgartCommand } from "./BotgartCommand.js";
 import { Database } from "./DB.js";
 import * as discord from "discord.js";
 import { log } from "./Util.js";
+import { Roster } from "./commands/resetlead/ResetRoster"
 
 export class BotgartClient extends AkairoClient {
     public db: Database;
     public cronjobs: Object;
+    private rosters: {[key: number] : [discord.Guild, discord.Message, Roster]};
 
     constructor(options, dbfile) {
         super(options, {});
         this.db = new Database(dbfile, this);  
         this.cronjobs = {};
+        this.rosters = {};
         this.on("ready", () => {
             this.commandHandler.modules.forEach(m => {
                 if(m instanceof BotgartCommand) {
@@ -19,6 +22,14 @@ export class BotgartClient extends AkairoClient {
                 }
             });
         });
+    }
+
+    public getRoster(weekNumber: number): [discord.Guild, discord.Message, Roster] | [undefined, undefined, undefined] {
+        return weekNumber in this.rosters ? this.rosters[weekNumber] : [undefined, undefined, undefined];
+    }
+
+    public setRoster(weekNumber: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
+        this.rosters[weekNumber] = [guild, message, roster];
     }
 
     /**

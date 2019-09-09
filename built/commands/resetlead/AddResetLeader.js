@@ -11,36 +11,29 @@ let config = require.main.require("../config.json");
 const Util = __importStar(require("../../Util"));
 const L = __importStar(require("../../Locale"));
 const BotgartCommand_1 = require("../../BotgartCommand");
-const ResetLead_1 = require("./ResetLead");
+const ResetRoster_1 = require("./ResetRoster");
 /**
 Testcases:
 
 */
-class AddResetLeadCommand extends BotgartCommand_1.BotgartCommand {
+class AddResetLeaderCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("addresetlead", {
             aliases: ["addresetlead"],
             args: [
                 {
-                    id: "weekNumber",
-                    type: "integer",
-                    default: undefined
-                },
-                {
                     id: "player",
                     type: "string"
+                },
+                {
+                    id: "map",
+                    type: (word, message, prevArgs) => ResetRoster_1.WvWMap.getMapNames().includes(word)
                 },
                 {
                     id: "weekNumber",
                     type: "integer",
                     default: -1
-                },
-                {
-                    id: "map",
-                    type: (word, message, prevArgs) => {
-                        return ResetLead_1.WvWMap.getMapNames().includes(word) ? word : undefined;
-                    }
-                },
+                }
             ]
         }, false, // available per DM
         false // cronable
@@ -50,13 +43,18 @@ class AddResetLeadCommand extends BotgartCommand_1.BotgartCommand {
         return L.get("DESC_ADD_RESETLEAD");
     }
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD") : undefined;
+        return !args || !args.weekNumber || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD", [ResetRoster_1.WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }
     command(message, responsible, guild, args) {
         if (args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
         }
+        const [g, mes, roster] = this.getBotgartClient().getRoster(args.weekNumber);
+        if (roster !== undefined) {
+            roster.addLead(ResetRoster_1.WvWMap.getMapByName(args.map), args.player);
+            this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));
+        }
     }
 }
-exports.AddResetLeadCommand = AddResetLeadCommand;
-module.exports = AddResetLeadCommand;
+exports.AddResetLeaderCommand = AddResetLeaderCommand;
+module.exports = AddResetLeaderCommand;

@@ -54,7 +54,7 @@ exports.EN = {
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
     "HELPTEXT_PRUNE": "Please use the command with the following parameters:\n`<number of days to be considered inactive (1 <= n <= 30)>` `<text the pruned members should receive as private message>`",
     "HELPTEXT_RESETLEAD": "Please use the command with the following parameters:\n`<Channel, in which the post should be created>`",
-    //"HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>` `<{0}>`".formatUnicorn(WvWMap.getMaps().map(m => m.name).join(" | ")),
+    "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>` `<{0}>`",
     "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>`",
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -89,6 +89,8 @@ exports.EN = {
     "RESETLEAD_HEADER": "React with one of these emotes to set yourself as reset lead. React with ❌ to withdraw your lead.",
     "ROSTER_EXISTS": "There is already a roster for that week: {0}",
     "WEEK_NUMBER": "Week Number",
+    "ROSTER_LEAD_ADDED": "Player `{0}` has successfully been added as reset lead for the map `{1}` on week {2}. See {3}",
+    "ROSTER_LEAD_REMOVED": "Player `{0}` has successfully been removed as reset lead for week {1}. See {2}",
 };
 exports.DE = {
     "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
@@ -143,7 +145,7 @@ exports.DE = {
     "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
     "HELPTEXT_PRUNE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
     "HELPTEXT_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Post erstellt werden soll>`",
-    //"HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>` `<{0}>`".formatUnicorn(WvWMap.getMaps().map(m => m.name).join(" | ")),
+    "HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>` `<{0}>`",
     "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>`",
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -177,7 +179,9 @@ exports.DE = {
     "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
     "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur einzutragen. Reagiere mit ❌ um dich wieder auszutragen.",
     "ROSTER_EXISTS": "Es gibt bereits ein Roster für diese Woche: {0}",
-    "WEEK_NUMBER": "Kalenderwoche"
+    "WEEK_NUMBER": "Kalenderwoche",
+    "ROSTER_LEAD_ADDED": "Spieler `{0}` wurde erfolgreich als Kommandeur für die Karte `{1}` in der Woche {2} hinzugefügt. Siehe {3}",
+    "ROSTER_LEAD_REMOVED": "Spieler `{0}` wurde erfolgreich als Kommandeur in der Woche {1} entfernt. Siehe {2}",
 };
 /**
 * Tries to resolve the passed key into a locale string.

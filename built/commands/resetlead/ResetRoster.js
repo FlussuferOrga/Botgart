@@ -21,6 +21,7 @@ const Util = __importStar(require("../../Util"));
 const L = __importStar(require("../../Locale"));
 const discord = __importStar(require("discord.js"));
 const BotgartCommand_1 = require("../../BotgartCommand");
+const EventEmitter = require("events");
 /**
 Testcases:
 
@@ -51,8 +52,9 @@ WvWMap.RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS");
 WvWMap.BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS");
 WvWMap.GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS");
 WvWMap.EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS");
-class Roster {
+class Roster extends EventEmitter {
     constructor(weekNumber) {
+        super();
         this.weekNumber = weekNumber;
         this.leads = {};
         for (const m of WvWMap.getMaps()) {
@@ -72,16 +74,19 @@ class Roster {
     addLead(map, player) {
         if (map && map.name in this.leads) {
             this.leads[map.name][1].add(player);
+            this.emit("addleader", this, map, player);
         }
     }
     removeLead(map, player) {
         if (map === undefined) {
             for (const m in this.leads) {
                 this.leads[m][1].delete(player);
+                this.emit("removeleader", this, m, player);
             }
         }
         else {
             this.leads[map.name][1].delete(player);
+            this.emit("removeleader", this, map, player);
         }
     }
     emptyMaps() {
@@ -90,12 +95,12 @@ class Roster {
     emptyMapCount() {
         return this.emptyMaps().length;
     }
-    getColour() {
+    getEmbedColour() {
         return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
     }
     toRichEmbed() {
         const re = new discord.RichEmbed()
-            .setColor(this.getColour())
+            .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
             .setDescription(L.get("RESETLEAD_HEADER"));
@@ -108,10 +113,10 @@ class Roster {
     }
 }
 exports.Roster = Roster;
-class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
+class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
-        super("resetlead", {
-            aliases: ["resetlead"],
+        super("resetroster", {
+            aliases: ["resetroster"],
             args: [
                 {
                     id: "channel",
@@ -140,27 +145,36 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
     init(client) {
         client.guilds.forEach(g => Promise.all(client.db.getActiveRosters(g))
             .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
-            .forEach(([dbRoster, dbChannel, dbMessage]) => this.watchMessage(dbMessage, dbRoster))));
+            .forEach(([dbRoster, dbChannel, dbMessage]) => {
+            client.setRoster(dbRoster.weekNumber, dbChannel.guild, dbMessage, dbRoster);
+            this.watchRoster(dbRoster);
+            this.watchMessage(dbMessage, dbRoster);
+        })));
+    }
+    watchRoster(roster) {
+        const cl = this.getBotgartClient();
+        const [guild, message, _] = cl.getRoster(roster.weekNumber);
+        const refresh = (r, map, p) => {
+            cl.db.upsertRosterPost(guild, r, message);
+            message.edit(r.toRichEmbed());
+        };
+        roster.on("addleader", refresh);
+        roster.on("removeleader", refresh);
     }
     watchMessage(message, roster) {
-        const col = message.createReactionCollector(e => this.emotes.includes(e.emoji.name), {});
-        col.on("collect", (r) => {
+        Util.log("debug", "ResetRoster.js", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
+        message.createReactionCollector(e => this.emotes.includes(e.emoji.name), {}).on("collect", (r) => {
             const m = WvWMap.getMapByEmote(r.emoji.name);
-            const notme = r.users.filter(u => u.id !== this.client.user.id);
-            if (notme.size > 0) { // make sure to not save the post four times upon creation due to the initial emotes
-                notme.map(u => {
-                    if (!m) {
-                        // no map has been found -> X -> user wants to remove themselves from roster
-                        roster.removeLead(undefined, Util.formatUserPing(u.id));
-                    }
-                    else {
-                        roster.addLead(m, Util.formatUserPing(u.id));
-                    }
-                    r.remove(u);
-                });
-                message.edit(roster.toRichEmbed());
-                this.getBotgartClient().db.addRosterPost(message.guild, roster, message); // save whenever someone reacts
-            }
+            r.users.filter(u => u.id !== this.client.user.id).map(u => {
+                if (!m) {
+                    // no map has been found -> X -> user wants to remove themselves from roster
+                    roster.removeLead(undefined, Util.formatUserPing(u.id));
+                }
+                else {
+                    roster.addLead(m, Util.formatUserPing(u.id));
+                }
+                r.remove(u);
+            });
         });
     }
     command(message, responsible, guild, args) {
@@ -175,8 +189,10 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
                     for (const e of this.emotes) {
                         yield mes.react(e);
                     }
-                    this.getBotgartClient().db.addRosterPost(message.guild, roster, mes); // initial save
+                    this.getBotgartClient().setRoster(roster.weekNumber, mes.guild, message, roster);
+                    this.getBotgartClient().db.upsertRosterPost(message.guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
+                    this.watchRoster(roster);
                 }));
             }
             else {
@@ -187,8 +203,8 @@ class ResetLeadCommand extends BotgartCommand_1.BotgartCommand {
         });
     }
 }
-exports.ResetLeadCommand = ResetLeadCommand;
-module.exports = ResetLeadCommand;
+exports.ResetRosterCommand = ResetRosterCommand;
+module.exports = ResetRosterCommand;
 exports.Roster = Roster;
 module.exports.Roster = Roster;
 module.exports.WvWMap = WvWMap;
