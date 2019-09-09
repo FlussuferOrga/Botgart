@@ -1,21 +1,24 @@
+"use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
 let config = require.main.require("../config.json");
-import { Command } from "discord-akairo";
-import * as Util from "../Util";
-import * as Const from "../Const";
-import * as L from "../Locale";
-import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
-
+const Util = __importStar(require("../../Util"));
+const L = __importStar(require("../../Locale"));
+const BotgartCommand_1 = require("../../BotgartCommand");
 /**
 Testcases:
 
 */
-
-export class PermanentRoleRemoveCommand extends BotgartCommand {
+class PermanentRoleRemoveCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("removepermanentrole", {
-            aliases: ["removepermarole","removepermanentrole","rmprole"],
+            aliases: ["removepermarole", "removepermanentrole", "rmprole"],
             args: [
                 {
                     id: "member",
@@ -27,38 +30,32 @@ export class PermanentRoleRemoveCommand extends BotgartCommand {
                 }
             ],
             userPermissions: ["ADMINISTRATOR"]
-
-        },
-        false,  // available per DM
+        }, false, // available per DM
         false // cronable
         );
     }
-
-    desc(): string {
+    desc() {
         return L.get("DESC_RM_PERMAROLE");
     }
-
     checkArgs(args) {
         return !args || !args.member || !args.role ? L.get("HELPTEXT_RM_PERMAROLE") : undefined;
-    }    
-
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        if(!message) {
+    }
+    command(message, responsible, guild, args) {
+        if (!message) {
             Util.log("error", "PermanentRoleRemove.js", "Mandatory message parameter missing. This command can not be issued as cron.");
             return;
         }
-
-        let cl = <BotgartClient>this.client;
+        let cl = this.client;
         let success = cl.db.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
-
-        if(success) {
+        if (success) {
             Util.log("info", "PermanentRoleRemove.js", "Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
             message.util.send(L.get("PERMANENT_ROLE_RM_SUCC"));
-        } else {
+        }
+        else {
             Util.log("info", "PermanentRoleRemove.js", "Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
             message.util.send(L.get("PERMANENT_ROLE_RM_FAIL"));
         }
     }
 }
-
+exports.PermanentRoleRemoveCommand = PermanentRoleRemoveCommand;
 module.exports = PermanentRoleRemoveCommand;

@@ -58,8 +58,8 @@ export let EN : Object = {
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
     "HELPTEXT_PRUNE": "Please use the command with the following parameters:\n`<number of days to be considered inactive (1 <= n <= 30)>` `<text the pruned members should receive as private message>`",
     "HELPTEXT_RESETLEAD": "Please use the command with the following parameters:\n`<Channel, in which the post should be created>`",
-    "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>` `<{0}>`",
-    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number>`",
+    "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<{0}>` `<week number (optional)>`",
+    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number (optional)>`",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -158,8 +158,8 @@ export let DE : Object = {
     "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
     "HELPTEXT_PRUNE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
     "HELPTEXT_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Post erstellt werden soll>`",
-    "HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>` `<{0}>`",
-    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche>`",
+    "HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>`",
+    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
 
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",

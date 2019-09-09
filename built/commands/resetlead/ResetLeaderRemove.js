@@ -19,7 +19,7 @@ Testcases:
 class ResetLeaderRemoveCommand extends BotgartCommand_1.BotgartCommand {
     constructor() {
         super("removeresetlead", {
-            aliases: ["rmresetlead"],
+            aliases: ["removeresetlead", "rmresetlead"],
             args: [
                 {
                     id: "player",
