@@ -189,7 +189,7 @@ class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
                     for (const e of this.emotes) {
                         yield mes.react(e);
                     }
-                    this.getBotgartClient().setRoster(roster.weekNumber, mes.guild, message, roster);
+                    this.getBotgartClient().setRoster(roster.weekNumber, mes.guild, mes, roster);
                     this.getBotgartClient().db.upsertRosterPost(message.guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
                     this.watchRoster(roster);
