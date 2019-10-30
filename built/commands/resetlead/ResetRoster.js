@@ -22,6 +22,7 @@ const L = __importStar(require("../../Locale"));
 const discord = __importStar(require("discord.js"));
 const BotgartCommand_1 = require("../../BotgartCommand");
 const EventEmitter = require("events");
+const dateFormat = __importStar(require("dateformat"));
 /**
 Testcases:
 
@@ -61,6 +62,26 @@ class Roster extends EventEmitter {
         for (const m of WvWMap.getMaps()) {
             this.leads[m.name] = [m, new Set()];
         }
+    }
+    static getNextResetDate() {
+        const now = new Date();
+        const resetDay = Util.getResetDay(Util.getNumberOfWeek(now), now.getFullYear());
+        const nowWeekDay = (now.getDay() + 6) % 7; // makes SUN 6
+        const resetWeekDay = (Util.RESET_WEEKDAY + 6) % 7;
+        if (nowWeekDay > resetWeekDay) {
+            resetDay.setDate(resetDay.getDate() + 7);
+        }
+        return resetDay;
+    }
+    getResetDate() {
+        return Util.getResetDay(this.weekNumber, this.year);
+    }
+    isFuture() {
+        const now = new Date();
+        return this.weekNumber <= Util.getNumberOfWeek(now) && this.year <= now.getFullYear();
+    }
+    isUpcoming() {
+        return this.getResetDate().getTime() === Roster.getNextResetDate().getTime();
     }
     getMapLeaders(map) {
         return this.leads[map.name][1];
@@ -160,36 +181,42 @@ class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
             this.watchMessage(dbMessage, dbRoster);
         })));
     }
+    syncToTS3(roster) {
+        const cl = this.getBotgartClient();
+        // users are stored as <@123123123123>. Resolve if possible.
+        const resolveUser = sid => {
+            const idregxp = /<@(\d+)>/;
+            const match = idregxp.exec(sid);
+            let user = sid;
+            if (match != null) {
+                const resolved = Util.resolveDiscordUser(cl, match[1]);
+                if (resolved != null) {
+                    user = resolved.displayName;
+                }
+            }
+            return user;
+        };
+        const ts3mes = {};
+        ts3mes["type"] = "post";
+        ts3mes["command"] = "setresetroster";
+        ts3mes["args"] = {
+            "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
+            "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
+            "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
+            "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
+            "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
+        };
+        cl.getTS3Connection().getSocket().write(JSON.stringify(ts3mes));
+    }
     watchRoster(roster) {
         const cl = this.getBotgartClient();
         const [guild, message, _] = cl.getRoster(roster.weekNumber, roster.year);
         const refresh = (r, map, p) => {
             cl.db.upsertRosterPost(guild, r, message);
             message.edit(r.toRichEmbed());
-            // users are stored as <@123123123123>. Resolve if possible.
-            const resolveUser = sid => {
-                const idregxp = /<@(\d+)>/;
-                const match = idregxp.exec(sid);
-                let user = sid;
-                if (match != null) {
-                    const resolved = Util.resolveDiscordUser(cl, match[1]);
-                    if (resolved != null) {
-                        user = resolved.displayName;
-                    }
-                }
-                return user;
-            };
-            const ts3mes = {};
-            ts3mes["type"] = "post";
-            ts3mes["command"] = "setresetroster";
-            ts3mes["args"] = {
-                "date": Util.getResetDay(roster.weekNumber, roster.year),
-                "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
-                "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
-                "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
-                "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
-            };
-            cl.getTS3Connection().getSocket().write(JSON.stringify(ts3mes));
+            if (roster.isUpcoming()) {
+                this.syncToTS3(roster);
+            }
         };
         roster.on("addleader", refresh);
         roster.on("removeleader", refresh);
@@ -228,6 +255,9 @@ class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
                     this.watchMessage(mes, roster);
                     this.watchRoster(roster);
                 }));
+                if (roster.isUpcoming()) {
+                    this.syncToTS3(roster);
+                }
             }
             else {
                 // there is already a roster-post for this guild+week -> do nothing, log warning

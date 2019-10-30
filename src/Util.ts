@@ -16,6 +16,8 @@ api.language('en');
 api.fetch.retry(tries => tries <= 5)
 api.fetch.retryWait(tries => tries * 3000)
 
+export const RESET_WEEKDAY = 5; // FRIDAY
+
 /**
 * Determines the reset day for a certain week.
 * week: the week to calculate the reset day for 

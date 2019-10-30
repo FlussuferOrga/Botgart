@@ -7,7 +7,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import EventEmitter = require("events");
-
+import * as dateFormat from "dateformat";
 
 /**
 Testcases:
@@ -53,6 +53,17 @@ export class Roster extends EventEmitter {
     public readonly weekNumber: number;
     public readonly year: number;
 
+    public static getNextResetDate(): Date {
+        const now = new Date();
+        const resetDay = Util.getResetDay(Util.getNumberOfWeek(now), now.getFullYear());
+        const nowWeekDay = (now.getDay() + 6)%7; // makes SUN 6
+        const resetWeekDay = (Util.RESET_WEEKDAY + 6)%7;
+        if(nowWeekDay > resetWeekDay) {
+            resetDay.setDate(resetDay.getDate() + 7);
+        }
+        return resetDay;
+    }
+
     public constructor(weekNumber: number, year: number) {
         super();
         this.weekNumber = weekNumber;
@@ -61,6 +72,19 @@ export class Roster extends EventEmitter {
         for(const m of WvWMap.getMaps()) {
             this.leads[m.name] = [m, new Set<string>()];
         }
+    }
+
+    public getResetDate() {
+        return Util.getResetDay(this.weekNumber, this.year);
+    }
+
+    public isFuture() : boolean {
+        const now: Date = new Date();
+        return this.weekNumber <= Util.getNumberOfWeek(now) && this.year <= now.getFullYear();
+    }
+
+    public isUpcoming() : boolean {
+        return this.getResetDate().getTime() === Roster.getNextResetDate().getTime();
     }
 
     public getMapLeaders(map: WvWMap) : Set<string> {
@@ -178,6 +202,35 @@ export class ResetRosterCommand extends BotgartCommand {
                     })));
     }    
 
+    private syncToTS3(roster: Roster): void {
+        const cl = this.getBotgartClient();
+        // users are stored as <@123123123123>. Resolve if possible.
+        const resolveUser = sid => {
+            const idregxp = /<@(\d+)>/;
+            const match = idregxp.exec(sid);
+            let user = sid;
+            if(match != null) {
+                const resolved: discord.GuildMember = Util.resolveDiscordUser(cl, match[1])
+                if(resolved != null) {
+                    user = resolved.displayName;
+                }
+            }
+            return user;
+        } 
+
+        const ts3mes = {}
+        ts3mes["type"] = "post";
+        ts3mes["command"] = "setresetroster";
+        ts3mes["args"] = {
+            "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
+            "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
+            "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
+            "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
+            "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
+        };
+        cl.getTS3Connection().getSocket().write(JSON.stringify(ts3mes));  
+    }
+
     private watchRoster(roster: Roster): void {
         const cl = this.getBotgartClient();
         const [guild, message, _] = cl.getRoster(roster.weekNumber, roster.year);
@@ -185,31 +238,9 @@ export class ResetRosterCommand extends BotgartCommand {
             cl.db.upsertRosterPost(guild, r, message);
             message.edit(r.toRichEmbed());
 
-            // users are stored as <@123123123123>. Resolve if possible.
-            const resolveUser = sid => {
-                const idregxp = /<@(\d+)>/;
-                const match = idregxp.exec(sid);
-                let user = sid;
-                if(match != null) {
-                    const resolved: discord.GuildMember = Util.resolveDiscordUser(cl, match[1])
-                    if(resolved != null) {
-                        user = resolved.displayName;
-                    }
-                }
-                return user;
-            } 
-
-            const ts3mes = {}
-            ts3mes["type"] = "post";
-            ts3mes["command"] = "setresetroster";
-            ts3mes["args"] = {
-                "date": Util.getResetDay(roster.weekNumber, roster.year),
-                "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
-                "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
-                "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
-                "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
-            };
-            cl.getTS3Connection().getSocket().write(JSON.stringify(ts3mes));
+            if(roster.isUpcoming()) {
+                this.syncToTS3(roster);
+            }
         };
         roster.on("addleader", refresh);
         roster.on("removeleader", refresh);
@@ -250,6 +281,9 @@ export class ResetRosterCommand extends BotgartCommand {
                     this.watchMessage(mes, roster);
                     this.watchRoster(roster);
                 });
+                if(roster.isUpcoming()) {
+                    this.syncToTS3(roster);
+                }
             } else {
                 // there is already a roster-post for this guild+week -> do nothing, log warning
                 Util.log("warning", "ResetLead.js", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
