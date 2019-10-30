@@ -139,6 +139,7 @@ export class Roster extends EventEmitter {
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
+            .setImage("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"))
         for(const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
