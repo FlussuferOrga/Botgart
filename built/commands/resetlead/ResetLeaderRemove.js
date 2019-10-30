@@ -29,6 +29,11 @@ class ResetLeaderRemoveCommand extends BotgartCommand_1.BotgartCommand {
                     id: "weekNumber",
                     type: "integer",
                     default: -1
+                },
+                {
+                    id: "year",
+                    type: "integer",
+                    default: new Date().getFullYear()
                 }
             ]
         }, false, // available per DM
@@ -45,7 +50,7 @@ class ResetLeaderRemoveCommand extends BotgartCommand_1.BotgartCommand {
         if (args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
         }
-        const [g, mes, roster] = this.getBotgartClient().getRoster(args.weekNumber);
+        const [g, mes, roster] = this.getBotgartClient().getRoster(args.weekNumber, args.year);
         if (roster !== undefined) {
             roster.removeLead(ResetRoster_1.WvWMap.getMapByName(args.map), args.player);
             this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [args.player, args.weekNumber, mes.url]));

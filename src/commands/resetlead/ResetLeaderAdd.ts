@@ -29,6 +29,11 @@ export class AddResetLeaderCommand extends BotgartCommand {
                     id: "weekNumber",
                     type: "integer",
                     default: -1
+                },
+                {
+                    id: "year",
+                    type: "integer",
+                    default: new Date().getFullYear()
                 }
             ]
         },
@@ -42,14 +47,14 @@ export class AddResetLeaderCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD", [WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
+        return !args || !args.weekNumber || !args.year || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD", [WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
         }
-        const [g,mes,roster] = this.getBotgartClient().getRoster(args.weekNumber);
+        const [g,mes,roster] = this.getBotgartClient().getRoster(args.weekNumber, args.year);
         if(roster !== undefined) {
             roster.addLead(WvWMap.getMapByName(args.map), args.player);
             this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));

@@ -38,7 +38,7 @@ const args = commandlineargs.default([
     { name: "updateconfig", type: Boolean }
 ]);
 // this is an in-order list of all patches
-const allPatches = ["Patch1", "Patch2", "Patch3", "Patch4", "Patch5", "Patch6"];
+const allPatches = ["Patch1", "Patch2", "Patch3", "Patch4", "Patch5", "Patch6", "Patch7"];
 function startBot() {
     console.log("Starting up...");
     client.login(config.token);

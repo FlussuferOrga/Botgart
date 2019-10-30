@@ -7,17 +7,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+let config = require("../config.json");
 const discord_akairo_1 = require("discord-akairo");
 const BotgartCommand_js_1 = require("./BotgartCommand.js");
 const DB_js_1 = require("./DB.js");
 const discord = __importStar(require("discord.js"));
 const Util_js_1 = require("./Util.js");
+const TS3Connection_1 = require("./TS3Connection");
 class BotgartClient extends discord_akairo_1.AkairoClient {
     constructor(options, dbfile) {
         super(options, {});
         this.db = new DB_js_1.Database(dbfile, this);
         this.cronjobs = {};
         this.rosters = {};
+        this.ts3connection = new TS3Connection_1.TS3Connection(config.ts_listener.ip, config.ts_listener.port);
+        this.ts3connection.exec();
         this.on("ready", () => {
             this.commandHandler.modules.forEach(m => {
                 if (m instanceof BotgartCommand_js_1.BotgartCommand) {
@@ -26,11 +30,18 @@ class BotgartClient extends discord_akairo_1.AkairoClient {
             });
         });
     }
-    getRoster(weekNumber) {
-        return weekNumber in this.rosters ? this.rosters[weekNumber] : [undefined, undefined, undefined];
+    toRosterKey(weekNumber, year) {
+        return `${year}|${weekNumber}`;
     }
-    setRoster(weekNumber, guild, message, roster) {
-        this.rosters[weekNumber] = [guild, message, roster];
+    getTS3Connection() {
+        return this.ts3connection;
+    }
+    getRoster(weekNumber, year) {
+        const k = this.toRosterKey(weekNumber, year);
+        return k in this.rosters ? this.rosters[k] : [undefined, undefined, undefined];
+    }
+    setRoster(weekNumber, year, guild, message, roster) {
+        this.rosters[this.toRosterKey(weekNumber, year)] = [guild, message, roster];
     }
     /**
     * Logs a string to a Discord-text-channel. For each type, one or more channels

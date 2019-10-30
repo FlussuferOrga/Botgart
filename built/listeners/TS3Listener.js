@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -21,10 +12,10 @@ const discord_akairo_1 = require("discord-akairo");
 const Util_1 = require("../Util");
 const L = __importStar(require("../Locale.js"));
 const discord = __importStar(require("discord.js"));
+const TS3Connection = require("../TS3Connection");
+const ts3c = __importStar(require("../TS3Connection"));
 const gw2 = require("gw2api-client");
 const api = gw2();
-const net = require("net");
-const RECONNECT_TIMER_MS = 30000;
 /*
 *********************************************************************************
                  tag up
@@ -70,10 +61,7 @@ class TS3Listener extends discord_akairo_1.Listener {
             emitter: "client",
             eventName: "ready"
         });
-        this.socket = new net.Socket();
-        this.connected = false;
-        this.ip = config.ts_listener.ip;
-        this.port = config.ts_listener.port;
+        this.ts3connection = new ts3c.TS3Connection(config.ts_listener.ip, config.ts_listener.port);
         this.broadcastChannel = config.ts_listener.broadcast_channel;
         this.pingRole = config.ts_listener.ping_role;
         this.commanderRole = config.ts_listener.commander_role;
@@ -84,13 +72,8 @@ class TS3Listener extends discord_akairo_1.Listener {
         this.users = {};
         this.channels = {};
         const that = this;
-        this.socket.on("connect", () => {
-            Util_1.log("info", "TS3Listener.js", "Successfully connected to TS3-Bot on {0}:{1}".formatUnicorn(that.ip, that.port));
-            that.connected = true;
-            // client.write('Hello, server! Love, Client.');
-        });
-        this.socket.on("data", (raw) => {
-            const data = JSON.parse(raw);
+        this.ts3connection.getSocket().on("data", (raw) => {
+            const data = JSON.parse(raw.toString());
             Util_1.log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             const now = new Date();
             const taggedDown = Util_1.setMinus(Object.keys(that.activeCommanders), new Set(data.commanders.map(c => c.ts_cluid)));
@@ -148,16 +131,6 @@ class TS3Listener extends discord_akairo_1.Listener {
             });
             //client.destroy(); // kill client after server's response
         });
-        this.socket.on("close", () => {
-            that.connected = false;
-            Util_1.log("info", "TS3Listener.js", "(Re)connection to TS3-Bot failed. Will attempt reconnect in {0} milliseconds".formatUnicorn(RECONNECT_TIMER_MS));
-            setTimeout(() => __awaiter(this, void 0, void 0, function* () {
-                yield this.connect().catch(e => { });
-            }), RECONNECT_TIMER_MS);
-        });
-        this.socket.on("error", (e) => {
-            //console.log(e);
-        });
     }
     /**
     * Makes a user tag up in a Discord-guild. That means:
@@ -209,13 +182,7 @@ class TS3Listener extends discord_akairo_1.Listener {
         }
         delete this.activeCommanders[tsUID];
     }
-    connect() {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.socket.connect(this.port, this.ip);
-        });
-    }
     exec() {
-        this.connect();
     }
 }
 exports.TS3Listener = TS3Listener;

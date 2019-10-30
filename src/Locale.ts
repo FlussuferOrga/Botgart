@@ -52,14 +52,15 @@ export let EN : Object = {
     "HELPTEXT_GET_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_DEL_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
-    "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
-    "HELPTEXT_RM_PERMAROLE": "Please use the command with the following parameters:\n`@user` `@role`",
+    "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`<@user>` `<@role>    `",
+    "HELPTEXT_RM_PERMAROLE": "Please use the command with the following parameters:\n`<@user>` `<@role>`",
     "HELPTEXT_WHOIS": "Please use the command with the following parameters:\n`<part of an account- or discord-name (at least three characters!)>`",
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
     "HELPTEXT_PRUNE": "Please use the command with the following parameters:\n`<number of days to be considered inactive (1 <= n <= 30)>` `<text the pruned members should receive as private message>`",
-    "HELPTEXT_RESETLEAD": "Please use the command with the following parameters:\n`<Channel, in which the post should be created>`",
+    "HELPTEXT_RESETLEAD": "Please use the command with the following parameters:\n`<Channel, in which the post should be created>` (`<number of week for the roster, default: current week>`) (`year for the roster, default: current year`)",
     "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<{0}>` `<week number (optional)>`",
     "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number (optional)>`",
+    "HELPTEXT_SET_TS3_RESET_ROSTER": "",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -86,6 +87,7 @@ export let EN : Object = {
     "DESC_RESETLEAD": "Creates a post for commanders to roster.",
     "DESC_ADD_RESETLEAD": "Manually adds a player as reset lead.",
     "DESC_REMOVE_RESETLEAD": "Manually removes a player as reset lead.",
+    "DESC_SET_TS3_RESET_ROSTER": "Syncs the current reset roster to TS3.",
 
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
@@ -157,9 +159,10 @@ export let DE : Object = {
     "HELPTEXT_WHOIS": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
     "HELPTEXT_DISCORD_LOG": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
     "HELPTEXT_PRUNE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
-    "HELPTEXT_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Post erstellt werden soll>`",
+    "HELPTEXT_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Post erstellt werden soll>` (`Kalenderwoche für den Reset, Standard: aktuelle Woche`) (`Jahr für den Reset, Standard: aktuelles Jahr`)",
     "HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>`",
     "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
+    "HELPTEXT_SET_TS3_RESET_ROSTER": "",
 
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -186,6 +189,7 @@ export let DE : Object = {
     "DESC_RESETLEAD": "Erstellt einen Post, mithilfe dessen Kommandeure rostern können.",
     "DESC_ADD_RESETLEAD": "Fügt manuell einen Spieler als Reset-Kommandeur hinzu.",
     "DESC_REMOVE_RESETLEAD": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
+    "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
 
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 

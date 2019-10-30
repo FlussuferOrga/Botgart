@@ -1,20 +1,25 @@
+let config = require("../config.json");
 import { AkairoClient } from "discord-akairo";
 import { BotgartCommand } from "./BotgartCommand.js";
 import { Database } from "./DB.js";
 import * as discord from "discord.js";
 import { log } from "./Util.js";
 import { Roster } from "./commands/resetlead/ResetRoster"
+import { TS3Connection } from "./TS3Connection";
 
 export class BotgartClient extends AkairoClient {
     public db: Database;
     public cronjobs: Object;
-    private rosters: {[key: number] : [discord.Guild, discord.Message, Roster]};
+    private ts3connection : TS3Connection;
+    private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
 
     constructor(options, dbfile) {
         super(options, {});
         this.db = new Database(dbfile, this);  
         this.cronjobs = {};
         this.rosters = {};
+        this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
+        this.ts3connection.exec();
         this.on("ready", () => {
             this.commandHandler.modules.forEach(m => {
                 if(m instanceof BotgartCommand) {
@@ -24,12 +29,21 @@ export class BotgartClient extends AkairoClient {
         });
     }
 
-    public getRoster(weekNumber: number): [discord.Guild, discord.Message, Roster] | [undefined, undefined, undefined] {
-        return weekNumber in this.rosters ? this.rosters[weekNumber] : [undefined, undefined, undefined];
+    private toRosterKey(weekNumber: number, year: number): string {
+        return `${year}|${weekNumber}`;
     }
 
-    public setRoster(weekNumber: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
-        this.rosters[weekNumber] = [guild, message, roster];
+    public getTS3Connection() : TS3Connection {
+        return this.ts3connection;
+    }
+
+    public getRoster(weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | [undefined, undefined, undefined] {
+        const k = this.toRosterKey(weekNumber, year);
+        return k in this.rosters ? this.rosters[k] : [undefined, undefined, undefined];
+    }
+
+    public setRoster(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
+        this.rosters[this.toRosterKey(weekNumber, year)] = [guild, message, roster];
     }
 
     /**

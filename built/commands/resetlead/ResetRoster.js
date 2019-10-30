@@ -53,13 +53,17 @@ WvWMap.BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS");
 WvWMap.GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS");
 WvWMap.EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS");
 class Roster extends EventEmitter {
-    constructor(weekNumber) {
+    constructor(weekNumber, year) {
         super();
         this.weekNumber = weekNumber;
+        this.year = year;
         this.leads = {};
         for (const m of WvWMap.getMaps()) {
             this.leads[m.name] = [m, new Set()];
         }
+    }
+    getMapLeaders(map) {
+        return this.leads[map.name][1];
     }
     getLeaders() {
         const leaders = [];
@@ -126,6 +130,11 @@ class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
                     id: "weekNumber",
                     type: "integer",
                     default: undefined
+                },
+                {
+                    id: "year",
+                    type: "integer",
+                    default: undefined
                 }
             ],
             userPermissions: ["ADMINISTRATOR"]
@@ -146,17 +155,41 @@ class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
         client.guilds.forEach(g => Promise.all(client.db.getActiveRosters(g))
             .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
             .forEach(([dbRoster, dbChannel, dbMessage]) => {
-            client.setRoster(dbRoster.weekNumber, dbChannel.guild, dbMessage, dbRoster);
+            client.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
             this.watchRoster(dbRoster);
             this.watchMessage(dbMessage, dbRoster);
         })));
     }
     watchRoster(roster) {
         const cl = this.getBotgartClient();
-        const [guild, message, _] = cl.getRoster(roster.weekNumber);
+        const [guild, message, _] = cl.getRoster(roster.weekNumber, roster.year);
         const refresh = (r, map, p) => {
             cl.db.upsertRosterPost(guild, r, message);
             message.edit(r.toRichEmbed());
+            // users are stored as <@123123123123>. Resolve if possible.
+            const resolveUser = sid => {
+                const idregxp = /<@(\d+)>/;
+                const match = idregxp.exec(sid);
+                let user = sid;
+                if (match != null) {
+                    const resolved = Util.resolveDiscordUser(cl, match[1]);
+                    if (resolved != null) {
+                        user = resolved.displayName;
+                    }
+                }
+                return user;
+            };
+            const ts3mes = {};
+            ts3mes["type"] = "post";
+            ts3mes["command"] = "setresetroster";
+            ts3mes["args"] = {
+                "date": Util.getResetDay(roster.weekNumber, roster.year),
+                "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
+                "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
+                "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
+                "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
+            };
+            cl.getTS3Connection().getSocket().write(JSON.stringify(ts3mes));
         };
         roster.on("addleader", refresh);
         roster.on("removeleader", refresh);
@@ -180,16 +213,17 @@ class ResetRosterCommand extends BotgartCommand_1.BotgartCommand {
     command(message, responsible, guild, args) {
         const currentWeek = Util.getNumberOfWeek();
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
-        this.getBotgartClient().db.getRosterPost(guild, rosterWeek).then(([dbRoster, dbChannel, dbMessage]) => {
+        const rosterYear = !args.year ? new Date().getFullYear() : args.year;
+        this.getBotgartClient().db.getRosterPost(guild, rosterWeek, rosterYear).then(([dbRoster, dbChannel, dbMessage]) => {
             if (dbRoster === undefined) {
                 // no roster for this guild+week -> create one
-                const roster = new Roster(rosterWeek);
+                const roster = new Roster(rosterWeek, rosterYear);
                 args.channel.send(roster.toRichEmbed())
                     .then((mes) => __awaiter(this, void 0, void 0, function* () {
                     for (const e of this.emotes) {
                         yield mes.react(e);
                     }
-                    this.getBotgartClient().setRoster(roster.weekNumber, mes.guild, mes, roster);
+                    this.getBotgartClient().setRoster(roster.weekNumber, roster.year, mes.guild, mes, roster);
                     this.getBotgartClient().db.upsertRosterPost(message.guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
                     this.watchRoster(roster);

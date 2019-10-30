@@ -5,11 +5,10 @@ import { BotgartClient } from "../BotgartClient";
 import * as L from "../Locale.js";
 import * as discord from "discord.js";
 import Timeout from "await-timeout";
+const TS3Connection = require("../TS3Connection");
+import * as ts3c from "../TS3Connection";
 const gw2 = require("gw2api-client");
 const api = gw2();
-const net = require("net");
-
-const RECONNECT_TIMER_MS = 30000;
 
 /*
 *********************************************************************************
@@ -51,10 +50,8 @@ enum CommanderState {
 }
 
 export class TS3Listener extends Listener {
-    private socket: any; // net.Socket;
     private connected: boolean;
-    private ip: string;
-    private port: number;
+    private ts3connection: ts3c.TS3Connection;
     private broadcastChannel: string;
     private pingRole: string;
     private commanderRole: string;
@@ -70,10 +67,7 @@ export class TS3Listener extends Listener {
             emitter: "client",
             eventName: "ready"
         });
-        this.socket = new net.Socket();
-        this.connected = false;
-        this.ip = config.ts_listener.ip;
-        this.port = config.ts_listener.port;
+        this.ts3connection = new ts3c.TS3Connection(config.ts_listener.ip, config.ts_listener.port);
         this.broadcastChannel = config.ts_listener.broadcast_channel;
         this.pingRole = config.ts_listener.ping_role;
         this.commanderRole = config.ts_listener.commander_role;
@@ -85,16 +79,8 @@ export class TS3Listener extends Listener {
         this.channels = {};
 
         const that = this;
-
-        this.socket.on("connect", () => {
-            log("info", "TS3Listener.js", "Successfully connected to TS3-Bot on {0}:{1}".formatUnicorn(that.ip, that.port));
-            that.connected = true;
-            // client.write('Hello, server! Love, Client.');
-        });
-
-
-        this.socket.on("data", (raw) => {
-            const data = JSON.parse(raw);
+        this.ts3connection.getSocket().on("data", (raw : Buffer) => {
+            const data = JSON.parse(raw.toString());
             log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             const now = new Date();
             const taggedDown = setMinus(Object.keys(that.activeCommanders), new Set<string>(data.commanders.map(c => c.ts_cluid)));
@@ -156,18 +142,6 @@ export class TS3Listener extends Listener {
 
             //client.destroy(); // kill client after server's response
         });
-
-        this.socket.on("close", () => {
-            that.connected = false;
-            log("info", "TS3Listener.js", "(Re)connection to TS3-Bot failed. Will attempt reconnect in {0} milliseconds".formatUnicorn(RECONNECT_TIMER_MS));
-            setTimeout(async () => {
-                await this.connect().catch(e => {});
-            }, RECONNECT_TIMER_MS);
-        });
-
-        this.socket.on("error", (e) => {
-            //console.log(e);
-        }); 
     }
 
     /**
@@ -222,12 +196,8 @@ export class TS3Listener extends Listener {
         delete this.activeCommanders[tsUID];
     }
 
-    private async connect() {
-        this.socket.connect(this.port, this.ip);   
-    }
-
     exec() {
-        this.connect();
+
     }    
 }
 

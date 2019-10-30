@@ -26,9 +26,26 @@ api.language('en');
 // retry some times and be polite about it
 api.fetch.retry(tries => tries <= 5);
 api.fetch.retryWait(tries => tries * 3000);
+/**
+* Determines the reset day for a certain week.
+* week: the week to calculate the reset day for
+* year: the year the week lied in. Per default it is the current year, but take care around New Year!
+* resetWeekDay: day of week the reset takes place: SUN 0, MON 1, TUE 2, WED 3, THU 4, FRI 5, SAT 6; per default it is Friday
+* returns: the Date on which the reset of the specified week takes place.
+*/
+function getResetDay(week, year = new Date().getFullYear(), resetWeekDay = 5) {
+    // look for the first reset day of the year
+    let resetDay = new Date(year, 0, 1);
+    while (resetDay.getDay() != resetWeekDay) {
+        resetDay.setDate(resetDay.getDate() + 1);
+    }
+    const firstResetWeekNumber = getNumberOfWeek(resetDay); // if the first day of the year is either SAT or SUN, the first Friday of the year is in week 2! So check that.
+    resetDay.setDate(resetDay.getDate() + (7 * (week - firstResetWeekNumber)));
+    return resetDay;
+}
+exports.getResetDay = getResetDay;
 // blatantly stolen from https://gist.github.com/IamSilviu/5899269#gistcomment-2918013
-function getNumberOfWeek() {
-    const today = new Date();
+function getNumberOfWeek(today = new Date()) {
     const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
     const pastDaysOfYear = (today.getTime() - firstDayOfYear.getTime()) / 86400000;
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
@@ -247,9 +264,11 @@ exports.getAccountName = getAccountName;
 function resolveDiscordUser(client, uid) {
     let user = null;
     let i = 0;
-    let l = client.guilds.array().length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
+    const gs = client.guilds.array();
+    let l = gs.length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
     while (!user && i < l) {
-        user = client.guilds[i].members.find(m => m.user.id = uid);
+        user = gs[i].members.find(m => m.user.id === uid);
+        i++;
     }
     return user;
 }

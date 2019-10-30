@@ -33,6 +33,11 @@ class AddResetLeaderCommand extends BotgartCommand_1.BotgartCommand {
                     id: "weekNumber",
                     type: "integer",
                     default: -1
+                },
+                {
+                    id: "year",
+                    type: "integer",
+                    default: new Date().getFullYear()
                 }
             ]
         }, false, // available per DM
@@ -43,13 +48,13 @@ class AddResetLeaderCommand extends BotgartCommand_1.BotgartCommand {
         return L.get("DESC_ADD_RESETLEAD");
     }
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD", [ResetRoster_1.WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
+        return !args || !args.weekNumber || !args.year || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD", [ResetRoster_1.WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }
     command(message, responsible, guild, args) {
         if (args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
         }
-        const [g, mes, roster] = this.getBotgartClient().getRoster(args.weekNumber);
+        const [g, mes, roster] = this.getBotgartClient().getRoster(args.weekNumber, args.year);
         if (roster !== undefined) {
             roster.addLead(ResetRoster_1.WvWMap.getMapByName(args.map), args.player);
             this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));

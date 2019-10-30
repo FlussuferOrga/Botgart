@@ -109,12 +109,12 @@ class Database {
     upsertRosterPost(guild, roster, message) {
         return this.execute(db => {
             db.transaction((_) => {
-                const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ?`).get(guild.id, roster.weekNumber);
+                const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
                 let rosterId = current ? current.rrid : undefined;
                 if (rosterId === undefined) {
                     // completely new roster -> create new roster and store ID
-                    db.prepare(`INSERT INTO reset_rosters(week_number, guild, channel, message) VALUES(?,?,?,?)`)
-                        .run(roster.weekNumber, guild.id, message.channel.id, message.id);
+                    db.prepare(`INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)`)
+                        .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id);
                     rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
                 }
                 else {
@@ -127,18 +127,19 @@ class Database {
         });
     }
     getActiveRosters(guild) {
-        return this.execute(db => db.prepare(`SELECT rr.week_number AS wn FROM reset_rosters AS rr WHERE week_number >= ? AND guild = ?`)
-            .all(Util.getNumberOfWeek(), guild.id)
-            .map(row => this.getRosterPost(guild, row.wn)));
+        return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
+            .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
+            .map(row => this.getRosterPost(guild, row.wn, row.year)));
     }
-    getRosterPost(guild, weekNumber) {
+    getRosterPost(guild, weekNumber, year) {
         return __awaiter(this, void 0, void 0, function* () {
             let postExists = false;
-            const roster = new ResetLead.Roster(weekNumber);
+            const roster = new ResetLead.Roster(weekNumber, year);
             const entries = this.execute(db => db.prepare(`
             SELECT 
                 rr.reset_roster_id,
                 rr.week_number,
+                rr.year,
                 rr.guild,
                 rr.channel,
                 rr.message,
@@ -150,8 +151,9 @@ class Database {
                   ON rr.reset_roster_id = rl.reset_roster_id
             WHERE 
                 rr.guild = ?
-                AND rr.week_number = ?`)
-                .all(guild.id, weekNumber));
+                AND rr.week_number = ?
+                AND rr.year = ?`)
+                .all(guild.id, weekNumber, year));
             entries.forEach(r => roster.addLead(ResetLead.WvWMap.getMapByName(r.map), r.player));
             let channel;
             let message;
