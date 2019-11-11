@@ -1,4 +1,4 @@
-let config = require.main.require("../config.json");
+import * as config from "../config.json";
 import * as discord from "discord.js";
 import * as winston from "winston";
 //import * as gw2 from "gw2api-client";
@@ -17,6 +17,20 @@ api.fetch.retry(tries => tries <= 5)
 api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
+
+/**
+* Compares two dates without considering the time component
+* and normalised to UTC, to avoid summer-winter-conflicts. 
+* -> 2019-12-24 13:00 === 2019-12-24 6:23
+* d1: first date
+* d2: second date
+* returns: true if both dates are equal in day, month, and year
+*/
+export function compareDatesWithoutTime(d1: Date, d2: Date) {
+    return d1.getUTCDate() == d2.getUTCDate()
+           && d1.getUTCMonth() == d2.getUTCMonth()
+           && d1.getUTCFullYear() == d2.getUTCFullYear()
+}
 
 /**
 * Determines the reset day for a certain week.
