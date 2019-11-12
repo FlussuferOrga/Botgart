@@ -1,4 +1,4 @@
-let config = require("./config.json");
+const config = require("../config.json");
 import { AkairoClient } from "discord-akairo";
 import { BotgartCommand } from "./BotgartCommand.js";
 import { Database } from "./DB.js";

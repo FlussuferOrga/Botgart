@@ -1,4 +1,4 @@
-import * as config from "../config.json";
+const config = require("../../config.json");
 import { Listener } from "discord-akairo";
 import { log, setMinus } from "../Util";
 import { BotgartClient } from "../BotgartClient";

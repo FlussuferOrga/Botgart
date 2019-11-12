@@ -1,4 +1,4 @@
-import * as config from "../config.json";
+const config = require("../../config.json");
 import { Command } from "discord-akairo";
 import * as Util from "../Util";
 import * as Const from "../Const";

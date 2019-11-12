@@ -1,4 +1,4 @@
-import * as config from "./config.json";
+const config = require("../config.json");
 import * as discord from "discord.js";
 import * as L from "./Locale";
 import { BotgartClient } from "./BotgartClient";

@@ -1,4 +1,4 @@
-import * as config from "./config.json";
+const config = require("../config.json");
 import * as discord from "discord.js";
 import * as winston from "winston";
 //import * as gw2 from "gw2api-client";

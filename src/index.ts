@@ -1,4 +1,4 @@
-import * as config from "./config.json";
+const config = require("../config.json");
 import { BotgartClient } from  "./BotgartClient";
 import { Patch } from "./patches/Patch.js";
 import * as commandlineargs from "command-line-args";
