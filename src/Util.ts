@@ -1,4 +1,4 @@
-import * as config from "../config.json";
+import * as config from "./config.json";
 import * as discord from "discord.js";
 import * as winston from "winston";
 //import * as gw2 from "gw2api-client";
@@ -41,7 +41,7 @@ export function compareDatesWithoutTime(d1: Date, d2: Date) {
 */
 export function getResetDay(week : number, year : number = new Date().getFullYear(), resetWeekDay : number = 5) : Date {
   // look for the first reset day of the year
-  let resetDay : Date = new Date(year, 0, 1);
+  let resetDay : Date = new Date(Date.UTC(year, 0, 1));
   while(resetDay.getDay() != resetWeekDay) {  
     resetDay.setDate(resetDay.getDate() + 1);
   }
@@ -52,7 +52,7 @@ export function getResetDay(week : number, year : number = new Date().getFullYea
 
 // blatantly stolen from https://gist.github.com/IamSilviu/5899269#gistcomment-2918013
 export function getNumberOfWeek(today = new Date()) {
-    const firstDayOfYear = new Date(today.getFullYear(), 0, 1);
+    const firstDayOfYear = new Date(Date.UTC(today.getFullYear(), 0, 1));
     const pastDaysOfYear = (today.getTime() - firstDayOfYear.getTime()) / 86400000;
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }

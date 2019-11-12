@@ -1,11 +1,11 @@
-let config = require("../config.json");
+import * as config from "./config.json";
 import { BotgartClient } from  "./BotgartClient";
 import { Patch } from "./patches/Patch.js";
 import * as commandlineargs from "command-line-args";
 import * as fs from "fs";
 
 const client = new BotgartClient({
-    ownerID: config.owner_id,
+    ownerID: config.owner_ids,
     prefix: config.prefix,
     commandDirectory: "./built/commands/",
     inhibitorDirectory: "./built/inhibitors/",

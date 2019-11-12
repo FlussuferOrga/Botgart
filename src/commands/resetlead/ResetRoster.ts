@@ -1,4 +1,3 @@
-let config = require.main.require("../config.json");
 import { Command, Listener } from "discord-akairo";
 import * as Util from "../../Util";
 import * as Const from "../../Const";
@@ -53,8 +52,7 @@ export class Roster extends EventEmitter {
     public readonly weekNumber: number;
     public readonly year: number;
 
-    public static getNextResetDate(): Date {
-        const now = new Date();
+    public static getNextResetDate(now = new Date()): Date {
         const resetDay = Util.getResetDay(Util.getNumberOfWeek(now), now.getFullYear());
         const nowWeekDay = (now.getDay() + 6)%7; // makes SUN 6
         const resetWeekDay = (Util.RESET_WEEKDAY + 6)%7;
@@ -84,7 +82,7 @@ export class Roster extends EventEmitter {
     }
 
     public isUpcoming() : boolean {
-        return this.getResetDate().getTime() === Roster.getNextResetDate().getTime();
+        return Util.compareDatesWithoutTime(this.getResetDate(), Roster.getNextResetDate());
     }
 
     public getMapLeaders(map: WvWMap) : Set<string> {
@@ -139,7 +137,7 @@ export class Roster extends EventEmitter {
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
-            .setImage("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
+            .setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"))
         for(const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];

@@ -1,4 +1,4 @@
-let config = require("../config.json");
+let config = require("./config.json");
 import { AkairoClient } from "discord-akairo";
 import { BotgartCommand } from "./BotgartCommand.js";
 import { Database } from "./DB.js";
@@ -18,7 +18,7 @@ export class BotgartClient extends AkairoClient {
         this.db = new Database(dbfile, this);  
         this.cronjobs = {};
         this.rosters = {};
-        this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
+        this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
         this.on("ready", () => {
             this.commandHandler.modules.forEach(m => {

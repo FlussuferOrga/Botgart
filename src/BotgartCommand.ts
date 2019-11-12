@@ -1,4 +1,4 @@
-let config = require("../config.json");
+import * as config from "./config.json";
 import * as discord from "discord.js";
 import * as L from "./Locale";
 import { BotgartClient } from "./BotgartClient";
@@ -75,7 +75,7 @@ export class BotgartCommand extends Command {
     * @returns - true, if the user is an owner.
     */ 
     public isOwner(user: (discord.GuildMember|discord.User)) {
-        return config.owner_ids === user.id || Array.isArray(config.owner_ids) && config.owner_ids.includes(user.id);
+        return Array.isArray(config.owner_ids) && config.owner_ids.includes(user.id);
     }
 
     /**

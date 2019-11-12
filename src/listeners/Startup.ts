@@ -1,4 +1,3 @@
-let config = require.main.require("../config.json");
 import { Listener } from "discord-akairo";
 import { log, resolveWvWObjective, resolveWvWMap, resolveMatchColour } from "../Util";
 import { BotgartClient } from "../BotgartClient";

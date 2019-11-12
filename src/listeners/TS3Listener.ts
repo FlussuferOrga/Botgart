@@ -1,4 +1,4 @@
-let config = require.main.require("../config.json");
+import * as config from "../config.json";
 import { Listener } from "discord-akairo";
 import { log, setMinus } from "../Util";
 import { BotgartClient } from "../BotgartClient";
@@ -82,64 +82,66 @@ export class TS3Listener extends Listener {
         this.ts3connection.getSocket().on("data", (raw : Buffer) => {
             const data = JSON.parse(raw.toString());
             log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
-            const now = new Date();
-            const taggedDown = setMinus(Object.keys(that.activeCommanders), new Set<string>(data.commanders.map(c => c.ts_cluid)));
-            that.client.guilds.forEach(g => {
-                data.commanders.forEach(c => {
-                    let account  = c.account_name; // for lookup
-                    let uid      = c.ts_cluid; // for this.users
-                    let username = c.ts_display_name; // for broadcast
-                    let channel  = c.ts_channel_name; // for broadcast and this.channels
-                    
-                    if(!(uid in that.users)) {
-                        // user was newly discovered as tagged up -> save user without cooldown
-                        that.users[uid] = [now,CommanderState.TAG_UP];
-                        log("debug", "TS3Listener.js", "Moving newly discovered {0} to TAG_UP state.".formatUnicorn(username));
-                    }
-                    let [userLastTime,state] = that.users[uid];
-                    switch(state) {
-                        case CommanderState.TAG_UP:
-                            // user tagged up and is waiting to gain commander status
-                            if(now.getTime() - userLastTime.getTime() > that.gracePeriod) {
-                                that.users[uid] = [now, CommanderState.COMMANDER];
-                                that.tagUp(g, account, uid, username, channel);
-                                log("debug", "TS3Listener.js", "Moving {0} from TAG_UP to COMMANDER state.".formatUnicorn(username));
-                            }
-                        break;
+            // COMMANDERS BROADCAST
+            if(data.constructor == Object && "commanders" in data) {
+                const now = new Date();
+                const taggedDown = setMinus(Object.keys(that.activeCommanders), new Set<string>(data.commanders.map(c => c.ts_cluid)));
+                that.client.guilds.forEach(g => {
+                    data.commanders.forEach(c => {
+                        let account  = c.account_name; // for lookup
+                        let uid      = c.ts_cluid; // for this.users
+                        let username = c.ts_display_name; // for broadcast
+                        let channel  = c.ts_channel_name; // for broadcast and this.channels
+                        
+                        if(!(uid in that.users)) {
+                            // user was newly discovered as tagged up -> save user without cooldown
+                            that.users[uid] = [now,CommanderState.TAG_UP];
+                            log("debug", "TS3Listener.js", "Moving newly discovered {0} to TAG_UP state.".formatUnicorn(username));
+                        }
+                        let [userLastTime,state] = that.users[uid];
+                        switch(state) {
+                            case CommanderState.TAG_UP:
+                                // user tagged up and is waiting to gain commander status
+                                if(now.getTime() - userLastTime.getTime() > that.gracePeriod) {
+                                    that.users[uid] = [now, CommanderState.COMMANDER];
+                                    that.tagUp(g, account, uid, username, channel);
+                                    log("debug", "TS3Listener.js", "Moving {0} from TAG_UP to COMMANDER state.".formatUnicorn(username));
+                                }
+                            break;
 
-                        case CommanderState.COOLDOWN:
-                            // user tagged up again too quickly -> wait out delay and then go into TAG_UP
-                            if(now.getTime() - userLastTime.getTime() > that.userDelay) {
-                                that.users[uid] = [now, CommanderState.TAG_UP];
-                                log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN to TAG_UP state.".formatUnicorn(username));
-                            }
-                        break;
+                            case CommanderState.COOLDOWN:
+                                // user tagged up again too quickly -> wait out delay and then go into TAG_UP
+                                if(now.getTime() - userLastTime.getTime() > that.userDelay) {
+                                    that.users[uid] = [now, CommanderState.TAG_UP];
+                                    log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN to TAG_UP state.".formatUnicorn(username));
+                                }
+                            break;
 
-                        case CommanderState.TAG_DOWN:
-                            // user raided before, but tagged down in between
-                            // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
-                            if(now.getTime() - userLastTime.getTime() > that.userDelay) {
-                                that.users[uid] = [now, CommanderState.TAG_UP];
-                                log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to TAG_UP state.".formatUnicorn(username));
-                            } else {
-                                that.users[uid] = [userLastTime, CommanderState.COOLDOWN];
-                                log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to COOLDOWN state.".formatUnicorn(username));
-                            }
-                        break;
+                            case CommanderState.TAG_DOWN:
+                                // user raided before, but tagged down in between
+                                // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
+                                if(now.getTime() - userLastTime.getTime() > that.userDelay) {
+                                    that.users[uid] = [now, CommanderState.TAG_UP];
+                                    log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to TAG_UP state.".formatUnicorn(username));
+                                } else {
+                                    that.users[uid] = [userLastTime, CommanderState.COOLDOWN];
+                                    log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to COOLDOWN state.".formatUnicorn(username));
+                                }
+                            break;
 
-                        case CommanderState.COMMANDER:
-                            // still raiding -> update timestamp
-                            that.users[uid] = [now,state];
-                        break;
-                    } 
+                            case CommanderState.COMMANDER:
+                                // still raiding -> update timestamp
+                                that.users[uid] = [now,state];
+                            break;
+                        } 
+                    });
+                    taggedDown.forEach(tduid => {
+                        that.users[tduid] = [now, CommanderState.TAG_DOWN];
+                        that.tagDown(g, tduid, that.activeCommanders[tduid]);
+                        log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
+                    })
                 });
-                taggedDown.forEach(tduid => {
-                    that.users[tduid] = [now, CommanderState.TAG_DOWN];
-                    that.tagDown(g, tduid, that.activeCommanders[tduid]);
-                    log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
-                })
-            });
-
+            }
             //client.destroy(); // kill client after server's response
         });
     }

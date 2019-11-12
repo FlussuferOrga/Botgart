@@ -1,4 +1,4 @@
-let config = require.main.require("../config.json");
+import * as config from "../config.json";
 import { Listener } from "discord-akairo";
 import { log } from "../Util";
 

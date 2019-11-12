@@ -1,4 +1,3 @@
-let config = require.main.require("../config.json");
 import { Command } from "discord-akairo";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
