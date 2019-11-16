@@ -53,15 +53,11 @@ export class Roster extends EventEmitter {
     public readonly year: number;
 
     public static getNextResetDate(now = new Date()): Date {
-        console.log("NoW", Util.getNumberOfWeek(now));
         const resetDay = Util.getResetDay(Util.getNumberOfWeek(now), now.getFullYear());
-        console.log("preliminary reset day",resetDay);
         const nowWeekDay = (now.getDay() + 6)%7; // makes SUN 6
         const resetWeekDay = (Util.RESET_WEEKDAY + 6)%7;
-        console.log("past friday?", nowWeekDay > resetWeekDay);
         if(nowWeekDay > resetWeekDay) {
             resetDay.setDate(resetDay.getDate() + 7);
-            console.log("final reset day",resetDay);
         }
         return resetDay;
     }
@@ -241,7 +237,6 @@ export class ResetRosterCommand extends BotgartCommand {
             cl.db.upsertRosterPost(guild, r, message);
             message.edit(r.toRichEmbed());
 
-            console.log(roster.isUpcoming());
             if(roster.isUpcoming()) {
                 this.syncToTS3(roster);
             }
