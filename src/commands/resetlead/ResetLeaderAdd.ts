@@ -15,6 +15,7 @@ export class AddResetLeaderCommand extends BotgartCommand {
      constructor() {
         super("addresetlead", {
             aliases: ["addresetlead"],
+            split: "quoted",
             args: [
                 {
                     id: "player",
