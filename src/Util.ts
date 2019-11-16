@@ -33,6 +33,18 @@ export function compareDatesWithoutTime(d1: Date, d2: Date) {
 }
 
 /**
+* Creates a standard UTC day without the time components.
+* This can be relevant when adding to a day during computations
+* can lead to confusing results when it's the middle of the day.
+* -> 2019-12-24 13:00 -> 2019-12-24 00:00 
+* d: the Date to normalise
+* returns: the passed day with the time components set to 0
+*/
+export function getStandardDay(d: Date) {
+    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+}
+
+/**
 * Determines the reset day for a certain week.
 * week: the week to calculate the reset day for 
 * year: the year the week lied in. Per default it is the current year, but take care around New Year!
@@ -42,7 +54,7 @@ export function compareDatesWithoutTime(d1: Date, d2: Date) {
 export function getResetDay(week : number, year : number = new Date().getFullYear(), resetWeekDay : number = 5) : Date {
   // look for the first reset day of the year
   let resetDay : Date = new Date(Date.UTC(year, 0, 1));
-  while(resetDay.getDay() != resetWeekDay) {  
+  while(resetDay.getDay() != resetWeekDay) {
     resetDay.setDate(resetDay.getDate() + 1);
   }
   const firstResetWeekNumber : number = getNumberOfWeek(resetDay); // if the first day of the year is either SAT or SUN, the first Friday of the year is in week 2! So check that.
@@ -51,9 +63,16 @@ export function getResetDay(week : number, year : number = new Date().getFullYea
 }
 
 // blatantly stolen from https://gist.github.com/IamSilviu/5899269#gistcomment-2918013
-export function getNumberOfWeek(today = new Date()) {
+export function getNumberOfWeek(today: Date = new Date()) {
+    today = getStandardDay(today);
+    if(today.getDay() === 0) {
+        // since JS weeks start on Sundays, we calculate the week for Saturday
+        // if we would calculate the week for a Sunday.
+        today.setDate(today.getDate() - 1);
+    }
     const firstDayOfYear = new Date(Date.UTC(today.getFullYear(), 0, 1));
     const pastDaysOfYear = (today.getTime() - firstDayOfYear.getTime()) / 86400000;
+    const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
     return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
 }
 

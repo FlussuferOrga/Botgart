@@ -18,6 +18,11 @@ export class TS3Connection {
         return this.socket;
     }
 
+    public write(message : string): void {
+        log("debug", "TS3Connection.js", `${this.name} Sending ${message}`);
+        this.socket.write(message);
+    }
+
     public constructor(ts3ip, ts3port, name = null) {
         this.socket = new net.Socket();
         this.connected = false;
