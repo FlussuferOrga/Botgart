@@ -137,7 +137,7 @@ export class Roster extends EventEmitter {
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
-            .setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
+            //.setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"))
         for(const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
@@ -149,8 +149,11 @@ export class Roster extends EventEmitter {
 }
 
 export class ResetRosterCommand extends BotgartCommand {
+    private static readonly UPDATE_DELAY = 1000;
+
     private messages: {[key: string]: Roster};
     private emotes: string[];
+    private syncScheduled: boolean;
 
     constructor() {
         super("resetroster", {
@@ -180,6 +183,7 @@ export class ResetRosterCommand extends BotgartCommand {
         this.messages = {};
         this.emotes = WvWMap.getMaps().map(m => m.emote);
         this.emotes.push("❌"); // cross
+        this.syncScheduled = false;
     }
 
     desc(): string {
@@ -201,7 +205,7 @@ export class ResetRosterCommand extends BotgartCommand {
                     })));
     }    
 
-    private syncToTS3(roster: Roster): void {
+    private syncToTS3(roster: Roster): void {       
         const cl = this.getBotgartClient();
         // users are stored as <@123123123123>. Resolve if possible.
         const resolveUser = sid => {
@@ -227,19 +231,28 @@ export class ResetRosterCommand extends BotgartCommand {
             "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
             "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
         };
-        cl.getTS3Connection().write(JSON.stringify(ts3mes));  
+        cl.getTS3Connection().write(JSON.stringify(ts3mes));       
     }
 
     private watchRoster(roster: Roster): void {
         const cl = this.getBotgartClient();
         const [guild, message, _] = cl.getRoster(roster.weekNumber, roster.year);
         const refresh = (r: Roster, map: string, p: string) => {
-            cl.db.upsertRosterPost(guild, r, message);
-            message.edit(r.toRichEmbed());
+            setTimeout(function() { 
+                // only updating post, DB, and TS3 in fixed intervals
+                // reduces strain if people are being funny by clicking around wildly
+                // and only updates once if someone who was tagged for multiple maps 
+                // pulls back, instead for once for every map.
+                if(this.syncScheduled) return;
+                this.syncScheduled = true;
+                cl.db.upsertRosterPost(guild, r, message);
+                message.edit(r.toRichEmbed());
 
-            if(roster.isUpcoming()) {
-                this.syncToTS3(roster);
-            }
+                if(roster.isUpcoming()) {
+                    this.syncToTS3(roster);
+                }
+                this.syncScheduled = false;
+            }.bind(this), ResetRosterCommand.UPDATE_DELAY);
         };
         roster.on("addleader", refresh);
         roster.on("removeleader", refresh);
