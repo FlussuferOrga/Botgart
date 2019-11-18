@@ -15,7 +15,7 @@ Testcases:
 
 */
 export class WvWMap {
-    static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS", ["RBG"]);
+    static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS", ["RBL"]);
     static readonly BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS", ["BBL"]);
     static readonly GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS", ["GBL"]);
     static readonly EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS", ["EBG"]);
