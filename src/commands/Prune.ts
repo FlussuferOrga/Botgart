@@ -29,7 +29,7 @@ export class PruneCommand extends BotgartCommand {
             ]
         },
         false,  // available per DM
-        false // cronable
+        true // cronable
         );
     }
 
