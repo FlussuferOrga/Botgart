@@ -8,7 +8,7 @@ export let EN : Object = {
     "WELCOME": "Welcome to the Riverside-Discord. :)\n Much of this server isn't accessible to for guests. Please authenticate using an API-key:\n\n1. Visit https://account.arena.net/applications\n2. Click 'new key'\n3. Post `,auth` followed by your new key per direct message (this window) to me.\n\nEg: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
     "NO_SUCH_COMMAND": "I don't know the command '{0}' you gave me.",
     "NOT_AVAILABLE_AS_DM": "This command is not usable as direct message. Please try it again within a server.",
-    "NOT_CRONABLE": "This command can not be used a cronjob.",
+    "NOT_CRONABLE": "This command can not be used in a cronjob.",
     "NO_DEL_PERM": "I could not delete your last message. Please remove it yourself for security reasons.",
     "KEY_INVALID_FORMAT": "Please give me a valid API-key. You can acquire one at https://account.arena.net/.",
     "KEY_ACCEPTED": "Welcome, friend! Please read up on the information in INFOCENTER, to use this Discord properly. :)",
