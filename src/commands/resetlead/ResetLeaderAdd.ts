@@ -23,7 +23,7 @@ export class AddResetLeaderCommand extends BotgartCommand {
                 },
                 {
                     id: "map",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => WvWMap.getMapNames().includes(word)
+                    type: (word: string, message: discord.Message, prevArgs: any[]) => WvWMap.getAllMapNames().includes(word)
                 },
                 {
                     id: "weekNumber",
@@ -47,7 +47,9 @@ export class AddResetLeaderCommand extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.year || !args.player || !args.map ? L.get("HELPTEXT_ADD_RESETLEAD", [WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
+        return !args || !args.weekNumber || !args.year || !args.player || !args.map 
+                ? L.get("HELPTEXT_ADD_RESETLEAD", [WvWMap.getAllMapNames().join(" | ")]) 
+                : undefined;
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {

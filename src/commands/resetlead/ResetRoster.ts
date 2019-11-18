@@ -15,10 +15,10 @@ Testcases:
 
 */
 export class WvWMap {
-    static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS");
-    static readonly BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS");
-    static readonly GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS");
-    static readonly EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS");
+    static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS", ["RBG"]);
+    static readonly BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS", ["BBL"]);
+    static readonly GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS", ["GBL"]);
+    static readonly EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS", ["EBG"]);
 
     static getMaps(): WvWMap[] {
         return [WvWMap.RedBorderlands, WvWMap.BlueBorderlands, WvWMap.GreenBorderlands, WvWMap.EternalBattlegrounds];
@@ -28,24 +28,35 @@ export class WvWMap {
         return WvWMap.getMaps().map(m => m.name);
     }
 
+    static getAllMapNames(): string[] {
+        return WvWMap.getMaps().map(m => m.getAllNames())
+                               .reduce((acc,m) => acc.concat(m), []);
+    }
+
     static getMapByEmote(emote: string): WvWMap {
         return WvWMap.getMaps().filter(m => m.emote === emote)[0] // yields undefined if no match
     }
 
     static getMapByName(name: string): WvWMap {
-        return WvWMap.getMaps().filter(m => m.name === name)[0] // yields undefined if no match
+        return WvWMap.getMaps().filter(m => m.getAllNames().includes(name))[0] // yields undefined if no match
     }
 
     public readonly emote: string;
     public readonly name: string;
+    public readonly aliases: string[];
 
     public getLocalisedName(separator = "\n", flags = true): string {
         return L.get(this.name, [], separator, flags);
     }
 
-    private constructor(emote: string, name: string) {
+    public getAllNames(): string[] {
+        return this.aliases.concat([this.name]);
+    }
+
+    private constructor(emote: string, name: string, aliases: string[]) {
         this.emote = emote;
         this.name = name;
+        this.aliases = aliases;
     }
 }
 
