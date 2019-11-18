@@ -29,21 +29,21 @@ export class BotgartClient extends AkairoClient {
         });
     }
 
-    private toRosterKey(weekNumber: number, year: number): string {
-        return `${year}|${weekNumber}`;
+    private toRosterKey(guild: discord.Guild, weekNumber: number, year: number): string {
+        return `${guild.id}|${year}|${weekNumber}`;
     }
 
     public getTS3Connection() : TS3Connection {
         return this.ts3connection;
     }
 
-    public getRoster(weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | [undefined, undefined, undefined] {
-        const k = this.toRosterKey(weekNumber, year);
+    public getRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | [undefined, undefined, undefined] {
+        const k = this.toRosterKey(guild, weekNumber, year);
         return k in this.rosters ? this.rosters[k] : [undefined, undefined, undefined];
     }
 
     public setRoster(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
-        this.rosters[this.toRosterKey(weekNumber, year)] = [guild, message, roster];
+        this.rosters[this.toRosterKey(guild, weekNumber, year)] = [guild, message, roster];
     }
 
     /**

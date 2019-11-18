@@ -54,7 +54,7 @@ export class AddResetLeaderCommand extends BotgartCommand {
         if(args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
         }
-        const [g,mes,roster] = this.getBotgartClient().getRoster(args.weekNumber, args.year);
+        const [g,mes,roster] = this.getBotgartClient().getRoster(guild, args.weekNumber, args.year);
         if(roster !== undefined) {
             roster.addLead(WvWMap.getMapByName(args.map), args.player);
             this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));

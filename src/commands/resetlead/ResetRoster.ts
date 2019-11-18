@@ -7,6 +7,8 @@ import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import EventEmitter = require("events");
 import * as dateFormat from "dateformat";
+//import * as moment from 'moment';
+import moment = require('moment');
 
 /**
 Testcases:
@@ -136,7 +138,7 @@ export class Roster extends EventEmitter {
         const re = new discord.RichEmbed()
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
-            .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber}`)
+            .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${moment(this.getResetDate()).format("DD.MM.YYYY")})`)
             //.setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"))
         for(const mname in this.leads) {
@@ -200,7 +202,7 @@ export class ResetRosterCommand extends BotgartCommand {
                 .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
                    .forEach(([dbRoster, dbChannel, dbMessage]) => {
                        client.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
-                       this.watchRoster(dbRoster);
+                       this.watchRoster(dbMessage.guild, dbRoster);
                        this.watchMessage(dbMessage, dbRoster);
                     })));
     }    
@@ -234,9 +236,9 @@ export class ResetRosterCommand extends BotgartCommand {
         cl.getTS3Connection().write(JSON.stringify(ts3mes));       
     }
 
-    private watchRoster(roster: Roster): void {
+    private watchRoster(guild: discord.Guild, roster: Roster): void {
         const cl = this.getBotgartClient();
-        const [guild, message, _] = cl.getRoster(roster.weekNumber, roster.year);
+        const [_, message, __] = cl.getRoster(guild, roster.weekNumber, roster.year);
         const refresh = (r: Roster, map: string, p: string) => {
             setTimeout(function() { 
                 // only updating post, DB, and TS3 in fixed intervals
@@ -291,7 +293,7 @@ export class ResetRosterCommand extends BotgartCommand {
                     this.getBotgartClient().setRoster(roster.weekNumber, roster.year, mes.guild, mes, roster);
                     this.getBotgartClient().db.upsertRosterPost(message.guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
-                    this.watchRoster(roster);
+                    this.watchRoster(guild, roster);
                 });
                 if(roster.isUpcoming()) {
                     this.syncToTS3(roster);

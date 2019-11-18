@@ -5,6 +5,7 @@ import * as winston from "winston";
 import * as assert from "assert";
 import { inspect } from "util";
 import * as stringSimilarity from "string-similarity";
+import * as moment from 'moment';
 
 const gw2 = require("gw2api-client");
 const api = gw2();

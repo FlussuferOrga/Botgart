@@ -21,7 +21,7 @@ class SetTS3ResetRosterCommand extends BotgartCommand {
     command(message, responsible, guild, args) {
         console.log(this.getBotgartClient().getTS3Connection())
         const week = Util.getNumberOfWeek();
-        console.log(this.getBotgartClient().getRoster(week, 2019));
+        console.log(this.getBotgartClient().getRoster(guild, week, 2019));
         return;
                 /*const config = require("../../config.json");
         var TeamSpeak = require('node-teamspeak-api');
