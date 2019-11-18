@@ -58,8 +58,8 @@ export let EN : Object = {
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
     "HELPTEXT_PRUNE": "Please use the command with the following parameters:\n`<number of days to be considered inactive (1 <= n <= 30)>` `<text the pruned members should receive as private message>`",
     "HELPTEXT_RESETLEAD": "Please use the command with the following parameters:\n`<Channel, in which the post should be created>` (`<number of week for the roster, default: current week>`) (`year for the roster, default: current year`)",
-    "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<{0}>` `<week number (optional)>`",
-    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number (optional)>`",
+    "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<{0}>` `<week number (optional)>` `<year (optional)>`",
+    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number (optional)>` `<year (optional)>`",
     "HELPTEXT_SET_TS3_RESET_ROSTER": "",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
