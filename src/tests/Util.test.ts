@@ -57,3 +57,29 @@ describe("Util", function() {
   //                                   new Date(Date.UTC(2019,10,))
 
 });
+
+console.log("it is the", U.parseCronDate("0 * 32 * 3"));
+
+describe("Util", function() {
+  it("empty string", () => expect(!U.parseCronDate("")));
+
+  it("undefined", () => expect(!U.parseCronDate(undefined)));
+
+  it("cron valid string 1", () => expect(U.parseCronDate("0 * 32 * 3")).equal("0 * 32 * 3"));
+
+  it("cron valid string 2", () => expect(U.parseCronDate("00 99 32 32 3")).equal("00 99 32 32 3"));
+
+  it("cron valid string 3", () => expect(U.parseCronDate("* * * * *")).equal("* * * * *"));
+
+  it("cron invalid string 1", () => assert(!U.parseCronDate("123 * * * *")));
+
+  it("cron invalid string 2", () => assert(!U.parseCronDate("* * * * * *")));
+
+  it("cron invalid string 3", () => assert(!U.parseCronDate("** * * * *")));
+  
+  it("cron valid Moment 1", () => assert(U.parseCronDate("12.12.2019 15:15").constructor.name === "Moment"));
+
+  it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
+
+
+});

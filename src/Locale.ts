@@ -52,7 +52,7 @@ export let EN : Object = {
     "HELPTEXT_GET_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_DEL_FAQ": "Please use the command with the following parameter:\n`<Keyword>`",
     "HELPTEXT_GUILD_LOG": "Please use the command with the following parameters:\n\"`<Name of the guild>`\" `<API-key of the leader>` `<Channel to pipe the log to>`",
-    "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`<@user>` `<@role>    `",
+    "HELPTEXT_ADD_PERMAROLE": "Please use the command with the following parameters:\n`<@user>` `<@role>`",
     "HELPTEXT_RM_PERMAROLE": "Please use the command with the following parameters:\n`<@user>` `<@role>`",
     "HELPTEXT_WHOIS": "Please use the command with the following parameters:\n`<part of an account- or discord-name (at least three characters!)>`",
     "HELPTEXT_DISCORD_LOG": "Please use the command with the following parameters:\n`<arbitary event type>` `<text channel to which messages of this type should be directed>`",
@@ -88,6 +88,7 @@ export let EN : Object = {
     "DESC_ADD_RESETLEAD": "Manually adds a player as reset lead.",
     "DESC_REMOVE_RESETLEAD": "Manually removes a player as reset lead.",
     "DESC_SET_TS3_RESET_ROSTER": "Syncs the current reset roster to TS3.",
+    "DESC_ADD_EVENT": "Creates a new event.",
 
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
@@ -100,6 +101,12 @@ export let EN : Object = {
     "WEEK_NUMBER": "Week Number",
     "ROSTER_LEAD_ADDED": "Player `{0}` has successfully been added as reset lead for the map `{1}` on week {2}. See {3}",
     "ROSTER_LEAD_REMOVED": "Player `{0}` has successfully been removed as reset lead for week {1}. See {2}",
+
+    "MK_EVENT_DATE": "Enter a valid date with time next. E.g. `15.02.2022 16:33`",
+    "MK_EVENT_TITLE": "Enter a title for the event now.",
+    "MK_EVENT_DESC": "Enter a short description for the event.",
+    "MK_EVENT_REMINDER": "If you want to have an automatic reminder posted for your event, enter how many minutes before the event the reminder should be posted. If you do not want to have reminder, enter a negative number instead.",
+    "MK_EVENT_TIMEOUT": "The time for input ran out and event creation was canceled. You can start over the event creation.",
 }
 
 export let DE : Object = {
@@ -190,6 +197,7 @@ export let DE : Object = {
     "DESC_ADD_RESETLEAD": "Fügt manuell einen Spieler als Reset-Kommandeur hinzu.",
     "DESC_REMOVE_RESETLEAD": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
     "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
+    "DESC_ADD_EVENT": "Erstellt ein neues Event",
 
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 
@@ -202,6 +210,12 @@ export let DE : Object = {
     "WEEK_NUMBER": "Kalenderwoche",
     "ROSTER_LEAD_ADDED": "Spieler `{0}` wurde erfolgreich als Kommandeur für die Karte `{1}` in der Woche {2} hinzugefügt. Siehe {3}",
     "ROSTER_LEAD_REMOVED": "Spieler `{0}` wurde erfolgreich als Kommandeur in der Woche {1} entfernt. Siehe {2}",
+
+    "MK_EVENT_DATE": "Gib als nächstes ein gültiges Datum mit Uhrzeit an. Z.B. `15.02.2022 16:33`",
+    "MK_EVENT_TITLE": "Gib jetzt einen Titel für das Event an.",
+    "MK_EVENT_DESC": "Gib nun eine kurze Beschreibung für das Event an.",
+    "MK_EVENT_REMINDER": "Falls automatisch eine Erinnerung gepostet werden soll, gib jetzt an, wie viele Minuten vor dem Event das geschehen soll. Gib eine negative Zahl an, falls du keine Erinnerung möchtest.",
+    "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
 }
 
 /**

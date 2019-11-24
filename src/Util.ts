@@ -5,7 +5,7 @@ import * as winston from "winston";
 import * as assert from "assert";
 import { inspect } from "util";
 import * as stringSimilarity from "string-similarity";
-import * as moment from 'moment';
+import moment = require("moment");
 
 const gw2 = require("gw2api-client");
 const api = gw2();
@@ -18,6 +18,28 @@ api.fetch.retry(tries => tries <= 5)
 api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
+
+/**
+* Tries to parse a date from a string that can be used for the node-schedule library. 
+* That is: either a valid date (format can be specified by the second parameter) or a cron-like string (https://crontab.guru/).
+* input: the input to parse
+* dateFormat: the date format to try to parse the string into. Default is the usual German format DD.MM.YYYY H:m
+* returns: a moment object, if the input was parsed to a date, 
+           or the input string, if it was parsed to a cron-like string,
+           or false, if the input could not be parsed to either format.
+*/
+export function parseCronDate(input: string, dateFomat: string = "DD.MM.YYYY H:m"): string | moment.Moment | boolean {
+    if(input === "") { // empty strings are "valid dates"
+        return false;
+    }
+    let res : string | moment.Moment | boolean = moment(input, dateFomat, true);
+    if(!res.isValid()) {
+        res = /^(\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*)$/.test(input) 
+                ? input 
+                : false; 
+    }
+    return res; 
+}
 
 /**
 * Compares two dates without considering the time component
