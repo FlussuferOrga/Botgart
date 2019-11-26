@@ -5,7 +5,7 @@ import CircularBuffer from "circular-buffer";
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
-const RECONNECT_TIMER_MS = 5000; 
+const RECONNECT_TIMER_MS = 30000; 
 
 export class TS3Connection {
     private static CONNECTION_COUNTER: number = 1;

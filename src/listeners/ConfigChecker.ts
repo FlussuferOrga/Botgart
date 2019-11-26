@@ -61,14 +61,9 @@ export class ConfigChecker extends Listener {
           owner_ids: {
             presence: true,
             isArray: {},
-            //all: {
-            //    func: x => validate.validate(x, {
-            //            format: {
-            //                pattern: "^\d+$",
-            //                message: (v, a, vos, as, gos) => validate.format("^%{num} is not a valid owner-ID", {num: v})
-            //            }
-            //        })
-            //}
+            all: {
+                func: x => /^\d+$/.test(x) ? undefined : validate.format("^%{num} is not a valid owner-ID", {num: x})
+            }
           },
           prefix: {
             presence: true,
