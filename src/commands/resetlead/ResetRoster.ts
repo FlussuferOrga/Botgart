@@ -301,8 +301,8 @@ export class ResetRosterCommand extends BotgartCommand {
                     for(const e of this.emotes) {
                         await mes.react(e);
                     }
-                    this.getBotgartClient().setRoster(roster.weekNumber, roster.year, mes.guild, mes, roster);
-                    this.getBotgartClient().db.upsertRosterPost(message.guild, roster, mes); // initial save
+                    this.getBotgartClient().setRoster(roster.weekNumber, roster.year, guild, mes, roster);
+                    this.getBotgartClient().db.upsertRosterPost(guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
                     this.watchRoster(guild, roster);
                 });
@@ -315,6 +315,19 @@ export class ResetRosterCommand extends BotgartCommand {
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
+    }
+
+    serialiseArgs(args) {
+        let clone = Object.assign({}, args);
+        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
+        return JSON.stringify(clone);
+    }
+
+    deserialiseArgs(jsonargs) {
+        let args = JSON.parse(jsonargs);
+        let guild = this.client.guilds.find(g => g.id == args.channel.guild);
+        args.channel = guild.channels.find(c => c.id == args.channel.channel);
+        return args;
     }
 }
 
