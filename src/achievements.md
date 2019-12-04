@@ -24,11 +24,15 @@ Leite für zehn Stunden.
 
 Tag up for ten hours.
 
+_Willkommen zurück, Kommandeur!_ _Welcome back, commander!_
+
 
 ### Gleißendes Licht | Blazing Light
 Leite für 100 Stunden.
 
 Tag up for 100 hours.
+
+_Die Truppen zählen auf euch._ _The troops are counting on you._
 
 
 ### Supernova | Supernova
@@ -41,6 +45,8 @@ Tag up for 1000 hours.
 Leite während eines Resets.
 
 Tag up during a reset.
+
+_Du bist die Ruhe vor dem Sturm._ _You are the calm before the storm._
 
 
 ### Eule | Owl
@@ -120,4 +126,4 @@ Nimm während deines Raids den Fischadler-Palast ein
 
 Capture Osprey's Palace during your raid.
 
-_Ich bin eine Prinzessin! -- Domi_ _I am a princess! -- Domi_
+_"Ich bin eine Prinzessin!" -- Unbekannt_ _"I am a princess!" -- anonymous_
