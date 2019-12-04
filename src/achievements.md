@@ -76,7 +76,7 @@ _Färbe den Boden mit ihrem Blut._ _Colour the ground with their blood._
 
 
 ### Niemals Aufgeben! | Never Surrender!
-Der Server erreicht unter deiner Leitung eine KD von höchstens 0,5.
+Führe einen Schlachtzug während der Server eine KD von 0,5 oder weniger hat.
 
 Tag up while the server has a KD of 0.5 or less.
 
