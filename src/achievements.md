@@ -127,3 +127,10 @@ Nimm während deines Raids den Fischadler-Palast ein
 Capture Osprey's Palace during your raid.
 
 _"Ich bin eine Prinzessin!" -- Unbekannt_ _"I am a princess!" -- anonymous_
+
+### Rochade | Castling
+Nimm eine höherwertige Befestigung eines Gegners ein, der gleichzeitig eine unserer Befestigungen einnimmt.
+
+Take a more valuable objective from another faction while they are taking one of our objectives.
+
+_Ein fairer Tausch._ _A fair trade._
