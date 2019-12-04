@@ -64,8 +64,8 @@ Leite eine Frühschicht.
 
 Tag up in the morning.
 
-_Guten Morgen!_
-_Good morning!_
+_Guten Morgen, Tyria!_
+_Good morning, Tyria!_
 
 ### Vernichter | Annihilator
 Der Server erreicht unter deiner Leitung eine KD von 2.
