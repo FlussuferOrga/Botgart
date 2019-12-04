@@ -149,7 +149,7 @@ Crash ten tier 3 objectives.
 
 _Hat das nicht eben noch uns gehört?!_ _Wasn't that ours a moment ago?!_
 
-https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png
+https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png
 
 ### Beharrlicher Belagerer | Tenacious Besieger
 Nimm während deiner Raids 100 Befestigungen der Stufe 3 ein.
@@ -158,7 +158,8 @@ Crash 100 tier 3 objectives.
 
 _Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt._ _We have taken the bridge and the Second Hall. They have barred the gates but cannot hold them for long. The ground shakes._
 
-https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png
+
+https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png
 
 ### Prinzessin | Princess
 Nimm während deines Raids den Fischadler-Palast ein
