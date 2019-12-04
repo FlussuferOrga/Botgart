@@ -113,7 +113,7 @@ Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.
 
 Crash ten tier objectives.
 
-_Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt._ We have taken the bridge and the Second Hall. They have barred the gates but cannot hold them for long. The ground shakes._
+_Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt._ _We have taken the bridge and the Second Hall. They have barred the gates but cannot hold them for long. The ground shakes._
 
 ### Prinzessin | Princess
 Nimm während deines Raids den Fischadler-Palast ein
