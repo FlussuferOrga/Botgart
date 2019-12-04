@@ -18,6 +18,8 @@ Tag up for an hour.
 
 _Willkommen auf der Brücke, Kommandeur!_ _Welcome to the bridge, commander!_
 
+https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png
+
 
 ### Sonnenstrahl | Sunray
 Leite für zehn Stunden.
@@ -25,6 +27,8 @@ Leite für zehn Stunden.
 Tag up for ten hours.
 
 _Willkommen zurück, Kommandeur!_ _Welcome back, commander!_
+
+https://wiki.guildwars2.com/images/3/37/Cosmic_Ray.png
 
 
 ### Gleißendes Licht | Blazing Light
@@ -34,6 +38,8 @@ Tag up for 100 hours.
 
 _Die Truppen zählen auf euch._ _The troops are counting on you._
 
+https://wiki.guildwars2.com/images/e/e6/Lunar_Impact.png
+
 
 ### Supernova | Supernova
 Leite für 1000 Stunden.
@@ -42,6 +48,8 @@ Tag up for 1000 hours.
 
 _Heerscharen harren deiner._ _Hosts abide your arrival._
 
+https://wiki.guildwars2.com/images/f/ff/Astral_Wisp.png
+
 
 ### Vorreiter | Trailblazer
 Leite während eines Resets.
@@ -49,6 +57,8 @@ Leite während eines Resets.
 Tag up during a reset.
 
 _Du bist die Ruhe vor dem Sturm._ _You are the calm before the storm._
+
+https://wiki.guildwars2.com/images/e/e1/Banner_of_Strength.png
 
 
 ### Eule | Owl
@@ -99,6 +109,8 @@ Tag up while the server has a tick of 200.
 
 _Färbe die Karte mit unseren Farben._ _Colour the map with our colours._
 
+https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png
+
 
 ### Unbestrittener Herrscher | Unchallenged Sovereign
 Schloss Steinnebel ist während deiner Leitung nicht gefallen.
@@ -127,6 +139,8 @@ Alle Befestigungen einer beliebigen Karte gehören während deiner Leitung volls
 All objectives on a map belong to us during your raid.
 
 _Das ist unser Königreich. Alles, was das Licht berührt._ _Everything the light touches is our kingdom._
+
+https://wiki.guildwars2.com/images/8/85/Watchtower.png
 
 
 ### Beharrlicher Belagerer | Tenacious Besieger
