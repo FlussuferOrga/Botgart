@@ -1,3 +1,16 @@
+## Format
+
+### Deutscher Name | English Name
+Deutsche Beschreibung.
+
+Englische Beschreibung.
+
+_Deutscher Flavourtext_ _Englisch flavour text_ (optional)
+
+https://url-to-the-icon (optional)
+
+## Achievements
+
 ### Schimmer | Glimmer
 Leite für eine Stunde.
 
@@ -35,6 +48,8 @@ Leite eine Nachtschicht.
 
 Tag up during the night.
 
+https://wiki.guildwars2.com/images/5/52/Juvenile_Owl.png
+
 
 ### Früher Vogel | Early Bird
 Leite eine Frühschicht.
@@ -62,7 +77,7 @@ Der Server erreicht unter deiner Leitung einen Tick von 200.
 Tag up while the server has a tick of 200.
 
 
-### König | King
+### Unbestrittener Herrscher | Unchallenged Sovereign
 Schloss Steinnebel ist während deiner Leitung nicht gefallen.
 
 Stonemist Castle did not fall during your raid.
@@ -75,6 +90,11 @@ None of our objectives with tier 3 fell during your raid.
 
 
 ### Beharrlicher Belagerer | Tenacious Besieger
-Nimm während deines Raids eine Befestigung der Stufe 3 ein.
+Nimm während deiner Raids 10 Befestigungen der Stufe 3 ein.
 
 Crash a tier 3 objective.
+
+### Prinzessin | Princess
+Nimm während deines Raids den Fischadler-Palast ein
+Capture Osprey's Palace during your raid.
+_Ich bin eine Prinzessin! -- Domi_ _I am a princess! -- Domi_
