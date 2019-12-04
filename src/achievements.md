@@ -40,6 +40,8 @@ Leite für 1000 Stunden.
 
 Tag up for 1000 hours.
 
+_Heerscharen harren deiner._ _Hosts abide your arrival._
+
 
 ### Vorreiter | Trailblazer
 Leite während eines Resets.
