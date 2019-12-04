@@ -149,6 +149,8 @@ Crash ten tier 3 objectives.
 
 _Hat das nicht eben noch uns gehört?!_ _Wasn't that ours a moment ago?!_
 
+https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png
+
 ### Beharrlicher Belagerer | Tenacious Besieger
 Nimm während deiner Raids 100 Befestigungen der Stufe 3 ein.
 
