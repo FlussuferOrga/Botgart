@@ -188,7 +188,7 @@ _Divide et impera._ _Divide et impera._
 
 https://wiki.guildwars2.com/images/4/46/Mirror_Images.png
 
-### Shichtwechsel | Shift Change
+### Schichtwechsel | Shift Change
 Übernimm die Leitung eines Schlachtzuges von einem Kommandeur.
 
 Take over the raid from another commander.
