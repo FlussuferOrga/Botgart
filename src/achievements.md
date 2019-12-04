@@ -153,3 +153,5 @@ Nimm eine höherwertige Befestigung eines Gegners ein, der gleichzeitig eine uns
 Take a more valuable objective from another faction while they are taking one of our objectives.
 
 _Ein fairer Tausch._ _A fair trade._
+
+https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png
