@@ -169,3 +169,21 @@ Take a more valuable objective from another faction while they are taking one of
 _Ein fairer Tausch._ _A fair trade._
 
 https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png
+
+### Hydra | Hydra
+Leite gleichzeitig mit mindestens einem weiteren Kommandeur einen Schlachtzug.
+
+Have a raid simultaneously with another commander.
+
+_Divide et impera._ _Divide et impera._
+
+https://wiki.guildwars2.com/images/4/46/Mirror_Images.png
+
+### Shichtwechsel | Shift Change
+Übernimm die Leitung eines Schlachtzuges von einem Kommandeur.
+
+Take over the raid from another commander.
+
+_Bin ich froh, dass du da bist._ _I am so glad to see you._
+
+https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png
