@@ -1,25 +1,29 @@
-const config = require("../config.json");
-import { AkairoClient } from "discord-akairo";
-import { BotgartCommand } from "./BotgartCommand.js";
-import { Database } from "./DB.js";
-import * as discord from "discord.js";
-import { log } from "./Util.js";
+const config = require("../config.json")
+import { AkairoClient } from "discord-akairo"
+import { BotgartCommand } from "./BotgartCommand.js"
+import { Database } from "./DB.js"
+import * as discord from "discord.js"
+import { log, loadModuleClasses } from "./Util.js"
 import { Roster } from "./commands/resetlead/ResetRoster"
-import { TS3Connection } from "./TS3Connection";
+import { TS3Connection } from "./TS3Connection"
+import { APIEmitter } from "./emitters/APIEmitter"
 
 export class BotgartClient extends AkairoClient {
     public db: Database;
     public cronjobs: Object;
     private ts3connection : TS3Connection;
     private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
+    private apiemitter: APIEmitter;
 
     constructor(options, dbfile) {
         super(options, {});
         this.db = new Database(dbfile, this);  
         this.cronjobs = {};
         this.rosters = {};
+        this.apiemitter = new APIEmitter();;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
+        
         this.on("ready", () => {
             this.commandHandler.modules.forEach(m => {
                 if(m instanceof BotgartCommand) {
@@ -27,6 +31,10 @@ export class BotgartClient extends AkairoClient {
                 }
             });
         });
+
+        this.apiemitter.on("wvw-upgrades", (res) => {
+            console.log(res);
+        })
     }
 
     private toRosterKey(guild: discord.Guild, weekNumber: number, year: number): string {

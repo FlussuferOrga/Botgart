@@ -7,8 +7,11 @@ import { inspect } from "util";
 import * as stringSimilarity from "string-similarity";
 import moment = require("moment");
 
+import glob from "glob" // dynamic module loading
+import path from "path" // ^
+
 const gw2 = require("gw2api-client");
-const api = gw2();
+export const api = gw2();
 
 api.schema('2019-03-26T00:00:00Z');
 api.language('en');
@@ -18,6 +21,26 @@ api.fetch.retry(tries => tries <= 5)
 api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
+
+export function loadModuleClasses(directory: string, blacklist: string[] = []): object[] {
+    // careful! Skips variables, but WILL instantiate non-class-functions! 
+    const loadedClasses = [];
+    glob.sync( directory ).forEach( file => {
+        const module = require( path.resolve( file ) );
+        for(const exportName in module) {
+            if(!blacklist.includes(exportName)) {
+                try {
+                    loadedClasses.push(new module[exportName]());
+                } catch(e) {
+                    if(!(e instanceof TypeError)) {
+                        throw e; // discard failed instantiations of functions and variables, throw everything else
+                    }
+                }
+            }         
+        }
+    });
+    return loadedClasses;
+}
 
 /**
 * Tries to parse a date from a string that can be used for the node-schedule library. 

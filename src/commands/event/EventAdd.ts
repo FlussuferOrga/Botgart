@@ -80,7 +80,14 @@ export class PermanentRoleAddCommand extends BotgartCommand {
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         let cl = <BotgartClient>this.client;
         return;
-        let success = cl.db.storePermanentRole(args.member.user.id, message.guild.id, args.role.name);
+        
+    }
+
+    private createEventPost(date: Date, title: string, description: string) {
+
+    }
+
+    private updateEventPosts() {
 
     }
 }
