@@ -90,11 +90,13 @@ None of our objectives with tier 3 fell during your raid.
 
 
 ### Beharrlicher Belagerer | Tenacious Besieger
-Nimm während deiner Raids 10 Befestigungen der Stufe 3 ein.
+Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.
 
-Crash a tier 3 objective.
+Crash ten tier objectives.
 
 ### Prinzessin | Princess
 Nimm während deines Raids den Fischadler-Palast ein
+
 Capture Osprey's Palace during your raid.
+
 _Ich bin eine Prinzessin! -- Domi_ _I am a princess! -- Domi_
