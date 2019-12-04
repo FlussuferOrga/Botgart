@@ -3,7 +3,7 @@
 ### Deutscher Name | English Name
 Deutsche Beschreibung.
 
-Englische Beschreibung.
+English description.
 
 _Deutscher Flavourtext_ _Englisch flavour text_ (optional)
 
@@ -48,6 +48,8 @@ Leite eine Nachtschicht.
 
 Tag up during the night.
 
+_zzzZZZZZZZZzz_ _zzzZZZZZZZZzz_
+
 https://wiki.guildwars2.com/images/5/52/Juvenile_Owl.png
 
 
@@ -64,11 +66,15 @@ Der Server erreicht unter deiner Leitung eine KD von 2.
 
 Tag up while the server has a KD of 2.
 
+_Färbe den Boden mit ihrem Blut._ _Colour the ground with their blood._
+
 
 ### Niemals Aufgeben! | Never Surrender!
-Der Server erreicht unter deiner Leitung eine KD von 0,5.
+Der Server erreicht unter deiner Leitung eine KD von höchstens 0,5.
 
-Tag up while the server has a KD of 0.5.
+Tag up while the server has a KD of 0.5 or less.
+
+_Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!_ _They may take our lives, but they will never take our freedom!_
 
 
 ### Stratege | Strategist
@@ -76,11 +82,15 @@ Der Server erreicht unter deiner Leitung einen Tick von 200.
 
 Tag up while the server has a tick of 200.
 
+_Färbe die Karte mit unseren Farben._ _Colour the map with our colours._
+
 
 ### Unbestrittener Herrscher | Unchallenged Sovereign
 Schloss Steinnebel ist während deiner Leitung nicht gefallen.
 
 Stonemist Castle did not fall during your raid.
+
+_Es ist gut, der König zu sein._ _It is good to be the king._
 
 
 ### Agiler Verteidiger | Agile Defender
@@ -88,11 +98,22 @@ Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden e
 
 None of our objectives with tier 3 fell during your raid.
 
+_Wenn ihr uns ruft, dann werden wir kommen._ _When you call, we will come._
+
+### Gründlicher Feldherr | Thorough Commander
+Alle Befestigungen einer beliebigen Karte gehören während deiner Leitung vollständig uns.
+
+All objectives on a map belong to us during your raid.
+
+_Das ist unser Königreich. Alles, was das Licht berührt._ _Everything the light touches is our kingdom._
+
 
 ### Beharrlicher Belagerer | Tenacious Besieger
 Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.
 
 Crash ten tier objectives.
+
+_Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt._ We have taken the bridge and the Second Hall. They have barred the gates but cannot hold them for long. The ground shakes._
 
 ### Prinzessin | Princess
 Nimm während deines Raids den Fischadler-Palast ein
