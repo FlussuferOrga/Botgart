@@ -32,8 +32,9 @@ export class BotgartClient extends AkairoClient {
             });
         });
 
-        this.apiemitter.on("wvw-upgrades", (res) => {
-            console.log(res);
+        this.apiemitter.on("wvw-matches", (res) => {
+            res.then(x => console.log(x))
+            //console.log(res);
         })
     }
 
