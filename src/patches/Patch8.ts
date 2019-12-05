@@ -3,9 +3,9 @@ import { Database } from "../DB.js";
 import { DBPatch } from "./DBPatch.js";
 
 /**
-* Adds the commander performance tables
+* Adds the commander performance and achievement tables
 */
-export class Patch9 extends DBPatch {
+export class Patch8 extends DBPatch {
     constructor(db: Database) {
         super(db);
     }
@@ -14,7 +14,10 @@ export class Patch9 extends DBPatch {
         return this.tableExists("lead_durations") 
             && this.tableExists("achievements")
             && this.tableExists("player_achievements")
-            && this.tableExists("achievement_progress")
+            && this.tableExists("matchup")
+            && this.tableExists("matchup_factions")
+            && this.tableExists("matchup_details")
+            && this.tableExists("matchup_objectives")
     }
 
     protected async apply(): Promise<void> {
@@ -22,7 +25,7 @@ export class Patch9 extends DBPatch {
         this.connection.prepare(`
           CREATE TABLE lead_durations(
             lead_duration_id INTEGER PRIMARY KEY,
-            gw2account TEXT NOT NULL
+            gw2account TEXT NOT NULL,
             ts_channel TEXT,
             start DATETIME NOT NULL,
             stop DATETIME NOT NULL
@@ -41,48 +44,74 @@ export class Patch9 extends DBPatch {
             achievement_id INTEGER NOT NULL,
             gw2account TEXT NOT NULL,
             achieved DATETIME DEFAULT CURRENT_TIMESTAMP,          
-            FOREIGN KEY(achievement_id) REFERENCES achievements(achievement_id),
-            UNIQUE(achievement_id, gw2account)
+            FOREIGN KEY(achievement_id) REFERENCES achievements(achievement_id)
           )`).run();
 
         this.connection.prepare(`
-          CREATE TABLE achievement_progress( 
-            achievement_progress_id INTEGER PRIMARY KEY,
-            gw2account TEXT NOT NULL, 
-            name TEXT NOT NULL,
-            value TEXT,
-            type TEXT NOT NULL,
-            UNIQUE(gw2account, name)
-          )`)
-
-                /*
-        // discarded. May be relevant again some day.
-        this.connection.prepare(`
-          CREATE TABLE performances(
-            performance_id INTEGER PRIMARY KEY,
-            timestamp TEXT
-          )`).run();
+          CREATE TABLE matchup(
+            matchup_id INTEGER PRIMARY KEY
+          )
+          `).run();
 
         this.connection.prepare(`
-          CREATE TABLE faction_performances(
-            faction_performance_id INTEGER PRIMARY KEY,
-            performance_id INTEGER,
-            world_id INTEGER,
-            colour TEXT,
-            kills INTEGER,
+          CREATE TABLE matchup_factions( 
+            matchup_faction_id INTEGER PRIMARY KEY, 
+            matchup_id INTEGER,
+            colour TEXT, 
+            world_id INTEGER, 
+            world_name TEXT,
+            FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
+            CHECK(colour IN ('Red','Green','Blue'))
+          )
+          `).run();
+
+        this.connection.prepare(`
+          CREATE TABLE matchup_details(
+            matchup_details_id INTEGER PRIMARY KEY, 
+            matchup_id INTEGER,
+            faction TEXT,
             deaths INTEGER,
+            kills INTEGER,
             victory_points INTEGER,
-            FOREIGN KEY(performance_id) REFERENCES performances(performance_id),
-            CHECK(colour IN ('red', 'blue', 'green'))
-          )`).run();
-          */
+            tick INTEGER,
+            FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
+            CHECK(faction IN ('Red','Blue','Green'))
+          )
+          `).run();
+
+        this.connection.prepare(`
+          CREATE TABLE matchup_objectives(
+            matchup_objectives_id INTEGER PRIMARY KEY,
+            matchup_id INTEGER,
+            objective_id TEXT NOT NULL,
+            map TEXT NOT NULL,
+            owner TEXT,
+            type TEXT NOT NULL,
+            points_tick INTEGER, 
+            points_capture,
+            last_flipped DATE, 
+            yaks_delivered INTEGER,
+            tier INTEGER,
+            FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
+            CHECK(0 <= tier AND tier <= 3),
+            CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
+            CHECK(owner IN ('Red','Blue','Green','Neutral'))
+            CHECK(type IN ('Spawn','Camp','Castle','Tower','Keep','Mercenary','Ruins')) -- make sure to ignore spawn!
+          )
+          `).run()
     }
 
     public async revert(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`DROP TABLE achievement_progress`).run();
-        this.connection.prepare(`DROP TABLE player_achievements`).run();
-        this.connection.prepare(`DROP TABLE achievements`).run();
-        this.connection.prepare(`DROP TABLE lead_durations`).run();      
+        this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS achievements`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS lead_durations`).run();      
+
+        this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS matchup_details`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS matchup`).run();
+        this.dbcommit()
     }
 }
