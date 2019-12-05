@@ -141,6 +141,7 @@ All objectives on a map belong to us during your raid.
 _Das ist unser Königreich. Alles, was das Licht berührt._ _Everything the light touches is our kingdom._
 
 https://wiki.guildwars2.com/images/8/85/Watchtower.png
+https://wiki.guildwars2.com/images/d/df/Transmute_File.png
 
 ### Dreister Belagerer | Bold Besieger
 Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.
