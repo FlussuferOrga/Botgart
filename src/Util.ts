@@ -22,6 +22,11 @@ api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
+export function determineTier(yaksDelivered: number) {
+    const yd = Math.floor(yaksDelivered/10);
+    return yd < 1 ? 0 : Math.min(3, Math.floor(Math.log2(yd)));
+}
+
 export function loadModuleClasses(directory: string, blacklist: string[] = []): object[] {
     // careful! Skips variables, but WILL instantiate non-class-functions! 
     const loadedClasses = [];

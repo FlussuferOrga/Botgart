@@ -6,6 +6,7 @@ import { PermissionTypes } from "./BotgartCommand";
 import * as ResetLead from "./commands/resetlead/ResetRoster";
 import Timeout from "await-timeout";
 import {Semaphore} from "await-semaphore";
+import * as moment from "moment";
 
 const REAUTH_DELAY : number = 5000;
 const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
@@ -22,7 +23,7 @@ export class Database {
         this.client = client;
     }
 
-    execute<T>(f: (sqlite3) => T): T|undefined  {
+    private execute<T>(f: (sqlite3) => T): T|undefined  {
         let db: sqlite3.Database = sqlite3.default(this.file, undefined);
         db.pragma("foreign_keys = ON");
 
@@ -38,7 +39,7 @@ export class Database {
         return res;
     }
 
-    async executeAsync<T>(f: (sqlite) => T): Promise<T|undefined> {
+    private async executeAsync<T>(f: (sqlite) => T): Promise<T|undefined> {
         return this.execute(f);
     }
 
@@ -55,7 +56,7 @@ export class Database {
     // sqlite3 and node don't work well together in terms of large integers.
     // Therefore, all big numbers are stored as strings.
     // As a consequence, === can't be used, when checking them.
-    initSchema(): void {
+    public initSchema(): void {
         let sqls = [
         `CREATE TABLE IF NOT EXISTS registrations(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,7 +102,7 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message) {
+    public upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message) {
         return this.execute(db => {
             db.transaction((_) => {
                 const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
@@ -110,7 +111,7 @@ export class Database {
                     // completely new roster -> create new roster and store ID
                     db.prepare(`INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)`)
                       .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id);
-                    rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;    
+                    rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
                 } else {
                     // there is already a roster entry -> drop all leaders and insert the current state
                     db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
@@ -121,7 +122,35 @@ export class Database {
         });
     }
 
-    getActiveRosters(guild: discord.Guild): Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]>[] {
+    public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string) {
+        return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
+                                    .run(gw2account, tsChannel, start.valueOf(), end.valueOf()));
+    }
+
+    public addMatchup(start: moment.Moment, end: moment.Moment, red: [number, string][], green: [number, string][], blue: [number, string][]) {
+        return this.execute(db => {
+            db.prepare("INSERT INTO matchup(start, end) VALUES(datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
+              .run(start.valueOf(), end.valueOf());
+            const matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            for(const [world, colour] of [[red, "Red"], [green, "Green"], [blue, "Blue"]] as const) {
+                for(const [worldId, worldName] of world) {
+                    this.addMatchupFaction(matchId, worldId, worldName, colour);
+                }
+            }
+        });
+    }
+
+    private addMatchupFaction(matchId: number, worldId: number, worldName: string, colour: string) {
+        return this.execute(db => db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id, world_name) VALUES(?,?,?,?)")
+                                    .run(matchId, colour, worldId, worldName));
+    }
+
+    public addMatchupDetails(matchId: number, faction: string, deaths: number, kills: number, victoryPoints: number, tick: number) {
+        return this.execute(db => db.prepare("INSERT INTO matchup_details(matchup_id, faction, deaths, kills, victory_points, tick) VALUES(?,?,?,?,?,?)"))
+                                    .run(matchId, faction, deaths, kills, victoryPoints, tick);
+    }
+
+    public getActiveRosters(guild: discord.Guild): Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]>[] {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
                                     .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
                                     .map(row => this.getRosterPost(guild, row.wn, row.year)));
@@ -174,20 +203,20 @@ export class Database {
         return entries && postExists ? [roster, channel, message] : [undefined,undefined,undefined];
     }
 
-    getLogChannels(guild: discord.Guild, type: string): string[] {
+    public getLogChannels(guild: discord.Guild, type: string): string[] {
         return this.execute(db => db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")
                                     .all(guild.id, type).map(c => c.channel));
     }
 
-    addLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): void {
+    public addLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): void {
         this.execute(db => db.prepare("INSERT INTO discord_log_channels(guild, type, channel) VALUES(?,?,?)").run(guild.id, type, channel.id));
     }
 
-    removeLogChannel(guild: discord.Guild, type: string): void {
+    public removeLogChannel(guild: discord.Guild, type: string): void {
         this.execute(db => db.prepare("DELETE FROM discord_log_channels WHERE guild = ? AND type = ?").run(guild.id, type));
     }
 
-    whois(searchString: string, discordCandidates: discord.User[]): {"discord_user": string, "account_name": string}[] {
+    public whois(searchString: string, discordCandidates: discord.User[]): {"discord_user": string, "account_name": string}[] {
         return this.execute(db => {
             db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
             const stmt = db.prepare(`INSERT INTO whois(discord_id) VALUES(?)`);
@@ -212,7 +241,7 @@ export class Database {
         });
     }
 
-    checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean,number] {
+    public checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean,number] {
         roles.push(uid);
         const params = '?,'.repeat(roles.length).slice(0, -1);
         let permission = this.execute(db => 
@@ -230,7 +259,7 @@ export class Database {
         return [permission > 0, permission];
     }
 
-    setPermission(command: string, receiver: string, type: PermissionTypes, value: number, gid?: string): number|undefined {
+    public setPermission(command: string, receiver: string, type: PermissionTypes, value: number, gid?: string): number|undefined {
         return this.execute(db => {
             let perm = undefined;
             db.transaction((_) => {
@@ -249,16 +278,16 @@ export class Database {
     }
 
 
-    getGW2Accounts(accnames: [string]): [object] {
+    public getGW2Accounts(accnames: [string]): [object] {
         return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created WHERE gw2account IN (?)`)
                                     .run(accnames.join(",")).all());
     }
 
-    getDesignatedRoles() {
+    public getDesignatedRoles() {
         return this.execute(db => db.prepare(`SELECT user, guild, registration_role FROM registrations ORDER BY guild`).all());
     }
 
-    storeFAQ(user: string, guild: string, keys: [string], text: string): number|undefined {
+    public storeFAQ(user: string, guild: string, keys: [string], text: string): number|undefined {
         return this.execute(db => {
             let lastId = undefined;
             db.transaction((_) => {
@@ -271,7 +300,7 @@ export class Database {
         });
     }
 
-    deleteFAQ(key: string, guild: string): boolean|undefined {
+    public deleteFAQ(key: string, guild: string): boolean|undefined {
         return this.execute(db => {
             let changes = 0;
             db.transaction((_) => {
@@ -283,15 +312,15 @@ export class Database {
         });
     }
 
-    getFAQ(key: string, guild: string): any {
+    public getFAQ(key: string, guild: string): any {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.key = ? AND fk.guild = ?`).get(key, guild));
     }
 
-    getFAQs(guild: string): any {
+    public getFAQs(guild: string): any {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
 
-    storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean|undefined {
+    public storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean|undefined {
         let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role) VALUES(?,?,?,?,?,?)`;
         return this.execute(db => {
                     try {
@@ -310,7 +339,7 @@ export class Database {
     * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db 
     *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
     */
-    async revalidateKeys(): Promise<any> {
+    public async revalidateKeys(): Promise<any> {
         let semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
         return this.execute(db => 
             Promise.all(
@@ -340,7 +369,7 @@ export class Database {
         );
     }
 
-    deleteKey(key: string): boolean|undefined {
+    public deleteKey(key: string): boolean|undefined {
         return this.execute(db => {
             let changes = 0;
             db.transaction((_) => {
@@ -351,7 +380,7 @@ export class Database {
         });
     }
 
-    dummy(): void {
+    private dummy(): void {
         return; // not testing rn
         let sql = `INSERT INTO registrations(user, api_key, gw2account) VALUES
         (?,?,?),
@@ -363,7 +392,7 @@ export class Database {
             ]));
     }
 
-    storeCronjob(schedule: string, command: string, args: string, creator: string, guild: string) : number|undefined {
+    public storeCronjob(schedule: string, command: string, args: string, creator: string, guild: string) : number|undefined {
         let sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?,?,?,?,?)`;
         return this.execute(db => {
             let lastId = undefined;
@@ -375,11 +404,11 @@ export class Database {
         });
     }
 
-    getCronjobs(): any {
+    public getCronjobs(): any {
         return this.execute(db => db.prepare(`SELECT * FROM cronjobs`).all());
     }
 
-    deleteCronjob(id: number): boolean|undefined {
+    public deleteCronjob(id: number): boolean|undefined {
         return this.execute(db => {
             let changes = 0;
             db.transaction((_) => {
@@ -390,7 +419,7 @@ export class Database {
         });
     }
 
-    storePermanentRole(user: string, guild: string, role: string) : boolean {
+    public storePermanentRole(user: string, guild: string, role: string) : boolean {
         let sql = `INSERT INTO permanent_roles(guild, user, role) VALUES(?,?,?)`;
         return this.execute(db => {
                     try {
@@ -403,11 +432,11 @@ export class Database {
                 });
     }
 
-    getPermanentRoles(user: string, guild: string) : string[] {
+    public getPermanentRoles(user: string, guild: string) : string[] {
         return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).all(guild, user).map(r => r.role));
     }
 
-    deletePermanentRole(user: string, guild: string, role: string): boolean {
+    public deletePermanentRole(user: string, guild: string, role: string): boolean {
         let sql = `DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?`;
         return this.execute(db => {
                     try {
@@ -420,7 +449,7 @@ export class Database {
                 });        
     }
 
-    findDuplicateRegistrations(): any {
+    public findDuplicateRegistrations(): any {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
     }
 }

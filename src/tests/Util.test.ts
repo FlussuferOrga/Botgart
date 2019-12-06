@@ -81,5 +81,19 @@ describe("Util", function() {
 
   it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
 
+  it("determine tier", () => {
+    for(let i = 0; i < 100; i++) {
+      const tier = U.determineTier(i);
+      if(0 <= i && i < 20) {
+        expect(tier).equal(0);
+      } else if(20 <= i && i < 40) {
+        expect(tier).equal(1);
+      } else if(40 <= i && i < 80) {
+        expect(tier).equal(2);
+      } else {
+        expect(tier).equal(3);
+      }
+    }
+  });
 
 });

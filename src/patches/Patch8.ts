@@ -11,7 +11,7 @@ export class Patch8 extends DBPatch {
     }
 
     protected async satisfied(): Promise<boolean> { 
-        return this.tableExists("lead_durations") 
+        return this.tableExists("ts_lead") 
             && this.tableExists("achievements")
             && this.tableExists("player_achievements")
             && this.tableExists("matchup")
@@ -23,12 +23,12 @@ export class Patch8 extends DBPatch {
     protected async apply(): Promise<void> {
         this.dbbegin();
         this.connection.prepare(`
-          CREATE TABLE lead_durations(
+          CREATE TABLE ts_lead(
             lead_duration_id INTEGER PRIMARY KEY,
             gw2account TEXT NOT NULL,
             ts_channel TEXT,
             start DATETIME NOT NULL,
-            stop DATETIME NOT NULL
+            end DATETIME NOT NULL
           )`).run();
 
         this.connection.prepare(`
@@ -49,7 +49,9 @@ export class Patch8 extends DBPatch {
 
         this.connection.prepare(`
           CREATE TABLE matchup(
-            matchup_id INTEGER PRIMARY KEY
+            matchup_id INTEGER PRIMARY KEY,
+            start DATETIME NOT NULL,
+            end DATETIME NOT NULL
           )
           `).run();
 
