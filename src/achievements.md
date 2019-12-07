@@ -200,9 +200,13 @@ _Bin ich froh, dass du da bist._ _I am so glad to see you._
 
 https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png
 
-### Promillekommandeur | Booze Commander
+### Promillekommandeur | Booze Commander 
+(manuell)
+
 Führe einen Saufraid.
 
 Do a booze raid.
 
 _Das ist unfair! Die sind plötzlich doppelt so viele!_ _That's unfair! They have doubled in numbers!_
+
+https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png
