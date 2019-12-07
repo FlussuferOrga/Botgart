@@ -11,7 +11,7 @@ export class Patch8 extends DBPatch {
     }
 
     protected async satisfied(): Promise<boolean> { 
-        return this.tableExists("ts_lead") 
+        return this.tableExists("ts_leads") 
             && this.tableExists("achievements")
             && this.tableExists("player_achievements")
             && this.tableExists("matchup")
@@ -23,8 +23,8 @@ export class Patch8 extends DBPatch {
     protected async apply(): Promise<void> {
         this.dbbegin();
         this.connection.prepare(`
-          CREATE TABLE ts_lead(
-            lead_duration_id INTEGER PRIMARY KEY,
+          CREATE TABLE ts_leads(
+            ts_lead_id INTEGER PRIMARY KEY,
             gw2account TEXT NOT NULL,
             ts_channel TEXT,
             start DATETIME NOT NULL,
@@ -48,7 +48,7 @@ export class Patch8 extends DBPatch {
           )`).run();
 
         this.connection.prepare(`
-          CREATE TABLE matchup(
+          CREATE TABLE matchups(
             matchup_id INTEGER PRIMARY KEY,
             start DATETIME NOT NULL,
             end DATETIME NOT NULL
@@ -61,8 +61,7 @@ export class Patch8 extends DBPatch {
             matchup_id INTEGER,
             colour TEXT, 
             world_id INTEGER, 
-            world_name TEXT,
-            FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
+            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
             CHECK(colour IN ('Red','Green','Blue'))
           )
           `).run();
@@ -90,11 +89,11 @@ export class Patch8 extends DBPatch {
             owner TEXT,
             type TEXT NOT NULL,
             points_tick INTEGER, 
-            points_capture,
+            points_capture INTEGER,
             last_flipped DATE, 
             yaks_delivered INTEGER,
             tier INTEGER,
-            FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
+            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
             CHECK(0 <= tier AND tier <= 3),
             CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(owner IN ('Red','Blue','Green','Neutral'))
@@ -108,12 +107,12 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS achievements`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS lead_durations`).run();      
+        this.connection.prepare(`DROP TABLE IF EXISTS ts_leads`).run();      
 
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_details`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS matchup`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS matchups`).run();
         this.dbcommit()
     }
 }

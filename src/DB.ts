@@ -124,30 +124,60 @@ export class Database {
 
     public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string) {
         return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
-                                    .run(gw2account, tsChannel, start.valueOf(), end.valueOf()));
+                                    .run(gw2account, tsChannel, start.valueOf()/1000, end.valueOf()/1000));
     }
 
-    public addMatchup(start: moment.Moment, end: moment.Moment, red: [number, string][], green: [number, string][], blue: [number, string][]) {
+    public getCurrentMatchup(now: moment.Moment) {
         return this.execute(db => {
-            db.prepare("INSERT INTO matchup(start, end) VALUES(datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
-              .run(start.valueOf(), end.valueOf());
+            const match = db.prepare("SELECT matchup_id FROM matchups WHERE datetime(?, 'unixepoch') BETWEEN start AND end").get(now.valueOf()/1000);
+            return match !== undefined ? match.matchup_id : undefined;
+        });
+    }
+
+    public addMatchup(start: moment.Moment, end: moment.Moment, red: number[], green: number[], blue: number[]) {
+        return this.execute(db => {
+            db.prepare("INSERT INTO matchups(start, end) VALUES(datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
+              .run(start.valueOf()/1000, end.valueOf()/1000);
             const matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
             for(const [world, colour] of [[red, "Red"], [green, "Green"], [blue, "Blue"]] as const) {
-                for(const [worldId, worldName] of world) {
-                    this.addMatchupFaction(matchId, worldId, worldName, colour);
+                console.log(world, colour);
+                for(const worldId of world) {
+                    this.addMatchupFaction(matchId, worldId, colour);
                 }
             }
         });
     }
 
-    private addMatchupFaction(matchId: number, worldId: number, worldName: string, colour: string) {
-        return this.execute(db => db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id, world_name) VALUES(?,?,?,?)")
-                                    .run(matchId, colour, worldId, worldName));
+    private addMatchupFaction(matchId: number, worldId: number, colour: string) {
+        return this.execute(db => db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id) VALUES(?,?,?)")
+                                    .run(matchId, colour, worldId));
     }
 
     public addMatchupDetails(matchId: number, faction: string, deaths: number, kills: number, victoryPoints: number, tick: number) {
         return this.execute(db => db.prepare("INSERT INTO matchup_details(matchup_id, faction, deaths, kills, victory_points, tick) VALUES(?,?,?,?,?,?)"))
                                     .run(matchId, faction, deaths, kills, victoryPoints, tick);
+    }
+
+    public addMatchupObjectives(matchId: number, objectives: [string, {id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[]}, number][]) {
+        return this.execute(db => {
+            const stmt = db.prepare(`INSERT INTO matchup_objectives
+                              (matchup_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
+                              VALUES (?,?,?,?,?,?,?,?,?,?)`);
+            db.transaction((matchId, objectives) => {
+                for(const [mapname, details, tier] of objectives) {
+                    stmt.run(matchId,
+                             details.id,
+                             mapname,
+                             details.owner,
+                             details.type,
+                             details.points_tick,
+                             details.points_capture,
+                             details.last_flipped,
+                             details.yaks_delivered,
+                             tier);
+                }
+            })(matchId, objectives);
+        });
     }
 
     public getActiveRosters(guild: discord.Guild): Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]>[] {

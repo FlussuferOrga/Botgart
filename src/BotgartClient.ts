@@ -7,6 +7,8 @@ import { log, loadModuleClasses } from "./Util.js"
 import { Roster } from "./commands/resetlead/ResetRoster"
 import { TS3Connection } from "./TS3Connection"
 import { APIEmitter } from "./emitters/APIEmitter"
+import * as Util from "./Util";
+import * as moment from "moment";
 
 export class BotgartClient extends AkairoClient {
     public db: Database;
@@ -32,8 +34,27 @@ export class BotgartClient extends AkairoClient {
             });
         });
 
-        this.apiemitter.on("wvw-matches", (res) => {
-            res.then(x => console.log(x))
+        this.apiemitter.on("wvw-matches", (prom) => {
+            prom.then(async match => {
+                const now = moment.utc();
+                let matchId = this.db.getCurrentMatchup(now);
+                if(matchId === undefined) {
+                    const currentMatch = await Util.api.wvw().matches().overview().world(config.home_id);
+                    this.db.addMatchup(
+                        moment.utc(currentMatch.start_time),
+                        moment.utc(currentMatch.end_time),
+                        currentMatch.all_worlds.red, 
+                        currentMatch.all_worlds.green,
+                        currentMatch.all_worlds.blue)
+                    matchId = this.db.getCurrentMatchup(now);
+                }
+                const objs = match.maps
+                            .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
+                            .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+                            .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
+                this.db.addMatchupObjectives(matchId, objs);
+                //console.log(x)
+            })
             //console.log(res);
         })
     }
