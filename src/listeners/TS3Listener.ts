@@ -5,6 +5,7 @@ import { BotgartClient } from "../BotgartClient";
 import * as L from "../Locale.js";
 import * as discord from "discord.js";
 import Timeout from "await-timeout";
+import * as moment from "moment";
 const TS3Connection = require("../TS3Connection");
 import * as ts3c from "../TS3Connection";
 const gw2 = require("gw2api-client");
@@ -55,7 +56,7 @@ export class TS3Listener extends Listener {
     private broadcastChannel: string;
     private pingRole: string;
     private commanderRole: string;
-    private activeCommanders: {[key:string]:string};
+    private activeCommanders: {[key:string]: [string, string, moment.Moment]};
     private users: {[key:string]:[Date,CommanderState]};
     private channels: {[key:string]:Date};
     private userDelay: number;
@@ -137,7 +138,7 @@ export class TS3Listener extends Listener {
                     });
                     taggedDown.forEach(tduid => {
                         that.users[tduid] = [now, CommanderState.TAG_DOWN];
-                        that.tagDown(g, tduid, that.activeCommanders[tduid]);
+                        that.tagDown(g, tduid, that.activeCommanders[tduid][0]);
                         log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
                     })
                 });
@@ -174,7 +175,7 @@ export class TS3Listener extends Listener {
             let mes:string = L.get("COMMANDER_TAG_UP", [username, channel, pingRole ? pingRole.toString() : ""]);
             dchan.send(mes);
         }
-        this.activeCommanders[tsUID] = account;
+        this.activeCommanders[tsUID] = [account, channel, moment.utc()];
     }
 
     /**
@@ -195,6 +196,9 @@ export class TS3Listener extends Listener {
                 });
             }
         }
+
+        const [commander, channel, start] = this.activeCommanders[tsUID];
+        (<BotgartClient>this.client).db.addLead(commander, start, moment.utc(), channel);
         delete this.activeCommanders[tsUID];
     }
 
