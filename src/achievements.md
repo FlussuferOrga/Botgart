@@ -76,8 +76,8 @@ Leite eine Frühschicht.
 
 Tag up in the morning.
 
-_Guten Morgen, Tyria!_
-_Good morning, Tyria!_
+_Ich liebe den Geruch von Sandschatten am Morgen!_
+_I love the smell of Sand Shades in the morning!_
 
 https://wiki.guildwars2.com/images/archive/0/0b/20130311171736%21Juvenile_Eagle.png
 
