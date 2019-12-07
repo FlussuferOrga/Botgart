@@ -69,6 +69,7 @@ Tag up during the night.
 _zzzZZZZZZZZzz_ _zzzZZZZZZZZzz_
 
 https://wiki.guildwars2.com/images/5/52/Juvenile_Owl.png
+https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png
 
 
 ### Früher Vogel | Early Bird
@@ -80,6 +81,7 @@ _Ich liebe den Geruch von Sandschatten am Morgen!_
 _I love the smell of Sand Shades in the morning!_
 
 https://wiki.guildwars2.com/images/archive/0/0b/20130311171736%21Juvenile_Eagle.png
+https://wiki.guildwars2.com/images/3/3c/Hunter%27s_Call.png
 
 ### Vernichter | Annihilator
 Der Server erreicht unter deiner Leitung eine KD von 2.
