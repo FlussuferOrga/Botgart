@@ -1,66 +1,57 @@
-import * as moment from "moment";
+import * as moment from "moment"
+import * as L from "../Locale"
+import * as discord from "discord.js"
+import { BotgartClient } from "../BotgartClient"
 
-export class Raid {
-    private start: moment.Moment;
-    private end: moment.Moment;
-    public readonly channel: string;
+abstract class Achievement {
+    public readonly name: string;
+    private client: BotgartClient;
+    private imageURL: string;
+    private repeatable: boolean;
+    private announceRepetitions: boolean;
 
-    public getStart(): moment.Moment {
-        return this.start;
+    public getName() {
+        return L.get(`ACHIEVEMENT_NAME_${this.name.toUpperCase()}`)
     }
 
-    public getEnd(): moment.Moment {
-        return this.end;
+    public getDescription() {
+        return L.get(`ACHIEVEMENT_DESC_${this.name.toUpperCase()}`)   
     }
 
-    public duration(): number {
-        return this.end === undefined 
-                ? 0
-                : this.end.diff(this.start);
+    public getFlavourText() {
+        return L.get(`ACHIEVEMENT_FLAV_${this.name.toUpperCase()}`)      
     }
 
-    public constructor(start: moment.Moment, end: moment.Moment, channel: string) {
-        this.start = start;
-        this.end = end;
-        this.channel = channel;
+    private award(player: string, by: string = null, timestamp: moment.Moment = null): number {
+        timestamp = timestamp || moment.utc();
+        const has = this.client.db.checkAchievement(this.name, player);
+        if(this.repeatable || !has) {
+            return this.client.db.awardAchievement(this.name, player, by, timestamp);
+        }
+        return -1;
     }
 
-    public stop(end: moment.Moment) {
-        this.end = end;
-    }
-}
-
-export class History {
-    public readonly firstRaid: Raid;
-    public readonly lastRaid: Raid;
-    public readonly raidCount: number;
-    public readonly totalRaidTime: number;
-
-    public constructor() {
-
-    }
-
-    public static loadFromDB(): History {
+    public awardIn(guild: discord.Guild, player: string, by: string = null, timestamp: moment.Moment = null): null {
         return null;
     }
-}
 
-export class Progress {
-    private gw2account: string;
-    private history: History;
-    private currentRaid: Raid;
-
-    public contructor(gw2account: string) {
-        this.gw2account = gw2account;
+    public constructor(client: BotgartClient, name: string, imageURL: string, repeatable = true, announceRepetitions = false) {
+        this.client = client;
+        this.name = name;
+        this.imageURL = imageURL;
+        this.repeatable = repeatable;
+        this.announceRepetitions = announceRepetitions;
     }
 
-    public startRaid(start: moment.Moment, channel: string) {
-        this.currentRaid = new Raid(start, undefined, channel);
+    public createEmbed(player: string) {
+        return new discord.RichEmbed()
+            .setTitle(this.getName())
+            .setDescription(L.get("ACHIEVEMENT_UNLOCKED", [], "|", false))
+            .setThumbnail(this.imageURL)
+            .addField("asd", this.getDescription())
+            .addField("asd", this.getFlavourText())
+            .setTimestamp(moment.utc().valueOf())
     }
 
-    public endRaid(end: moment.Moment) {
-        this.currentRaid.stop(end);
-    }
-
-    
+    public abstract check(player: string): boolean;
 }

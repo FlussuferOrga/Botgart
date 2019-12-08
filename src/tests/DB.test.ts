@@ -56,4 +56,18 @@ describe("DB", function() {
       expect(db._getEnvironmentVariable(testGuild, "testString2"))
             .deep.equal(["hello world", "string", "hello world"]);
   });
+
+  it("overwrite environment implicitly to implicitly typed boolean to DB", () => {
+      db._setEnvironmentVariable(testGuild, "testBooleanOW1", true);
+      db._setEnvironmentVariable(testGuild, "testBooleanOW1", false);
+      expect(db._getEnvironmentVariable(testGuild, "testBooleanOW1"))
+            .deep.equal(["false", "boolean", false]);
+  });
+
+  it("overwrite environment explicitly to explicitly typed boolean to DB", () => {
+      db._setEnvironmentVariable(testGuild, "testBooleanOW2", true);
+      db._setEnvironmentVariable(testGuild, "testBooleanOW2", "false", "boolean");
+      expect(db._getEnvironmentVariable(testGuild, "testBooleanOW2"))
+            .deep.equal(["false", "boolean", false]);
+  });
 });

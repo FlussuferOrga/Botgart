@@ -58,8 +58,6 @@ describe("Util", function() {
 
 });
 
-console.log("it is the", U.parseCronDate("0 * 32 * 3"));
-
 describe("Util", function() {
   it("empty string", () => expect(!U.parseCronDate("")));
 

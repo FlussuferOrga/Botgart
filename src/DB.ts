@@ -54,7 +54,7 @@ export class Database {
                         let casted = undefined;
                         switch(res.type) {
                             case "boolean":
-                                casted = Boolean(res.value);
+                                casted = ("true" === res.value);
                             break;
                             case "number":
                                 casted = Number(res.value);

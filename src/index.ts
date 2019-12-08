@@ -89,7 +89,7 @@ if(args.updateconfig) {
 } else if(args.patch) {
     applyPatches(args.patch, args.revert === true);
 } else {
-    startBot();    
+    startBot();
 }
 
 // node built/index.js --patchall
