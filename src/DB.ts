@@ -1,4 +1,4 @@
-import * as Util from "./Util.js";
+import * as Util from "./Util";
 import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
@@ -23,7 +23,7 @@ export class Database {
         this.client = client;
     }
 
-    private execute<T>(f: (sqlite3) => T): T|undefined  {
+    public execute<T>(f: (sqlite3) => T): T|undefined  {
         let db: sqlite3.Database = sqlite3.default(this.file, undefined);
         db.pragma("foreign_keys = ON");
 
@@ -41,6 +41,47 @@ export class Database {
 
     private async executeAsync<T>(f: (sqlite) => T): Promise<T|undefined> {
         return this.execute(f);
+    }
+
+    public getEnvironmentVariable(guild: discord.Guild, name: string) {
+        return this._getEnvironmentVariable(guild.id, name);
+    }
+
+    public _getEnvironmentVariable(guildId: string, name: string) : [string, string, (boolean|number|string|null)] {
+        return this.execute(db => {
+                        const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
+                                      .get(guildId, name)
+                        let casted = undefined;
+                        switch(res.type) {
+                            case "boolean":
+                                casted = Boolean(res.value);
+                            break;
+                            case "number":
+                                casted = Number(res.value);
+                            break;
+                            case "string":
+                                casted = res.value;
+                            break;
+                        }
+                        return [res.value, res.type, casted];
+                          });
+    }
+
+    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string = null) {
+        return this._setEnvironmentVariable(guild.id, name, value, type);
+    }
+
+    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string = null) {
+        type = type || typeof value;
+        return this.execute(db => db.prepare(`INSERT INTO 
+                                                environment_variables(guild, name, type, value) 
+                                                VALUES(?,?,?,?)
+                                              ON CONFLICT(guild, name) DO UPDATE SET 
+                                                guild = ?,
+                                                name = ?,
+                                                type = ?,
+                                                value = ?`)
+                                    .run(guildId, name, ""+type, ""+value, guildId, name, ""+type, ""+value));
     }
 
     public getUserByAccountName(accountName: string) {
@@ -125,6 +166,31 @@ export class Database {
     public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string) {
         return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
                                     .run(gw2account, tsChannel, start.valueOf()/1000, end.valueOf()/1000));
+    }
+
+    public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
+        return this.execute(db => {
+                                db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'unixepoch'))")
+                                  .run(achievementName, gw2account, awardedBy, timestamp.valueOf());
+                                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                            });
+    }
+
+    public checkAchievement(achievementName: string, gw2account: string): [string, string, string, string, string][] {
+        return this.execute(db => db.prepare(`SELECT 
+                                                    pa.awarded_by,
+                                                    pa.achieved,
+                                                    pap.guild,
+                                                    pap.channel,
+                                                    pap.message
+                                              FROM 
+                                                   player_achievements AS pa 
+                                                   LEFT JOIN player_achievement_posts AS pap
+                                                     ON pa.player_achievement_id = pap.player_achievement_id
+                                              WHERE 
+                                                  achievement_name = ? 
+                                                  AND gw2account = ?`)
+                                    .all(achievementName, gw2account));
     }
 
     public getCurrentMatchup(now: moment.Moment) {

@@ -4,6 +4,7 @@ import { DBPatch } from "./DBPatch.js";
 
 /**
 * Adds the commander performance and achievement tables
+* also the environment variables
 */
 export class Patch8 extends DBPatch {
     constructor(db: Database) {
@@ -12,16 +13,29 @@ export class Patch8 extends DBPatch {
 
     protected async satisfied(): Promise<boolean> { 
         return this.tableExists("ts_leads") 
-            && this.tableExists("achievements")
             && this.tableExists("player_achievements")
+            && this.tableExists("player_achievement_posts")
             && this.tableExists("matchup")
             && this.tableExists("matchup_factions")
             && this.tableExists("matchup_details")
             && this.tableExists("matchup_objectives")
+            && this.tableExists("environment_variables")
     }
 
     protected async apply(): Promise<void> {
         this.dbbegin();
+
+        this.connection.prepare(`
+          CREATE TABLE environment_variables(
+            environment_variable_id INTEGER PRIMARY KEY,
+            guild TEXT,
+            name TEXT NOT NULL,
+            type TEXT NOT NULL,
+            value TEXT,
+            UNIQUE(guild, name)
+          )
+          `).run();
+
         this.connection.prepare(`
           CREATE TABLE ts_leads(
             ts_lead_id INTEGER PRIMARY KEY,
@@ -31,21 +45,32 @@ export class Patch8 extends DBPatch {
             end DATETIME NOT NULL
           )`).run();
 
-        this.connection.prepare(`
-          CREATE TABLE achievements(
-            achievement_id INTEGER PRIMARY KEY,
-            guild_id TEXT NOT NULL,
-            role_name TEXT
-          )`).run();
+        //this.connection.prepare(`
+        //  CREATE TABLE achievements(
+        //    achievement_id INTEGER PRIMARY KEY,
+        //    guild_id TEXT NOT NULL,
+        //    role_name TEXT
+        //  )`).run();
 
         this.connection.prepare(`
           CREATE TABLE player_achievements(
-            player_achievements_id INTEGER PRIMARY KEY,
-            achievement_id INTEGER NOT NULL,
+            player_achievement_id INTEGER PRIMARY KEY,
+            achievement_name TEXT NOT NULL,
             gw2account TEXT NOT NULL,
-            achieved DATETIME DEFAULT CURRENT_TIMESTAMP,          
-            FOREIGN KEY(achievement_id) REFERENCES achievements(achievement_id)
+            awarded_by TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
           )`).run();
+
+        this.connection.prepare(`
+          CREATE TABLE player_achievement_posts(
+            player_achievement_post_id INTEGER PRIMARY KEY, 
+            player_achievements_id INTEGER NOT NULL,
+            guild TEXT NOT NULL,
+            channel TEXT NOT NULL,
+            message TEXT NOT NULL,
+            FOREIGN KEY(player_achievements_id) REFERENCES player_achievements(player_achievements_id)
+          )
+          `);
 
         this.connection.prepare(`
           CREATE TABLE matchups(
@@ -82,7 +107,7 @@ export class Patch8 extends DBPatch {
 
         this.connection.prepare(`
           CREATE TABLE matchup_objectives(
-            matchup_objectives_id INTEGER PRIMARY KEY,
+            matchup_objective_id INTEGER PRIMARY KEY,
             matchup_id INTEGER,
             objective_id TEXT NOT NULL,
             map TEXT NOT NULL,
@@ -105,14 +130,16 @@ export class Patch8 extends DBPatch {
     public async revert(): Promise<void> {
         this.dbbegin();
         this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS player_achievement_posts`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS achievements`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS ts_leads`).run();      
 
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_details`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchups`).run();
+
+        this.connection.prepare(`DROP TABLE IF EXISTS environment_variables`).run();
         this.dbcommit()
     }
 }
