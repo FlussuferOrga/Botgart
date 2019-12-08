@@ -64,7 +64,7 @@ export class Database {
                             break;
                         }
                         return [res.value, res.type, casted];
-                          });
+                    });
     }
 
     public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string = null) {
