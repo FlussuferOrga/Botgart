@@ -20,6 +20,7 @@ export class Patch8 extends DBPatch {
             && this.tableExists("matchup_details")
             && this.tableExists("matchup_objectives")
             && this.tableExists("environment_variables")
+            && this.tableExists("player_activities")
     }
 
     protected async apply(): Promise<void> {
@@ -42,6 +43,15 @@ export class Patch8 extends DBPatch {
             gw2account TEXT NOT NULL,
             ts_channel TEXT,
             start DATETIME NOT NULL,
+            end DATETIME NOT NULL
+          )`).run();
+
+        this.connection.prepare(`
+          CREATE TABLE player_activities( 
+            player_activity_id INTEGER PRIMARY KEY,
+            gw2account TEXT NOT NULL, 
+            activity TEXT NOT NULL,
+            start DATETIME NOT NULL, 
             end DATETIME NOT NULL
           )`).run();
 
@@ -70,7 +80,7 @@ export class Patch8 extends DBPatch {
             message TEXT NOT NULL,
             FOREIGN KEY(player_achievements_id) REFERENCES player_achievements(player_achievements_id)
           )
-          `);
+          `).run();
 
         this.connection.prepare(`
           CREATE TABLE matchups(
@@ -138,6 +148,8 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_details`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchups`).run();
+
+        this.connection.prepare(`DROP TABLE IF EXISTS player_activities`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS environment_variables`).run();
         this.dbcommit()

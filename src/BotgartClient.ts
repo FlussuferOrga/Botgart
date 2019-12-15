@@ -9,6 +9,7 @@ import { TS3Connection } from "./TS3Connection"
 import { APIEmitter } from "./emitters/APIEmitter"
 import * as Util from "./Util";
 import * as moment from "moment";
+import * as achievements from "./commands/achievements/Achievements";
 
 export class BotgartClient extends AkairoClient {
     public db: Database;
@@ -16,12 +17,14 @@ export class BotgartClient extends AkairoClient {
     private ts3connection : TS3Connection;
     private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
     private apiemitter: APIEmitter;
+    private achievements: {[key:string] : achievements.Achievement};
 
     constructor(options, dbfile) {
         super(options, {});
-        this.db = new Database(dbfile, this);  
+        this.db = new Database(dbfile, this);
         this.cronjobs = {};
         this.rosters = {};
+        this.achievements = {};
         this.apiemitter = new APIEmitter();;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
@@ -56,7 +59,22 @@ export class BotgartClient extends AkairoClient {
                 //console.log(x)
             })
             //console.log(res);
-        })
+        });
+
+        Util.loadModuleClasses("built/commands/achievements/Achievements.js", [this], ["Achievement"]).forEach(achievement => {
+            if(achievement instanceof achievements.Achievement) {
+                this.registerAchievement(achievement);
+                Util.log("info", "Botgart.js", `Registered achievement '${achievement.name}'.`);
+            }            
+        });
+    }
+
+    public getAchievement(name: string) {
+        return name in this.achievements ? this.achievements[name] : undefined;
+    }
+
+    public registerAchievement(achievement: achievements.Achievement) {
+        this.achievements[achievement.name] = achievement;
     }
 
     private toRosterKey(guild: discord.Guild, weekNumber: number, year: number): string {
@@ -91,7 +109,7 @@ export class BotgartClient extends AkairoClient {
     * @param message - the message to log 
     * @param disposable (optional, default: true) - if no channel can be found to log the message, it will be written to the debug-log as fallback. 
     */
-    discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
+    public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels = this.db.getLogChannels(guild, type);
         if(channels.length === 0 && disposable === false) {
             log("debug", "BotgartClient.js", "Expected channel for type '{0}' for not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));

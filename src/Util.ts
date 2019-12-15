@@ -27,23 +27,25 @@ export function determineTier(yaksDelivered: number) {
     return yd < 1 ? 0 : Math.min(3, Math.floor(Math.log2(yd)));
 }
 
-export function loadModuleClasses(directory: string, blacklist: string[] = []): object[] {
+export function loadDirectoryModuleClasses(directory: string, args: any[] = [], blacklist: string[] = []): object[] {
     // careful! Skips variables, but WILL instantiate non-class-functions! 
+    return glob.sync(directory).map(file => loadModuleClasses(file, args, blacklist)).reduce((acc, cls) => acc.concat(cls), []);
+}
+
+export function loadModuleClasses(file: string, args: any[] = [], blacklist: string[] = []): object[] {
     const loadedClasses = [];
-    glob.sync( directory ).forEach( file => {
-        const module = require( path.resolve( file ) );
-        for(const exportName in module) {
-            if(!blacklist.includes(exportName)) {
-                try {
-                    loadedClasses.push(new module[exportName]());
-                } catch(e) {
-                    if(!(e instanceof TypeError)) {
-                        throw e; // discard failed instantiations of functions and variables, throw everything else
-                    }
+    const module = require(path.resolve(file));
+    for(const exportName in module) {
+        if(!blacklist.includes(exportName)) {
+            try {
+                loadedClasses.push(new module[exportName](...args));
+            } catch(e) {
+                if(!(e instanceof TypeError)) {
+                    throw e; // discard failed instantiations of functions and variables, throw everything else
                 }
-            }         
-        }
-    });
+            }
+        }         
+    }
     return loadedClasses;
 }
 

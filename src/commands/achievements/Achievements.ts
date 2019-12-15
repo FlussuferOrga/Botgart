@@ -1,10 +1,10 @@
 import * as moment from "moment"
-import * as L from "../Locale"
+import * as L from "../../Locale"
 import * as discord from "discord.js"
-import { BotgartClient } from "../BotgartClient"
-import * as Util from "../Util"
+import { BotgartClient } from "../../BotgartClient"
+import * as Util from "../../Util"
 
-abstract class Achievement {
+export abstract class Achievement {
     public readonly name: string;
     private client: BotgartClient;
     private imageURL: string;
@@ -28,7 +28,16 @@ abstract class Achievement {
         return this.roleName;
     }
 
-    /**
+    public constructor(client: BotgartClient, name: string, imageURL: string, roleName: string, repeatable = true, announceRepetitions = false) {
+        this.client = client;
+        this.name = name;
+        this.imageURL = imageURL;
+        this.roleName = roleName;
+        this.repeatable = repeatable;
+        this.announceRepetitions = announceRepetitions;
+    }
+
+        /**
     * Awards the passed player this achievement.
     * If the player already has the achievement and it is not repeatable, it will not be assigned again. 
     * Whether the achievement was actually awarded is implied by the return value.
@@ -73,15 +82,6 @@ abstract class Achievement {
         }
     }
 
-    public constructor(client: BotgartClient, name: string, imageURL: string, roleName: string, repeatable = true, announceRepetitions = false) {
-        this.client = client;
-        this.name = name;
-        this.imageURL = imageURL;
-        this.roleName = roleName;
-        this.repeatable = repeatable;
-        this.announceRepetitions = announceRepetitions;
-    }
-
     public createEmbed(player: string) {
         return new discord.RichEmbed()
             .setTitle(this.getName())
@@ -93,4 +93,14 @@ abstract class Achievement {
     }
 
     public abstract check(player: string): boolean;
+}
+
+export class Glimmer extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "glimmer", "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", "Glimmer", false, false);
+    }
+
+    public check(player: string): boolean {
+        return true;
+    }
 }
