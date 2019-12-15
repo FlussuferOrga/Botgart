@@ -11,7 +11,7 @@ import { BotgartCommand } from "../../BotgartCommand";
 Testcases:
 
 */
-export class AchievementGrant extends BotgartCommand {
+export class GrantAchievement extends BotgartCommand {
      constructor() {
         super("grantachievement", {
             aliases: ["gachievement"],
@@ -52,4 +52,4 @@ export class AchievementGrant extends BotgartCommand {
     }
 }
 
-module.exports = AchievementGrant;
+module.exports = GrantAchievement;

@@ -69,7 +69,11 @@ export class BotgartClient extends AkairoClient {
         });
     }
 
-    public getAchievement(name: string) {
+    public getAchievements(): achievements.Achievement[] {
+        return Object.values(this.achievements);
+    }
+
+    public getAchievement(name: string): achievements.Achievement {
         return name in this.achievements ? this.achievements[name] : undefined;
     }
 
