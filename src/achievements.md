@@ -200,6 +200,16 @@ _Bin ich froh, dass du da bist._ _I am so glad to see you._
 
 https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png
 
+### Kugelsicher | Bullet Proof
+Leite, während das Matchup bereits gelaufen ist.
+
+Raid while the matchup can not be won anymore.
+
+_Hinter diesem Kommandeursabzeichen ist nicht nur ein Spieler, hinter diesem Kommandeursabzeichen steckt eine Idee... und Ideen sind unzerstörbar._
+_Behind this commander's tag there is more than just a player. Beneath this commander's tag there is an idea... and ideas are indestructible._
+
+https://wiki.guildwars2.com/images/2/24/Endure_Pain.png
+
 ### Promillekommandeur | Booze Commander 
 (manuell)
 
