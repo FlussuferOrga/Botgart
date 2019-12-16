@@ -220,3 +220,31 @@ Do a booze raid.
 _Das ist unfair! Die sind plötzlich doppelt so viele!_ _That's unfair! They have doubled in numbers!_
 
 https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png
+
+### Aus der Asche | From Ashes
+Sei dabei, wenn der Server aus dem T5 aufsteigt.
+
+Be there when the server rises from tier 5.
+
+_Sie haben uns alles genommen. Auch unsere Furcht._ _They have taken everything from us. Even fear itself._
+
+### Der Präsident | The President
+Sei dabei, wenn der Server aus dem T4 aufsteigt.
+
+Be there when the server rises from tier 4.
+
+_I nimm die Nummer drey._ _I pick number three._
+
+### xxx
+Sei dabei, wenn der Server aus dem T3 aufsteigt.
+
+Be there when the server rises from tier 3.
+
+_xxx_ _xxx_
+
+### Der Gipfel | The Peak
+Sei dabei, wenn der Server aus dem T2 aufsteigt.
+
+Be there when the server rises from tier 2.
+
+_Die schönste Aussicht._ _The best view._
