@@ -66,7 +66,7 @@ Leite eine Nachtschicht.
 
 Tag up during the night.
 
-_zzzZZZZZZZZzz_ _zzzZZZZZZZZzz_
+_Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt._ _Who zergs there so late through the night dark and drear? It is the commander, he soweth the fear._
 
 https://wiki.guildwars2.com/images/5/52/Juvenile_Owl.png
 https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png
