@@ -228,12 +228,16 @@ Be there when the server rises from tier 5.
 
 _Sie haben uns alles genommen. Auch unsere Furcht._ _They have taken everything from us. Even fear itself._
 
+https://wiki.guildwars2.com/images/c/c1/Phoenix.png
+
 ### Der Präsident | The President
 Sei dabei, wenn der Server aus dem T4 aufsteigt.
 
 Be there when the server rises from tier 4.
 
 _I nimm die Nummer drey._ _I pick number three._
+
+https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png
 
 ### xxx
 Sei dabei, wenn der Server aus dem T3 aufsteigt.
@@ -242,9 +246,13 @@ Be there when the server rises from tier 3.
 
 _xxx_ _xxx_
 
+https://wiki.guildwars2.com/images/a/a1/Inspiring_Reinforcement.png
+
 ### Der Gipfel | The Peak
 Sei dabei, wenn der Server aus dem T2 aufsteigt.
 
 Be there when the server rises from tier 2.
 
 _Die schönste Aussicht._ _The best view._
+
+https://wiki.guildwars2.com/images/c/c7/Fortify.png
