@@ -15,7 +15,7 @@ export class Patch8 extends DBPatch {
         return this.tableExists("ts_leads") 
             && this.tableExists("player_achievements")
             && this.tableExists("player_achievement_posts")
-            && this.tableExists("matchup")
+            && this.tableExists("matchups")
             && this.tableExists("matchup_factions")
             && this.tableExists("matchup_details")
             && this.tableExists("matchup_objectives")
@@ -55,13 +55,6 @@ export class Patch8 extends DBPatch {
             end DATETIME NOT NULL
           )`).run();
 
-        //this.connection.prepare(`
-        //  CREATE TABLE achievements(
-        //    achievement_id INTEGER PRIMARY KEY,
-        //    guild_id TEXT NOT NULL,
-        //    role_name TEXT
-        //  )`).run();
-
         this.connection.prepare(`
           CREATE TABLE player_achievements(
             player_achievement_id INTEGER PRIMARY KEY,
@@ -74,11 +67,11 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`
           CREATE TABLE player_achievement_posts(
             player_achievement_post_id INTEGER PRIMARY KEY, 
-            player_achievements_id INTEGER NOT NULL,
+            player_achievement_id INTEGER NOT NULL,
             guild TEXT NOT NULL,
             channel TEXT NOT NULL,
             message TEXT NOT NULL,
-            FOREIGN KEY(player_achievements_id) REFERENCES player_achievements(player_achievements_id)
+            FOREIGN KEY(player_achievement_id) REFERENCES player_achievements(player_achievement_id)
           )
           `).run();
 

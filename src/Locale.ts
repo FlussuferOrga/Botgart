@@ -61,6 +61,7 @@ export let EN : Object = {
     "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<{0}>` `<week number (optional)>` `<year (optional)>`",
     "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number (optional)>` `<year (optional)>`",
     "HELPTEXT_SET_TS3_RESET_ROSTER": "",
+    "HELPTEXT_GRANT_ACHIEVEMENT": "Please use the command with the following parameters:\n`<player name>` `<achievement name>` `<timestamp dd.mm.yyyy hh:mm (optional, default: now)>`",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
@@ -89,6 +90,7 @@ export let EN : Object = {
     "DESC_REMOVE_RESETLEAD": "Manually removes a player as reset lead.",
     "DESC_SET_TS3_RESET_ROSTER": "Syncs the current reset roster to TS3.",
     "DESC_ADD_EVENT": "Creates a new event.",
+    "DESC_GRANT_ACHIEVEMENT": "Grants a player an achievement.",
 
     "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
@@ -107,6 +109,11 @@ export let EN : Object = {
     "MK_EVENT_DESC": "Enter a short description for the event.",
     "MK_EVENT_REMINDER": "If you want to have an automatic reminder posted for your event, enter how many minutes before the event the reminder should be posted. If you do not want to have reminder, enter a negative number instead.",
     "MK_EVENT_TIMEOUT": "The time for input ran out and event creation was canceled. You can start over the event creation.",
+
+    "ACHIEVEMENT_UNLOCKED": "Achievement unlocked",
+    "ACHIEVEMENT_NAME_GLIMMER": "Glimmer",
+    "ACHIEVEMENT_DESC_GLIMMER": "Tag up for an hour.",
+    "ACHIEVEMENT_FLAV_GLIMMER": "Welcome to the bridge, commander!"
 }
 
 export let DE : Object = {
@@ -168,8 +175,9 @@ export let DE : Object = {
     "HELPTEXT_PRUNE": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
     "HELPTEXT_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Channel, in dem der Post erstellt werden soll>` (`Kalenderwoche für den Reset, Standard: aktuelle Woche`) (`Jahr für den Reset, Standard: aktuelles Jahr`)",
     "HELPTEXT_ADD_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>`",
-    "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
+    "HELPTEXT_REMOVE_RESETLEAD": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
     "HELPTEXT_SET_TS3_RESET_ROSTER": "",
+    "HELPTEXT_GRANT_ACHIEVEMENT": "Bitte benutze den Befehl mit folgenden Parametern:\n`<Spieler>` `<Name der Errungenschaft>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
 
     "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
     "DESC_DEL_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -198,6 +206,7 @@ export let DE : Object = {
     "DESC_REMOVE_RESETLEAD": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
     "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
     "DESC_ADD_EVENT": "Erstellt ein neues Event",
+    "DESC_GRANT_ACHIEVEMENT": "Vergibt eine Errungenschaft an einen Spieler.",
 
     "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 
@@ -216,6 +225,11 @@ export let DE : Object = {
     "MK_EVENT_DESC": "Gib nun eine kurze Beschreibung für das Event an.",
     "MK_EVENT_REMINDER": "Falls automatisch eine Erinnerung gepostet werden soll, gib jetzt an, wie viele Minuten vor dem Event das geschehen soll. Gib eine negative Zahl an, falls du keine Erinnerung möchtest.",
     "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
+
+    "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
+    "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
+    "ACHIEVEMENT_DESC_GLIMMER": "Leite für eine Stunde.",
+    "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!"
 }
 
 /**
@@ -226,12 +240,22 @@ export let DE : Object = {
 * @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders. 
 *          If no locale string could be found, the key is returned instead.
 */
-export function get(key: string, args?: string[], separator = "\n", flags = true): string {
-    const sde = key in DE ? DE[key].formatUnicorn(args) : key;
-    const sen = key in EN ? EN[key].formatUnicorn(args) : key;
-    const flagde = flags ? ":flag_de: " : "";
-    const flagen = flags ? ":flag_gb: " : "";
-    return `${flagde}${sde}${separator}${flagen}${sen}`;
+export function get(key: string, args?: string[], separator: string = "\n", flags = true, options: {[option: string]: boolean} = {}): string {
+    const flagIcons = [flags ? ":flag_de: " : "", flags ? ":flag_gb: " : ""];
+    const strings = [key in DE ? DE[key].formatUnicorn(args) : key, key in EN ? EN[key].formatUnicorn(args) : key]
+                    .map(s => {
+                        if("italic" in options && options["italic"] === true) {
+                            s = `_${s}_`;
+                        }
+                        if("bold" in options && options["bold"] === true) {
+                            s = `**${s}**`;
+                        }
+                        return s;
+                    });  
+
+    return [0,1].map(i => `${flagIcons[i]}${strings[i]}`)
+                .join(separator);
+    //return `${flagde}${sde}${separator}${flagen}${sen}`;
     //return ":flag_de: {0}{1}:flag_gb: {2}".formatUnicorn(sde, separator, sen);
     //return key in DE ? DE[key].formatUnicorn(args) : key;
 };

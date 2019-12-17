@@ -102,6 +102,15 @@ export class Database {
             ).get(gw2account));        
     }
 
+    public getUserByDiscordId(discordUser: discord.User) {
+        return this.execute(db => db.prepare(
+                `SELECT id, user, guild, api_key, gw2account, registration_role, account_name, created 
+                 FROM registrations 
+                 WHERE id = ?
+                 ORDER BY created DESC`
+            ).get(discordUser.id));        
+    }
+
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
     // sqlite3 and node don't work well together in terms of large integers.
     // Therefore, all big numbers are stored as strings.
@@ -188,7 +197,7 @@ export class Database {
     public checkAchievement(achievementName: string, gw2account: string): [string, string, string, string, string][] {
         return this.execute(db => db.prepare(`SELECT 
                                                     pa.awarded_by,
-                                                    pa.achieved,
+                                                    pa.timestamp,
                                                     pap.guild,
                                                     pap.channel,
                                                     pap.message

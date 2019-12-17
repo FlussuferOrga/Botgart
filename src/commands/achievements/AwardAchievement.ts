@@ -11,15 +11,15 @@ import { BotgartCommand } from "../../BotgartCommand";
 Testcases:
 
 */
-export class GrantAchievement extends BotgartCommand {
+export class AwardAchievement extends BotgartCommand {
      constructor() {
-        super("grantachievement", {
-            aliases: ["gachievement"],
+        super("awardachievement", {
+            aliases: ["awardachievement"],
             split: "quoted",
             args: [
                 {
                     id: "player",
-                    type: "string" //type: (word: string, message: discord.Message, prevArgs: any[]) => message.guild.members.find(m => m.)
+                    type: "member" //type: (word: string, message: discord.Message, prevArgs: any[]) => message.guild.members.find(m => m.)
                 },
                 {
                     id: "achievement",
@@ -48,8 +48,12 @@ export class GrantAchievement extends BotgartCommand {
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-  
+        if(args.achievement === undefined) {
+            // FIXME
+        } else {
+            args.achievement.awardIn(message.guild, args.player, responsible.id);
+        }
     }
 }
 
-module.exports = GrantAchievement;
+module.exports = AwardAchievement;
