@@ -106,7 +106,7 @@ export class Database {
         return this.execute(db => db.prepare(
                 `SELECT id, user, guild, api_key, gw2account, registration_role, account_name, created 
                  FROM registrations 
-                 WHERE id = ?
+                 WHERE user = ?
                  ORDER BY created DESC`
             ).get(discordUser.id));        
     }

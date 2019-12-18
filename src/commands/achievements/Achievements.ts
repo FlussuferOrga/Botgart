@@ -4,6 +4,13 @@ import * as discord from "discord.js"
 import { BotgartClient } from "../../BotgartClient"
 import * as Util from "../../Util"
 
+export enum AchievementAwardResult {
+    AWARDED_FIRST_TIME,
+    AWARDED_AGAIN,
+    NOT_AWARDED, // not repeatable
+    USER_NOT_FOUND
+}
+
 export abstract class Achievement {
     public readonly name: string;
     private client: BotgartClient;
@@ -29,7 +36,7 @@ export abstract class Achievement {
         return this.roleName;
     }
 
-    public constructor(client: BotgartClient, name: string, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable = true, announceRepetitions = false) {
+    public constructor(client: BotgartClient, name: string, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable = false, announceRepetitions = false) {
         this.client = client;
         this.name = name;
         this.imageURL = imageURL;
@@ -39,8 +46,8 @@ export abstract class Achievement {
         this.announceRepetitions = announceRepetitions;
     }
 
-        /**
-    * Awards the passed player this achievement.
+    /**
+    * Awards the passed player this achievement in the database.
     * If the player already has the achievement and it is not repeatable, it will not be assigned again. 
     * Whether the achievement was actually awarded is implied by the return value.
     * gw2account: gw2account of the player to award 
@@ -67,50 +74,75 @@ export abstract class Achievement {
     * by: see award()
     * timestamp: see award()
     */
-    public awardIn(guild: discord.Guild, player: discord.GuildMember, by: string = null, timestamp: moment.Moment = null): void {
-        let discordUser: discord.GuildMember;
-        let gw2account: string;
+    public awardIn(guild: discord.Guild, discordUser: discord.GuildMember, by: string = null, timestamp: moment.Moment = null): AchievementAwardResult {
+        let result: AchievementAwardResult = AchievementAwardResult.NOT_AWARDED;
 
-        discordUser = player;
-        gw2account = this.client.db.getUserByDiscordId(player.user).gw2account;
-        // FIXME: check undefineds
-        const [rowId, isNew] = this.award(gw2account, by, timestamp);
-        //const discordPlayer: discord.GuildMember = dbuser === undefined ? undefined : guild.members.find(m => m.id === dbuser.user);
-        
-        if(rowId > -1 && (isNew || this.repeatable)) {
-            const achievementChannel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === "achievements");
-            if(achievementChannel) {
-               (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser));
-            }
-            if(discordUser) {
-                discordUser.addRole(this.getRoleName()).catch(e => {
+        const gw2account: string = this.client.db.getUserByDiscordId(discordUser.user).gw2account;
+
+        if(gw2account === undefined) {
+            Util.log("warning", "Achievements.js", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
+            result = AchievementAwardResult.USER_NOT_FOUND;
+        } else {
+            const [rowId, isNew] = this.award(gw2account, by, timestamp);
+
+            if(rowId > -1 && (isNew || (this.repeatable && this.announceRepetitions))) {
+                const achievementChannel: discord.Channel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === "achievements");
+
+                if(achievementChannel) {
+                   (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser, rowId));
+                } else {
+                    Util.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+                }
+
+                const role: discord.Role = guild.roles.find(r => r.name === this.getRoleName());
+                if(role) {
+                    discordUser.addRole(role);
+                } else {
                     guild.createRole({"name": this.roleName, "color": this.roleColour})
                       .then(r => discordUser.addRole(r))
-                      .catch(e => Util.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', or the bot does not have the required permissions to give out this role.`))                   
-                });
-            }
+                      .catch(e => Util.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to give out this role.`));                    
+                }
+            }    
         }
     }
 
-    public createEmbed(player: discord.GuildMember) {
+    /**
+    * Checks, if the user is elligble for the achievement.
+    * If so, they will be awarded, if not, nothing happens.
+    */
+    public tryAward(discordUser: discord.GuildMember) {
+        if(this.checkCondition(discordUser)) {
+            this.awardIn(discordUser.guild, discordUser);
+        }
+    }
+
+    public createEmbed(discordUser: discord.GuildMember, dbId: number) {
         return new discord.RichEmbed()
-            .setAuthor(player)
+            .setAuthor(discordUser.displayName, discordUser.user.displayAvatarURL)
+            .setColor(this.roleColour)
             .setTitle(`${this.getName()}`)
             .setThumbnail(this.imageURL)
             .addField(L.get("ACHIEVEMENT_UNLOCKED", [], " | ", false), this.getDescription())
             .addField("\u200b", `${this.getFlavourText()}`)
             .setTimestamp(moment.utc().valueOf())
+            .setFooter(dbId);
     }
 
-    public abstract check(player: string): boolean;
+    public abstract checkCondition(discordUser: discord.GuildMember): boolean;
 }
 
 export class Glimmer extends Achievement {
     public constructor(client: BotgartClient) {
-        super(client, "glimmer", "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", "Glimmer", "GREEN", false, false);
+        super(client, "glimmer", 
+                      "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
+                      "Glimmer", 
+                      "GREEN", 
+                      false, // repeatable
+                      false // announce repeats
+        );
     }
 
-    public check(player: string): boolean {
+    public checkCondition(discordUser: discord.GuildMember): boolean {
         return true;
     }
 }
