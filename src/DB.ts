@@ -186,6 +186,37 @@ export class Database {
                                     .run(gw2account, tsChannel, start.valueOf()/1000, end.valueOf()/1000));
     }
 
+    /**
+    * Total time a player tagged up over all channels in seconds. 
+    * gw2account: player to check 
+    * returns: seconds the player has tagged up or 0 if the player is unknown.
+    */ 
+    public getTotalLeadTime(gw2account: string): number {
+        return this.execute(db => db.prepare(`
+                                SELECT 
+                                    COALESCE(SUM(strftime('%s',end) - strftime('%s',start)), 0) AS total
+                                FROM 
+                                    ts_leads
+                                WHERE 
+                                    gw2account = ?
+                                `).get(gw2account).total)
+    }
+
+    public getLastLeadDuration(gw2account: string): number {
+        return this.execute(db => db.prepare(`
+                                SELECT 
+                                    COALESCE(strftime('%s',end) - strftime('%s',start), 0) AS duration 
+                                FROM 
+                                    ts_leads 
+                                WHERE 
+                                    gw2account = ?
+                                ORDER BY 
+                                    ts_lead_id DESC 
+                                LIMIT 
+                                    1
+            `).get(gw2account).duration)
+    }
+
     public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
         return this.execute(db => {
                                 db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'unixepoch'))")

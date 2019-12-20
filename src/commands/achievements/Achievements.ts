@@ -1,3 +1,4 @@
+const config = require("../config.json")
 import * as moment from "moment"
 import * as L from "../../Locale"
 import * as discord from "discord.js"
@@ -12,8 +13,12 @@ export enum AchievementAwardResult {
 }
 
 export abstract class Achievement {
+    public static readonly EASY_COLOUR: string = "#c0792e";
+    public static readonly MEDIUM_COLOUR: string = "#dadada";
+    public static readonly HARD_COLOUR: string = "#f5de3d";
+
     public readonly name: string;
-    private client: BotgartClient;
+    protected client: BotgartClient;
     private imageURL: string;
     private repeatable: boolean;
     private roleName: string;
@@ -86,7 +91,7 @@ export abstract class Achievement {
             const [rowId, isNew] = this.award(gw2account, by, timestamp);
 
             if(rowId > -1 && (isNew || (this.repeatable && this.announceRepetitions))) {
-                const achievementChannel: discord.Channel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === "achievements");
+                const achievementChannel: discord.Channel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === config.achievements.channel);
 
                 if(achievementChannel) {
                    (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser, rowId));
@@ -104,6 +109,7 @@ export abstract class Achievement {
                 }
             }    
         }
+        return result;
     }
 
     /**
@@ -136,13 +142,16 @@ export class Glimmer extends Achievement {
         super(client, "glimmer", 
                       "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
                       "Glimmer", 
-                      "GREEN", 
+                      Achievement.EASY_COLOUR, 
                       false, // repeatable
                       false // announce repeats
         );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
     }
 
     public checkCondition(discordUser: discord.GuildMember): boolean {
-        return true;
+        const user = this.client.db.getUserByDiscordId(discordUser.user);
+        return this.client.db.getTotalLeadTime(user.gw2account) > 3600;
     }
 }

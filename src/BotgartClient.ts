@@ -5,7 +5,7 @@ import { Database } from "./DB.js"
 import * as discord from "discord.js"
 import { log, loadModuleClasses } from "./Util.js"
 import { Roster } from "./commands/resetlead/ResetRoster"
-import { TS3Connection } from "./TS3Connection"
+import { TS3Connection, TS3Listener } from "./TS3Connection"
 import { APIEmitter } from "./emitters/APIEmitter"
 import * as Util from "./Util";
 import * as moment from "moment";
@@ -16,7 +16,8 @@ export class BotgartClient extends AkairoClient {
     public cronjobs: Object;
     private ts3connection : TS3Connection;
     private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
-    private apiemitter: APIEmitter;
+    public readonly gw2apiemitter: APIEmitter;
+    public readonly ts3listener: TS3Listener;
     private achievements: {[key:string] : achievements.Achievement};
 
     constructor(options, dbfile) {
@@ -25,7 +26,8 @@ export class BotgartClient extends AkairoClient {
         this.cronjobs = {};
         this.rosters = {};
         this.achievements = {};
-        this.apiemitter = new APIEmitter();;
+        this.gw2apiemitter = new APIEmitter();
+        this.ts3listener = new TS3Listener(this);
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
         
@@ -37,7 +39,7 @@ export class BotgartClient extends AkairoClient {
             });
         });
 
-        this.apiemitter.on("wvw-matches", (prom) => {
+        this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 const now = moment.utc();
                 let matchId = this.db.getCurrentMatchup(now);
@@ -56,9 +58,7 @@ export class BotgartClient extends AkairoClient {
                             .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                             .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                 this.db.addMatchupObjectives(matchId, objs);
-                //console.log(x)
             })
-            //console.log(res);
         });
 
         Util.loadModuleClasses("built/commands/achievements/Achievements.js", [this], ["Achievement"]).forEach(achievement => {
@@ -111,12 +111,12 @@ export class BotgartClient extends AkairoClient {
     * @param guild - guild for which the connection should be defined
     * @param type - arbitrary type
     * @param message - the message to log 
-    * @param disposable (optional, default: true) - if no channel can be found to log the message, it will be written to the debug-log as fallback. 
+    * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback. 
     */
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels = this.db.getLogChannels(guild, type);
         if(channels.length === 0 && disposable === false) {
-            log("debug", "BotgartClient.js", "Expected channel for type '{0}' for not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
+            log("debug", "BotgartClient.js", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
             const channel: discord.GuildChannel = guild.channels.find(c => c.id === cid);
