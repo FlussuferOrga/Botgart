@@ -116,6 +116,12 @@ export class ConfigChecker extends Listener {
         "disabled.inhibitors": {
             presence: true,
             isArray: {}
+        },
+        achievements: {
+            presence: true
+        },
+        "achievements.channel": {
+            presence: true
         }
         };
 
@@ -162,25 +168,3 @@ export class ConfigChecker extends Listener {
 }
 
 module.exports = ConfigChecker;
-
-/*
-
-{
-    "owner_id": "227563459963912202",
-    "prefix": "-",
-    "token": "NTEyOTg4NzA4NjkwMTk4NTI5.DtBdnA.DZ1-4T6-LlPAqenp2iruHVkRwqI",
-    "home_id": 2202,
-    "world_assignments": [{"world_id": 2202, "role": "Flussufer"}],
-    "ts": {
-        "ip": "127.0.01",
-        "port": 10011,
-        "user": "admin",
-        "password": "fqJE4Wkl" 
-    },
-    "disabled": {
-        "listeners": [],
-        "commands": [],
-        "inhibitors": []
-    }
-}
-*/

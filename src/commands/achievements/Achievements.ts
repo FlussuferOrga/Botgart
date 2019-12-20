@@ -1,4 +1,4 @@
-const config = require("../config.json")
+const config = require("../../../config.json")
 import * as moment from "moment"
 import * as L from "../../Locale"
 import * as discord from "discord.js"

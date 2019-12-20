@@ -18,5 +18,8 @@
         "listeners": [],
         "commands": [],
         "inhibitors": []
+    },
+    "achievements": {
+        "channel": "achievements"
     }
 }
