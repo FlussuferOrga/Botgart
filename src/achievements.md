@@ -52,9 +52,9 @@ https://wiki.guildwars2.com/images/f/ff/Astral_Wisp.png
 
 
 ### Vorreiter | Trailblazer
-Leite während eines Resets.
+Leite während eines Resets. Schalte dazu deine Lampe schon vor dem Reset an leite ab dann mindestens zwei Stunden.
 
-Tag up during a reset.
+Tag up during a reset. For this to count, you need to tag up at before the reset takes place and lead for at least two hours from then.
 
 _Du bist die Ruhe vor dem Sturm._ _You are the calm before the storm._
 
@@ -62,9 +62,9 @@ https://wiki.guildwars2.com/images/e/e1/Banner_of_Strength.png
 
 
 ### Eule | Owl
-Leite eine Nachtschicht.
+Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 5:00 Uhr für mindestens zwei Stunden an.
 
-Tag up during the night.
+Tag up during the night. For this to count, you need to tag up between 11 PM and 5 AM for at least two hours.
 
 _Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt._ _Who zergs there so late through the night dark and drear? It is the commander, he soweth the fear._
 
@@ -73,9 +73,9 @@ https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png
 
 
 ### Früher Vogel | Early Bird
-Leite eine Frühschicht.
+Leite eine Frühschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens zwei Stunden an.
 
-Tag up in the morning.
+Tag up in the morning. For this to count, you need to tag up between 6 AM and 10 AM for at least two hours.
 
 _Ich liebe den Geruch von Sandschatten am Morgen!_
 _I love the smell of Sand Shades in the morning!_
@@ -84,9 +84,9 @@ https://wiki.guildwars2.com/images/archive/0/0b/20130311171736%21Juvenile_Eagle.
 https://wiki.guildwars2.com/images/3/3c/Hunter%27s_Call.png
 
 ### Vernichter | Annihilator
-Der Server erreicht unter deiner Leitung eine KD von 2.
+Der Server erreicht unter deiner Leitung eine gesamte KDR von 2.
 
-Tag up while the server has a KD of 2.
+Tag up while the server has a total KDR of 2.
 
 _Färbe den Boden mit ihrem Blut._ _Colour the ground with their blood._
 
@@ -125,9 +125,9 @@ https://wiki.guildwars2.com/images/5/5f/Champion%27s_Crown.png
 
 
 ### Agiler Verteidiger | Agile Defender
-Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden eingenommen.
+Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden eingenommen. Dieses Achievement wird nur vergeben, wenn während deines Raids mindestens eine Befestigung Stufe 3 hatte.
 
-None of our objectives with tier 3 fell during your raid.
+None of our objectives with tier 3 fell during your raid. This achievement is only awarded if at least one of our objectives was of tier 3 during your raid.
 
 _Wenn ihr uns ruft, dann werden wir kommen._ _When you call, we will come._
 
@@ -136,9 +136,9 @@ https://wiki.guildwars2.com/images/7/7b/Strength_in_Numbers.png
 
 
 ### Gründlicher Feldherr | Thorough Commander
-Alle Befestigungen einer beliebigen Karte gehören während deiner Leitung vollständig uns.
+Alle Befestigungen einer beliebigen Karte gehören während deiner Leitung vollständig uns. Das schließt Lager, Türme, Festungen und Schloss Steinnebel ein.
 
-All objectives on a map belong to us during your raid.
+All objectives on a map belong to us during your raid. This includes camps, towers, keeps, and Stone Mist castle.
 
 _Das ist unser Königreich. Alles, was das Licht berührt._ _Everything the light touches is our kingdom._
 
