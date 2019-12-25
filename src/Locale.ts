@@ -111,9 +111,26 @@ export let EN : Object = {
     "MK_EVENT_TIMEOUT": "The time for input ran out and event creation was canceled. You can start over the event creation.",
 
     "ACHIEVEMENT_UNLOCKED": "Achievement unlocked",
+
     "ACHIEVEMENT_NAME_GLIMMER": "Glimmer",
     "ACHIEVEMENT_DESC_GLIMMER": "Tag up for an hour.",
-    "ACHIEVEMENT_FLAV_GLIMMER": "Welcome to the bridge, commander!"
+    "ACHIEVEMENT_FLAV_GLIMMER": "Welcome to the bridge, commander!",
+
+    "ACHIEVEMENT_NAME_SUNRAY": "Sunray",
+    "ACHIEVEMENT_DESC_SUNRAY": "Tag up for ten hours.",
+    "ACHIEVEMENT_FLAV_SUNRAY": "Welcome back, commander!",
+
+    "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Blazing Light",
+    "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Tag up for one hundred hours.",
+    "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "The troops are counting on you.",
+
+    "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
+    "ACHIEVEMENT_DESC_SUPERNOVA": "Tag up for one thousand hours.",
+    "ACHIEVEMENT_FLAV_SUPERNOVA": "Hosts abide your arrival.",
+
+    "ACHIEVEMENT_NAME_TRAILBLAZER": "Trailblazer",
+    "ACHIEVEMENT_DESC_TRAILBLAZER": "Tag up during a reset. For this to count, you need to tag up at before the reset takes place and lead for at least two hours from then.",
+    "ACHIEVEMENT_FLAV_TRAILBLAZER": "You are the calm before the storm.",
 }
 
 export let DE : Object = {
@@ -227,9 +244,22 @@ export let DE : Object = {
     "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
 
     "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
+
     "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
     "ACHIEVEMENT_DESC_GLIMMER": "Leite für eine Stunde.",
-    "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!"
+    "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!",
+
+    "ACHIEVEMENT_NAME_SUNRAY": "Sonnenstrahl",
+    "ACHIEVEMENT_DESC_SUNRAY": "Leite für zehn Stunden.",
+    "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur!",
+
+    "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
+    "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leite für einhundert Stunden.",
+    "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf euch.",
+
+    "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
+    "ACHIEVEMENT_DESC_SUPERNOVA": "Leite für eintausend Stunden.",
+    "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren deiner.",
 }
 
 /**

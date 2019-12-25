@@ -41,9 +41,9 @@ export abstract class Achievement {
         return this.roleName;
     }
 
-    public constructor(client: BotgartClient, name: string, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable = false, announceRepetitions = false) {
+    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable = false, announceRepetitions = false) {
         this.client = client;
-        this.name = name;
+        this.name = this.constructor.name;
         this.imageURL = imageURL;
         this.roleName = roleName;
         this.roleColour = roleColour;
@@ -139,9 +139,8 @@ export abstract class Achievement {
 
 export class Glimmer extends Achievement {
     public constructor(client: BotgartClient) {
-        super(client, "glimmer", 
-                      "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
-                      "Glimmer", 
+        super(client, "https://wiki.guildwars.2gwcom/images/a/a9/Solar_Beam.png", 
+                      "Schimmer", 
                       Achievement.EASY_COLOUR, 
                       false, // repeatable
                       false // announce repeats
@@ -152,6 +151,60 @@ export class Glimmer extends Achievement {
 
     public checkCondition(discordUser: discord.GuildMember): boolean {
         const user = this.client.db.getUserByDiscordId(discordUser.user);
-        return this.client.db.getTotalLeadTime(user.gw2account) > 3600;
+        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 : false;
+    }
+}
+
+export class Sunray extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/3/37/Cosmic_Ray.png", 
+                      "Sonnenstrahl", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        const user = this.client.db.getUserByDiscordId(discordUser.user);
+        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 10 : false;
+    }
+}
+
+export class BlazingLight extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/e/e6/Lunar_Impact.png", 
+                      "Gleißendes Licht", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        const user = this.client.db.getUserByDiscordId(discordUser.user);
+        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 100 : false;
+    }
+}
+
+export class Supernova extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/f/ff/Astral_Wisp.png", 
+                      "Supernova", 
+                      Achievement.HARD_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        const user = this.client.db.getUserByDiscordId(discordUser.user);
+        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 1000 : false;
     }
 }
