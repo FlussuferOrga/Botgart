@@ -131,6 +131,14 @@ export let EN : Object = {
     "ACHIEVEMENT_NAME_TRAILBLAZER": "Trailblazer",
     "ACHIEVEMENT_DESC_TRAILBLAZER": "Tag up during a reset. For this to count, you need to tag up at before the reset takes place and lead for at least two hours from then.",
     "ACHIEVEMENT_FLAV_TRAILBLAZER": "You are the calm before the storm.",
+
+    "ACHIEVEMENT_NAME_OWL": "Owl",
+    "ACHIEVEMENT_DESC_OWL": "Tag up during the night. For this to count, you need to tag up between 11 PM and 5 AM for at least two hours.",
+    "ACHIEVEMENT_FLAV_OWL": "Who zergs there so late through the night dark and drear? It is the commander, he soweth the fear.",
+
+    "ACHIEVEMENT_NAME_EARLYBIRD": "Early Bird",
+    "ACHIEVEMENT_DESC_EARLYBIRD": "Tag up in the morning. For this to count, you need to tag up between 6 AM and 10 AM for at least two hours.",
+    "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! I love the smell of Sand Shades in the morning!",
 }
 
 export let DE : Object = {
@@ -260,6 +268,18 @@ export let DE : Object = {
     "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
     "ACHIEVEMENT_DESC_SUPERNOVA": "Leite für eintausend Stunden.",
     "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren deiner.",
+
+    "ACHIEVEMENT_NAME_TRAILBLAZER": "Vorreiter",
+    "ACHIEVEMENT_DESC_TRAILBLAZER": "Leite während eines Resets. Schalte dazu deine Lampe schon vor dem Reset an leite ab dann mindestens zwei Stunden.",
+    "ACHIEVEMENT_FLAV_TRAILBLAZER": "Du bist die Ruhe vor dem Sturm.",
+
+    "ACHIEVEMENT_NAME_OWL": "Eule",
+    "ACHIEVEMENT_DESC_OWL": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 5:00 Uhr für mindestens zwei Stunden an.",
+    "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
+
+    "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
+    "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 5:00 Uhr für mindestens zwei Stunden an.",
+    "ACHIEVEMENT_FLAV_EARLYBIRD": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
 }
 
 /**
