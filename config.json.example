@@ -20,6 +20,7 @@
         "inhibitors": []
     },
     "achievements": {
-        "channel": "achievements"
+        "channel": "achievements",
+        "ignoring_roles": ["privateer"]
     }
 }

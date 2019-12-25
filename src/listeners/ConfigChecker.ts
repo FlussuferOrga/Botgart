@@ -122,6 +122,10 @@ export class ConfigChecker extends Listener {
         },
         "achievements.channel": {
             presence: true
+        },
+        "achievements.ignoring_roles": {
+            presence: true,
+            isArray: {}
         }
         };
 

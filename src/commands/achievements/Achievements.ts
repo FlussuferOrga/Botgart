@@ -117,6 +117,7 @@ export abstract class Achievement {
     * If so, they will be awarded, if not, nothing happens.
     */
     public tryAward(discordUser: discord.GuildMember) {
+        // config.achievements.ignoring_roles.reduce((acc, x) => acc || discordUser.roles.has(x), false)
         if(this.checkCondition(discordUser)) {
             this.awardIn(discordUser.guild, discordUser);
         }
