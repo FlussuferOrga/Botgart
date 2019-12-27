@@ -74,11 +74,12 @@ export class BotgartClient extends AkairoClient {
     }
 
     public getAchievement(name: string): achievements.Achievement {
+        name = name.toLowerCase();
         return name in this.achievements ? this.achievements[name] : undefined;
     }
 
     public registerAchievement(achievement: achievements.Achievement) {
-        this.achievements[achievement.name] = achievement;
+        this.achievements[achievement.name.toLowerCase()] = achievement;
     }
 
     private toRosterKey(guild: discord.Guild, weekNumber: number, year: number): string {
