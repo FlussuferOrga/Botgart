@@ -73,42 +73,55 @@ export class Database {
 
     public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string = null) {
         type = type || typeof value;
-        return this.execute(db => db.prepare(`INSERT INTO 
-                                                environment_variables(guild, name, type, value) 
-                                                VALUES(?,?,?,?)
-                                              ON CONFLICT(guild, name) DO UPDATE SET 
-                                                guild = ?,
-                                                name = ?,
-                                                type = ?,
-                                                value = ?`)
-                                    .run(guildId, name, ""+type, ""+value, guildId, name, ""+type, ""+value));
+        return this.execute(db => db.prepare(`
+            INSERT INTO 
+                    environment_variables(guild, name, type, value) 
+                    VALUES(?,?,?,?)
+                  ON CONFLICT(guild, name) DO UPDATE SET 
+                    guild = ?,
+                    name = ?,
+                    type = ?,
+                    value = ?
+        `).run(guildId, name, ""+type, ""+value, guildId, name, ""+type, ""+value));
     }
 
     public getUserByAccountName(accountName: string) {
-        return this.execute(db => db.prepare(
-                `SELECT id, user, guild, api_key, gw2account, registration_role, account_name, created 
-                 FROM registrations 
-                 WHERE account_name = ? 
-                 ORDER BY created DESC`
-            ).get(accountName));
+        return this.execute(db => db.prepare(`
+            SELECT 
+                id, user, guild, api_key, gw2account, registration_role, account_name, created 
+            FROM 
+                registrations 
+            WHERE 
+                account_name = ? 
+            ORDER BY 
+                created DESC
+        `).get(accountName));
     }
 
     public getUserByGW2Account(gw2account: string) {
-        return this.execute(db => db.prepare(
-                `SELECT id, user, guild, api_key, gw2account, registration_role, account_name, created 
-                 FROM registrations 
-                 WHERE gw2account = ?
-                 ORDER BY created DESC`
-            ).get(gw2account));        
+        return this.execute(db => db.prepare(`
+            SELECT 
+                id, user, guild, api_key, gw2account, registration_role, account_name, created 
+            FROM 
+                registrations 
+            WHERE 
+                gw2account = ?
+            ORDER BY 
+                created DESC
+        `).get(gw2account));        
     }
 
     public getUserByDiscordId(discordUser: discord.User) {
-        return this.execute(db => db.prepare(
-                `SELECT id, user, guild, api_key, gw2account, registration_role, account_name, created 
-                 FROM registrations 
-                 WHERE user = ?
-                 ORDER BY created DESC`
-            ).get(discordUser.id));        
+        return this.execute(db => db.prepare(`
+            SELECT 
+                id, user, guild, api_key, gw2account, registration_role, account_name, created 
+            FROM 
+                registrations 
+            WHERE 
+                user = ?
+            ORDER BY 
+                created DESC
+        `).get(discordUser.id));        
     }
 
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
@@ -193,28 +206,28 @@ export class Database {
     */ 
     public getTotalLeadTime(gw2account: string): number {
         return this.execute(db => db.prepare(`
-                                SELECT 
-                                    COALESCE(SUM(strftime('%s',end) - strftime('%s',start)), 0) AS total
-                                FROM 
-                                    ts_leads
-                                WHERE 
-                                    gw2account = ?
-                                `).get(gw2account).total)
+            SELECT 
+                COALESCE(SUM(strftime('%s',end) - strftime('%s',start)), 0) AS total
+            FROM 
+                ts_leads
+            WHERE 
+                gw2account = ?
+        `).get(gw2account).total)
     }
 
     public getLastLeadDuration(gw2account: string): number {
         return this.execute(db => db.prepare(`
-                                SELECT 
-                                    COALESCE(strftime('%s',end) - strftime('%s',start), 0) AS duration 
-                                FROM 
-                                    ts_leads 
-                                WHERE 
-                                    gw2account = ?
-                                ORDER BY 
-                                    ts_lead_id DESC 
-                                LIMIT 
-                                    1
-            `).get(gw2account).duration)
+            SELECT 
+                COALESCE(strftime('%s',end) - strftime('%s',start), 0) AS duration 
+            FROM 
+                ts_leads 
+            WHERE 
+                gw2account = ?
+            ORDER BY 
+                ts_lead_id DESC 
+            LIMIT 
+                1
+        `).get(gw2account).duration)
     }
 
     public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
@@ -226,20 +239,40 @@ export class Database {
     }
 
     public checkAchievement(achievementName: string, gw2account: string): [string, string, string, string, string][] {
-        return this.execute(db => db.prepare(`SELECT 
-                                                    pa.awarded_by,
-                                                    pa.timestamp,
-                                                    pap.guild,
-                                                    pap.channel,
-                                                    pap.message
-                                              FROM 
-                                                   player_achievements AS pa 
-                                                   LEFT JOIN player_achievement_posts AS pap
-                                                     ON pa.player_achievement_id = pap.player_achievement_id
-                                              WHERE 
-                                                  achievement_name = ? 
-                                                  AND gw2account = ?`)
-                                    .all(achievementName, gw2account));
+        return this.execute(db => db.prepare(`
+            SELECT 
+                pa.awarded_by,
+                pa.timestamp,
+                pap.guild,
+                pap.channel,
+                pap.message
+              FROM 
+                player_achievements AS pa 
+                LEFT JOIN player_achievement_posts AS pap
+                  ON pa.player_achievement_id = pap.player_achievement_id
+              WHERE 
+                achievement_name = ? 
+                AND gw2account = ?
+        `).all(achievementName, gw2account));
+    }
+
+    public deletePlayerAchievement(playerAchievementID: number): void {
+        return this.execute(db => db.prepare(`
+            DELETE FROM 
+                player_achievements
+            WHERE
+                player_achievement_id = ?
+        `).run(playerAchievementID));
+    }
+
+    public revokePlayerAchievements(achievementName: string, gw2account: string) {
+        return this.execute(db => db.prepare(`
+            DELETE FROM 
+                player_achievements
+            WHERE
+                achievement_name = ?
+                AND gw2account = ?
+        `).run(achievementName, gw2account));
     }
 
     public getCurrentMatchup(now: moment.Moment) {
