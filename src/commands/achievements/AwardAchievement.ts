@@ -18,12 +18,12 @@ export class AwardAchievement extends BotgartCommand {
             split: "quoted",
             args: [
                 {
-                    id: "player",
-                    type: "member" //type: (word: string, message: discord.Message, prevArgs: any[]) => message.guild.members.find(m => m.)
-                },
-                {
                     id: "achievement",
                     type: (word: string, message: discord.Message, prevArgs: any[]) => this.getBotgartClient().getAchievement(word)
+                },
+                {
+                    id: "player",
+                    type: "member" //type: (word: string, message: discord.Message, prevArgs: any[]) => message.guild.members.find(m => m.)
                 },
                 {
                     id: "timestamp",
