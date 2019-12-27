@@ -61,7 +61,7 @@ export let EN : Object = {
     "HELPTEXT_ADD_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<{0}>` `<week number (optional)>` `<year (optional)>`",
     "HELPTEXT_REMOVE_RESETLEAD": "Please use the command with the following parameters:\n`<player to add (any text)>` `<week number (optional)>` `<year (optional)>`",
     "HELPTEXT_SET_TS3_RESET_ROSTER": "",
-    "HELPTEXT_GRANT_ACHIEVEMENT": "Please use the command with the following parameters:\n`<player name>` `<achievement name>` `<timestamp dd.mm.yyyy hh:mm (optional, default: now)>`",
+    "HELPTEXT_GRANT_ACHIEVEMENT": "Please use the command with the following parameters:\n`<achievement name>` `<player name>` `<timestamp dd.mm.yyyy hh:mm (optional, default: now)>`",
 
     "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
     "DESC_DEL_CRON": "Deletes the cronjob with the given ID.",
