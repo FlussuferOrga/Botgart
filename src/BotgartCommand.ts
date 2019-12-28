@@ -20,7 +20,7 @@ export class BotgartCommand extends Command {
         this.cronable = cronable;
         this.everyonePermission = everyonePermission;
         //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
-    }
+    }  
 
     /**
     * Used to execute code after the client.ready event has been thrown.
@@ -37,6 +37,23 @@ export class BotgartCommand extends Command {
     */
     protected getBotgartClient(): BotgartClient {
         return <BotgartClient>this.client;
+    }
+
+    /**
+    * @returns this commands name in capitalisedsnake case. 
+    *          Eg. MyCool2Command becomes MY_COOL2_COMMAND. 
+    *          Useful for generating default locale keys.
+    */
+    protected snakeCaseName(): string {
+        return this.constructor.name.match(/([A-Z][a-z0-9]*)/g).map(t => t.toUpperCase()).join("_")
+    }
+
+    protected helptextKey(): string {
+        return `HELPTEXT_${this.snakeCaseName()}`;
+    }
+
+    protected descriptionKey(): string {
+        return `DESC_${this.snakeCaseName()}`
     }
 
     /**
@@ -84,7 +101,7 @@ export class BotgartCommand extends Command {
     * @returns - description of this command.
     */
     public desc() {
-        return "";
+        return L.get(this.descriptionKey(), [], " ");
     }
 
     /**
@@ -94,11 +111,22 @@ export class BotgartCommand extends Command {
     * arguments should result in an error message.
     * This method will be called by cronjobs to validate
     * that commands are executed with proper arguments.
-    * @param args - arguments to the command.
-    * @returns error-string in case of malformed args, else undefined.
+    * The default implementation will check that every argument
+    * defined in the args list is not undefined.
+    * Commands where undefined (optional) arguments are allowed
+    * or other checks must be enforced should override this
+    * function or concatenate it with super.checkArgs(args).
+    * @param {Object} args - arguments to the command.
+    * @returns {String} error-string in case of malformed args, else undefined.
     */
     public checkArgs(args: Object): string | undefined {
-        return undefined;
+        let argsPresent: boolean = args !== undefined;
+        let i = 0;
+        while(argsPresent && i < this.args.length) {
+            argsPresent = this.args[i] !== undefined;
+            i++;
+        }
+        return argsPresent ? undefined : L.get(this.helptextKey());
     }
 
     /**
@@ -133,7 +161,7 @@ export class BotgartCommand extends Command {
     * do that additional work.
     * NOTE: serialiseArgs may _not_ modify the arguments by reference!
     * @param {Map} args - arguments to serialise to the DB.
-    * @returns {string} 
+    * @returns {string} - the serialised args
     */
     public serialiseArgs(args: Map<any,any>): string {
         return JSON.stringify(args);
@@ -141,9 +169,9 @@ export class BotgartCommand extends Command {
 
     /*
     * Inverse to serialiseArgs. Has to revert everything that was done there.
-    * @param {string} jsonargs - serialised JSON arguments for the command.
-    * NOTE: deserialiseArgs may _not_ modify the arguments by reference!
-    * @returns {Map}
+    * @param {string} jsonargs - serialised JSON arguments for the command. 
+    *                 NOTE: deserialiseArgs may _not_ modify the arguments by reference!
+    * @returns {Map} the deserialised arguments.
     */
     public deserialiseArgs(jsonargs: string): Map<any,any> {
         return JSON.parse(jsonargs);

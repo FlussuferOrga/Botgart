@@ -14,7 +14,7 @@ Testcases:
 export class AwardAchievement extends BotgartCommand {
      constructor() {
         super("awardachievement", {
-            aliases: ["awardachievement"],
+            aliases: ["awardachievement", "grantachievement"],
             split: "quoted",
             args: [
                 {
@@ -36,16 +36,6 @@ export class AwardAchievement extends BotgartCommand {
         false // cronable
         );
     }
-
-    desc(): string {
-        return L.get("DESC_GRANT_ACHIEVEMENT");
-    }
-
-    checkArgs(args) {
-        return !args || !args.player || !args.achievement || !args.timestamp
-                ? L.get("HELPTEXT_GRANT_ACHIEVEMENT") 
-                : undefined;
-    }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(args.achievement === undefined) {

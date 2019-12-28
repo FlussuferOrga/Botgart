@@ -12,7 +12,7 @@ Testcases:
 - with invalid channel -> error
 - from cron: remove channel bot was supposed to talk in -> error
 */
-export class SayCommand extends BotgartCommand {
+export class Say extends BotgartCommand {
     constructor() {
         super("say", {
                 aliases: ["say","speak"],
@@ -33,10 +33,6 @@ export class SayCommand extends BotgartCommand {
             true, // cronable
             0, // everyone permission
         );
-    }
-
-    desc() {
-        return L.get("DESC_SAY");
     }
 
     command(message, responsible, guild, args) {
@@ -62,10 +58,6 @@ export class SayCommand extends BotgartCommand {
         return result;
     }
 
-    checkArgs(args) {
-        return !args || !args.channel || !args.text ?  L.get("HELPTEXT_SAY") : undefined;
-    }
-
     serialiseArgs(args) {
         let clone = Object.assign({}, args);
         clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
@@ -80,4 +72,4 @@ export class SayCommand extends BotgartCommand {
     }
 }
 
-module.exports = SayCommand;
+module.exports = Say;

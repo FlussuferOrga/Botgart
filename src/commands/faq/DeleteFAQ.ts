@@ -14,7 +14,7 @@ Testcases:
 - cron: all of the above
 */
 
-export class DeleteFAQCommand extends BotgartCommand {
+export class DeleteFaq extends BotgartCommand {
     constructor() {
         super("deletefaq", {
             aliases: ["deletefaq","deletertfm","rmfaq","rmrtfm"],
@@ -31,14 +31,6 @@ export class DeleteFAQCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_DEL_FAQ");
-    }
-
-    checkArgs(args): string|undefined {
-        return !args || !args.key ? L.get("HELPTEXT_DEL_FAQ") : undefined;
-    }
-
     command(message: discord.Message , responsible: discord.User, guild: discord.Guild, args: any): boolean {
         let deleted: boolean = (<BotgartClient>this.client).db.deleteFAQ(args.key, guild.id);
         let reply: string = deleted ? L.get("FAQ_DELETED").formatUnicorn(args.key) : L.get("FAQ_NOT_DELETED").formatUnicorn(args.key);
@@ -47,4 +39,4 @@ export class DeleteFAQCommand extends BotgartCommand {
     }
 }
 
-module.exports = DeleteFAQCommand;
+module.exports = DeleteFaq;

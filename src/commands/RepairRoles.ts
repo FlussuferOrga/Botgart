@@ -10,7 +10,7 @@ Testcases:
 - remove role from user manually after registration -> users should get their roles back (output on console)
 - remove role from server -> error on console
 */
-export class RepairRolesCommand extends BotgartCommand {
+export class RepairRoles extends BotgartCommand {
     public constructor() {
         super("repairroles", {
                 aliases: ["rolerepair"],
@@ -19,10 +19,6 @@ export class RepairRolesCommand extends BotgartCommand {
             true, // available as DM
             true // cronable
         );
-    }
-
-    public desc() {
-        return L.get("DESC_REPAIR_ROLES");
     }
 
     public command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Object): void {
@@ -54,4 +50,4 @@ export class RepairRolesCommand extends BotgartCommand {
     }
 }
 
-module.exports = RepairRolesCommand;
+module.exports = RepairRoles;

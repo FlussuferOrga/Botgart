@@ -13,7 +13,7 @@ Testcases:
 - emotes string doesn't contain proper emotes -> error
 - cron: everything of the above
 */
-export class PollCommand extends BotgartCommand {
+export class Poll extends BotgartCommand {
     constructor() {
         super("poll", {
             aliases: ["poll","vote"],
@@ -40,12 +40,8 @@ export class PollCommand extends BotgartCommand {
         );
     }
 
-    desc() {
-        return L.get("DESC_POLL");
-    }
-
     checkArgs(args) {
-        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get("HELPTEXT_POLL") : undefined;
+        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
     serialiseArgs(args) {
@@ -86,4 +82,4 @@ export class PollCommand extends BotgartCommand {
     }
 }
 
-module.exports = PollCommand;
+module.exports = Poll;

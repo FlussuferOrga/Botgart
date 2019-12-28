@@ -19,7 +19,7 @@ Testcases:
 - cron: anything -> error
 */
 
-export class AuthenticateCommand extends BotgartCommand {
+export class Authenticate extends BotgartCommand {
     private static readonly LOG_TYPE_AUTH : string = "auth";
 
     constructor() {
@@ -37,10 +37,6 @@ export class AuthenticateCommand extends BotgartCommand {
         false, // cronable
         10 // everyone permission
         );
-    }
-
-    desc(): string {
-        return L.get("DESC_AUTHENTICATE");
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
@@ -107,7 +103,7 @@ export class AuthenticateCommand extends BotgartCommand {
                                         Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                         Util.assignServerRole(m.member, null, r);
-                                        cl.discordLog(m.guild, AuthenticateCommand.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]), false);
+                                        cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]), false);
                                         reply = L.get("KEY_ACCEPTED")
                                     } else {
                                         Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
@@ -143,4 +139,4 @@ export class AuthenticateCommand extends BotgartCommand {
     }
 }
 
-module.exports = AuthenticateCommand;
+module.exports = Authenticate;

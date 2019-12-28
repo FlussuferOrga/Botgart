@@ -11,7 +11,7 @@ import moment = require('moment');
 Testcases:
 
 */
-export class PermanentRoleAddCommand extends BotgartCommand {
+export class AddEvent extends BotgartCommand {
     constructor() {
         super("addevent", {
             aliases: ["mkevent","newevent"],
@@ -61,22 +61,6 @@ export class PermanentRoleAddCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_ADD_EVENT");
-    }
-
-    checkArgs(args) {
-        return !args 
-            || !args.date 
-            || !args.title 
-            || !args.description === undefined 
-            || !args.reminder === undefined 
-            || !args.repeat === undefined 
-            || !args.times === undefined
-            ? L.get("HELPTEXT_ADD_EVENT") 
-            : undefined;
-    }    
-
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         let cl = <BotgartClient>this.client;
         return;
@@ -92,4 +76,4 @@ export class PermanentRoleAddCommand extends BotgartCommand {
     }
 }
 
-module.exports = PermanentRoleAddCommand;
+module.exports = AddEvent;

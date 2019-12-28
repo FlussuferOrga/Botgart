@@ -10,7 +10,7 @@ import { BotgartClient } from "../BotgartClient";
 Testcases:
 
 */
-export class WhoisCommand extends BotgartCommand {
+export class Whois extends BotgartCommand {
     constructor() {
         super("whois", {
             aliases: ["whois"],
@@ -25,10 +25,6 @@ export class WhoisCommand extends BotgartCommand {
         true, // cronable
         0 // everyone permission
         );
-    }
-
-    desc(): string {
-        return L.get("DESC_WHOIS");
     }
 
     checkArgs(args) {
@@ -51,4 +47,4 @@ export class WhoisCommand extends BotgartCommand {
     }
 }
 
-module.exports = WhoisCommand;
+module.exports = Whois;

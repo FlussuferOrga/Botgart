@@ -11,7 +11,7 @@ import { WvWMap } from "./ResetRoster";
 Testcases:
 
 */
-export class AddResetLeaderCommand extends BotgartCommand {
+export class AddResetLeader extends BotgartCommand {
      constructor() {
         super("addresetlead", {
             aliases: ["addresetlead"],
@@ -42,13 +42,9 @@ export class AddResetLeaderCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_ADD_RESETLEAD");
-    }
-
     checkArgs(args) {
         return !args || !args.weekNumber || !args.year || !args.player || !args.map 
-                ? L.get("HELPTEXT_ADD_RESETLEAD", [WvWMap.getAllMapNames().join(" | ")]) 
+                ? L.get(this.helptextKey(), [WvWMap.getAllMapNames().join(" | ")]) 
                 : undefined;
     }    
 
@@ -64,4 +60,4 @@ export class AddResetLeaderCommand extends BotgartCommand {
     }
 }
 
-module.exports = AddResetLeaderCommand;
+module.exports = AddResetLeader;

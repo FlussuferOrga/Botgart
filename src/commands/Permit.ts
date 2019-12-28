@@ -10,7 +10,7 @@ import { BotgartClient } from "../BotgartClient";
 Testcases:
 
 */
-export class PermitCommand extends BotgartCommand {
+export class Permit extends BotgartCommand {
     constructor() {
         super("permit", {
             aliases: ["permit", "allow", "permission"],
@@ -60,14 +60,6 @@ export class PermitCommand extends BotgartCommand {
         );
     }
 
-    checkArgs(args) {
-        return !args || !args.command || !args.receiver || args.value === undefined ? L.get("HELPTEXT_PERMIT") : undefined;
-    }
-
-    desc(): string {
-        return L.get("DESC_PERMIT");
-    }
-
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const cmd: string = args.command.id;
         const receiver: string = args.receiver.id;
@@ -82,4 +74,4 @@ export class PermitCommand extends BotgartCommand {
     }
 }
 
-module.exports = PermitCommand;
+module.exports = Permit;

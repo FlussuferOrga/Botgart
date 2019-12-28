@@ -5,7 +5,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 
-export class FindDuplicatesCommand extends BotgartCommand {
+export class FindDuplicates extends BotgartCommand {
     constructor() {
         super("findduplicates", {
             aliases: ["findduplicates", "finddupes"],
@@ -14,10 +14,6 @@ export class FindDuplicatesCommand extends BotgartCommand {
         false, // available per DM
         false // cronable
         );
-    }
-
-    desc(): string {
-        return L.get("DESC_FIND_DUPES");
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
@@ -35,4 +31,4 @@ export class FindDuplicatesCommand extends BotgartCommand {
     }
 }
 
-module.exports = FindDuplicatesCommand;
+module.exports = FindDuplicates;

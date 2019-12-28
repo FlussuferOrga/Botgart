@@ -9,7 +9,7 @@ import { BotgartCommand } from "../BotgartCommand";
 Testcases:
 
 */
-export class DiscordLogCommand extends BotgartCommand {
+export class DiscordLog extends BotgartCommand {
     constructor() {
         super("discordlog", {
                 aliases: ["discordlog"],
@@ -33,20 +33,12 @@ export class DiscordLogCommand extends BotgartCommand {
         );
     }
 
-    desc() {
-        return L.get("DESC_DISCORD_LOG");
-    }
-
     command(message, responsible, guild, args) {
         const cl = this.getBotgartClient();
         cl.db.addLogChannel(guild, args.type, args.channel);
         log("notice", "DiscordLog.js", "Set up log channel '{0}' for event type '{1}' in guild '{2}'.".formatUnicorn(args.channel.name, args.type, guild.name));
         (<discord.Message>message).react("✅"); // that's a white checkmark, even if not rendered properly...
     }
-
-    checkArgs(args) {
-        return !args || !args.channel || !args.type ?  L.get("HELPTEXT_DISCORD_LOG") : undefined;
-    }
 }
 
-module.exports = DiscordLogCommand;
+module.exports = DiscordLog;

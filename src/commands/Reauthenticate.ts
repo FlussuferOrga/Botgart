@@ -12,7 +12,7 @@ Testcases:
 - remove a formerly valid API key with user no longer in guild -> key gets unauthenticated
 - cron: all of the above -> reauth success
 */
-export class ReauthenticateCommand extends BotgartCommand {
+export class Reauthenticate extends BotgartCommand {
     private static readonly LOG_TYPE_UNAUTH : string = "unauth";
 
     constructor() {
@@ -23,10 +23,6 @@ export class ReauthenticateCommand extends BotgartCommand {
         true, // available per DM
         true // cronable
         );
-    }
-
-    desc() {
-        return L.get("DESC_REAUTHENTICATE");
     }
 
     command(message, responsible, guild, args) {
@@ -59,7 +55,7 @@ export class ReauthenticateCommand extends BotgartCommand {
                             let m = guild.members.find(member => p.user == member.user.id);
                             if(!m) {
                                 log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
-                                cl.discordLog(guild, ReauthenticateCommand.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
+                                cl.discordLog(guild, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
                                 cl.db.deleteKey(p.api_key);
                             } else {
                                 if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
@@ -67,7 +63,7 @@ export class ReauthenticateCommand extends BotgartCommand {
                                     log("info", "Reauthenticate.js", "Pruning {0}.".formatUnicorn(m.user.username));
                                     m.removeRole(currentRole);
                                     cl.db.deleteKey(p.api_key);
-                                    cl.discordLog(guild, ReauthenticateCommand.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
+                                    cl.discordLog(guild, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
                                     m.send(L.get("KEY_INVALIDATED"));
                                 } else {
                                     // user transed to another admitted server -> update role
@@ -87,4 +83,4 @@ export class ReauthenticateCommand extends BotgartCommand {
     }
 }
 
-module.exports = ReauthenticateCommand;
+module.exports = Reauthenticate;

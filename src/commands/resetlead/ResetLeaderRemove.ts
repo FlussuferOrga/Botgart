@@ -11,7 +11,7 @@ import { WvWMap } from "./ResetRoster";
 Testcases:
 
 */
-export class ResetLeaderRemoveCommand extends BotgartCommand {
+export class RemoveResetLeader extends BotgartCommand {
      constructor() {
         super("removeresetlead", {
             aliases: ["removeresetlead", "rmresetlead"],
@@ -38,12 +38,8 @@ export class ResetLeaderRemoveCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_REMOVE_RESETLEAD");
-    }
-
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.player ? L.get("HELPTEXT_REMOVE_RESETLEAD", [WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
+        return !args || !args.weekNumber || !args.player ? L.get(this.helptextKey(), [WvWMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
@@ -58,4 +54,4 @@ export class ResetLeaderRemoveCommand extends BotgartCommand {
     }
 }
 
-module.exports = ResetLeaderRemoveCommand;
+module.exports = RemoveResetLeader;

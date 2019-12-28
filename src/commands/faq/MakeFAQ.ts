@@ -13,7 +13,7 @@ Testcases:
 - missing parameters -> error
 */
 
-export class MakeFAQCommand extends BotgartCommand {
+export class MakeFaq extends BotgartCommand {
     constructor() {
         super("addfaq", {
             aliases: ["addfaq","addrtfm"],
@@ -35,12 +35,8 @@ export class MakeFAQCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_ADD_FAQ");
-    }
-
     checkArgs(args): string|undefined {
-        return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get("HELPTEXT_ADD_FAQ") : undefined;
+        return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any) {
@@ -53,4 +49,4 @@ export class MakeFAQCommand extends BotgartCommand {
     }
 }
 
-module.exports = MakeFAQCommand;
+module.exports = MakeFaq;

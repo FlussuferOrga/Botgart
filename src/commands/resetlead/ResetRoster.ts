@@ -161,7 +161,7 @@ export class Roster extends EventEmitter {
     }
 }
 
-export class ResetRosterCommand extends BotgartCommand {
+export class ResetRoster extends BotgartCommand {
     private static readonly UPDATE_DELAY = 1000;
 
     private messages: {[key: string]: Roster};
@@ -199,12 +199,8 @@ export class ResetRosterCommand extends BotgartCommand {
         this.syncScheduled = false;
     }
 
-    desc(): string {
-        return L.get("DESC_RESETLEAD");
-    }
-
     checkArgs(args) {
-        return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get("HELPTEXT_RESETLEAD") : undefined;
+        return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get(this.helptextKey()) : undefined;
     }
 
     public init(client: BotgartClient): void {
@@ -265,7 +261,7 @@ export class ResetRosterCommand extends BotgartCommand {
                     this.syncToTS3(roster);
                 }
                 this.syncScheduled = false;
-            }.bind(this), ResetRosterCommand.UPDATE_DELAY);
+            }.bind(this), ResetRoster.UPDATE_DELAY);
         };
         roster.on("addleader", refresh);
         roster.on("removeleader", refresh);
@@ -331,7 +327,7 @@ export class ResetRosterCommand extends BotgartCommand {
     }
 }
 
-module.exports = ResetRosterCommand;
+module.exports = ResetRoster;
 exports.Roster = Roster;
 module.exports.Roster = Roster;
 module.exports.WvWMap = WvWMap;

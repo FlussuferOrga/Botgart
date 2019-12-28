@@ -11,7 +11,7 @@ const TEASER_LENGTH = 30;
 Testcases:
 - list faqs -> bot lists all available faqs
 */
-export class ListFAQsCommand extends BotgartCommand {
+export class ListFaqs extends BotgartCommand {
     constructor() {
         super("listfaqs", {
                 aliases: ["listfaqs","lsfaqs","lsrtfms"]
@@ -20,10 +20,6 @@ export class ListFAQsCommand extends BotgartCommand {
             false, // cronable
             1 // everyone permissions
         );
-    }
-
-    desc(): string {
-        return L.get("DESC_LIST_FAQS");
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
@@ -51,4 +47,4 @@ export class ListFAQsCommand extends BotgartCommand {
     }
 }
 
-module.exports = ListFAQsCommand;
+module.exports = ListFaqs;

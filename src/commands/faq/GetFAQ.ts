@@ -13,7 +13,7 @@ Testcases:
 - non-existing key -> feedback to user
 */
 
-export class GetFAQCommand extends BotgartCommand {
+export class GetFaq extends BotgartCommand {
     constructor() {
         super("getfaq", {
             aliases: ["getfaq","faq","getrtfm","rtfm"],
@@ -30,14 +30,6 @@ export class GetFAQCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_GET_FAQ");
-    }
-
-    checkArgs(args): string|undefined {
-        return !args || !args.key ? L.get("HELPTEXT_GET_FAQ") : undefined;
-    }
-
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         let faq = (<BotgartClient>this.client).db.getFAQ(args.key, guild.id);
         let response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
@@ -45,4 +37,4 @@ export class GetFAQCommand extends BotgartCommand {
     }
 }
 
-module.exports = GetFAQCommand;
+module.exports = GetFaq;

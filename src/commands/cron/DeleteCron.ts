@@ -13,7 +13,7 @@ Testcases:
 - delete non-numeric cron id -> error
 - cron: anything -> error
 */
-export class DeleteCronCommand extends BotgartCommand {
+export class DeleteCron extends BotgartCommand {
     constructor() {
         super("deletecron", {
                 aliases: ["deletecron","rmcron"],
@@ -30,12 +30,8 @@ export class DeleteCronCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_DEL_CRON");
-    }
-
     checkArgs(args: any): string|undefined {
-        return args === undefined || args.id === undefined || args.id < 0 ?L.get("HELPTEXT_DEL_CRON") : undefined;
+        return args === undefined || args.id === undefined || args.id < 0 ?L.get(this.helptextKey()) : undefined;
     }
 
     command(message: discord.Message , responsible: discord.User, guild: discord.Guild, args: any): boolean {
@@ -79,4 +75,4 @@ export class DeleteCronCommand extends BotgartCommand {
     }
 }
 
-module.exports = DeleteCronCommand;
+module.exports = DeleteCron;

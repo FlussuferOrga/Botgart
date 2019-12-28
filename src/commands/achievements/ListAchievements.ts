@@ -16,16 +16,11 @@ export class ListAchievements extends BotgartCommand {
         super("listachievements", {
             aliases: ["lsachievements"],
             split: "quoted",
-            args: [
-            ]
+            args: []
         },
         true,  // available per DM
         false // cronable
         );
-    }
-
-    desc(): string {
-        return L.get("DESC_LIST_ACHIEVEMENTS");
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {

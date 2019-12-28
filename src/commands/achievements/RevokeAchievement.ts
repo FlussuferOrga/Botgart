@@ -12,10 +12,10 @@ import { BotgartCommand } from "../../BotgartCommand";
 Testcases:
 
 */
-export class AwardAchievement extends BotgartCommand {
+export class RevokeAchievement extends BotgartCommand {
      constructor() {
-        super("rewardachievement", {
-            aliases: ["rewardachievement","rmachievement"],
+        super("revokeachievement", {
+            aliases: ["revokeachievement","rmachievement"],
             split: "quoted",
             args: [
                 {
@@ -40,17 +40,13 @@ export class AwardAchievement extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_REVOKE_ACHIEVEMENT");
-    }
-
     checkArgs(args) {
         return !args || 
                 !(
                     (args.player !== undefined && (args.achievement instanceof achievement.Achievement)) // proper achievementname + player
                     || Number.isInteger(args.achievement) // achievement entry by DB id
                 )
-                ? L.get("HELPTEXT_REVOKE_ACHIEVEMENT") 
+                ? L.get(this.helptextKey()) 
                 : undefined;
     }    
 
@@ -65,4 +61,4 @@ export class AwardAchievement extends BotgartCommand {
     }
 }
 
-module.exports = AwardAchievement;
+module.exports = RevokeAchievement;

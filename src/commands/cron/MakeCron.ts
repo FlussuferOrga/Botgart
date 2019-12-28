@@ -13,7 +13,7 @@ Testcases:
 - schedule cron with id
 - schedule cron with alias
 */
-export class MakeCronCommand extends BotgartCommand {
+export class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
                 aliases: ["makecron", "mkcron"],
@@ -38,14 +38,6 @@ export class MakeCronCommand extends BotgartCommand {
             false, // available per DM
             false // cronable
         );
-    }
-
-    desc():string {
-        return L.get("DESC_MAKE_CRON");
-    }
-
-    checkArgs(args:any): string|undefined {
-        return !args || !args.schedule || !args.cmd || !args.args ? L.get("HELPTEXT_ADD_CRON") : undefined;
     }
 
     command(message, responsible, guild, args) {
@@ -153,4 +145,4 @@ export class MakeCronCommand extends BotgartCommand {
     }
 }
 
-module.exports = MakeCronCommand;
+module.exports = MakeCron;

@@ -12,7 +12,7 @@ Testcases:
 - with no crons in db -> bot DMs nothing
 - cron: anything -> error
 */
-export class ListCronsCommand extends BotgartCommand {
+export class ListCrons extends BotgartCommand {
     constructor() {
         super("listcrons", {
                 aliases: ["listcrons","lscrons"],
@@ -21,10 +21,6 @@ export class ListCronsCommand extends BotgartCommand {
             true, // available per DM
             false // cronable
         );
-    }
-
-    desc() {
-        return L.get("DESC_LIST_CRONS");
     }
 
     command(message: discord.Message|null, responsible: discord.User, guild: discord.Guild, args: any) {
@@ -53,4 +49,4 @@ export class ListCronsCommand extends BotgartCommand {
     }
 }
 
-module.exports = ListCronsCommand;
+module.exports = ListCrons;

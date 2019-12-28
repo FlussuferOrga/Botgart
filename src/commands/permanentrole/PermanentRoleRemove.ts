@@ -11,7 +11,7 @@ Testcases:
 
 */
 
-export class PermanentRoleRemoveCommand extends BotgartCommand {
+export class RemovePermanentRole extends BotgartCommand {
     constructor() {
         super("removepermanentrole", {
             aliases: ["removepermarole","removepermanentrole","rmprole"],
@@ -33,14 +33,6 @@ export class PermanentRoleRemoveCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_RM_PERMAROLE");
-    }
-
-    checkArgs(args) {
-        return !args || !args.member || !args.role ? L.get("HELPTEXT_RM_PERMAROLE") : undefined;
-    }    
-
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!message) {
             Util.log("error", "PermanentRoleRemove.js", "Mandatory message parameter missing. This command can not be issued as cron.");
@@ -60,4 +52,4 @@ export class PermanentRoleRemoveCommand extends BotgartCommand {
     }
 }
 
-module.exports = PermanentRoleRemoveCommand;
+module.exports = RemovePermanentRole;

@@ -9,7 +9,7 @@ Testcases:
 
 */
 
-export class PruneCommand extends BotgartCommand {
+export class Prune extends BotgartCommand {
     private static readonly LOG_TYPE_AUTH : string = "auth";
 
     constructor() {
@@ -33,12 +33,8 @@ export class PruneCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_PRUNE");
-    }
-
     checkArgs(args) {
-        return !args || args.days === undefined || args.days < 1 || args.days > 30 ?  L.get("HELPTEXT_PRUNE") : undefined;
+        return !args || args.days === undefined || args.days < 1 || args.days > 30 ?  L.get(this.helptextKey()) : undefined;
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<string | void> {
@@ -59,4 +55,4 @@ export class PruneCommand extends BotgartCommand {
     }
 }
 
-module.exports = PruneCommand;
+module.exports = Prune;

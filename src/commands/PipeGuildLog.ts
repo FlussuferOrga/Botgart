@@ -13,7 +13,7 @@ Testcases:
 - run with very long help text (change desc for some commands in Locale) > 2000 chars -> response comes in parts
 - run with one very long help text (change desc for one command in Locale) > 2000 chars -> that command is omitted
 */
-export class PipeGuildLogCommand extends BotgartCommand {
+export class PipeGuildLog extends BotgartCommand {
     constructor() {
         super("pipeguildlog", {
                 aliases: ["glog"],
@@ -39,12 +39,8 @@ export class PipeGuildLogCommand extends BotgartCommand {
         );
     }
 
-    desc(): string {
-        return L.get("DESC_GUILD_LOG");
-    }
-
     checkArgs(args: any): string|undefined {
-        return !args || !args.guildnamechannel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get("HELPTEXT_POLL") : undefined;
+        return !args || !args.guildnamechannel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
@@ -52,4 +48,4 @@ export class PipeGuildLogCommand extends BotgartCommand {
     }
 }
 
-module.exports = PipeGuildLogCommand;
+module.exports = PipeGuildLog;
