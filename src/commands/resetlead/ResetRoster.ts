@@ -230,17 +230,13 @@ export class ResetRoster extends BotgartCommand {
             return user;
         } 
 
-        const ts3mes = {}
-        ts3mes["type"] = "post";
-        ts3mes["command"] = "setresetroster";
-        ts3mes["args"] = {
+        cl.getTS3Connection().post("setresetroster", {
             "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
             "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
             "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
             "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
             "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
-        };
-        cl.getTS3Connection().write(JSON.stringify(ts3mes));       
+        });
     }
 
     private watchRoster(guild: discord.Guild, roster: Roster): void {

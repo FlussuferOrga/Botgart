@@ -126,7 +126,19 @@ export class ConfigChecker extends Listener {
         "achievements.ignoring_roles": {
             presence: true,
             isArray: {}
-        }
+        },
+        ts_unregister_protection: {
+          presence: true,
+          isArray: {},
+          all: {
+                func: x => validate.validate(x, {
+                                format: {
+                                  pattern: /^.+#\d+$/,
+                                  message: (v, a, vos, as, gos) => validate.format("^%{tok} is not a valid GW2 account", {tok: v})
+                                }
+                            })
+          }
+        } 
         };
 
         let asyncConstraints =  {

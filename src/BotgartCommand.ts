@@ -123,7 +123,8 @@ export class BotgartCommand extends Command {
         let argsPresent: boolean = args !== undefined;
         let i = 0;
         while(argsPresent && i < this.args.length) {
-            argsPresent = this.args[i] !== undefined;
+            const arg = args[this.args[i].id];
+            argsPresent = arg !== undefined && arg !== "";
             i++;
         }
         return argsPresent ? undefined : L.get(this.helptextKey());

@@ -41,15 +41,15 @@ export class Reauthenticate extends BotgartCommand {
                         guild = cl.guilds.find(g => g.id == p.guild);
                     }
                     if(!guild) {
-                        log("error", "Reauthenticate.js", "Could not find a guild {0}. Have I been kicked?".formatUnicorn(p.guild))
+                        log("error", "Reauthenticate.js", `Could not find a guild ${p.guild}. Have I been kicked?`)
                     } else {
                         admittedRole = guild.roles.find(r => r.name === admittedRoleName);
                         currentRole  = guild.roles.find(r => r.name === currentRoleName);
                         if(!admittedRole) {
-                            log("error", "Reauthenticate.js", "Can not find a role {0} to assign.".formatUnicorn(admittedRoleName));
+                            log("error", "Reauthenticate.js", `Can not find a role ${admittedRoleName} to assign.`);
                         }
                         if(!currentRole) {
-                            log("error", "Reauthenticate.js", "Can not find a role {0} that should be currently used.".formatUnicorn(currentRoleName));
+                            log("error", "Reauthenticate.js", `Can not find a role ${currentRoleName} that should be currently used.`);
                         }
                         if((admittedRole || admittedRoleName === false) && currentRole) { // admittedRoleName === false means: user must be pruned
                             let m = guild.members.find(member => p.user == member.user.id);

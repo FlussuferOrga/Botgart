@@ -16,6 +16,8 @@ export class TS3Connection {
     private static CONNECTION_COUNTER: number = 1;
     private static CIRCULAR_BUFFER_SIZE: number = 4;
 
+    private static MESSAGE_ID: number = 1;
+
     private socket: net.Socket;
     private connected: boolean;
     private ip: string;
@@ -27,7 +29,7 @@ export class TS3Connection {
         return this.socket;
     }
 
-    public write(message : string): boolean {
+    private write(message : string): boolean {
         let sent: boolean = false;
         // ERR_STREAM_DESTROYED is a system error that will not cause
         // an exception, but instead halts the process, see:
@@ -45,6 +47,26 @@ export class TS3Connection {
         }
         //log("debug", "TS3Connection.js", `${this.name} Sending ${message}, ${sent}`);
         return sent;
+    }
+
+    private writeCommand(type: string, command: string, args: object) {
+        const mesId = TS3Connection.MESSAGE_ID++;
+        this.write(JSON.stringify({
+            "type": type,
+            "command": command,
+            "args": args,
+            "message_id": mesId
+        }));
+    }
+
+    public post(command: string, args: object) {
+        this.writeCommand("post", command, args);
+    }
+
+
+
+    public delete(command: string, args: object) {
+        this.writeCommand("delete", command, args);
     }
 
     public constructor(ts3ip, ts3port, name = null) {
