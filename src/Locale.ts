@@ -51,7 +51,7 @@ EN = {
 
         "HELPTEXT_PERMIT": EN["HELPTEXT_PREFIX"] + "`\"<name or alias of a command>\" \"<snowflake or name of the player or role (MUST EXIST)>\" <numerical permission value, positive to allow, negative to disallow>`",
         "HELPTEXT_SAY": EN["HELPTEXT_PREFIX"] + "`<Channel, in which the bot should speak> \"<Text to speak>\"`.",
-        "HELPTEXT_ADD_CRON": EN["HELPTEXT_PREFIX"] + "\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Command to execute>`\" `<Parameters for that command as specified by the help text>`.",
+        "HELPTEXT_MAKE_CRON": EN["HELPTEXT_PREFIX"] + "\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Command to execute>`\" `<Parameters for that command as specified by the help text>`.",
         "HELPTEXT_DELETE_CRON": EN["HELPTEXT_PREFIX"] + "`<ID of the cronjob to delete>`\nIDs of all cronjobs can be found with the `lscrons`-command.",
         "HELPTEXT_POLL": EN["HELPTEXT_PREFIX"] + "`<Channel to create the poll in> \"<Question for the poll>\" \"<Emotes available for voting>\"`.",
         "HELPTEXT_MAKE_FAQ": EN["HELPTEXT_PREFIX"] + "`\"<Keywords to link to the entry, separated with semicolons (;)>` `\"<FAQ text>\"`.",
@@ -70,6 +70,7 @@ EN = {
         "HELPTEXT_AWARD_ACHIEVEMENT": EN["HELPTEXT_PREFIX"] + "`<achievement name>` `<player name>` `<timestamp dd.mm.yyyy hh:mm (optional, default: now)>`",
         "HELPTEXT_REVOKE_ACHIEVEMENT": EN["HELPTEXT_PREFIX"] + "`<achievement name or achievement DB id>` (`<Discord user to revoke from, iff an achievement name was given>`)",
         "HELPTEXT_LIST_ACHIEVEMENTS": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_DELETE_TS_REGISTRATION": EN["HELPTEXT_PREFIX"] + "`<GW2 account name>`",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
@@ -101,6 +102,7 @@ EN = {
         "DESC_AWARD_ACHIEVEMENT": "Grants a player an achievement.",
         "DESC_REVOKE_ACHIEVEMENT": "Revokes all instances of an achievement from a player or deletes a particular achievement entry.",
         "DESC_LIST_ACHIEVEMENTS": "Lists all achievable achievements.",
+        "DESC_DELETE_TS_REGISTRATION": "Deletes all TS registrations from a GW2 account.",
 
         "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
@@ -203,7 +205,7 @@ DE = {
 
         "HELPTEXT_PERMIT": DE["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
         "HELPTEXT_SAY": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
-        "HELPTEXT_ADD_CRON": DE["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
+        "HELPTEXT_MAKE_CRON": DE["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
         "HELPTEXT_DELETE_CRON": DE["HELPTEXT_PREFIX"] + "`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
         "HELPTEXT_POLL": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
         "HELPTEXT_MAKE_FAQ": DE["HELPTEXT_PREFIX"] + "`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",
@@ -221,7 +223,8 @@ DE = {
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
         "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Spieler>` `<Name der Errungenschaft>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
         "HELPTEXT_REVOKE_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
-        "HELPTEXT_LIST_ACHIEVEMENTS": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -253,6 +256,7 @@ DE = {
         "DESC_AWARD_ACHIEVEMENT": "Vergibt eine Errungenschaft an einen Spieler.",
         "DESC_REVOKE_ACHIEVEMENT": "Entfernt alle Instanzen einer Errungenschaft von einem Spieler oder entfernt einenbestimmten Errungenschaften-Eintrag aus der Datenbank.",
         "DESC_LIST_ACHIEVEMENTS": "Listet alle verfügbaren Errungenschaften auf.",
+        "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
 
         "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 
