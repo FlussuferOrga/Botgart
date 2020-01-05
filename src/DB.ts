@@ -256,23 +256,31 @@ export class Database {
         `).all(achievementName, gw2account));
     }
 
-    public deletePlayerAchievement(playerAchievementID: number): void {
-        return this.execute(db => db.prepare(`
-            DELETE FROM 
-                player_achievements
-            WHERE
-                player_achievement_id = ?
-        `).run(playerAchievementID));
+    public deletePlayerAchievement(playerAchievementID: number): number {
+        return this.execute(db =>
+            db.transaction((_) => {
+                db.prepare(`
+                    DELETE FROM 
+                        player_achievements
+                    WHERE
+                        player_achievement_id = ?
+                `).run(playerAchievementID);
+                return db.prepare(`SELECT changes() AS changes`).get().changes;
+            })(null))
     }
 
-    public revokePlayerAchievements(achievementName: string, gw2account: string) {
-        return this.execute(db => db.prepare(`
-            DELETE FROM 
-                player_achievements
-            WHERE
-                achievement_name = ?
-                AND gw2account = ?
-        `).run(achievementName, gw2account));
+    public revokePlayerAchievements(achievementName: string, gw2account: string): number {
+        return this.execute(db =>
+            db.transaction((_) => {
+                db.prepare(`
+                    DELETE FROM 
+                        player_achievements
+                    WHERE
+                        achievement_name = ?
+                        AND gw2account = ?
+                `).run(achievementName, gw2account);
+                return db.prepare(`SELECT changes() AS changes`).get().changes;
+            })(null))
     }
 
     public getCurrentMatchup(now: moment.Moment) {
@@ -288,7 +296,6 @@ export class Database {
               .run(start.valueOf()/1000, end.valueOf()/1000);
             const matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
             for(const [world, colour] of [[red, "Red"], [green, "Green"], [blue, "Blue"]] as const) {
-                console.log(world, colour);
                 for(const worldId of world) {
                     this.addMatchupFaction(matchId, worldId, colour);
                 }
@@ -301,19 +308,29 @@ export class Database {
                                     .run(matchId, colour, worldId));
     }
 
-    public addMatchupDetails(matchId: number, faction: string, deaths: number, kills: number, victoryPoints: number, tick: number) {
-        return this.execute(db => db.prepare("INSERT INTO matchup_details(matchup_id, faction, deaths, kills, victory_points, tick) VALUES(?,?,?,?,?,?)"))
-                                    .run(matchId, faction, deaths, kills, victoryPoints, tick);
+    public addMatchupSnapshot(): number {
+        return this.execute(db =>
+            db.transaction((_) => {
+                db.prepare("INSERT INTO matchup_snapshots DEFAULT VALUES").run();
+                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            })(null)
+        );         
     }
 
-    public addMatchupObjectives(matchId: number, objectives: [string, {id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[]}, number][]) {
+    public addMatchupDetails(matchId: number, snapshotId: number, faction: string, deaths: number, kills: number, victoryPoints: number, tick: number) {
+        return this.execute(db => db.prepare("INSERT INTO matchup_details(matchup_id, matchup_snapshot_id, faction, deaths, kills, victory_points, tick) VALUES(?,?,?,?,?,?,?)"))
+                                    .run(matchId, snapshotId, faction, deaths, kills, victoryPoints, tick);
+    }
+
+    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, {id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[]}, number][]) {
         return this.execute(db => {
             const stmt = db.prepare(`INSERT INTO matchup_objectives
-                              (matchup_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
-                              VALUES (?,?,?,?,?,?,?,?,?,?)`);
+                              (matchup_id, matchup_snapshot_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
+                              VALUES (?,?,?,?,?,?,?,?,?,?,?)`);
             db.transaction((matchId, objectives) => {
                 for(const [mapname, details, tier] of objectives) {
                     stmt.run(matchId,
+                             snapshotId,
                              details.id,
                              mapname,
                              details.owner,
