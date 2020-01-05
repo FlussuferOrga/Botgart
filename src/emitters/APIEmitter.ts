@@ -12,7 +12,9 @@ export class APIEmitter extends EventEmitter {
         super();
         //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
         //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
-        this.schedule("wvw-matches", api => api.wvw().matches().world(config.home_id), 10000);
+        this.schedule("wvw-matches", api => api.wvw().matches().world(config.home_id)
+                                            .catch(err => console.log(`Error while fetching match details: ${err}`))
+                                   , 10000);
 
     }
 

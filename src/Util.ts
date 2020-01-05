@@ -22,6 +22,10 @@ api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
+export function validGW2Account(gw2account: string) {
+    return gw2account && gw2account.match(/^[\w\_\s]+\.\d{4}$/);
+}
+
 export function determineTier(yaksDelivered: number) {
     const yd = Math.floor(yaksDelivered/10);
     return yd < 1 ? 0 : Math.min(3, Math.floor(Math.log2(yd)));

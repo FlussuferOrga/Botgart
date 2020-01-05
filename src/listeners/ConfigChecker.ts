@@ -133,7 +133,7 @@ export class ConfigChecker extends Listener {
           all: {
                 func: x => validate.validate(x, {
                                 format: {
-                                  pattern: /^.+#\d+$/,
+                                  pattern: /^.+\.\d+$/,
                                   message: (v, a, vos, as, gos) => validate.format("^%{tok} is not a valid GW2 account", {tok: v})
                                 }
                             })

@@ -4,7 +4,7 @@ import * as Const from "../../Const";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
 import * as moment from "moment";
-import * as achievement from "./Achievements";
+import { Achievement } from "./Achievements";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 
@@ -21,7 +21,7 @@ export class RevokeAchievement extends BotgartCommand {
                 {
                     id: "achievement",
                     type: (word: string, message: discord.Message, prevArgs: any[]) => {
-                        let achievement: number | achievement.Achievement = parseInt(word);
+                        let achievement: number | Achievement = parseInt(word);
                         if(isNaN(achievement)) {
                             achievement = this.getBotgartClient().getAchievement(word);
                         }
@@ -41,23 +41,28 @@ export class RevokeAchievement extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || 
-                !(
-                    (args.player !== undefined && (args.achievement instanceof achievement.Achievement)) // proper achievementname + player
-                    || Number.isInteger(args.achievement) // achievement entry by DB id
-                )
-                ? L.get(this.helptextKey()) 
-                : undefined;
+        return args &&
+                // there is this super weird behaviour here, where `args.achievement instanceof Achievement` always returns false,
+                // although it returns true within the BotgartClient class. I can only come up with the explanation that this has to 
+                // do with class loading between the two modules and maybe the fact that achievements are instantiated by reflection. 
+                // But anyway, this seems to be the most "sane" sanity check here.
+                (args.player !== undefined && args.achievement !== undefined) // proper achievementname + player
+                 || Number.isInteger(args.achievement) // achievement entry by DB id
+                ? undefined 
+                : L.get(this.helptextKey());
     }    
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        if(Number.isInteger(args.achievement)) {
-            console.log("NUMBER");
-        } else if(args.achievement instanceof achievement.Achievement) {
-            console.log("ACHIEVEMENT");
+        const userdata = this.getBotgartClient().db.getUserByDiscordId(args.player.user);
+        if(userdata === undefined && !Number.isInteger(args.achievement)) {
+            message.reply(L.get("REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
         } else {
-            console.log("ERROR!!");
+            const revoked = (Number.isInteger(args.achievement))
+                ? this.getBotgartClient().db.deletePlayerAchievement(args.achievement)
+                : this.getBotgartClient().db.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
+            message.reply(L.get("REVOKE_ACHIEVEMENT_SUCCESS", [""+revoked]));
         }
+
     }
 }
 

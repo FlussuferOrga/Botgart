@@ -9,13 +9,14 @@ export enum AchievementAwardResult {
     AWARDED_FIRST_TIME,
     AWARDED_AGAIN,
     NOT_AWARDED, // not repeatable
-    USER_NOT_FOUND
+    USER_NOT_FOUND,
+    HIDDEN // users hides achievements
 }
 
 export abstract class Achievement {
-    public static readonly EASY_COLOUR: string = "#c0792e";
+    public static readonly EASY_COLOUR: string = "#c97012";
     public static readonly MEDIUM_COLOUR: string = "#dadada";
-    public static readonly HARD_COLOUR: string = "#f5de3d";
+    public static readonly HARD_COLOUR: string = "#fcba03";
 
     public readonly name: string;
     protected client: BotgartClient;
@@ -55,6 +56,7 @@ export abstract class Achievement {
     * Awards the passed player this achievement in the database.
     * If the player already has the achievement and it is not repeatable, it will not be assigned again. 
     * Whether the achievement was actually awarded is implied by the return value.
+    * Note that calling this method directly will award a player the achievement even if they are hiding their achievements.
     * gw2account: gw2account of the player to award 
     * by: who awarded the achievement (can be the name of a moderator, or null if it was assigned automatically)
     * timestamp: when the achievement was granted, will be NOW if null was passed
@@ -82,32 +84,41 @@ export abstract class Achievement {
     public awardIn(guild: discord.Guild, discordUser: discord.GuildMember, by: string = null, timestamp: moment.Moment = null): AchievementAwardResult {
         let result: AchievementAwardResult = AchievementAwardResult.NOT_AWARDED;
 
-        const gw2account: string = this.client.db.getUserByDiscordId(discordUser.user).gw2account;
-
-        if(gw2account === undefined) {
+        const userdata = this.client.db.getUserByDiscordId(discordUser.user);
+        if(userdata === undefined) {
             Util.log("warning", "Achievements.js", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
-            const [rowId, isNew] = this.award(gw2account, by, timestamp);
+            const gw2account: string = userdata.gw2account;
+            if(discordUser.roles.some(r => config.achievements.ignoring_roles.includes(r.name))) {
+                // user is hiding their achievements
+                result = AchievementAwardResult.HIDDEN;
+            } else {
+                // actually award
+                const [rowId, isNew] = this.award(gw2account, by, timestamp);
 
-            if(rowId > -1 && (isNew || (this.repeatable && this.announceRepetitions))) {
-                const achievementChannel: discord.Channel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === config.achievements.channel);
+                if(rowId > -1 && (isNew || this.repeatable)) {
+                    result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
+                    const achievementChannel: discord.Channel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === config.achievements.channel);
 
-                if(achievementChannel) {
-                   (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser, rowId));
-                } else {
-                    Util.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
-                }
+                    if(achievementChannel) {
+                        if(isNew || this.announceRepetitions) {
+                           (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser, rowId));     
+                        }                       
+                    } else {
+                        Util.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+                    }
 
-                const role: discord.Role = guild.roles.find(r => r.name === this.getRoleName());
-                if(role) {
-                    discordUser.addRole(role);
-                } else {
-                    guild.createRole({"name": this.roleName, "color": this.roleColour})
-                      .then(r => discordUser.addRole(r))
-                      .catch(e => Util.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to give out this role.`));                    
-                }
-            }    
+                    const role: discord.Role = guild.roles.find(r => r.name === this.getRoleName());
+                    if(role) {
+                        discordUser.addRole(role);
+                    } else {
+                        guild.createRole({"name": this.roleName, "color": this.roleColour})
+                          .then(r => discordUser.addRole(r))
+                          .catch(e => Util.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));                    
+                    }
+                }   
+            } 
         }
         return result;
     }
@@ -140,7 +151,7 @@ export abstract class Achievement {
 
 export class Glimmer extends Achievement {
     public constructor(client: BotgartClient) {
-        super(client, "https://wiki.guildwars.2gwcom/images/a/a9/Solar_Beam.png", 
+        super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
                       "Schimmer", 
                       Achievement.EASY_COLOUR, 
                       false, // repeatable
@@ -207,5 +218,30 @@ export class Supernova extends Achievement {
     public checkCondition(discordUser: discord.GuildMember): boolean {
         const user = this.client.db.getUserByDiscordId(discordUser.user);
         return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 1000 : false;
+    }
+}
+
+
+
+
+
+
+
+export class GlimmerTest extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
+                      "Schimmer", 
+                      Achievement.EASY_COLOUR, 
+                      true, // repeatable
+                      true // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        const user = this.client.db.getUserByDiscordId(discordUser.user);
+        console.log("total lead time", this.client.db.getTotalLeadTime(user.gw2account));
+        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 1 : false;
     }
 }

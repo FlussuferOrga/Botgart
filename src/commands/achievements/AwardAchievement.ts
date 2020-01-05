@@ -4,6 +4,7 @@ import * as Const from "../../Const";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
 import * as moment from "moment";
+import * as achievements from "./Achievements";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 
@@ -23,7 +24,7 @@ export class AwardAchievement extends BotgartCommand {
                 },
                 {
                     id: "player",
-                    type: "member" //type: (word: string, message: discord.Message, prevArgs: any[]) => message.guild.members.find(m => m.)
+                    type: "member"
                 },
                 {
                     id: "timestamp",
@@ -39,9 +40,26 @@ export class AwardAchievement extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(args.achievement === undefined) {
-            // FIXME
+            message.reply(L.get("NO_SUCH_ACHIEVEMENT"));
         } else {
-            args.achievement.awardIn(message.guild, args.player, responsible.id);
+            const res = args.achievement.awardIn(message.guild, args.player, responsible.id);
+            switch(res) {
+                case achievements.AchievementAwardResult.AWARDED_FIRST_TIME:
+                    message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME"));
+                break;
+                case achievements.AchievementAwardResult.AWARDED_AGAIN:
+                    message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_AGAIN"));
+                break;
+                case achievements.AchievementAwardResult.NOT_AWARDED:
+                    message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED"));
+                break;
+                case achievements.AchievementAwardResult.USER_NOT_FOUND:
+                    message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
+                break;
+                case achievements.AchievementAwardResult.HIDDEN:
+                    message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN"));
+                break;
+            }            
         }
     }
 }

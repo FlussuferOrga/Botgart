@@ -35,6 +35,7 @@ export class DeleteTsRegistration extends BotgartCommand {
             this.reply(message, responsible, L.get("TS_UNREGISTER_PROTECTION"));
         } else {
             this.getBotgartClient().getTS3Connection().delete("user", {"gw2account": gw2account});
+            this.reply(message, responsible, L.get("TS_UNREGISTER_SENT"));
             // FIXME: feedback
         }
     }
