@@ -16,6 +16,7 @@ export class Patch8 extends DBPatch {
             && this.tableExists("player_achievements")
             && this.tableExists("player_achievement_posts")
             && this.tableExists("matchups")
+            && this.tableExists("matchup_snapshots")
             && this.tableExists("matchup_factions")
             && this.tableExists("matchup_details")
             && this.tableExists("matchup_objectives")
@@ -57,7 +58,7 @@ export class Patch8 extends DBPatch {
 
         this.connection.prepare(`
           CREATE TABLE player_achievements(
-            player_achievement_id INTEGER PRIMARY KEY,
+            player_achievement_id INTEGER PRIMARY KEY AUTOINCREMENT,
             achievement_name TEXT NOT NULL,
             gw2account TEXT NOT NULL,
             awarded_by TEXT,
@@ -95,15 +96,24 @@ export class Patch8 extends DBPatch {
           `).run();
 
         this.connection.prepare(`
+            CREATE TABLE matchup_snapshots(
+              matchup_snapshot_id INTEGER PRIMARY KEY,
+              timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            `).run();
+
+        this.connection.prepare(`
           CREATE TABLE matchup_details(
             matchup_details_id INTEGER PRIMARY KEY, 
             matchup_id INTEGER,
+            matchup_snapshot_id INTEGER,
             faction TEXT,
             deaths INTEGER,
             kills INTEGER,
             victory_points INTEGER,
             tick INTEGER,
             FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
+            FOREIGN KEY(matchup_snapshot_id) REFERENCES matchup_snapshots(matchup_snapshot_id),
             CHECK(faction IN ('Red','Blue','Green'))
           )
           `).run();
@@ -112,6 +122,7 @@ export class Patch8 extends DBPatch {
           CREATE TABLE matchup_objectives(
             matchup_objective_id INTEGER PRIMARY KEY,
             matchup_id INTEGER,
+            matchup_snapshot_id INTEGER,
             objective_id TEXT NOT NULL,
             map TEXT NOT NULL,
             owner TEXT,
@@ -122,6 +133,7 @@ export class Patch8 extends DBPatch {
             yaks_delivered INTEGER,
             tier INTEGER,
             FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
+            FOREIGN KEY(matchup_snapshot_id) REFERENCES matchup_snapshots(matchup_snapshot_id),
             CHECK(0 <= tier AND tier <= 3),
             CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(owner IN ('Red','Blue','Green','Neutral'))
@@ -140,6 +152,7 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_details`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS matchup_snapshots`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchups`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS player_activities`).run();
