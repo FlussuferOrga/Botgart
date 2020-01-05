@@ -41,6 +41,7 @@ export class BotgartClient extends AkairoClient {
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
+                if(match === undefined) return;
                 const now = moment.utc();
                 let matchId = this.db.getCurrentMatchup(now);
                 if(matchId === undefined) {
@@ -53,11 +54,13 @@ export class BotgartClient extends AkairoClient {
                         currentMatch.all_worlds.blue)
                     matchId = this.db.getCurrentMatchup(now);
                 }
+                // FIXME: addMatchupDetails
+                const snapshotId = this.db.addMatchupSnapshot();
                 const objs = match.maps
                             .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
                             .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                             .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
-                this.db.addMatchupObjectives(matchId, objs);
+                this.db.addMatchupObjectives(matchId, snapshotId, objs);
             })
         });
 
