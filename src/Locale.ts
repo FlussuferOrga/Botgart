@@ -34,6 +34,14 @@ EN = {
         "WHOIS_RESULTS": "The following possible results were found:",
         "DLOG_AUTH": "User {0} with ingame account `{1}` has been authorised with role {2}.",
         "DLOG_UNAUTH": "User {0} with ingame account `{1}` has been de-authorised and lost their role {2}.",
+        "AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME": "Achievement successfully awarded for the first time.",
+        "AWARD_ACHIEVEMENT_SUCCESS_AGAIN": "Achievement successfully awarded again.",
+        "AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED": "Could not award this achievement to that user. The achievement is probably not repeatable and already awarded to that player.",
+        "AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "No GW2 account found to award them this achievement.",
+        "AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN": "That user has chosen to hide their achievements.",
+        "NO_SUCH_ACHIEVEMENT": "There is achievement with that name.",
+        "REVOKE_ACHIEVEMENT_SUCCESS": "{0} achievement(s) revoked.",
+        "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "No GW2 account found to revoke this achievement from.",
 
         "CRONJOB_STORED": "Your cronjob has been saved with ID {0}. Next execution: {1}.",
         "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
@@ -46,6 +54,7 @@ EN = {
         "FAQ_NOT_DELETED": "The FAQ entry for '{0}' could not be deleted.",
         "FAQ_NOT_FOUND": "There is no FAQ-entry for the keyword '{0}'.",
         "CIRCULAR_CRON": "Cronjobs can not be recursive for security reasons.",
+        "TS_UNREGISTER_SENT": "Successfully sent request to remove TS registration.",
 
         "GUILD_LOG_PERMISSION_FAIL": "I need the API-key of a guild leader to retrieve the guild log.",
 
@@ -188,6 +197,14 @@ DE = {
         "WHOIS_RESULTS": "Die folgenden möglichen Treffer wurden gefunden:",
         "DLOG_AUTH": "Benutzer {0} mit dem Ingame-Account `{1}` wurde mit der Rolle {2} autorisiert.",
         "DLOG_UNAUTH": "Benutzer {0} mit dem Ingame-Account `{1}` wurde ent-autorisiert und hat die Rolle {2} verloren.",
+        "AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME": "Errungenschaft wurde erfolgreich zum ersten mal gewährt.",
+        "AWARD_ACHIEVEMENT_SUCCESS_AGAIN": "Errungenschaft wurde erfolgreich erneut gewährt.",
+        "AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED": "Diese Errungenschaft konnte dem Benutzer nicht gewährt werden. Wahrscheinlich ist die Errungenschaft nicht wiederholbar und wurde dem Spieler bereits gewährt.",
+        "AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Es wurde kein zugehöriger GW2-Account gefunden, dem die Errungenschaft gewährt werden könnte.",
+        "AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN": "Dieser Benutzer lässt seine Errungenschaften nicht anzeigen.",
+        "NO_SUCH_ACHIEVEMENT": "Es gibt keine Errungenschaft dieses Namens.",
+        "REVOKE_ACHIEVEMENT_SUCCESS": "{0} Errungenschaft(en) entzogen.",
+        "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Es wurde kein zugehöriger GW2-Account gefunden, dem die Errungenschaft entzogen werden könnte.",
 
         "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
         "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
@@ -200,6 +217,7 @@ DE = {
         "FAQ_NOT_DELETED": "Der FAQ-Eintrag für '{0}' konnte nicht gelöscht werden.",
         "FAQ_NOT_FOUND": "Es gibt keinen FAQ-Eintrag zu dem Stichwort '{0}'.",
         "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
+        "TS_UNREGISTER_SENT": "Successfully sent request to remove TS registration.",
 
         "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 
@@ -221,7 +239,7 @@ DE = {
         "HELPTEXT_ADD_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>`",
         "HELPTEXT_REMOVE_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
-        "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Spieler>` `<Name der Errungenschaft>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
+        "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
         "HELPTEXT_REVOKE_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
         "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
