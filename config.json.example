@@ -21,7 +21,7 @@
     },
     "achievements": {
         "channel": "achievements",
-        "ignoring_roles": ["privateer"]
+        "ignoring_roles": ["covert"]
     },
     "ts_unregister_protection": []
 }
