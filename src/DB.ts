@@ -256,16 +256,36 @@ export class Database {
         `).all(achievementName, gw2account));
     }
 
-    public deletePlayerAchievement(playerAchievementID: number): number {
+    public deletePlayerAchievement(playerAchievementID: number)
+    :  { 
+        player_achievement_id: number,
+         achievement_name: string,
+         gw2account: string,
+         awarded_by: string,
+         timestamp: string
+       } 
+    {
         return this.execute(db =>
             db.transaction((_) => {
+                const achievementData = db.prepare(`
+                    SELECT
+                        player_achievement_id,
+                        achievement_name,
+                        gw2account,
+                        awarded_by,
+                        timestamp
+                    FROM 
+                        player_achievements
+                    WHERE
+                        player_achievement_id = ?
+                `).get(playerAchievementID);
                 db.prepare(`
                     DELETE FROM 
                         player_achievements
                     WHERE
                         player_achievement_id = ?
                 `).run(playerAchievementID);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return achievementData; //db.prepare(`SELECT changes() AS changes`).get().changes;
             })(null))
     }
 

@@ -52,17 +52,48 @@ export class RevokeAchievement extends BotgartCommand {
                 : L.get(this.helptextKey());
     }    
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        const userdata = this.getBotgartClient().db.getUserByDiscordId(args.player.user);
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: {achievement: any, player?: discord.GuildMember}): void {
+        // note that args.achievement is not typed Achievement|number on purpose, as it would prevent stuff like 
+        // Number.isInteger(args.achievement) (which only takes number as argument) and would make the code a whole lot more clunky
+        // for very little benefit.
+        const db = this.getBotgartClient().db;
+        let userdata = args.player ? db.getUserByDiscordId(args.player.user) : undefined;
         if(userdata === undefined && !Number.isInteger(args.achievement)) {
             message.reply(L.get("REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
         } else {
-            const revoked = (Number.isInteger(args.achievement))
-                ? this.getBotgartClient().db.deletePlayerAchievement(args.achievement)
-                : this.getBotgartClient().db.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
-            message.reply(L.get("REVOKE_ACHIEVEMENT_SUCCESS", [""+revoked]));
+            let revokedCount = 0;
+            if (Number.isInteger(args.achievement)) {
+                // revoke specific instance
+                const achievementId: number = <number>args.achievement;
+                const achievementData = db.deletePlayerAchievement(achievementId);
+                if(achievementData !== undefined) {
+                    revokedCount = 1; // else stays at default 0
+                    const aobj: Achievement = this.getBotgartClient().getAchievement(achievementData.achievement_name);
+                    if(achievementData && db.checkAchievement(achievementData.achievement_name, achievementData.gw2account).length == 0) {
+                        // user lost their last instance of this achievement -> remove role
+                        // since removing an entry from the DB does not require a player to be passed,
+                        // we need to resolve the player manually
+                        userdata = db.getUserByGW2Account(achievementData.gw2account);
+                        if(userdata) {
+                            const member = guild.members.find(m => m.id === userdata.user);
+                            const role: discord.Role = guild.roles.find(r => r.name === aobj.getRoleName());
+                            if(member && role) {
+                                member.removeRole(role);
+                            }    
+                        }                    
+                    }
+                }
+            } else {
+                // revoke all instances
+                // assert args.achievement instanceof Achievement
+                revokedCount = db.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
+                const role: discord.Role = guild.roles.find(r => r.name === args.achievement.getRoleName());
+                if(role) {
+                    args.player.removeRole(role);
+                }
+            }
+            message.reply(L.get("REVOKE_ACHIEVEMENT_SUCCESS", [""+revokedCount]));
         }
-
     }
 }
 

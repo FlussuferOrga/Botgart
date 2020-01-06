@@ -230,7 +230,7 @@ export class Supernova extends Achievement {
 export class GlimmerTest extends Achievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
-                      "Schimmer", 
+                      "SchimmerTest", 
                       Achievement.EASY_COLOUR, 
                       true, // repeatable
                       true // announce repeats
