@@ -23,111 +23,14 @@ export class Database {
         this.client = client;
     }
 
-    public execute<T>(f: (sqlite3) => T): T|undefined  {
-        let db: sqlite3.Database = sqlite3.default(this.file, undefined);
-        db.pragma("foreign_keys = ON");
-
-        let res: T|undefined;
-        try {
-            res = f(db);
-        } catch(err) {
-            res = undefined;
-            Util.log("error", "DB.js", "DB execute: {0}".formatUnicorn(err["message"]));
-        }
-
-        db.close();
-        return res;
-    }
-
-    private async executeAsync<T>(f: (sqlite) => T): Promise<T|undefined> {
-        return this.execute(f);
-    }
-
-    public getEnvironmentVariable(guild: discord.Guild, name: string) {
-        return this._getEnvironmentVariable(guild.id, name);
-    }
-
-    public _getEnvironmentVariable(guildId: string, name: string) : [string, string, (boolean|number|string|null)] {
-        return this.execute(db => {
-                        const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
-                                      .get(guildId, name)
-                        let casted = undefined;
-                        switch(res.type) {
-                            case "boolean":
-                                casted = ("true" === res.value);
-                            break;
-                            case "number":
-                                casted = Number(res.value);
-                            break;
-                            case "string":
-                                casted = res.value;
-                            break;
-                        }
-                        return [res.value, res.type, casted];
-                    });
-    }
-
-    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string = null) {
-        return this._setEnvironmentVariable(guild.id, name, value, type);
-    }
-
-    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string = null) {
-        type = type || typeof value;
-        return this.execute(db => db.prepare(`
-            INSERT INTO 
-                    environment_variables(guild, name, type, value) 
-                    VALUES(?,?,?,?)
-                  ON CONFLICT(guild, name) DO UPDATE SET 
-                    guild = ?,
-                    name = ?,
-                    type = ?,
-                    value = ?
-        `).run(guildId, name, ""+type, ""+value, guildId, name, ""+type, ""+value));
-    }
-
-    public getUserByAccountName(accountName: string) {
-        return this.execute(db => db.prepare(`
-            SELECT 
-                id, user, guild, api_key, gw2account, registration_role, account_name, created 
-            FROM 
-                registrations 
-            WHERE 
-                account_name = ? 
-            ORDER BY 
-                created DESC
-        `).get(accountName));
-    }
-
-    public getUserByGW2Account(gw2account: string) {
-        return this.execute(db => db.prepare(`
-            SELECT 
-                id, user, guild, api_key, gw2account, registration_role, account_name, created 
-            FROM 
-                registrations 
-            WHERE 
-                gw2account = ?
-            ORDER BY 
-                created DESC
-        `).get(gw2account));        
-    }
-
-    public getUserByDiscordId(discordUser: discord.User) {
-        return this.execute(db => db.prepare(`
-            SELECT 
-                id, user, guild, api_key, gw2account, registration_role, account_name, created 
-            FROM 
-                registrations 
-            WHERE 
-                user = ?
-            ORDER BY 
-                created DESC
-        `).get(discordUser.id));        
-    }
-
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
     // sqlite3 and node don't work well together in terms of large integers.
     // Therefore, all big numbers are stored as strings.
     // As a consequence, === can't be used, when checking them.
+    /**
+    * Initial schema. All patches should be applied after
+    * creating the init.
+    */ 
     public initSchema(): void {
         let sqls = [
         `CREATE TABLE IF NOT EXISTS registrations(
@@ -174,7 +77,191 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    public upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message) {
+    /**
+    * Executes an SQL statement and handles errors, as well as closing the DB connection afterwards.
+    * f: lambda expression taking the opened sqlite3 connection to run queries on.
+    * returns: the result of the lambda.
+    */
+    public execute<T>(f: (sqlite3) => T): T|undefined  {
+        let db: sqlite3.Database = sqlite3.default(this.file, undefined);
+        db.pragma("foreign_keys = ON");
+
+        let res: T|undefined;
+        try {
+            res = f(db);
+        } catch(err) {
+            res = undefined;
+            Util.log("error", "DB.js", "DB execute: {0}".formatUnicorn(err["message"]));
+        }
+
+        db.close();
+        return res;
+    }
+
+    /**
+    * Convenience method for _getEnvironmentVariable.
+    */
+    public getEnvironmentVariable(guild: discord.Guild, name: string): [string, string, (boolean|number|string|null)] {
+        return this._getEnvironmentVariable(guild.id, name);
+    }
+
+    /**
+    * Gets the value of an environment variable as set for a guild.
+    * guildId: ID of the guild to lookup the variable in. 
+    * name: name of the variable. 
+    * returns: triple [0]: value es text, 
+    *                 [1]: type of the value, as stored in the DB 
+    *                 [2]: casted version, if the type was among the supported types, else undefined
+    */
+    public _getEnvironmentVariable(guildId: string, name: string): [string, string, (boolean|number|string|null)] {
+        return this.execute(db => {
+                        const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
+                                      .get(guildId, name)
+                        let casted = undefined;
+                        switch(res.type) {
+                            case "boolean":
+                                casted = ("true" === res.value);
+                            break;
+                            case "number":
+                                casted = Number(res.value);
+                            break;
+                            case "string":
+                                casted = res.value;
+                            break;
+                        }
+                        return [res.value, res.type, casted];
+                    });
+    }
+
+    /**
+    * Convenience method for _setEnvironmentVariable.
+    */
+    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string = null) {
+        return this._setEnvironmentVariable(guild.id, name, value, type);
+    }
+
+    /**
+    * Sets an environment variable for a guild. A variable is identified by its name. 
+    * No scoping beyond the guild is possible and setting an already existing EV in a guild 
+    * leads to the old value (and type!) being overridden. 
+    * guildId: ID of the guild to store the EV in. 
+    * name: name of the EV. 
+    * type: type of the variable as it should be stored. This will affect how it will be retrieved later on in getEnvironmentVariable.
+    */
+    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string = null) {
+        type = type || typeof value;
+        return this.execute(db => db.prepare(`
+            INSERT INTO 
+                    environment_variables(guild, name, type, value) 
+                    VALUES(?,?,?,?)
+                  ON CONFLICT(guild, name) DO UPDATE SET 
+                    guild = ?,
+                    name = ?,
+                    type = ?,
+                    value = ?
+        `).run(guildId, name, ""+type, ""+value, guildId, name, ""+type, ""+value));
+    }
+
+    /**
+    * Gets a user by their account name. That is Foobar.1234. 
+    * Having multiple users registered with the same GW2 account will 
+    * only retrieve the one that was created last.
+    * accountName: GW2 account name. 
+    * returns: the latest entry for that account name if any, else undefined.
+    */
+    public getUserByAccountName(accountName: string)
+    : {
+        id: string,
+        user: string,
+        guild: string, 
+        api_key: string, 
+        gw2account: string, 
+        registration_role: string,
+        account_name: string, 
+        created: string
+      } 
+    {
+        return this.execute(db => db.prepare(`
+            SELECT 
+                id, user, guild, api_key, gw2account, registration_role, account_name, created 
+            FROM 
+                registrations 
+            WHERE 
+                account_name = ? 
+            ORDER BY 
+                created DESC
+        `).get(accountName));
+    }
+
+    /**
+    * Same as getUserByAccountName, but this time, the unique account ID
+    * is used. That's the one looking like FFFF-FFFF-FFFF-FFFF. 
+    * accountName: GW2 account name. 
+    * returns: the latest entry for that account name if any, else undefined.
+    */ 
+    public getUserByGW2Account(gw2account: string)
+    : {
+        id: string,
+        user: string,
+        guild: string, 
+        api_key: string, 
+        gw2account: string, 
+        registration_role: string,
+        account_name: string, 
+        created: string
+      } 
+    {
+        return this.execute(db => db.prepare(`
+            SELECT 
+                id, user, guild, api_key, gw2account, registration_role, account_name, created 
+            FROM 
+                registrations 
+            WHERE 
+                gw2account = ?
+            ORDER BY 
+                created DESC
+        `).get(gw2account));        
+    }
+
+    /**
+    * Same as getUserByAccountName, but this time, the Discord user ID
+    * is used.
+    * discordUser: the Discord user to retrieve the account for. 
+    * returns: the latest entry for that account name if any, else undefined.
+    */
+    public getUserByDiscordId(discordUser: discord.User) 
+    : {
+        id: string,
+        user: string,
+        guild: string, 
+        api_key: string, 
+        gw2account: string, 
+        registration_role: string,
+        account_name: string, 
+        created: string
+      } 
+    {
+        return this.execute(db => db.prepare(`
+            SELECT 
+                id, user, guild, api_key, gw2account, registration_role, account_name, created 
+            FROM 
+                registrations 
+            WHERE 
+                user = ?
+            ORDER BY 
+                created DESC
+        `).get(discordUser.id));        
+    }
+
+    /**
+    * Upserts the roster post for a guild. That is:
+    * If no roster for that week exists in that guild, the post is stored. 
+    * Else, the commanders in that post are updated. 
+    * guild: the guild to upsert the roster post in. 
+    * roster: the roster to upsert. Uniqueness will be determined by week number and year of the roster. 
+    * message: the message that represents the roster post.
+    */
+    public upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message): void {
         return this.execute(db => {
             db.transaction((_) => {
                 const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
@@ -194,7 +281,14 @@ export class Database {
         });
     }
 
-    public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string) {
+    /**
+    * Adds the duration of a TS lead to the database. 
+    * gw2account: player to add the lead to. 
+    * start: Moment when the tag-up was registered. 
+    * end: Moment when the tag-down was registered. 
+    * tsChannel: channel in which they did their lead. 
+    */
+    public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string): void {
         return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
                                     .run(gw2account, tsChannel, start.valueOf()/1000, end.valueOf()/1000));
     }
@@ -215,6 +309,11 @@ export class Database {
         `).get(gw2account).total)
     }
 
+    /**
+    * Checks how long the last lead of the player lasted. 
+    * gw2account: the account to check for. 
+    * returns: number in milliseconds.
+    */
     public getLastLeadDuration(gw2account: string): number {
         return this.execute(db => db.prepare(`
             SELECT 
@@ -230,15 +329,37 @@ export class Database {
         `).get(gw2account).duration)
     }
 
+    /**
+    * Inserts a granted achievement into the DB. 
+    * achievementName: name of the achievement. No checks are done here -- could be an invalid achievement name! 
+    * gw2account: the account to award the achievement to. 
+    * awardedBy: Discord ID of the user who issued the grant-command, if any. Having nothing here implies the achievement was awarded automatically by fulfilling the requirements.
+    * timestamp: when the achievement was granted. 
+    * returns: ID of the newly created row. Note that this row is autoincrementally, so no ID will be repeated over the lifespan of the DB. 
+    */
     public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
         return this.execute(db => {
                                 db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'unixepoch'))")
-                                  .run(achievementName, gw2account, awardedBy, timestamp.valueOf());
+                                  .run(achievementName, gw2account, awardedBy, timestamp.valueOf()/1000);
                                 return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
                             });
     }
 
-    public checkAchievement(achievementName: string, gw2account: string): [string, string, string, string, string][] {
+    /**
+    * Checks the state of an achievement for a player. 
+    * That is: it returns all instances the player has of that achievement, 
+    * or in other words: an empty result implies the player having not unlocked the achievement yet. 
+    * returns: the info about each instance (NOTE: the pap fields are not in use yet.)
+    */
+    public checkAchievement(achievementName: string, gw2account: string)
+    : {
+        awarded_by: string, 
+        timestamp: string,
+        guild: string,
+        channel: string,
+        message: string
+      }[]
+    {
         return this.execute(db => db.prepare(`
             SELECT 
                 pa.awarded_by,
@@ -256,6 +377,33 @@ export class Database {
         `).all(achievementName, gw2account));
     }
 
+    /**
+    * Retrieves all grouped instances of achievements the player has been awarded.
+    * Grouped by the achievement name, including the count.
+    * gw2account: player to retrieve the achievements for. 
+    * returns: array of achievement, group by the achievemet name with the count included.
+    */
+    public getPlayerAchievements(gw2account: string) 
+    : {times_awarded: number, achievement_name: string}[]
+    {
+        return this.execute(db => db.prepare(`
+                SELECT 
+                    COUNT(*) AS times_awarded,
+                    achievement_name
+                FROM
+                    player_achievements
+                WHERE
+                    gw2account = ?
+                GROUP BY
+                    achievement_name      
+            `).all(gw2account));
+    }
+
+    /**
+    * Delete a specific achievement instance by ID. 
+    * playerAchievementID: the ID of the row to delete.
+    * returns: if the passed ID was valid, the deleted row is returned.
+    */ 
     public deletePlayerAchievement(playerAchievementID: number)
     :  { 
         player_achievement_id: number,
@@ -285,10 +433,16 @@ export class Database {
                     WHERE
                         player_achievement_id = ?
                 `).run(playerAchievementID);
-                return achievementData; //db.prepare(`SELECT changes() AS changes`).get().changes;
+                return achievementData;
             })(null))
     }
 
+    /**
+    * Revokes an achievement by name; that is: all instances of that achievement. 
+    * achievementName: name of the achievement. 
+    * gw2account: player to revoke the achievement from. 
+    * returns: how many rows were deleted in the process.
+    */
     public revokePlayerAchievements(achievementName: string, gw2account: string): number {
         return this.execute(db =>
             db.transaction((_) => {
