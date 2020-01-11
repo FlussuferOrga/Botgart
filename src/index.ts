@@ -85,9 +85,9 @@ if(args.updateconfig) {
     // disabled
     //updateConfig("config.json", "config.json.example");
 } else if(args.patchall) {
-    applyPatches(allPatches, args.revert === true)
+    applyPatches(allPatches, args.revert === true).then(_ => process.exit(0));    
 } else if(args.patch) {
-    applyPatches(args.patch, args.revert === true);
+    applyPatches(args.patch, args.revert === true).then(_ => process.exit(0));    
 } else {
     startBot();
 }
