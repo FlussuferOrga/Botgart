@@ -16,9 +16,10 @@ export class Patch8 extends DBPatch {
             && this.tableExists("player_achievements")
             && this.tableExists("player_achievement_posts")
             && this.tableExists("matchups")
-            && this.tableExists("matchup_snapshots")
+            && this.tableExists("stats_snapshots")
+            && this.tableExists("objectives_snapshots")
             && this.tableExists("matchup_factions")
-            && this.tableExists("matchup_details")
+            && this.tableExists("matchup_stats")
             && this.tableExists("matchup_objectives")
             && this.tableExists("environment_variables")
             && this.tableExists("player_activities")
@@ -96,25 +97,31 @@ export class Patch8 extends DBPatch {
           `).run();
 
         this.connection.prepare(`
-            CREATE TABLE matchup_snapshots(
-              matchup_snapshot_id INTEGER PRIMARY KEY,
+            CREATE TABLE objectives_snapshots(
+              objectives_snapshot_id INTEGER PRIMARY KEY,
               timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
             )
             `).run();
 
         this.connection.prepare(`
-          CREATE TABLE matchup_details(
-            matchup_details_id INTEGER PRIMARY KEY, 
+            CREATE TABLE stats_snapshots(
+              stats_snapshot_id INTEGER PRIMARY KEY,
+              timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )
+            `).run();
+
+        this.connection.prepare(`
+          CREATE TABLE matchup_stats(
+            matchup_stats_id INTEGER PRIMARY KEY, 
             matchup_id INTEGER,
-            matchup_snapshot_id INTEGER,
+            snapshot_id INTEGER,
             map TEXT NOT NULL,
             faction TEXT,
             deaths INTEGER,
             kills INTEGER,
             victory_points INTEGER,
-            tick INTEGER,
-            FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
-            FOREIGN KEY(matchup_snapshot_id) REFERENCES matchup_snapshots(matchup_snapshot_id),
+            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
+            FOREIGN KEY(snapshot_id) REFERENCES stats_snapshots(stats_snapshot_id),
             CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(faction IN ('Red','Blue','Green'))
           )
@@ -124,7 +131,7 @@ export class Patch8 extends DBPatch {
           CREATE TABLE matchup_objectives(
             matchup_objective_id INTEGER PRIMARY KEY,
             matchup_id INTEGER,
-            matchup_snapshot_id INTEGER,
+            snapshot_id INTEGER,
             objective_id TEXT NOT NULL,
             map TEXT NOT NULL,
             owner TEXT,
@@ -135,7 +142,7 @@ export class Patch8 extends DBPatch {
             yaks_delivered INTEGER,
             tier INTEGER,
             FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
-            FOREIGN KEY(matchup_snapshot_id) REFERENCES matchup_snapshots(matchup_snapshot_id),
+            FOREIGN KEY(snapshot_id) REFERENCES objectives_snapshots(objectives_snapshot_id),
             CHECK(0 <= tier AND tier <= 3),
             CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(owner IN ('Red','Blue','Green','Neutral'))
@@ -152,9 +159,11 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS ts_leads`).run();      
 
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS matchup_details`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS matchup_stats`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS matchup_snapshots`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS stats_snapshots`).run();
+        this.connection.prepare(`DROP TABLE IF EXISTS objectives_snapshots`).run();
+
         this.connection.prepare(`DROP TABLE IF EXISTS matchups`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS player_activities`).run();
