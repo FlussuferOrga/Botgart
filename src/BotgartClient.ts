@@ -40,22 +40,32 @@ export class BotgartClient extends AkairoClient {
         });
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
+            prom.then(async stats => {
+                if(stats === undefined) return;
+                const matchId = await Util.getCurrentMatchId(this.db);
+                const snapshotId = this.db.addStatsSnapshot();
+                for await(const mapData of stats.maps) {
+                    for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
+                        this.db.addMatchupStats(
+                                    matchId, 
+                                    snapshotId, 
+                                    mapData.type, // map 
+                                    Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
+                                    mapData.deaths[faction], 
+                                    mapData.kills[faction],
+                                    mapData.scores[faction])
+                    }
+                    
+                }
+
+            });
+        });
+
+        this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 if(match === undefined) return;
-                const now = moment.utc();
-                let matchId = this.db.getCurrentMatchup(now);
-                if(matchId === undefined) {
-                    const currentMatch = await Util.api.wvw().matches().overview().world(config.home_id);
-                    this.db.addMatchup(
-                        moment.utc(currentMatch.start_time),
-                        moment.utc(currentMatch.end_time),
-                        currentMatch.all_worlds.red, 
-                        currentMatch.all_worlds.green,
-                        currentMatch.all_worlds.blue)
-                    matchId = this.db.getCurrentMatchup(now);
-                }
-                // FIXME: addMatchupDetails
-                const snapshotId = this.db.addMatchupSnapshot();
+                const matchId = await Util.getCurrentMatchId(this.db);
+                const snapshotId = this.db.addObjectivesSnapshot();
                 const objs = match.maps
                             .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
                             .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting

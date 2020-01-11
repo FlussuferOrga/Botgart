@@ -482,24 +482,33 @@ export class Database {
                                     .run(matchId, colour, worldId));
     }
 
-    public addMatchupSnapshot(): number {
+    public addStatsSnapshot(): number {
         return this.execute(db =>
             db.transaction((_) => {
-                db.prepare("INSERT INTO matchup_snapshots DEFAULT VALUES").run();
+                db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES").run();
                 return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
             })(null)
         );         
     }
 
-    public addMatchupDetails(matchId: number, snapshotId: number, faction: string, deaths: number, kills: number, victoryPoints: number, tick: number) {
-        return this.execute(db => db.prepare("INSERT INTO matchup_details(matchup_id, matchup_snapshot_id, faction, deaths, kills, victory_points, tick) VALUES(?,?,?,?,?,?,?)"))
-                                    .run(matchId, snapshotId, faction, deaths, kills, victoryPoints, tick);
+    public addObjectivesSnapshot(): number {
+        return this.execute(db =>
+            db.transaction((_) => {
+                db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES").run();
+                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            })(null)
+        );         
+    }
+
+    public addMatchupStats(matchId: number, snapshotId: number, map: string, faction: string, deaths: number, kills: number, victoryPoints: number) {
+        return this.execute(db => db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES(?,?,?,?,?,?,?)")
+                                    .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
     }
 
     public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, {id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[]}, number][]) {
         return this.execute(db => {
             const stmt = db.prepare(`INSERT INTO matchup_objectives
-                              (matchup_id, matchup_snapshot_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
+                              (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
                               VALUES (?,?,?,?,?,?,?,?,?,?,?)`);
             db.transaction((matchId, objectives) => {
                 for(const [mapname, details, tier] of objectives) {
