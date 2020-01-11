@@ -127,6 +127,30 @@ export class ConfigChecker extends Listener {
             presence: true,
             isArray: {}
         },
+        gw2api: {
+            presence: true
+        },
+        "gw2api.delays": {
+            presence: true
+        },
+        "gw2api.delays.wvw_stats": {
+            presence: true,
+            numericality: {
+                struct: true,
+                noStrings: true, 
+                onlyInteger: true,
+                greaterThan: 0
+            }
+        },
+        "gw2api.delays.wvw_matches": {
+            presence: true,
+            numericality: {
+                struct: true,
+                noStrings: true, 
+                onlyInteger: true,
+                greaterThan: 0
+            }
+        },
         ts_unregister_protection: {
           presence: true,
           isArray: {},
