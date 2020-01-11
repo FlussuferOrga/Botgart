@@ -107,6 +107,7 @@ export class Patch8 extends DBPatch {
             matchup_details_id INTEGER PRIMARY KEY, 
             matchup_id INTEGER,
             matchup_snapshot_id INTEGER,
+            map TEXT NOT NULL,
             faction TEXT,
             deaths INTEGER,
             kills INTEGER,
@@ -114,6 +115,7 @@ export class Patch8 extends DBPatch {
             tick INTEGER,
             FOREIGN KEY(matchup_id) REFERENCES matchup(matchup_id),
             FOREIGN KEY(matchup_snapshot_id) REFERENCES matchup_snapshots(matchup_snapshot_id),
+            CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(faction IN ('Red','Blue','Green'))
           )
           `).run();
