@@ -163,6 +163,117 @@ enum CommanderState {
     TAG_DOWN
 }
 
+export class Commander {
+    private accountName: string;
+    private ts3DisplayName: string;
+    private ts3clientUID: string;
+    private ts3channel: string;
+    private raidStart: moment.Moment;
+    private lastUpdate: moment.Moment;
+    private state: CommanderState;
+    private discordMember: discord.GuildMember;
+
+    public getAccountName(): string {
+        return this.accountName;
+    }
+
+    public getTS3ClientUID(): string {
+        return this.ts3clientUID;
+    }
+
+    public getTS3DisplayName(): string {
+        return this.ts3DisplayName;
+    }
+
+    public setTS3DisplayName(name: string) {
+        this.ts3DisplayName = name;
+    }
+
+    public getTS3Channel(): string {
+        return this.ts3channel;
+    }
+
+    public setTS3Channel(ts3channel: string) {
+        this.ts3channel = ts3channel;
+    }
+
+    public getRaidStart(): moment.Moment {
+        return this.raidStart;
+    }
+
+    public setRaidStart(timestamp: moment.Moment) {
+        this.raidStart = timestamp;
+    }
+
+    public getLastUpdate(): moment.Moment {
+        return this.lastUpdate;
+    }
+
+    public setLastUpdate(timestamp: moment.Moment) {
+        this.lastUpdate = timestamp;
+    }
+
+    public getState(): CommanderState {
+        return this.state;
+    }
+
+    public setState(state: CommanderState) {
+        this.state = state;
+    }
+
+    public getDiscordMember(): discord.GuildMember {
+        return this.discordMember;
+    }
+
+    public setDiscordMember(dmember: discord.GuildMember) {
+        this.discordMember = dmember;
+    }
+
+    public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string) {
+        this.accountName = accountName;
+        this.ts3DisplayName = ts3DisplayName;
+        this.ts3clientUID = ts3clientUID;
+        this.ts3channel = ts3channel;
+        this.lastUpdate = moment.utc();
+        this.raidStart = undefined;
+        this.state = CommanderState.TAG_UP;
+    }
+}
+
+export class CommanderStorage {
+    private commanders: Commander[];
+
+    public constructor() {
+        this.commanders = [];
+    }
+
+    public getCommanderByTS3UID(ts3uid: string) {
+        return this.commanders.find(c => c.getTS3ClientUID() === ts3uid);
+    }
+
+    public addCommander(commander: Commander) {
+        if(this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
+            log("warning", "TS3Connection.js", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);           
+        } else {
+            this.commanders.push(commander);    
+        } 
+    }
+
+    public deleteCommander(commander: Commander) {
+        let i = 0;
+        while(i < this.commanders.length) {
+            if(this.commanders[i].getTS3ClientUID() === commander.getTS3ClientUID()) {
+                this.commanders.splice(i,1);
+                i = this.commanders.length; // break
+            }
+        }
+    }
+
+    public setMinus(stillUp: Set<string>): Commander[] {
+        return this.commanders.filter(c => !stillUp.has(c.getTS3ClientUID()));
+    }
+}
+
 /**
 * This class listens for changes in the commander list.
 * That is, it reacts to when a commander tags up or down in Teamspeak. 
@@ -175,21 +286,20 @@ export class TS3Listener extends EventEmitter {
     private broadcastChannel: string;
     private pingRole: string;
     private commanderRole: string;
-    private activeCommanders: {[key:string]: [string, string, moment.Moment]};
-    private users: {[key:string]:[moment.Moment,CommanderState]};
+    //private activeCommanders: {[key:string]: [string, string, moment.Moment]};
+    //private activeCommanders: {[key:string]: Commander};
+    //private commanders: CommanderCache;
+    //private users: {[key:string]:[moment.Moment,CommanderState]};
+    //private users: {[key: string]: Commander};
     private channels: {[key:string]:moment.Moment};
     private userDelay: number;
     private channelDelay: number;
     private gracePeriod: number;
-    private client: BotgartClient;
+    private botgartClient: BotgartClient;
 
-    constructor(client: BotgartClient) {
+    constructor(bgclient: BotgartClient) {
         super();
-        /*super("ts3listener", {
-            emitter: "client",
-            eventName: "ready"
-        });*/
-        this.client = client;
+        this.botgartClient = bgclient;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
         this.broadcastChannel = config.ts_listener.broadcast_channel;
         this.pingRole = config.ts_listener.ping_role;
@@ -197,8 +307,6 @@ export class TS3Listener extends EventEmitter {
         this.userDelay = config.ts_listener.user_delay;
         this.channelDelay = config.ts_listener.channel_delay;
         this.gracePeriod = config.ts_listener.grace_period;
-        this.activeCommanders = {};
-        this.users = {};
         this.channels = {};
 
         const that = this;
@@ -208,60 +316,70 @@ export class TS3Listener extends EventEmitter {
             // COMMANDERS BROADCAST
             if(data.constructor == Object && "commanders" in data) {
                 const now: moment.Moment = moment.utc();
-                const taggedDown = setMinus(Object.keys(that.activeCommanders), new Set<string>(data.commanders.map(c => c.ts_cluid)));
-                that.client.guilds.forEach(g => {
+                const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
+                that.botgartClient.guilds.forEach(g => {
                     data.commanders.forEach(c => {
                         const account  = c.account_name; // for lookup
                         const uid      = c.ts_cluid; // for this.users
                         const username = c.ts_display_name; // for broadcast
                         const channel  = c.ts_channel_name; // for broadcast and this.channels
                         
-                        if(!(uid in that.users)) {
+                        let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
+                        if(commander === undefined) {
                             // user was newly discovered as tagged up -> save user without cooldown
-                            that.users[uid] = [now,CommanderState.TAG_UP];
-                            log("debug", "TS3Listener.js", "Moving newly discovered {0} to TAG_UP state.".formatUnicorn(username));
+                            commander = new Commander(account, username, uid, channel);
+                            commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
+                            that.botgartClient.commanders.addCommander(commander);
+                            log("debug", "TS3Listener.js", `Moving newly discovered ${username} to TAG_UP state.`);
                         }
-                        let [userLastTime,state] = that.users[uid];
-                        switch(state) {
+
+                        const elapsed = now.valueOf() - commander.getLastUpdate().valueOf();
+                        switch(commander.getState()) {
                             case CommanderState.TAG_UP:
                                 // user tagged up and is waiting to gain commander status
-                                if(now. valueOf() - userLastTime.valueOf() > that.gracePeriod) {
-                                    that.users[uid] = [now, CommanderState.COMMANDER];
-                                    that.tagUp(g, account, uid, username, channel);
-                                    log("debug", "TS3Listener.js", "Moving {0} from TAG_UP to COMMANDER state.".formatUnicorn(username));
+                                if(elapsed > that.gracePeriod) {
+                                    commander.setLastUpdate(now);
+                                    commander.setRaidStart(now);
+                                    commander.setState(CommanderState.COMMANDER);
+                                    commander.setTS3Channel(channel);
+                                    that.tagUp(g, commander);
+                                    log("debug", "TS3Listener.js", `Moving ${username} from TAG_UP to COMMANDER state.`);
                                 }
                             break;
 
                             case CommanderState.COOLDOWN:
                                 // user tagged up again too quickly -> wait out delay and then go into TAG_UP
-                                if(now.valueOf() - userLastTime.valueOf() > that.userDelay) {
-                                    that.users[uid] = [now, CommanderState.TAG_UP];
-                                    log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN to TAG_UP state.".formatUnicorn(username));
+                                if(elapsed > that.userDelay) {
+                                    commander.setLastUpdate(now);
+                                    commander.setState(CommanderState.TAG_UP);
+                                    log("debug", "TS3Listener.js", `Moving ${username} from COOLDOWN to TAG_UP state.`);
                                 }
                             break;
 
                             case CommanderState.TAG_DOWN:
                                 // user raided before, but tagged down in between
                                 // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
-                                if(now.valueOf() - userLastTime.valueOf() > that.userDelay) {
-                                    that.users[uid] = [now, CommanderState.TAG_UP];
-                                    log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to TAG_UP state.".formatUnicorn(username));
+                                if(elapsed > that.userDelay) {
+                                    commander.setLastUpdate(now);
+                                    commander.setState(CommanderState.TAG_UP);
+                                    log("debug", "TS3Listener.js", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
                                 } else {
-                                    that.users[uid] = [userLastTime, CommanderState.COOLDOWN];
-                                    log("debug", "TS3Listener.js", "Moving {0} from TAG_DOWN to COOLDOWN state.".formatUnicorn(username));
+                                    commander.setState(CommanderState.COOLDOWN);
+                                    log("debug", "TS3Listener.js", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
                                 }
                             break;
 
                             case CommanderState.COMMANDER:
                                 // still raiding -> update timestamp
-                                that.users[uid] = [now,state];
+                                commander.setLastUpdate(now);
                             break;
                         } 
                     });
-                    taggedDown.forEach(tduid => {
-                        that.users[tduid] = [now, CommanderState.TAG_DOWN];
-                        that.tagDown(g, tduid, that.activeCommanders[tduid][0]);
-                        log("debug", "TS3Listener.js", "Moving {0} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.".formatUnicorn(tduid));
+                    taggedDown.forEach((commander: Commander) => {
+                        commander.setLastUpdate(now);
+                        commander.setState(CommanderState.TAG_DOWN);
+                        that.tagDown(g, commander);
+                        log("debug", "TS3Listener.js", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
                     })
                 });
             }
@@ -274,38 +392,37 @@ export class TS3Listener extends EventEmitter {
     * - if the user is not just in TS, but also in Discord, he will gain the commander status there
     * - a mapping of the TS-UID to the Discord-username is created
     */
-    private tagUp(g: discord.Guild, account: string, tsUID: string, username: string, channel: string) {
-        log("info", "TS3Listener.js", "Tagging up {0} in {1}.".formatUnicorn(username, g.name));
-        const registration = (<BotgartClient>this.client).db.getUserByAccountName(account);
-        let duser = undefined;
+    private tagUp(g: discord.Guild, commander: Commander) {
+        let displayname = commander.getTS3DisplayName();
+        log("info", "TS3Listener.js", `Tagging up ${displayname} in ${g.name}.`);
+        const registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
         if(registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.find(r => r.name === this.commanderRole);
-            duser = g.members.find(m => m.id === registration.user);
-            if(crole && duser) {
-                duser.addRole(crole);
+            commander.setDiscordMember(g.members.find(m => m.id === registration.user));
+            if(crole && commander.getDiscordMember()) {
+                commander.getDiscordMember().addRole(crole);
             }
-            username = "{0} ({1})".formatUnicorn(username, registration.registration_role);
+            displayname = `${displayname} (${registration.registration_role})`;
         }
 
         // broadcast the message                    
-        let dchan:discord.TextChannel = <discord.TextChannel>g.channels.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
+        const dchan: discord.TextChannel = <discord.TextChannel>g.channels.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
         if(!dchan) {
-            log("warning", "TS3Listener.js", "I was supposed to broadcast the commander message on guild '{0}' in channel '{1}', but no such channel was found there. Skipping.".formatUnicorn(g.name, this.broadcastChannel));
+            log("warning", "TS3Listener.js", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
-            let pingRole = g.roles.find(r => r.name === this.pingRole);
-            let mes:string = L.get("COMMANDER_TAG_UP", [username, channel, pingRole ? pingRole.toString() : ""]);
+            const pingRole = g.roles.find(r => r.name === this.pingRole);
+            const mes: string = L.get("COMMANDER_TAG_UP", [displayname, commander.getTS3Channel(), pingRole ? pingRole.toString() : ""]);
             dchan.send(mes);
         }
-        this.activeCommanders[tsUID] = [account, channel, moment.utc()];
         this.emit("tagup", {
             ...{
                 "guild": g,
-                "account": account, 
-                "tsUID": tsUID, 
-                "username": username, 
-                "channel": channel,
-                "discordUser": duser
+                "account": commander.getAccountName(), 
+                "tsUID": commander.getTS3ClientUID(), 
+                "username": commander.getTS3DisplayName(), 
+                "channel": commander.getTS3Channel(),
+                "discordMember": commander.getDiscordMember()
             }, ...registration});
     }
 
@@ -314,32 +431,31 @@ export class TS3Listener extends EventEmitter {
     * - the role is removed from the user if he is present in the Discord
     * - the user's TS-UID-Discordname is forgotten
     */
-    private tagDown(g: discord.Guild, tsUID: string, account: string) {
-        let registration = (<BotgartClient>this.client).db.getUserByAccountName(account);
-        let duser = undefined;
+    private tagDown(g: discord.Guild, commander: Commander) {
+        let registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
+        let dmember = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
             const crole = g.roles.find(r => r.name === this.commanderRole);
-            duser = g.members.find(m => m.id === registration.user);
-            if(crole && duser) {
-                log("info", "TS3Listener.js", "Tagging down {0} in {1}.".formatUnicorn(duser.displayName, g.name));
-                duser.removeRole(crole).catch(e => {
-                    log("warning", "TS3Listener.js", "Could not remove role '{0}' from user '{1}'' which was expected to be there. Maybe someone else already removed it.".formatUnicorn(this.commanderRole, duser.nickname))
+            dmember = g.members.find(m => m.id === registration.user);
+            if(crole && dmember) {
+                log("info", "TS3Listener.js", `Tagging down ${dmember.displayName} in ${g.name}.`);
+                dmember.removeRole(crole).catch(e => {
+                    log("warning", "TS3Listener.js", `Could not remove role '${this.commanderRole}' from user '${dmember.nickname}'' which was expected to be there. Maybe someone else already removed it.`)
                 });
             }
         }
 
-        const [commander, channel, start] = this.activeCommanders[tsUID];
-        (<BotgartClient>this.client).db.addLead(registration.gw2account, start, moment.utc(), channel);
-        delete this.activeCommanders[tsUID];
+        this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
+        this.botgartClient.commanders.deleteCommander(commander);
         this.emit("tagdown", {
             ...{
                 "guild": g,
-                "tsUID": tsUID,
-                "account": account,
-                "start": start,
+                "tsUID": commander.getTS3ClientUID(),
+                "account": commander.getAccountName(),
+                "start": commander.getRaidStart(),
                 "end": moment.utc(),
-                "discordUser": duser
+                "discordMember": commander.getDiscordMember()
         }, ...registration});
     } 
 }

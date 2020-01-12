@@ -53,8 +53,8 @@ export class Patch8 extends DBPatch {
             player_activity_id INTEGER PRIMARY KEY,
             gw2account TEXT NOT NULL, 
             activity TEXT NOT NULL,
-            start DATETIME NOT NULL, 
-            end DATETIME NOT NULL
+            start TIMESTAMP NOT NULL, 
+            end TIMESTAMP NOT NULL
           )`).run();
 
         this.connection.prepare(`
@@ -63,7 +63,7 @@ export class Patch8 extends DBPatch {
             achievement_name TEXT NOT NULL,
             gw2account TEXT NOT NULL,
             awarded_by TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
           )`).run();
 
         this.connection.prepare(`
@@ -74,14 +74,17 @@ export class Patch8 extends DBPatch {
             channel TEXT NOT NULL,
             message TEXT NOT NULL,
             FOREIGN KEY(player_achievement_id) REFERENCES player_achievements(player_achievement_id)
+                ON DELETE CASCADE
           )
           `).run();
-
         this.connection.prepare(`
           CREATE TABLE matchups(
             matchup_id INTEGER PRIMARY KEY,
-            start DATETIME NOT NULL,
-            end DATETIME NOT NULL
+            tier INTEGER,
+            start TIMESTAMP NOT NULL,
+            end TIMESTAMP NOT NULL,
+            CHECK(tier BETWEEN 1 AND 5),
+            UNIQUE(start)
           )
           `).run();
 
@@ -91,7 +94,8 @@ export class Patch8 extends DBPatch {
             matchup_id INTEGER,
             colour TEXT, 
             world_id INTEGER, 
-            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
+            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id)
+                ON DELETE CASCADE,
             CHECK(colour IN ('Red','Green','Blue'))
           )
           `).run();
@@ -99,14 +103,14 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`
             CREATE TABLE objectives_snapshots(
               objectives_snapshot_id INTEGER PRIMARY KEY,
-              timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+              timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
             )
             `).run();
 
         this.connection.prepare(`
             CREATE TABLE stats_snapshots(
               stats_snapshot_id INTEGER PRIMARY KEY,
-              timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+              timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
             )
             `).run();
 
@@ -120,8 +124,10 @@ export class Patch8 extends DBPatch {
             deaths INTEGER,
             kills INTEGER,
             victory_points INTEGER,
-            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
-            FOREIGN KEY(snapshot_id) REFERENCES stats_snapshots(stats_snapshot_id),
+            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id)
+                ON DELETE CASCADE,
+            FOREIGN KEY(snapshot_id) REFERENCES stats_snapshots(stats_snapshot_id)
+                ON DELETE CASCADE,
             CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(faction IN ('Red','Blue','Green'))
           )
@@ -141,8 +147,10 @@ export class Patch8 extends DBPatch {
             last_flipped DATE, 
             yaks_delivered INTEGER,
             tier INTEGER,
-            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id),
-            FOREIGN KEY(snapshot_id) REFERENCES objectives_snapshots(objectives_snapshot_id),
+            FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id) 
+                ON DELETE CASCADE,
+            FOREIGN KEY(snapshot_id) REFERENCES objectives_snapshots(objectives_snapshot_id) 
+                ON DELETE CASCADE,
             CHECK(0 <= tier AND tier <= 3),
             CHECK(map IN ('Center', 'RedHome', 'GreenHome', 'BlueHome')),
             CHECK(owner IN ('Red','Blue','Green','Neutral'))

@@ -91,7 +91,7 @@ export class Database {
             res = f(db);
         } catch(err) {
             res = undefined;
-            Util.log("error", "DB.js", "DB execute: {0}".formatUnicorn(err["message"]));
+            Util.log("error", "DB.js", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
         }
 
         db.close();
@@ -290,7 +290,10 @@ export class Database {
     */
     public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string): void {
         return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
-                                    .run(gw2account, tsChannel, start.valueOf()/1000, end.valueOf()/1000));
+                                    .run(gw2account, 
+                                         tsChannel, 
+                                         Util.momentToLocalSqliteTimestamp(start), 
+                                         Util.momentToLocalSqliteTimestamp(end)));
     }
 
     /**
@@ -340,7 +343,7 @@ export class Database {
     public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
         return this.execute(db => {
                                 db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'unixepoch'))")
-                                  .run(achievementName, gw2account, awardedBy, timestamp.valueOf()/1000);
+                                  .run(achievementName, gw2account, awardedBy, Util.momentToLocalSqliteTimestamp(timestamp));
                                 return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
                             });
     }
@@ -459,16 +462,23 @@ export class Database {
 
     public getCurrentMatchup(now: moment.Moment) {
         return this.execute(db => {
-            const match = db.prepare("SELECT matchup_id FROM matchups WHERE datetime(?, 'unixepoch') BETWEEN start AND end").get(now.valueOf()/1000);
+            const match = db.prepare("SELECT matchup_id FROM matchups WHERE datetime(?, 'unixepoch') BETWEEN start AND end").get(Util.momentToLocalSqliteTimestamp(now));
             return match !== undefined ? match.matchup_id : undefined;
         });
     }
 
-    public addMatchup(start: moment.Moment, end: moment.Moment, red: number[], green: number[], blue: number[]) {
+    public addMatchup(tier: number, start: moment.Moment, end: moment.Moment, red: number[], green: number[], blue: number[]) {
         return this.execute(db => {
-            db.prepare("INSERT INTO matchups(start, end) VALUES(datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
-              .run(start.valueOf()/1000, end.valueOf()/1000);
-            const matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            const existingMatch = db.prepare("SELECT matchup_id AS id FROM matchups WHERE start = datetime(?, 'unixepoch')")
+                .get(Util.momentToLocalSqliteTimestamp(start));
+            let matchId: number = existingMatch ? existingMatch.id : undefined;
+            if(matchId === undefined) {
+                db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'unixepoch'), datetime(?, 'unixepoch'))")
+                  .run(tier, 
+                       Util.momentToLocalSqliteTimestamp(start), 
+                       Util.momentToLocalSqliteTimestamp(end));
+                matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            }            
             for(const [world, colour] of [[red, "Red"], [green, "Green"], [blue, "Blue"]] as const) {
                 for(const worldId of world) {
                     this.addMatchupFaction(matchId, worldId, colour);

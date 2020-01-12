@@ -127,9 +127,9 @@ export abstract class Achievement {
     * Checks, if the user is elligble for the achievement.
     * If so, they will be awarded, if not, nothing happens.
     */
-    public tryAward(discordUser: discord.GuildMember) {
+    public tryAward(discordUser: discord.GuildMember, context: any) {
         // config.achievements.ignoring_roles.reduce((acc, x) => acc || discordUser.roles.has(x), false)
-        if(this.checkCondition(discordUser)) {
+        if(this.checkCondition(discordUser, context)) {
             this.awardIn(discordUser.guild, discordUser);
         }
     }
@@ -146,7 +146,7 @@ export abstract class Achievement {
             .setFooter(dbId);
     }
 
-    public abstract checkCondition(discordUser: discord.GuildMember): boolean;
+    public abstract checkCondition(discordUser: discord.GuildMember, context: any): boolean;
 }
 
 export class Glimmer extends Achievement {
@@ -158,7 +158,7 @@ export class Glimmer extends Achievement {
                       false // announce repeats
         );
 
-        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
     }
 
     public checkCondition(discordUser: discord.GuildMember): boolean {
@@ -176,7 +176,7 @@ export class Sunray extends Achievement {
                       false // announce repeats
         );
 
-        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
     }
 
     public checkCondition(discordUser: discord.GuildMember): boolean {
@@ -194,7 +194,7 @@ export class BlazingLight extends Achievement {
                       false // announce repeats
         );
 
-        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
     }
 
     public checkCondition(discordUser: discord.GuildMember): boolean {
@@ -212,7 +212,7 @@ export class Supernova extends Achievement {
                       false // announce repeats
         );
 
-        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
     }
 
     public checkCondition(discordUser: discord.GuildMember): boolean {
@@ -236,7 +236,7 @@ export class GlimmerTest extends Achievement {
                       true // announce repeats
         );
 
-        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser));
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
     }
 
     public checkCondition(discordUser: discord.GuildMember): boolean {

@@ -23,6 +23,17 @@ api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
+export function momentToLocalSqliteTimestamp(moment: moment.Moment) {
+    return moment.valueOf()/1000;
+}
+
+/**
+* Capitalises the first letter of the passed string. 
+* Even if it contains multiple words.
+* word: the string to capitalise. 
+* returns: the capitalised string. 
+*          "foo" -> "Foo", "Foo" -> "Foo", "foo bar" -> "Foo bar"
+*/
 export function capitalise(word: string) {
   return word.length === 0 
               ? word 
@@ -40,7 +51,9 @@ export async function getCurrentMatchId(db: db.Database) {
     let matchId = db.getCurrentMatchup(now);
     if(matchId === undefined) {
         const currentMatch = await api.wvw().matches().overview().world(config.home_id);
+        const tier = currentMatch.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
         db.addMatchup(
+            tier,
             moment.utc(currentMatch.start_time),
             moment.utc(currentMatch.end_time),
             currentMatch.all_worlds.red, 
