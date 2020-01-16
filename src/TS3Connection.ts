@@ -229,6 +229,13 @@ export class Commander {
         this.discordMember = dmember;
     }
 
+    /**
+    * returns: the time of the ongoing raid in seconds. If no raid is going on, 0 is returned.
+    */
+    public getRaidTime(): number {
+        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - this.getRaidStart().valueOf())/1000 : 0;
+    }
+
     public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string) {
         this.accountName = accountName;
         this.ts3DisplayName = ts3DisplayName;
@@ -245,6 +252,10 @@ export class CommanderStorage {
 
     public constructor() {
         this.commanders = [];
+    }
+
+    public getActiveCommanders(): Commander[] {
+        return this.commanders.filter(c => c.getState() === CommanderState.COMMANDER);
     }
 
     public getCommanderByTS3UID(ts3uid: string) {

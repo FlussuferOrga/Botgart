@@ -23,8 +23,8 @@ api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
-export function momentToLocalSqliteTimestamp(moment: moment.Moment) {
-    return moment.valueOf()/1000;
+export function momentToLocalSqliteTimestamp(mom: moment.Moment): string {
+    return mom.local().format("YYYY-MM-DD hh:mm:ss");
 }
 
 /**

@@ -71,8 +71,8 @@ export class Patch8 extends DBPatch {
             ts_lead_id INTEGER PRIMARY KEY,
             gw2account TEXT NOT NULL,
             ts_channel TEXT,
-            start DATETIME NOT NULL,
-            end DATETIME NOT NULL
+            start TIMESTAMP NOT NULL,
+            end TIMESTAMP NOT NULL
           )`).run();
 
         this.connection.prepare(`
@@ -174,7 +174,7 @@ export class Patch8 extends DBPatch {
             type TEXT NOT NULL,
             points_tick INTEGER, 
             points_capture INTEGER,
-            last_flipped DATE, 
+            last_flipped TIMESTAMP, 
             yaks_delivered INTEGER,
             tier INTEGER,
             FOREIGN KEY(matchup_id) REFERENCES matchups(matchup_id) 

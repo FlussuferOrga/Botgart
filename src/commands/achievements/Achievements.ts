@@ -1,9 +1,10 @@
-const config = require("../../../config.json")
-import * as moment from "moment"
-import * as L from "../../Locale"
-import * as discord from "discord.js"
-import { BotgartClient } from "../../BotgartClient"
-import * as Util from "../../Util"
+const config = require("../../../config.json");
+import * as moment from "moment";
+import * as L from "../../Locale";
+import * as discord from "discord.js";
+import { BotgartClient } from "../../BotgartClient";
+import * as Util from "../../Util";
+import { Commander } from "../../TS3Connection";
 
 export enum AchievementAwardResult {
     AWARDED_FIRST_TIME,
@@ -14,9 +15,9 @@ export enum AchievementAwardResult {
 }
 
 export abstract class Achievement {
-    public static readonly EASY_COLOUR: string = "#c97012";
-    public static readonly MEDIUM_COLOUR: string = "#dadada";
-    public static readonly HARD_COLOUR: string = "#fcba03";
+    public static readonly EASY_COLOUR: string = "#c97012"; // 13201426, AD8A56 11373142 
+    public static readonly MEDIUM_COLOUR: string = "#dadada"; // 14342874
+    public static readonly HARD_COLOUR: string = "#fcba03"; // 16562691
 
     public readonly name: string;
     protected client: BotgartClient;
@@ -243,5 +244,29 @@ export class GlimmerTest extends Achievement {
         const user = this.client.db.getUserByDiscordId(discordUser.user);
         console.log("total lead time", this.client.db.getTotalLeadTime(user.gw2account));
         return user ? this.client.db.getTotalLeadTime(user.gw2account) > 1 : false;
+    }
+}
+
+export class ObjectiveTest extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
+                      "Zielobjekts Test", 
+                      Achievement.HARD_COLOUR, 
+                      true, // repeatable
+                      true // announce repeats
+        );
+
+        client.gw2apiemitter.on("wvw-match", 
+                                objs => this.client.commanders.getActiveCommanders()
+                                                              .map(c => this.tryAward(c.getDiscordMember(), 
+                                                                                      {"commander": c, "objectives": objs})));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember, objectives: any): boolean {
+        //const user = this.client.db.getUserByDiscordId(discordUser.user);
+        const commander: Commander = objectives.commander;
+        console.log("total lead time", this.client.db.getTotalLeadTime(commander.getAccountName()));
+        return false;
+        //return user ? this.client.db.getTotalLeadTime(user.gw2account) > 1 : false;
     }
 }
