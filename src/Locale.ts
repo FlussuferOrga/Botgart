@@ -236,7 +236,7 @@ DE = {
         "HELPTEXT_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, in den Nachrichten dieses Typs geleitet werden sollen>`",
         "HELPTEXT_PRUNE": DE["HELPTEXT_PREFIX"] + "`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
         "HELPTEXT_RESET_ROSTER": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Post erstellt werden soll>` (`Kalenderwoche für den Reset, Standard: aktuelle Woche`) (`Jahr für den Reset, Standard: aktuelles Jahr`)",
-        "HELPTEXT_ADD_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>`",
+        "HELPTEXT_ADD_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>` `<Jahr (optional)>`",
         "HELPTEXT_REMOVE_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
         "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
