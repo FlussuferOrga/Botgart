@@ -70,7 +70,7 @@ export class BotgartClient extends AkairoClient {
                 const snapshotId = this.db.addObjectivesSnapshot();
                 const objs = match.maps
                             .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
-                            .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+                            //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                             .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                 this.db.addMatchupObjectives(matchId, snapshotId, objs);
             })
