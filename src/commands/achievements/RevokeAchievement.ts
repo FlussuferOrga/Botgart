@@ -41,13 +41,14 @@ export class RevokeAchievement extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return args &&
+        console.log(args.achievement, Number.isInteger(args.achievement)), args.achievement !== undefined && (args.player !== undefined || Number.isInteger(args.achievement)));
+        return args 
                 // there is this super weird behaviour here, where `args.achievement instanceof Achievement` always returns false,
                 // although it returns true within the BotgartClient class. I can only come up with the explanation that this has to 
                 // do with class loading between the two modules and maybe the fact that achievements are instantiated by reflection. 
                 // But anyway, this seems to be the most "sane" sanity check here.
-                (args.player !== undefined && args.achievement !== undefined) // proper achievementname + player
-                 || Number.isInteger(args.achievement) // achievement entry by DB id
+                args.achievement !== undefined && (args.player !== undefined // proper achievementname + player
+                                                   || Number.isInteger(args.achievement)) // achievement entry by DB id
                 ? undefined 
                 : L.get(this.helptextKey());
     }    

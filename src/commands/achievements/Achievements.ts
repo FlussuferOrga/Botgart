@@ -222,11 +222,379 @@ export class Supernova extends Achievement {
     }
 }
 
+export class Trailblazer extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/e/e1/Banner_of_Strength.png", 
+                      "Vorreiter", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
 
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
 
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
 
+export class Owl extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png", 
+                      "Eule", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
 
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
 
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Earlybird extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/3/3c/Hunter%27s_Call.png", 
+                      "Früher Vogel", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Annihilator extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/e/e4/Rampage.png", 
+                      "Vernichter", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class NeverSurrender extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png", 
+                      "Niemals aufgeben!", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Strategist extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png", 
+                      "Stratege", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class UnchallengedSovereign extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/5/5f/Champion%27s_Crown.png", 
+                      "Unbestrittener Beherrscher", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class AgileDefender extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/3/33/Iron_Guards.png", 
+                      "Agiler Verteidiger", 
+                      Achievement.HARD_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class ThoroughCommander extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/8/85/Watchtower.png", 
+                      "Gründlicher Kommandeur", 
+                      Achievement.HARD_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class BoldBesieger extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png", 
+                      "Dreister Belagerer", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class TenaciousBesieger extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png", 
+                      "Beharrlicher Belagerer", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Princess extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/f/f2/Princess.png", 
+                      "Prinzessin", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Castling extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png", 
+                      "Rochade", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Ettin extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/4/46/Mirror_Images.png", 
+                      "Ettin", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Hydra extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/4/46/Mass_Invisibility.png", 
+                      "Hydra", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Shiftchange extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png", 
+                      "Schichtwechsel", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Bulletproof extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/2/24/Endure_Pain.png", 
+                      "Kugelsicher", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class Boozecommander extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png", 
+                      "Promillekommandeur", 
+                      Achievement.EASY_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class FromAshes extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/c/c1/Phoenix.png", 
+                      "Aus der Asche", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class ThePresident extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png", 
+                      "Der Präsident", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class MountainIsCalling extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/a/a1/Inspiring_Reinforcement.png", 
+                      "Der Berg Ruft", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
+
+export class ThePeak extends Achievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/c/c7/Fortify.png", 
+                      "Der Gipfel", 
+                      Achievement.MEDIUM_COLOUR, 
+                      false, // repeatable
+                      false // announce repeats
+        );
+
+        client.ts3listener.on("tagdown", x => this.tryAward(x.discordUser, undefined));
+    }
+
+    public checkCondition(discordUser: discord.GuildMember): boolean {
+        return false;
+    }
+}
 
 export class GlimmerTest extends Achievement {
     public constructor(client: BotgartClient) {

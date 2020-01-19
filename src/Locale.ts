@@ -160,6 +160,82 @@ EN = {
         "ACHIEVEMENT_NAME_EARLYBIRD": "Early Bird",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Tag up in the morning. For this to count, you need to tag up between 6 AM and 10 AM for at least two hours.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! I love the smell of Sand Shades in the morning!",
+
+        "ACHIEVEMENT_NAME_ANNIHILATOR": "Annihilator",
+        "ACHIEVEMENT_DESC_ANNIHILATOR": "Tag up while the server has a total KDR of 2.",
+        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Colour the ground with their blood.",
+
+        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Never Surrender!",
+        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Tag up when the server has a KD of 0.5 or less.",
+        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "They may take our lives, but they will never take our freedom!",
+
+        "ACHIEVEMENT_NAME_STRATEGIST": "Strategist",
+        "ACHIEVEMENT_DESC_STRATEGIST": "The server reaches a tick of at least 200 during your raid.",
+        "ACHIEVEMENT_FLAV_STRATEGIST": "Colour the map with our colours.",
+
+        "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unchallenged Sovereign",
+        "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Stonemist Castle did not fall during your raid. For this to count, Stonemist Castle needs to be under our control for at least an hour during your raid.",
+        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "It is good to be the king.",
+
+        "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agile Defender",
+        "ACHIEVEMENT_DESC_AGILEDEFENDER": "None of our objectives with tier 3 fell during your raid. This achievement is only awarded if at least one of our objectives was of tier 3 during your raid.",
+        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "When you call, we will come.",
+
+        "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Thorough Commander",
+        "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "All objectives on a map belong to us during your raid. This only includes camps, towers, keeps, and Stone Mist castle.",
+        "ACHIEVEMENT_FLAV_THOROUGHCOMMANDER": "Everything the light touches is our kingdom.",
+
+        "ACHIEVEMENT_NAME_BOLDBESIEGER": "Bold Besieger",
+        "ACHIEVEMENT_DESC_BOLDBESIEGER": "Crash ten tier 3 objectives during your raids.",
+        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Wasn't that ours a moment ago?!",
+
+        "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Tenacious Besieger",
+        "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Crash 100 tier 3 objectives during your raids.",
+        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "We have taken the bridge and the Second Hall. They have barred the gates but cannot hold them for long. The ground shakes.",
+
+        "ACHIEVEMENT_NAME_PRINCESS": "Princess",
+        "ACHIEVEMENT_DESC_PRINCESS": "Capture Osprey's Palace during your raid.",
+        "ACHIEVEMENT_FLAV_PRINCESS": "\"I am a princess!\" -- anonymous",
+
+        "ACHIEVEMENT_NAME_CASTLING": "Castling",
+        "ACHIEVEMENT_DESC_CASTLING": "Take a more valuable objective from another faction while they are taking one of our objectives.",
+        "ACHIEVEMENT_FLAV_CASTLING": "A fair trade.",
+
+        "ACHIEVEMENT_NAME_ETTIN": "Ettin",
+        "ACHIEVEMENT_DESC_ETTIN": "Have a raid simultaneously with another commander.",
+        "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
+
+        "ACHIEVEMENT_NAME_HYDRA": "Hydra",
+        "ACHIEVEMENT_DESC_HYDRA": "Have a raid simultaneously with at least two other commanders.",
+        "ACHIEVEMENT_FLAV_HYDRA": "Cut off one head, two more will take its place.",
+
+        "ACHIEVEMENT_NAME_SHIFTCHANGE": "Shift Change",
+        "ACHIEVEMENT_DESC_SHIFTCHANGE": "Take over the raid from another commander. For this to count you need to tag up in the same channel as another commander or at most five minutes after they tagged down. Lead the raid for at least one hour after that.",
+        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "I am so glad to see you.",
+
+        "ACHIEVEMENT_NAME_BULLETPROOF": "Bullet Proof",
+        "ACHIEVEMENT_DESC_BULLETPROOF": "Raid while the matchup can not be won anymore. This achievement is only awarded if our ranking withtin the ongoing match can not change anymore.",
+        "ACHIEVEMENT_FLAV_BULLETPROOF": "Behind this commander's tag there is more than just a player. Beneath this commander's tag there is an idea... and ideas are indestructible.",
+
+        "ACHIEVEMENT_NAME_BOOZECOMMANDER": "Booze Commander",
+        "ACHIEVEMENT_DESC_BOOZECOMMANDER": "Do a booze raid.",
+        "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "That's unfair! They have suddenly doubled in numbers!",
+
+        "ACHIEVEMENT_NAME_FROMASHES": "From the Ashes",
+        "ACHIEVEMENT_DESC_FROMASHES": "Aid in raising the server from tier 5.",
+        "ACHIEVEMENT_FLAV_FROMASHES": "They have taken everything from us. Even fear itself.",
+
+        "ACHIEVEMENT_NAME_THEPRESIDENT": "The President",
+        "ACHIEVEMENT_DESC_THEPRESIDENT": "Aid in raising the server from tier 4.",
+        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I pick number three.",
+
+        "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "The Mountain is Calling",
+        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Aid in raising the server from tier 3.",
+        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Rasta from Jamaica in Bavarian exile",
+
+        "ACHIEVEMENT_NAME_THEPEAK": "The Peak",
+        "ACHIEVEMENT_DESC_THEPEAK": "Aid in raising the server from tier 2.",
+        "ACHIEVEMENT_FLAV_THEPEAK": "The best view."
     }
 };
 
@@ -323,6 +399,82 @@ DE = {
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 5:00 Uhr für mindestens zwei Stunden an.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
+        
+        "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
+        "ACHIEVEMENT_DESC_ANNIHILATOR": "Der Server erreicht unter deiner Leitung eine gesamte KDR von 2.",
+        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
+
+        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Niemals Aufgeben!",
+        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Beginne einen Schlachtzug wenn der Server eine KD von 0,5 oder weniger hat.",
+        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
+
+        "ACHIEVEMENT_NAME_STRATEGIST": "Stratege",
+        "ACHIEVEMENT_DESC_STRATEGIST": "Der Server erreicht unter deiner Leitung einen Tick von 200.",
+        "ACHIEVEMENT_FLAV_STRATEGIST": "Färbe die Karte mit unseren Farben.",
+
+        "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
+        "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Schloss Steinnebel ist während deiner Leitung nicht gefallen. Dazu muss Schloss Steinnebel mindestens eine Stunde lang während deines Schlachtzuges unter unserer Kontrolle stehen.",
+        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, der König zu sein.",
+
+        "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agiler Verteidiger",
+        "ACHIEVEMENT_DESC_AGILEDEFENDER": "Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden eingenommen. Dieses Achievement wird nur vergeben, wenn wir während deines Raids mindestens eine Befestigung der Stufe 3 kontrollieren.",
+        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Wenn ihr uns ruft, dann werden wir kommen.",
+
+        "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Gründlicher Feldherr",
+        "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "Alle Befestigungen einer beliebigen Karte gehören während deiner Leitung vollständig uns. Das schließt nur Lager, Türme, Festungen und Schloss Steinnebel ein.",
+        "ACHIEVEMENT_FLAV_THOROUGHCOMMANDER": "Das ist unser Königreich. Alles, was das Licht berührt.",
+
+        "ACHIEVEMENT_NAME_BOLDBESIEGER": "Dreister Belagerer",
+        "ACHIEVEMENT_DESC_BOLDBESIEGER": "Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.",
+        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Hat das nicht eben noch uns gehört?! ",
+
+        "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Beharrlicher Belagerer",
+        "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Nimm während deiner Raids 100 Befestigungen der Stufe 3 ein.",
+        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt.",
+
+        "ACHIEVEMENT_NAME_PRINCESS": "Prinzessin",
+        "ACHIEVEMENT_DESC_PRINCESS": "Nimm während deines Raids den Fischadler-Palast ein",
+        "ACHIEVEMENT_FLAV_PRINCESS": "\"Ich bin eine Prinzessin!\" -- Unbekannt ",
+
+        "ACHIEVEMENT_NAME_CASTLING": "Rochade",
+        "ACHIEVEMENT_DESC_CASTLING": "Nimm eine höherwertige Befestigung eines Gegners ein, der gleichzeitig eine unserer Befestigungen einnimmt.",
+        "ACHIEVEMENT_FLAV_CASTLING": "Ein fairer Tausch.",
+
+        "ACHIEVEMENT_NAME_ETTIN": "Ettin",
+        "ACHIEVEMENT_DESC_ETTIN": "Leite gleichzeitig mit mindestens einem weiteren Kommandeur einen Schlachtzug.",
+        "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
+
+        "ACHIEVEMENT_NAME_HYDRA": "Hydra",
+        "ACHIEVEMENT_DESC_HYDRA": "Leite gleichzeitig mit mindestens zwei weiteren Kommandeuren einen Schlachtzug.",
+        "ACHIEVEMENT_FLAV_HYDRA": "Schlagt einen Kopf ab, und zwei weitere werden ihren Platz einnehmen.",
+
+        "ACHIEVEMENT_NAME_SHIFTCHANGE": "Schichtwechsel",
+        "ACHIEVEMENT_DESC_SHIFTCHANGE": "Übernimm die Leitung eines Schlachtzuges von einem Kommandeur. Beginne dazu einen Schlachtzug im selben Kanal während ein anderer Kommandeur leitet oder spätestens fünf Minuten nach diesem. Leite dann mindestens eine Stunde.",
+        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "Bin ich froh, dass du da bist.",
+
+        "ACHIEVEMENT_NAME_BULLETPROOF": "Kugelsicher",
+        "ACHIEVEMENT_DESC_BULLETPROOF": "Beginne einen Raid für mindestens eine Stunde, wenn das Matchup bereits gelaufen ist. Dieses Achievement wird dann vergeben, wenn sich unsere Platzierung nicht weiter verändern kann.",
+        "ACHIEVEMENT_FLAV_BULLETPROOF": "Hinter diesem Kommandeursabzeichen ist nicht nur ein Spieler, hinter diesem Kommandeursabzeichen steckt eine Idee... und Ideen sind unzerstörbar.",
+
+        "ACHIEVEMENT_NAME_BOOZECOMMANDER": "Promillekommandeur",
+        "ACHIEVEMENT_DESC_BOOZECOMMANDER": "Führe einen Saufraid.",
+        "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "Das ist unfair! Die sind plötzlich doppelt so viele!",
+
+        "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
+        "ACHIEVEMENT_DESC_FROMASHES": "Trage dazu bei, den Server aus dem T5 aufsteigen zu lassen.",
+        "ACHIEVEMENT_FLAV_FROMASHES": "Sie haben uns alles genommen. Auch unsere Furcht.",
+
+        "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
+        "ACHIEVEMENT_DESC_THEPRESIDENT": "Trage dazu bei, den Server aus dem T4 aufsteigen zu lassen.",
+        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I nimm die Nummer drey.",
+
+        "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
+        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Trage dazu bei, den Server aus dem T3 aufsteigen zu lassen.",
+        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
+
+        "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
+        "ACHIEVEMENT_DESC_THEPEAK": "Trage dazu bei, den Server aus dem T2 aufsteigen zu lassen.",
+        "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht."
     }
 };
 
