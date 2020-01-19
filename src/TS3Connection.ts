@@ -6,11 +6,24 @@ import * as moment from "moment";
 import * as L from "./Locale.js";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
-import EventEmitter from "events"
+import EventEmitter from "events";
+import * as db from "./DB";
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
 const RECONNECT_TIMER_MS = 30000; 
+
+export interface TagDown {
+    readonly guild: discord.Guild;
+    readonly commander: Commander,
+    readonly dbRegistration: db.Registration
+}
+
+export interface TagUp {
+    readonly guild: discord.Guild,
+    readonly commander: Commander,
+    readonly dbRegistration: db.Registration
+}
 
 export class TS3Connection {
     private static CONNECTION_COUNTER: number = 1;
@@ -427,14 +440,10 @@ export class TS3Listener extends EventEmitter {
             dchan.send(mes);
         }
         this.emit("tagup", {
-            ...{
-                "guild": g,
-                "account": commander.getAccountName(), 
-                "tsUID": commander.getTS3ClientUID(), 
-                "username": commander.getTS3DisplayName(), 
-                "channel": commander.getTS3Channel(),
-                "discordMember": commander.getDiscordMember()
-            }, ...registration});
+                "guild": g, 
+                "commander": commander,
+                "dbRegistration": registration
+            });
     }
 
     /**
@@ -443,8 +452,8 @@ export class TS3Listener extends EventEmitter {
     * - the user's TS-UID-Discordname is forgotten
     */
     private tagDown(g: discord.Guild, commander: Commander) {
-        let registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
-        let dmember = undefined;
+        let registration: db.Registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
+        let dmember: discord.GuildMember = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
             const crole = g.roles.find(r => r.name === this.commanderRole);
@@ -460,13 +469,9 @@ export class TS3Listener extends EventEmitter {
         this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
         this.botgartClient.commanders.deleteCommander(commander);
         this.emit("tagdown", {
-            ...{
-                "guild": g,
-                "tsUID": commander.getTS3ClientUID(),
-                "account": commander.getAccountName(),
-                "start": commander.getRaidStart(),
-                "end": moment.utc(),
-                "discordMember": commander.getDiscordMember()
-        }, ...registration});
+                "guild": g, 
+                "commander": commander, 
+                "dbRegistration": registration
+            });
     } 
 }

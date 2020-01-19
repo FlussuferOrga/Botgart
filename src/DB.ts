@@ -12,7 +12,16 @@ const REAUTH_DELAY : number = 5000;
 const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
 
 // FIXME: resolve objects when loading from db
-
+export interface Registration {
+    readonly id: string;
+    readonly user: string;
+    readonly guild: string, 
+    readonly api_key: string,
+    readonly gw2account: string,
+    readonly registration_role: string,
+    readonly account_name: string, 
+    readonly created: string
+}
 
 export class Database {
     readonly file: string;
@@ -169,18 +178,7 @@ export class Database {
     * accountName: GW2 account name. 
     * returns: the latest entry for that account name if any, else undefined.
     */
-    public getUserByAccountName(accountName: string)
-    : {
-        id: string,
-        user: string,
-        guild: string, 
-        api_key: string, 
-        gw2account: string, 
-        registration_role: string,
-        account_name: string, 
-        created: string
-      } 
-    {
+    public getUserByAccountName(accountName: string): Registration {
         return this.execute(db => db.prepare(`
             SELECT 
                 id, user, guild, api_key, gw2account, registration_role, account_name, created 
@@ -199,18 +197,7 @@ export class Database {
     * accountName: GW2 account name. 
     * returns: the latest entry for that account name if any, else undefined.
     */ 
-    public getUserByGW2Account(gw2account: string)
-    : {
-        id: string,
-        user: string,
-        guild: string, 
-        api_key: string, 
-        gw2account: string, 
-        registration_role: string,
-        account_name: string, 
-        created: string
-      } 
-    {
+    public getUserByGW2Account(gw2account: string): Registration {
         return this.execute(db => db.prepare(`
             SELECT 
                 id, user, guild, api_key, gw2account, registration_role, account_name, created 
@@ -229,18 +216,7 @@ export class Database {
     * discordUser: the Discord user to retrieve the account for. 
     * returns: the latest entry for that account name if any, else undefined.
     */
-    public getUserByDiscordId(discordUser: discord.User) 
-    : {
-        id: string,
-        user: string,
-        guild: string, 
-        api_key: string, 
-        gw2account: string, 
-        registration_role: string,
-        account_name: string, 
-        created: string
-      } 
-    {
+    public getUserByDiscordId(discordUser: discord.User): Registration {
         return this.execute(db => db.prepare(`
             SELECT 
                 id, user, guild, api_key, gw2account, registration_role, account_name, created 

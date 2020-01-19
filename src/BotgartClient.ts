@@ -19,7 +19,7 @@ export class BotgartClient extends AkairoClient {
     public readonly gw2apiemitter: APIEmitter;
     public readonly ts3listener: TS3Listener;
     public readonly commanders: CommanderStorage;
-    private achievements: {[key:string] : achievements.Achievement};
+    private achievements: {[key:string] : achievements.Achievement<any>};
 
     constructor(options, dbfile) {
         super(options, {});
@@ -84,16 +84,16 @@ export class BotgartClient extends AkairoClient {
         });
     }
 
-    public getAchievements(): achievements.Achievement[] {
+    public getAchievements(): achievements.Achievement<any>[] {
         return Object.values(this.achievements);
     }
 
-    public getAchievement(name: string): achievements.Achievement {
+    public getAchievement(name: string): achievements.Achievement<any> {
         name = name.toLowerCase();
         return name in this.achievements ? this.achievements[name] : undefined;
     }
 
-    public registerAchievement(achievement: achievements.Achievement) {
+    public registerAchievement(achievement: achievements.Achievement<any>) {
         this.achievements[achievement.name.toLowerCase()] = achievement;
     }
 

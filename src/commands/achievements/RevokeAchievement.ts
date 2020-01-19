@@ -21,7 +21,7 @@ export class RevokeAchievement extends BotgartCommand {
                 {
                     id: "achievement",
                     type: (word: string, message: discord.Message, prevArgs: any[]) => {
-                        let achievement: number | Achievement = parseInt(word);
+                        let achievement: number | Achievement<any> = parseInt(word);
                         if(isNaN(achievement)) {
                             achievement = this.getBotgartClient().getAchievement(word);
                         }
@@ -41,7 +41,6 @@ export class RevokeAchievement extends BotgartCommand {
     }
 
     checkArgs(args) {
-        console.log(args.achievement, Number.isInteger(args.achievement)), args.achievement !== undefined && (args.player !== undefined || Number.isInteger(args.achievement)));
         return args 
                 // there is this super weird behaviour here, where `args.achievement instanceof Achievement` always returns false,
                 // although it returns true within the BotgartClient class. I can only come up with the explanation that this has to 
@@ -69,7 +68,7 @@ export class RevokeAchievement extends BotgartCommand {
                 const achievementData = db.deletePlayerAchievement(achievementId);
                 if(achievementData !== undefined) {
                     revokedCount = 1; // else stays at default 0
-                    const aobj: Achievement = this.getBotgartClient().getAchievement(achievementData.achievement_name);
+                    const aobj: Achievement<any> = this.getBotgartClient().getAchievement(achievementData.achievement_name);
                     if(achievementData && db.checkAchievement(achievementData.achievement_name, achievementData.gw2account).length == 0) {
                         // user lost their last instance of this achievement -> remove role
                         // since removing an entry from the DB does not require a player to be passed,
