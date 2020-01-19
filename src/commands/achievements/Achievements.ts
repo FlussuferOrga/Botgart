@@ -232,7 +232,7 @@ export class Trailblazer extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/e/e1/Banner_of_Strength.png", 
                       "Vorreiter", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -249,7 +249,7 @@ export class Owl extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png", 
                       "Eule", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -266,7 +266,7 @@ export class Earlybird extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/3/3c/Hunter%27s_Call.png", 
                       "Früher Vogel", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -283,7 +283,7 @@ export class Annihilator extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/e/e4/Rampage.png", 
                       "Vernichter", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -300,7 +300,7 @@ export class NeverSurrender extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png", 
                       "Niemals aufgeben!", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -317,7 +317,7 @@ export class Strategist extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png", 
                       "Stratege", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -334,7 +334,7 @@ export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/5/5f/Champion%27s_Crown.png", 
                       "Unbestrittener Beherrscher", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -351,7 +351,7 @@ export class AgileDefender extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/3/33/Iron_Guards.png", 
                       "Agiler Verteidiger", 
                       Achievement.HARD_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -368,7 +368,7 @@ export class ThoroughCommander extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/8/85/Watchtower.png", 
                       "Gründlicher Kommandeur", 
                       Achievement.HARD_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -419,7 +419,7 @@ export class Princess extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/f/f2/Princess.png", 
                       "Prinzessin", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -436,7 +436,7 @@ export class Castling extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png", 
                       "Rochade", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -453,7 +453,7 @@ export class Ettin extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mirror_Images.png", 
                       "Ettin", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -470,7 +470,7 @@ export class Hydra extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mass_Invisibility.png", 
                       "Hydra", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -487,7 +487,7 @@ export class Shiftchange extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png", 
                       "Schichtwechsel", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -504,7 +504,7 @@ export class Bulletproof extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/2/24/Endure_Pain.png", 
                       "Kugelsicher", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -521,7 +521,7 @@ export class Boozecommander extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png", 
                       "Promillekommandeur", 
                       Achievement.EASY_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -538,7 +538,7 @@ export class FromAshes extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/c/c1/Phoenix.png", 
                       "Aus der Asche", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -555,7 +555,7 @@ export class ThePresident extends Achievement<ts3.TagDown> {
         super(client, "https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png", 
                       "Der Präsident", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -572,7 +572,7 @@ export class MountainIsCalling extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/a/a1/Inspiring_Reinforcement.png", 
                       "Der Berg Ruft", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
@@ -589,7 +589,7 @@ export class ThePeak extends Achievement<ts3.TagDown> {
         super(client, "https://wiki.guildwars2.com/images/c/c7/Fortify.png", 
                       "Der Gipfel", 
                       Achievement.MEDIUM_COLOUR, 
-                      false, // repeatable
+                      true, // repeatable
                       false // announce repeats
         );
 
