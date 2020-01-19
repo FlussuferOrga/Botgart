@@ -3,10 +3,11 @@ import * as moment from "moment";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
-import * as Util from "../../Util";
+import * as U from "../../Util";
 import { Commander } from "../../TS3Connection";
 import * as db from "../../DB";
 import * as ts3 from "../../TS3Connection";
+import * as gw2api from "../../emitters/APIEmitter";
 
 export enum AchievementAwardResult {
     AWARDED_FIRST_TIME,
@@ -49,7 +50,7 @@ export abstract class Achievement<C> {
         return this.roleName;
     }
 
-    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable = false, announceRepetitions = false) {
+    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable: boolean = false, announceRepetitions: boolean = false) {
         this.client = client;
         this.name = this.constructor.name;
         this.imageURL = imageURL;
@@ -93,7 +94,7 @@ export abstract class Achievement<C> {
 
         const userdata = this.client.db.getUserByDiscordId(discordUser.user);
         if(userdata === undefined) {
-            Util.log("warning", "Achievements.js", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
+            U.log("warning", "Achievements.js", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
@@ -113,7 +114,7 @@ export abstract class Achievement<C> {
                            (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser, rowId));     
                         }                       
                     } else {
-                        Util.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+                        U.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
                     const role: discord.Role = guild.roles.find(r => r.name === this.getRoleName());
@@ -122,7 +123,7 @@ export abstract class Achievement<C> {
                     } else {
                         guild.createRole({"name": this.roleName, "color": this.roleColour})
                           .then(r => discordUser.addRole(r))
-                          .catch(e => Util.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));                    
+                          .catch(e => U.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));                    
                     }
                 }   
             } 
@@ -155,7 +156,40 @@ export abstract class Achievement<C> {
     public abstract checkCondition(discordUser: discord.GuildMember, context: C): boolean;
 }
 
-export class Glimmer extends Achievement<ts3.TagDown> {
+abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
+    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+          super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+
+          client.ts3listener.on("tagup", x => this.tryAward(x.commander.discordMember, x));
+      }
+}
+
+abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
+    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+          super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+
+          client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
+      }
+}
+
+abstract class ObjectiveAchievement extends Achievement<{"commander": ts3.Commander, "objectives": gw2api.WvWMatches}> {
+    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+          super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+
+          client.gw2apiemitter.on("wvw-match", 
+                                  objs => this.client
+                                              .commanders
+                                              .getActiveCommanders()
+                                              .map(c => this.tryAward(c.getDiscordMember(), 
+                                                                     {"commander": c, "objectives": objs})));
+    }
+}
+
+//------------------------------------------------------------------------------
+// ACHIEVEMENTS
+//------------------------------------------------------------------------------
+
+export class Glimmer extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
                       "Schimmer", 
@@ -163,8 +197,6 @@ export class Glimmer extends Achievement<ts3.TagDown> {
                       false, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -173,7 +205,7 @@ export class Glimmer extends Achievement<ts3.TagDown> {
     }
 }
 
-export class Sunray extends Achievement<ts3.TagDown> {
+export class Sunray extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/37/Cosmic_Ray.png", 
                       "Sonnenstrahl", 
@@ -181,8 +213,6 @@ export class Sunray extends Achievement<ts3.TagDown> {
                       false, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -191,7 +221,7 @@ export class Sunray extends Achievement<ts3.TagDown> {
     }
 }
 
-export class BlazingLight extends Achievement<ts3.TagDown> {
+export class BlazingLight extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e6/Lunar_Impact.png", 
                       "Gleißendes Licht", 
@@ -199,8 +229,6 @@ export class BlazingLight extends Achievement<ts3.TagDown> {
                       false, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -209,7 +237,7 @@ export class BlazingLight extends Achievement<ts3.TagDown> {
     }
 }
 
-export class Supernova extends Achievement<ts3.TagDown> {
+export class Supernova extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/ff/Astral_Wisp.png", 
                       "Supernova", 
@@ -217,8 +245,6 @@ export class Supernova extends Achievement<ts3.TagDown> {
                       false, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -227,7 +253,7 @@ export class Supernova extends Achievement<ts3.TagDown> {
     }
 }
 
-export class Trailblazer extends Achievement<ts3.TagDown> {
+export class Trailblazer extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e1/Banner_of_Strength.png", 
                       "Vorreiter", 
@@ -235,16 +261,18 @@ export class Trailblazer extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+        const rs: moment.Moment = context.commander.getRaidStart();
+        const min: number = U.getResetTime().minute();
+        const before: moment.Moment = U.getResetTime().minute(min-20);
+        const after: moment.Moment = U.getResetTime().minute(min+20);
+        return rs.weekday() === U.RESET_WEEKDAY && rs.isBetween(before,after) && context.commander.getRaidTime() > 3600;
     }
 }
 
-export class Owl extends Achievement<ts3.TagDown> {
+export class Owl extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png", 
                       "Eule", 
@@ -252,16 +280,14 @@ export class Owl extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+      return U.isBetweenTime(context.commander.getRaidStart(), "23:00:00", "05:00:00") && context.commander.getRaidTime() > 3600;
     }
 }
 
-export class Earlybird extends Achievement<ts3.TagDown> {
+export class Earlybird extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/3c/Hunter%27s_Call.png", 
                       "Früher Vogel", 
@@ -269,32 +295,37 @@ export class Earlybird extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+      return U.isBetweenTime(context.commander.getRaidStart(), "06:00:00", "10:00:00") && context.commander.getRaidTime() > 3600;
     }
 }
 
-export class Annihilator extends Achievement<ts3.TagDown> {
+export class Annihilator extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e4/Rampage.png", 
                       "Vernichter", 
-                      Achievement.EASY_COLOUR, 
+                      Achievement.HARD_COLOUR, 
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
+        let holds = false;
+        const obj = context.objectives;
+        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(config.home_id))[0]; 
+        if(ourColour === undefined) {
+          U.log("warning", "Achievements.js", `Could not find our home id '${config.home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+        } else {
+          holds = obj.kills[ourColour]/obj.kills[ourColour] >= 2.0;
+        }
+        return holds;
     }
 }
 
+// fixme
 export class NeverSurrender extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png", 
@@ -312,6 +343,7 @@ export class NeverSurrender extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Strategist extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png", 
@@ -329,6 +361,7 @@ export class Strategist extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/5/5f/Champion%27s_Crown.png", 
@@ -346,6 +379,7 @@ export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class AgileDefender extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/33/Iron_Guards.png", 
@@ -363,6 +397,7 @@ export class AgileDefender extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class ThoroughCommander extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/85/Watchtower.png", 
@@ -380,6 +415,7 @@ export class ThoroughCommander extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class BoldBesieger extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png", 
@@ -397,6 +433,7 @@ export class BoldBesieger extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class TenaciousBesieger extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png", 
@@ -414,6 +451,7 @@ export class TenaciousBesieger extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Princess extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/f2/Princess.png", 
@@ -431,6 +469,7 @@ export class Princess extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Castling extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png", 
@@ -448,6 +487,7 @@ export class Castling extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Ettin extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mirror_Images.png", 
@@ -465,6 +505,7 @@ export class Ettin extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Hydra extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mass_Invisibility.png", 
@@ -482,6 +523,7 @@ export class Hydra extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Shiftchange extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png", 
@@ -499,6 +541,7 @@ export class Shiftchange extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Bulletproof extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/2/24/Endure_Pain.png", 
@@ -516,6 +559,7 @@ export class Bulletproof extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class Boozecommander extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png", 
@@ -533,6 +577,7 @@ export class Boozecommander extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class FromAshes extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/c/c1/Phoenix.png", 
@@ -550,6 +595,7 @@ export class FromAshes extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class ThePresident extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png", 
@@ -567,6 +613,7 @@ export class ThePresident extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class MountainIsCalling extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/a/a1/Inspiring_Reinforcement.png", 
@@ -584,6 +631,7 @@ export class MountainIsCalling extends Achievement<ts3.TagDown> {
     }
 }
 
+// fixme
 export class ThePeak extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/c/c7/Fortify.png", 
@@ -600,47 +648,3 @@ export class ThePeak extends Achievement<ts3.TagDown> {
         return false;
     }
 }
-
-/*export class GlimmerTest extends Achievement<ts3.TagDown> {
-    public constructor(client: BotgartClient) {
-        super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
-                      "SchimmerTest", 
-                      Achievement.EASY_COLOUR, 
-                      true, // repeatable
-                      true // announce repeats
-        );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
-    }
-
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const user = this.client.db.getUserByDiscordId(discordUser.user);
-        console.log("total lead time", this.client.db.getTotalLeadTime(user.gw2account));
-        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 1 : false;
-    }
-}
-
-export class ObjectiveTest extends Achievement<ts3.TagDown> {
-    public constructor(client: BotgartClient) {
-        super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png", 
-                      "Zielobjekts Test", 
-                      Achievement.HARD_COLOUR, 
-                      true, // repeatable
-                      true // announce repeats
-        );
-
-        client.gw2apiemitter.on("wvw-match", 
-                                objs => this.client.commanders.getActiveCommanders()
-                                                              .map(c => this.tryAward(c.getDiscordMember(), 
-                                                                                      {"commander": c, "objectives": objs})));
-    }
-
-    public checkCondition(discordUser: discord.GuildMember, objectives: any): boolean {
-        //const user = this.client.db.getUserByDiscordId(discordUser.user);
-        const commander: Commander = objectives.commander;
-        console.log("total lead time", this.client.db.getTotalLeadTime(commander.getAccountName()));
-        return false;
-        //return user ? this.client.db.getTotalLeadTime(user.gw2account) > 1 : false;
-    }
-}
-*/

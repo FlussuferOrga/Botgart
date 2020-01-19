@@ -243,7 +243,8 @@ export class Commander {
     }
 
     /**
-    * returns: the time of the ongoing raid in seconds. If no raid is going on, 0 is returned.
+    * returns: the time of the _ongoing_ raid in seconds. If no raid is going on, 0 is returned. 
+    *          That means: when this method is called, it assumes the raid is still going on!
     */
     public getRaidTime(): number {
         return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - this.getRaidStart().valueOf())/1000 : 0;
