@@ -317,7 +317,7 @@ export class Owl extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-      return U.isBetweenTime(context.commander.getRaidStart(), "23:00:00", "05:00:00") && context.commander.getRaidTime() > 3600;
+        return U.isBetweenTime(context.commander.getRaidStart(), "23:00:00", "05:00:00") && context.commander.getRaidTime() > 3600;
     }
 }
 

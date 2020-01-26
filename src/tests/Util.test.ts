@@ -1,8 +1,9 @@
 import { expect, assert } from  "chai";
 import * as U from "../Util";
 import * as R from "../commands/resetlead/ResetRoster"
+import moment = require("moment");
 
-describe("Util", function() {
+describe("Util - Date", function() {
   // getResetDay(week : number, year : number = new Date().getFullYear(), resetWeekDay : number = 5) : Date {
   // both months start at zero, so 2019-1-4 becomes 2019,0,4
   it("number of week on Monday",    () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019,10,11)))).equal(46));
@@ -39,7 +40,7 @@ describe("Util", function() {
   //});
 });
 
-describe("Util", function() {
+describe("Util - WvW", function() {
   it("upcoming reset before Friday", () => 
     assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,10,12))), 
                                      new Date(Date.UTC(2019,10,15)))));
@@ -52,13 +53,41 @@ describe("Util", function() {
     assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,11,31))), 
                                      new Date(Date.UTC(2020,0,3)))));
 
+  it("determine tier", () => {
+    for(let i = 0; i < 100; i++) {
+      const tier = U.determineTier(i);
+      if(0 <= i && i < 20) {
+        expect(tier).equal(0);
+      } else if(20 <= i && i < 40) {
+        expect(tier).equal(1);
+      } else if(40 <= i && i < 80) {
+        expect(tier).equal(2);
+      } else {
+        expect(tier).equal(3);
+      }
+    }
+  });
+
   //it("upcoming reset on Saturday", () => 
   //  assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,10,16)))
   //                                   new Date(Date.UTC(2019,10,))
 
 });
 
-describe("Util", function() {
+describe("Util - Is Between", function() {
+  it("is between", () => expect(U.isBetweenTime(moment("2010-10-20 4:30", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
+
+  it("is at start", () => expect(U.isBetweenTime(moment("2010-10-20 23:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
+
+  it("is at end", () => expect(U.isBetweenTime(moment("2010-10-20 05:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
+
+  it("is before", () => expect(!U.isBetweenTime(moment("2010-10-20 22:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
+
+  it("is after", () => expect(!U.isBetweenTime(moment("2010-10-20 06:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
+});
+
+
+describe("Util - Crons", function() {
   it("empty string", () => expect(!U.parseCronDate("")));
 
   it("undefined", () => expect(!U.parseCronDate(undefined)));
@@ -78,20 +107,5 @@ describe("Util", function() {
   it("cron valid Moment 1", () => assert(U.parseCronDate("12.12.2019 15:15").constructor.name === "Moment"));
 
   it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
-
-  it("determine tier", () => {
-    for(let i = 0; i < 100; i++) {
-      const tier = U.determineTier(i);
-      if(0 <= i && i < 20) {
-        expect(tier).equal(0);
-      } else if(20 <= i && i < 40) {
-        expect(tier).equal(1);
-      } else if(40 <= i && i < 80) {
-        expect(tier).equal(2);
-      } else {
-        expect(tier).equal(3);
-      }
-    }
-  });
 
 });
