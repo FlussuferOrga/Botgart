@@ -333,6 +333,7 @@ export class TS3Listener extends EventEmitter {
         this.channelDelay = config.ts_listener.channel_delay;
         this.gracePeriod = config.ts_listener.grace_period;
         this.channels = {};
+        this.setMaxListeners(24);
 
         const that = this;
         this.ts3connection.getSocket().on("data", (raw : Buffer) => {
@@ -455,6 +456,7 @@ export class TS3Listener extends EventEmitter {
     private tagDown(g: discord.Guild, commander: Commander) {
         let registration: db.Registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember = undefined;
+        let writeToDB: boolean = true;
         if(registration) {
             // the commander is member of the current discord -> remove role
             const crole = g.roles.find(r => r.name === this.commanderRole);
@@ -465,9 +467,13 @@ export class TS3Listener extends EventEmitter {
                     log("warning", "TS3Listener.js", `Could not remove role '${this.commanderRole}' from user '${dmember.nickname}'' which was expected to be there. Maybe someone else already removed it.`)
                 });
             }
+            // do not write leads of members which hide their roles
+            writeToDB = !(dmember && dmember.roles.find(r => config.achievements.ignoring_roles.includes(r.name)));
         }
 
-        this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
+        if(writeToDB) {
+            this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
+        }
         this.botgartClient.commanders.deleteCommander(commander);
         this.emit("tagdown", {
                 "guild": g, 

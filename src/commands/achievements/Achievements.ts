@@ -111,7 +111,7 @@ export abstract class Achievement<C> {
 
                     if(achievementChannel) {
                         if(isNew || this.announceRepetitions) {
-                           (<discord.TextChannel>achievementChannel).send(this.createEmbed(discordUser, rowId));     
+                           (<discord.TextChannel>achievementChannel).send({reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
                         }                       
                     } else {
                         U.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
@@ -334,8 +334,6 @@ export class NeverSurrender extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -352,8 +350,6 @@ export class Strategist extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -370,8 +366,6 @@ export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -388,8 +382,6 @@ export class AgileDefender extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -406,8 +398,6 @@ export class ThoroughCommander extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -424,8 +414,6 @@ export class BoldBesieger extends Achievement<ts3.TagDown> {
                       false, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -442,8 +430,6 @@ export class TenaciousBesieger extends Achievement<ts3.TagDown> {
                       false, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -460,8 +446,6 @@ export class Princess extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -478,8 +462,6 @@ export class Castling extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -496,8 +478,6 @@ export class Ettin extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -514,8 +494,6 @@ export class Hydra extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -532,8 +510,6 @@ export class Shiftchange extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -550,8 +526,6 @@ export class Bulletproof extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -568,8 +542,6 @@ export class Boozecommander extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -586,8 +558,6 @@ export class FromAshes extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -604,8 +574,6 @@ export class ThePresident extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -622,8 +590,6 @@ export class MountainIsCalling extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
@@ -640,8 +606,6 @@ export class ThePeak extends Achievement<ts3.TagDown> {
                       true, // repeatable
                       false // announce repeats
         );
-
-        client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
