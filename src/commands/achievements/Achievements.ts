@@ -153,6 +153,40 @@ export abstract class Achievement<C> {
             .setFooter(dbId);
     }
 
+    /**
+    * Convenience method to give a user the role linked to this achievement. 
+    * Useful to restore roles for a user after they rejoined the Discord after 
+    * they have already earned the achievement. 
+    * discordUser: the user to grant the role to in that exact guild. 
+    * returns: true, if the achievement role was found in the guild and 
+    *          addRole was called (this doesn't imply wether the role was actually added!)
+    */
+    public giveRole(discordUser: discord.GuildMember): boolean {
+        let given = false;
+        const role = discordUser.guild.roles.find(r => r.name === this.getRoleName());
+        if(role) {
+            discordUser.addRole(role);
+            given = true;
+        }
+        return given;
+    }
+
+    /**
+    * Convenience method to remove the role linked to this achievement from a user. 
+    * discordUser: the user to remove the role from in their guild. 
+    * returns: true, if the achievement role was found in the guild and 
+    *          removeRole was called (this doesn't imply wether the role was actually removed!)
+    */
+    public removeRole(discordUser: discord.GuildMember): boolean {
+        let removed = false;
+        const role = discordUser.guild.roles.find(r => r.name === this.getRoleName());
+        if(role) {
+            discordUser.removeRole(role);
+            removed = true;
+        }
+        return removed;
+    }
+
     public abstract checkCondition(discordUser: discord.GuildMember, context: C): boolean;
 }
 
