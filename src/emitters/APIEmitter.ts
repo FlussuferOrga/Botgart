@@ -66,7 +66,7 @@ export class APIEmitter extends EventEmitter {
     }
 
     public schedule(name: string, endpoint: (gw2) => any, interval: number): void {
-        endpoint(api).then(r => console.log(name, r));
+        //endpoint(api).then(r => console.log(name, r));
         setInterval(() => this.emit(name, endpoint(api)), interval);
     }
 }
