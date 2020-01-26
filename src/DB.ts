@@ -273,6 +273,36 @@ export class Database {
     }
 
     /**
+    * Deletes all information related to the achievements of a player.
+    * That is: all their leads and all their achievements the have been awarded so far. 
+    * returns: tuple of [0]: number of removed leads, [1]: number of revoked achievements
+    */
+    public deleteAchievementInformation(gw2account: string): [number, number] {
+        const removedLeads: number = this.execute(db =>
+                                db.transaction((_) => {
+                                    db.prepare(`
+                                        DELETE FROM 
+                                            ts_leads
+                                        WHERE
+                                            gw2account = ?
+                                    `).run(gw2account);
+                                    return db.prepare(`SELECT changes() AS changes`).get().changes;
+                                })(null));
+        const revokedAchievements: number = this.execute(db =>
+                                    db.transaction((_) => {
+                                        db.prepare(`
+                                            DELETE FROM 
+                                                player_achievements
+                                            WHERE
+                                                gw2account = ?
+                                        `).run(gw2account);
+                                        return db.prepare(`SELECT changes() AS changes`).get().changes;
+                                    })(null));
+        return [removedLeads, revokedAchievements];
+        
+    }
+
+    /**
     * Total time a player tagged up over all channels in seconds. 
     * gw2account: player to check 
     * returns: seconds the player has tagged up or 0 if the player is unknown.
