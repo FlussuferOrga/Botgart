@@ -29,6 +29,8 @@ export class Patch8 extends DBPatch {
             && this.viewExists("map_ticks")
             && this.viewExists("total_ticks")
             && this.viewExists("total_stats")
+            && this.indexExists("stats_snapshots", "stats_snapshots_timestamp_index")
+            && this.indexExists("objectives_snapshots", "objectives_snapshots_timestamp_index")
     }
 
     protected async apply(): Promise<void> {
@@ -288,7 +290,13 @@ export class Patch8 extends DBPatch {
                       ON ss.stats_snapshot_id = ms.snapshot_id
                 GROUP BY
                     ms.snapshot_id, faction
-            `).run()
+            `).run();
+
+        this.connection.prepare(`
+            CREATE INDEX stats_snapshots_timestamp_index ON stats_snapshots(timestamp)`).run();
+
+        this.connection.prepare(`
+            CREATE INDEX objectives_snapshots_timestamp_index ON objectives_snapshots(timestamp)`).run();
     }
 
     public async revert(): Promise<void> {
@@ -298,6 +306,8 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP VIEW IF EXISTS map_ticks`).run();
         this.connection.prepare(`DROP VIEW IF EXISTS total_ticks`).run();
         this.connection.prepare(`DROP VIEW IF EXISTS total_stats`).run();
+        this.connection.prepare(`DROP INDEX IF EXISTS stats_snapshots_timestamp_index`).run();
+        this.connection.prepare(`DROP INDEX IF EXISTS objectives_snapshots_timestamp_index`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievement_posts`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();

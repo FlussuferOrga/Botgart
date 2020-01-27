@@ -4,13 +4,15 @@ import { Patch } from "./patches/Patch.js";
 import * as commandlineargs from "command-line-args";
 import * as fs from "fs";
 
-
 /*
 import * as moment from "moment";
 import * as Util from "./Util";
 
 
 console.log(Util.momentToLocalSqliteTimestamp(moment.utc()));
+process.exit(1);
+
+console.log(client.db.getObjectivesAround());
 process.exit(1);
 */
 

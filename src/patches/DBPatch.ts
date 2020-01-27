@@ -30,6 +30,10 @@ export class DBPatch extends Patch {
             .filter(col => col.name === column).length > 0;
     }
 
+    protected indexExists(table: string, index: string): boolean {
+        return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name=? AND name=?").all(table, index).length > 0;
+    }
+
     protected dbbegin(): void {
         this.connection.prepare("BEGIN").run();
     }

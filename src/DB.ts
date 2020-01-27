@@ -488,13 +488,21 @@ export class Database {
         );         
     }
 
-    public getObjectivesAround(moment: moment.Moment)
+    /**
+    * Determines the objectives' states around a given moment. 
+    * That is, based on the snapshot whose timestamp is closest
+    * to the passed moment. 
+    * If no moment is passed, the local NOW is assumed, resulting
+    * in the latest state present in the database. 
+    * now: the moment around which the state should be determined
+    * returns: information about the state of all objectives
+    */
+    public getObjectivesAround(now: moment.Moment = undefined)
     : {
-        objectives_snapshot_id: number,
+        snapshot_id: number,
         timestamp: string,
         matchup_objective_id: number,
         matchup_id: number,
-        snapshot_id: number,
         objective_id: number
         map: string, owner: string,
         type: string,
@@ -504,7 +512,10 @@ export class Database {
         yaks_delivered: number,
         tier: number
     } {
-        const ts = Util.momentToLocalSqliteTimestamp(moment);
+        if(!now) {
+            now = moment.utc().local();
+        }
+        const ts = Util.momentToLocalSqliteTimestamp(now);
         return this.execute(db => db.prepare(`
             WITH 
             surrounding AS (
@@ -543,13 +554,103 @@ export class Database {
                     1
             )
             SELECT 
-                * 
+                c.objectives_snapshot_id AS snapshot_id,
+                c.timestamp,
+                mo.matchup_objective_id,
+                mo.matchup_id,
+                mo.objective_id,
+                mo.map,
+                mo.owner,
+                mo.type,
+                mo.points_tick,
+                mo.points_capture,
+                mo.last_flipped,
+                mo.yaks_delivered,
+                mo.tier
             FROM 
                 closest AS c
                 JOIN matchup_objectives AS mo
                   ON c.objectives_snapshot_id = mo.snapshot_id
+        `).all(ts,ts,ts));
+    }
 
-        `)).all(ts,ts,ts);
+    /**
+    * Determines the matchup stats around a given moment. 
+    * That is, based on the snapshot whose timestamp is closest
+    * to the passed moment. 
+    * If no moment is passed, the local NOW is assumed, resulting
+    * in the latest stats present in the database. 
+    * now: the moment around which the stats should be determined
+    * returns: information about the stats (not aggregated)
+    */
+    public getStatsAround(now: moment.Moment = undefined)
+    : {
+        snapshot_id: number,
+        timestamp: string,
+        matchup_stats_id: number,
+        matchup_id: number,
+        map: string,
+        faction: string,
+        deaths: number,
+        kills: number,
+        victory_points: number 
+    } {
+        if(!now) {
+            now = moment.utc().local();
+        }
+        const ts = Util.momentToLocalSqliteTimestamp(now);
+        return this.execute(db => db.prepare(`
+            WITH 
+            surrounding AS (
+                SELECT * FROM
+                (SELECT 
+                        *
+                    FROM
+                        stats_snapshots
+                    WHERE
+                        datetime(?) >= timestamp
+                    ORDER BY
+                        timestamp DESC
+                    LIMIT 1
+                ) before
+                UNION ALL
+                SELECT * FROM
+                (SELECT 
+                        *
+                    FROM
+                        stats_snapshots
+                    WHERE
+                        datetime(?) < timestamp
+                    ORDER BY
+                        timestamp ASC
+                    LIMIT 1
+                ) after
+            ),
+            closest AS (
+                SELECT 
+                    *
+                FROM 
+                    surrounding
+                ORDER BY
+                    ABS(julianday(?) - julianday(timestamp))
+                LIMIT
+                    1
+            )
+            SELECT 
+                c.stats_snapshot_id AS snapshot_id,
+                c.timestamp,
+                ms.matchup_stats_id,
+                ms.matchup_id,
+                ms.map,
+                ms.faction,
+                ms.deaths,
+                ms.kills,
+                ms.victory_points 
+            FROM 
+                closest AS c
+                JOIN matchup_stats AS ms 
+                  ON c.stats_snapshot_id = ms.snapshot_id
+        `).all(ts,ts,ts));
     }
 
     public addMatchupStats(matchId: number, snapshotId: number, map: string, faction: string, deaths: number, kills: number, victoryPoints: number) {
