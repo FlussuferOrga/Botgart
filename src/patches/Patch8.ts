@@ -28,6 +28,7 @@ export class Patch8 extends DBPatch {
             && this.viewExists("captured_objectives")
             && this.viewExists("map_ticks")
             && this.viewExists("total_ticks")
+            && this.viewExists("total_stats")
     }
 
     protected async apply(): Promise<void> {
@@ -263,14 +264,31 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`
             CREATE VIEW total_ticks(snapshot_id, faction, tick) AS
                 SELECT
-                    snapshot_id,
-                    faction,
-                    SUM(tick)
+                    snapshot_id AS snapshot_id,
+                    faction     AS faction,
+                    SUM(tick)   AS tick
                 FROM 
                     map_ticks
                 GROUP BY 
                     snapshot_id, faction
             `).run();
+
+        this.connection.prepare(`
+            CREATE VIEW total_stats(snapshot_id, faction, deaths, kills, victory_points, kd) AS
+                SELECT
+                    ms.snapshot_id        AS snapshot_id,
+                    faction               AS faction,
+                    SUM(deaths)           AS deaths,
+                    SUM(kills)            AS kills,
+                    SUM(victory_points)   AS victory_points,
+                    AVG(1.0*kills/deaths) AS kd
+                FROM
+                    stats_snapshots AS ss
+                    JOIN matchup_stats AS ms
+                      ON ss.stats_snapshot_id = ms.snapshot_id
+                GROUP BY
+                    ms.snapshot_id, faction
+            `).run()
     }
 
     public async revert(): Promise<void> {
@@ -279,6 +297,7 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP VIEW IF EXISTS captured_objectives`).run();
         this.connection.prepare(`DROP VIEW IF EXISTS map_ticks`).run();
         this.connection.prepare(`DROP VIEW IF EXISTS total_ticks`).run();
+        this.connection.prepare(`DROP VIEW IF EXISTS total_stats`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievement_posts`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();
