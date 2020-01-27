@@ -360,7 +360,7 @@ export class Annihilator extends ObjectiveAchievement {
 }
 
 // fixme
-export class NeverSurrender extends Achievement<ts3.TagDown> {
+export class NeverSurrender extends Achievement<ts3.TagUp> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png", 
                       "Niemals aufgeben!", 
@@ -370,7 +370,7 @@ export class NeverSurrender extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagUp): boolean {
         return false;
     }
 }

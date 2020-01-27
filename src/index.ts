@@ -4,6 +4,16 @@ import { Patch } from "./patches/Patch.js";
 import * as commandlineargs from "command-line-args";
 import * as fs from "fs";
 
+
+/*
+import * as moment from "moment";
+import * as Util from "./Util";
+
+
+console.log(Util.momentToLocalSqliteTimestamp(moment.utc()));
+process.exit(1);
+*/
+
 const client = new BotgartClient({
     ownerID: config.owner_ids,
     prefix: config.prefix,
