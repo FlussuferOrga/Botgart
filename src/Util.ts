@@ -24,15 +24,15 @@ api.fetch.retryWait(tries => tries * 3000)
 export const RESET_WEEKDAY: number = 5; // FRIDAY
 
 export function isBetweenTime(m: moment.Moment, t1: string, t2: string): boolean {
-    return m.isBetween(moment(t1, "hh:mm:ss"), moment(t2, "hh:mm:ss"));
+    return m.isBetween(moment(t1, "HH:mm:ss"), moment(t2, "HH:mm:ss"));
 }
 
 export function getResetTime(): moment.Moment {
-    return moment("18:00:00", "hh:mm:ss");
+    return moment("18:00:00 +0000", "HH:mm:ss Z").local();
 }
 
 export function momentToLocalSqliteTimestamp(mom: moment.Moment): string {
-    return mom.local().format("YYYY-MM-DD hh:mm:ss");
+    return mom.local().format("YYYY-MM-DD HH:mm:ss");
 }
 
 /**
