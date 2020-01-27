@@ -230,34 +230,6 @@ export class Database {
     }
 
     /**
-    * Upserts the roster post for a guild. That is:
-    * If no roster for that week exists in that guild, the post is stored. 
-    * Else, the commanders in that post are updated. 
-    * guild: the guild to upsert the roster post in. 
-    * roster: the roster to upsert. Uniqueness will be determined by week number and year of the roster. 
-    * message: the message that represents the roster post.
-    */
-    public upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message): void {
-        return this.execute(db => {
-            db.transaction((_) => {
-                const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
-                let rosterId = current ? current.rrid : undefined;
-                if(rosterId === undefined) {
-                    // completely new roster -> create new roster and store ID
-                    db.prepare(`INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)`)
-                      .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id);
-                    rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-                } else {
-                    // there is already a roster entry -> drop all leaders and insert the current state
-                    db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
-                }                
-                let stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map) VALUES(?,?,?)`);
-                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader, map));
-            })(null);
-        });
-    }
-
-    /**
     * Adds the duration of a TS lead to the database. 
     * gw2account: player to add the lead to. 
     * start: Moment when the tag-up was registered. 
@@ -466,7 +438,7 @@ export class Database {
             })(null))
     }
 
-    public getCurrentMatchup(now: moment.Moment) {
+    public getCurrentMatchup(now: moment.Moment): number {
         return this.execute(db => {
             const match = db.prepare("SELECT matchup_id FROM matchups WHERE datetime(?, 'localtime') BETWEEN start AND end").get(Util.momentToLocalSqliteTimestamp(now));
             return match !== undefined ? match.matchup_id : undefined;
@@ -516,6 +488,70 @@ export class Database {
         );         
     }
 
+    public getObjectivesAround(moment: moment.Moment)
+    : {
+        objectives_snapshot_id: number,
+        timestamp: string,
+        matchup_objective_id: number,
+        matchup_id: number,
+        snapshot_id: number,
+        objective_id: number
+        map: string, owner: string,
+        type: string,
+        points_tick: number,
+        points_capture: number,
+        last_flipped: string,
+        yaks_delivered: number,
+        tier: number
+    } {
+        const ts = Util.momentToLocalSqliteTimestamp(moment);
+        return this.execute(db => db.prepare(`
+            WITH 
+            surrounding AS (
+                SELECT * FROM
+                (SELECT 
+                        *
+                    FROM
+                        objectives_snapshots
+                    WHERE
+                        datetime(?) >= timestamp
+                    ORDER BY
+                        timestamp DESC
+                    LIMIT 1
+                ) before
+                UNION ALL
+                SELECT * FROM
+                (SELECT 
+                        *
+                    FROM
+                        objectives_snapshots
+                    WHERE
+                        datetime(?) < timestamp
+                    ORDER BY
+                        timestamp ASC
+                    LIMIT 1
+                ) after
+            ),
+            closest AS (
+                SELECT 
+                    *
+                FROM 
+                    surrounding
+                ORDER BY
+                    ABS(julianday(?) - julianday(timestamp))
+                LIMIT
+                    1
+            )
+            SELECT 
+                * 
+            FROM 
+                closest AS c
+                JOIN matchup_objectives AS mo
+                  ON c.objectives_snapshot_id = mo.snapshot_id
+
+        `)).all(ts,ts,ts);
+    }
+
     public addMatchupStats(matchId: number, snapshotId: number, map: string, faction: string, deaths: number, kills: number, victoryPoints: number) {
         return this.execute(db => db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES(?,?,?,?,?,?,?)")
                                     .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
@@ -548,6 +584,34 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
                                     .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
                                     .map(row => this.getRosterPost(guild, row.wn, row.year)));
+    }
+
+    /**
+    * Upserts the roster post for a guild. That is:
+    * If no roster for that week exists in that guild, the post is stored. 
+    * Else, the commanders in that post are updated. 
+    * guild: the guild to upsert the roster post in. 
+    * roster: the roster to upsert. Uniqueness will be determined by week number and year of the roster. 
+    * message: the message that represents the roster post.
+    */
+    public upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message): void {
+        return this.execute(db => {
+            db.transaction((_) => {
+                const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
+                let rosterId = current ? current.rrid : undefined;
+                if(rosterId === undefined) {
+                    // completely new roster -> create new roster and store ID
+                    db.prepare(`INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)`)
+                      .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id);
+                    rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                } else {
+                    // there is already a roster entry -> drop all leaders and insert the current state
+                    db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
+                }                
+                let stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map) VALUES(?,?,?)`);
+                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader, map));
+            })(null);
+        });
     }
 
     async getRosterPost(guild: discord.Guild, weekNumber: number, year: number) 
