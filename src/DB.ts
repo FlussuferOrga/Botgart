@@ -511,7 +511,7 @@ export class Database {
         last_flipped: string,
         yaks_delivered: number,
         tier: number
-    } {
+    }[] {
         if(!now) {
             now = moment.utc().local();
         }
@@ -594,7 +594,7 @@ export class Database {
         deaths: number,
         kills: number,
         victory_points: number 
-    } {
+    }[] {
         if(!now) {
             now = moment.utc().local();
         }

@@ -419,6 +419,16 @@ export class AgileDefender extends Achievement<ts3.TagDown> {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+        const holds: boolean = context.commander.getRaidTime() > 3600;
+        if(holds) {
+            const t3AtStart: number[] = this.client.db.getObjectivesAround(context.commander.getRaidStart())
+                              .filter(obj => obj.tier === 3)
+                              .map(obj => obj.objective_id);
+            if(t3AtStart) {
+                this.client.db.getObjectivesAround()
+                .filter(obj => obj.tier === 3 && t3AtStart.includes(obj.objective_id));
+            }
+        }
         return false;
     }
 }
