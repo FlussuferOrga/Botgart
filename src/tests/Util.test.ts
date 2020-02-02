@@ -35,6 +35,12 @@ describe("Util - Date", function() {
     assert(U.compareDatesWithoutTime(U.getResetDay(47, 2019, 5),
                                      new Date(Date.UTC(2019,10,22)))));
 
+  it("convert twice", () => {
+    const orig: string = "2019-12-12 00:00:00";
+    const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
+    return assert(U.momentToLocalSqliteTimestamp(mom) == orig);
+  });
+
   //it("reset date2", function() {
   //  expect(false).equal(false);
   //});

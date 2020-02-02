@@ -202,11 +202,11 @@ EN = {
         "ACHIEVEMENT_FLAV_CASTLING": "A fair trade.",
 
         "ACHIEVEMENT_NAME_ETTIN": "Ettin",
-        "ACHIEVEMENT_DESC_ETTIN": "Have a raid simultaneously with another commander.",
+        "ACHIEVEMENT_DESC_ETTIN": "Have a raid simultaneously with another commander. Only commanders that are leading for at least one hour are counted.",
         "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
 
         "ACHIEVEMENT_NAME_HYDRA": "Hydra",
-        "ACHIEVEMENT_DESC_HYDRA": "Have a raid simultaneously with at least two other commanders.",
+        "ACHIEVEMENT_DESC_HYDRA": "Have a raid simultaneously with at least two other commanders. Only commanders that are leading for at least one hour are counted.",
         "ACHIEVEMENT_FLAV_HYDRA": "Cut off one head, two more will take its place.",
 
         "ACHIEVEMENT_NAME_SHIFTCHANGE": "Shift Change",
@@ -222,16 +222,16 @@ EN = {
         "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "That's unfair! They have suddenly doubled in numbers!",
 
         "ACHIEVEMENT_NAME_FROMASHES": "From the Ashes",
-        "ACHIEVEMENT_DESC_FROMASHES": "Aid in raising the server from tier 5.",
+        "ACHIEVEMENT_DESC_FROMASHES": "Aid in raising the server from tier 4.",
         "ACHIEVEMENT_FLAV_FROMASHES": "They have taken everything from us. Even fear itself.",
-
-        "ACHIEVEMENT_NAME_THEPRESIDENT": "The President",
-        "ACHIEVEMENT_DESC_THEPRESIDENT": "Aid in raising the server from tier 4.",
-        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I pick number three.",
 
         "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "The Mountain is Calling",
         "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Aid in raising the server from tier 3.",
         "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Rasta from Jamaica in Bavarian exile",
+
+        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Tier Solidifier",
+        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Aid in keeping the server in the current tier.",
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Nice tier. I'll take it.",
 
         "ACHIEVEMENT_NAME_THEPEAK": "The Peak",
         "ACHIEVEMENT_DESC_THEPEAK": "Aid in raising the server from tier 2.",
@@ -441,11 +441,11 @@ DE = {
         "ACHIEVEMENT_FLAV_CASTLING": "Ein fairer Tausch.",
 
         "ACHIEVEMENT_NAME_ETTIN": "Ettin",
-        "ACHIEVEMENT_DESC_ETTIN": "Leite gleichzeitig mit mindestens einem weiteren Kommandeur einen Schlachtzug.",
+        "ACHIEVEMENT_DESC_ETTIN": "Leite gleichzeitig mit mindestens einem weiteren Kommandeur einen Schlachtzug. Nur Kommandeure, die bereits für mindestens eine Stunde leiten zählen.",
         "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
 
         "ACHIEVEMENT_NAME_HYDRA": "Hydra",
-        "ACHIEVEMENT_DESC_HYDRA": "Leite gleichzeitig mit mindestens zwei weiteren Kommandeuren einen Schlachtzug.",
+        "ACHIEVEMENT_DESC_HYDRA": "Leite gleichzeitig mit mindestens zwei weiteren Kommandeuren einen Schlachtzug. Nur Kommandeure, die bereits für mindestens eine Stunde leiten zählen.",
         "ACHIEVEMENT_FLAV_HYDRA": "Schlagt einen Kopf ab, und zwei weitere werden ihren Platz einnehmen.",
 
         "ACHIEVEMENT_NAME_SHIFTCHANGE": "Schichtwechsel",
@@ -471,6 +471,10 @@ DE = {
         "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
         "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Trage dazu bei, den Server aus dem T3 aufsteigen zu lassen.",
         "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
+
+        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Stufenverdichter",
+        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Trage dazu bei, den Server im aktuellen Tier zu halten.",
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!",
 
         "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
         "ACHIEVEMENT_DESC_THEPEAK": "Trage dazu bei, den Server aus dem T2 aufsteigen zu lassen.",

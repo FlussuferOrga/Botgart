@@ -1,35 +1,76 @@
 const config = require("../config.json")
 import { AkairoClient } from "discord-akairo"
 import { BotgartCommand } from "./BotgartCommand.js"
-import { Database } from "./DB.js"
+import * as db from "./DB.js"
 import * as discord from "discord.js"
 import { log, loadModuleClasses } from "./Util.js"
 import { Roster } from "./commands/resetlead/ResetRoster"
 import { TS3Connection, TS3Listener, CommanderStorage } from "./TS3Connection"
 import { APIEmitter } from "./emitters/APIEmitter"
+import { EventEmitter } from "events";
 import * as Util from "./Util";
 import * as moment from "moment";
 import * as achievements from "./commands/achievements/Achievements";
 
+export class WvWWatcher extends EventEmitter {
+    private db: db.Database;
+    private api;
+
+    public constructor(db: db.Database, api) {
+        super();
+        this.db = db;
+        this.api = api;
+    }
+
+    /**
+    * Resolves the Database entry for the currently ongoing match for the home world.  
+    * If no match exists for that time, a new match will be created in the database 
+    * with data retrieved from the API and that newly created match is returned. 
+    * returns: the DB matchup info for the ongoing match. 
+    *          If no such match existed during the call, it will be created
+    */
+    public async getCurrentMatch(): Promise<db.Matchup> {
+        const now: moment.Moment = moment.utc();
+        let dbMatchup: db.Matchup = this.db.getCurrentMatchup(now);
+        if(dbMatchup === undefined) {
+            const latestDbMatchup: db.Matchup = this.db.getLatestMatchup();
+            const currentMatchupInfo = await this.api.wvw().matches().overview().world(config.home_id);
+            const tier = currentMatchupInfo.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
+            this.db.addMatchup(
+                tier,
+                moment.utc(currentMatchupInfo.start_time),
+                moment.utc(currentMatchupInfo.end_time),
+                currentMatchupInfo.all_worlds.red, 
+                currentMatchupInfo.all_worlds.green,
+                currentMatchupInfo.all_worlds.blue);
+            dbMatchup = this.db.getCurrentMatchup(now);
+            this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
+        }
+        return dbMatchup;
+    }
+}
+
 export class BotgartClient extends AkairoClient {
-    public db: Database;
+    public db: db.Database;
     public cronjobs: Object;
     private ts3connection : TS3Connection;
     private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
     public readonly gw2apiemitter: APIEmitter;
     public readonly ts3listener: TS3Listener;
+    public readonly wvwWatcher: WvWWatcher;
     public readonly commanders: CommanderStorage;
     private achievements: {[key:string] : achievements.Achievement<any>};
 
     constructor(options, dbfile) {
         super(options, {});
-        this.db = new Database(dbfile, this);
+        this.db = new db.Database(dbfile, this);
         this.cronjobs = {};
         this.rosters = {};
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
+        this.wvwWatcher = new WvWWatcher(this.db, Util.api);
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
         
@@ -44,12 +85,12 @@ export class BotgartClient extends AkairoClient {
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
                 if(stats === undefined) return;
-                const matchId = await Util.getCurrentMatchId(this.db);
+                const match = await this.wvwWatcher.getCurrentMatch();
                 const snapshotId = this.db.addStatsSnapshot();
                 for await(const mapData of stats.maps) {
                     for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
                         this.db.addMatchupStats(
-                                    matchId, 
+                                    match.matchup_id, 
                                     snapshotId, 
                                     mapData.type, // map 
                                     Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
@@ -66,13 +107,13 @@ export class BotgartClient extends AkairoClient {
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 if(match === undefined) return;
-                const matchId = await Util.getCurrentMatchId(this.db);
+                const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 const snapshotId = this.db.addObjectivesSnapshot();
                 const objs = match.maps
                             .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
                             //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                             .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
-                this.db.addMatchupObjectives(matchId, snapshotId, objs);
+                this.db.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
             })
         });
 

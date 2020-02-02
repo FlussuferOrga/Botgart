@@ -23,6 +23,10 @@ api.fetch.retryWait(tries => tries * 3000)
 
 export const RESET_WEEKDAY: number = 5; // FRIDAY
 
+export function sqliteTimestampToMoment(str: string): moment.Moment {
+    return moment(str, "YYYY-MM-DD HH:mm:ss");
+}
+
 export function isBetweenTime(m: moment.Moment, t1: string, t2: string): boolean {
     return m.isBetween(moment(t1, "HH:mm:ss"), moment(t2, "HH:mm:ss"));
 }
@@ -46,30 +50,6 @@ export function capitalise(word: string) {
   return word.length === 0 
               ? word 
               : word.charAt(0).toUpperCase() + word.slice(1)
-}
-
-/**
-* Resolves the Database ID for the currently ongoing match for the home world.  
-* If no match exists for that time, a new match will be created 
-* in the database with data retrieved from the API and that newly created ID is returned. 
-* returns: DB ID for the ongoing match.
-*/
-export async function getCurrentMatchId(db: db.Database) {
-    const now: moment.Moment = moment.utc();
-    let matchId = db.getCurrentMatchup(now);
-    if(matchId === undefined) {
-        const currentMatch = await api.wvw().matches().overview().world(config.home_id);
-        const tier = currentMatch.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
-        db.addMatchup(
-            tier,
-            moment.utc(currentMatch.start_time),
-            moment.utc(currentMatch.end_time),
-            currentMatch.all_worlds.red, 
-            currentMatch.all_worlds.green,
-            currentMatch.all_worlds.blue)
-        matchId = db.getCurrentMatchup(now);
-    }
-    return matchId;
 }
 
 export function validGW2Account(gw2account: string) {

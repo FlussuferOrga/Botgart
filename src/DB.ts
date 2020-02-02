@@ -11,7 +11,8 @@ import * as moment from "moment";
 const REAUTH_DELAY : number = 5000;
 const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
 
-// FIXME: resolve objects when loading from db
+export type FactionColour = "Red" | "Blue" | "Green";
+
 export interface Registration {
     readonly id: string;
     readonly user: string;
@@ -21,6 +22,19 @@ export interface Registration {
     readonly registration_role: string,
     readonly account_name: string, 
     readonly created: string
+}
+
+export interface Lead extends Registration {
+    readonly channel: string,
+    readonly start: string,
+    readonly end: string
+}
+
+export interface Matchup {
+    readonly matchup_id: number,
+    readonly tier: number,
+    readonly start: string,
+    readonly end: string
 }
 
 export class Database {
@@ -438,17 +452,75 @@ export class Database {
             })(null))
     }
 
-    public getCurrentMatchup(now: moment.Moment): number {
-        return this.execute(db => {
-            const match = db.prepare("SELECT matchup_id FROM matchups WHERE datetime(?, 'localtime') BETWEEN start AND end").get(Util.momentToLocalSqliteTimestamp(now));
-            return match !== undefined ? match.matchup_id : undefined;
-        });
+    public getCommandersDuring(start: moment.Moment, end: moment.Moment): Lead[] {
+        return this.execute(db =>db.prepare(`
+                    SELECT
+                        r.id, 
+                        r.user,
+                        r.guild,
+                        r.api_key,
+                        r.gw2account,
+                        r.registration_role,
+                        r.account_name,
+                        r.created,
+                        tl.ts_channel,
+                        tl.start,
+                        tl.end
+                    FROM
+                        ts_leads AS tl
+                        JOIN registrations AS r 
+                          ON tl.gw2account = r.gw2account
+                    WHERE
+                        tl.start BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime') `)
+                  .all(Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end)));
     }
 
-    public addMatchup(tier: number, start: moment.Moment, end: moment.Moment, red: number[], green: number[], blue: number[]) {
+    public getFactionColour(now: moment.Moment, serverId: number): FactionColour | undefined {
+        const row = this.execute(db => db.prepare(`
+                SELECT 
+                    colour
+                FROM 
+                    matchup_factions AS mf 
+                    JOIN matchups AS m 
+                      ON mf.matchup_id = m.matchup_id
+                WHERE
+                    datetime(?, 'localtime') BETWEEN m.start AND m.end    
+                    AND mf.world_id = ?
+                    
+                `).get(Util.momentToLocalSqliteTimestamp(now), serverId)
+            );
+        return row ? row.colour : undefined;
+    }
+
+    public wasCapturedBetween(start: moment.Moment, end: moment.Moment, objectiveId: string, colour: FactionColour): boolean {
+        return this.execute(db => db.prepare(`
+                SELECT 
+                    *
+                FROM 
+                    captured_objectives
+                WHERE
+                    objective_id = ?
+                    AND new_owner = ?
+                    AND new_last_flipped BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
+                LIMIT
+                    1
+            `).get(objectiveId, colour, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))) !== undefined;
+    }
+
+    public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
+        return this.execute(db => 
+                db.prepare("SELECT matchup_id, tier, start, end FROM matchups WHERE datetime(?, 'localtime') BETWEEN start AND end").get(Util.momentToLocalSqliteTimestamp(now)));
+    }
+
+    public getLatestMatchup(): Matchup | undefined {
+        return this.execute(db =>
+                db.prepare(`SELECT matchup_id, tier, start, end FROM matchups ORDER BY start DESC LIMIT 1`).get());
+    }
+
+    public addMatchup(tier: number, start: moment.Moment, end: moment.Moment, reds: number[], greens: number[], blues: number[]) {
         return this.execute(db => {
             const existingMatch = db.prepare("SELECT matchup_id AS id FROM matchups WHERE start = datetime(?, 'localtime')")
-                .get(Util.momentToLocalSqliteTimestamp(start));
+                                    .get(Util.momentToLocalSqliteTimestamp(start));
             let matchId: number = existingMatch ? existingMatch.id : undefined;
             if(matchId === undefined) {
                 db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
@@ -456,10 +528,10 @@ export class Database {
                        Util.momentToLocalSqliteTimestamp(start), 
                        Util.momentToLocalSqliteTimestamp(end));
                 matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-            }            
-            for(const [world, colour] of [[red, "Red"], [green, "Green"], [blue, "Blue"]] as const) {
-                for(const worldId of world) {
-                    this.addMatchupFaction(matchId, worldId, colour);
+                for(const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
+                    for(const worldId of worlds) {
+                        this.addMatchupFaction(matchId, worldId, colour);
+                    }
                 }
             }
         });

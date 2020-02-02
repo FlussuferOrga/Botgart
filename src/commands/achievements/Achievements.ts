@@ -219,6 +219,23 @@ abstract class ObjectiveAchievement extends Achievement<{"commander": ts3.Comman
     }
 }
 
+abstract class NewMatchupAchievement extends Achievement<{lastMatchup: db.Matchup, newMatchup: db.Matchup}> {
+    public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+        super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+        client.wvwWatcher.on("new-matchup",
+                              mu => this.client 
+                                        .db
+                                        .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
+                                                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
+                                        .map(r => {
+                                            const guild: discord.Guild = client.guilds.get(r.guild);
+                                            return guild ? guild.members.get(r.user) : undefined;
+                                        })
+                                        .filter(c => c !== undefined)
+                                        .map(c => this.tryAward(c, mu)));
+    }
+}
+
 //------------------------------------------------------------------------------
 // ACHIEVEMENTS
 //------------------------------------------------------------------------------
@@ -481,8 +498,7 @@ export class TenaciousBesieger extends Achievement<ts3.TagDown> {
     }
 }
 
-// fixme
-export class Princess extends Achievement<ts3.TagDown> {
+export class Princess extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/f2/Princess.png", 
                       "Prinzessin", 
@@ -492,8 +508,10 @@ export class Princess extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
+        const palaceID: string = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
+        const colour: db.FactionColour = this.client.db.getFactionColour(moment.utc(), config.home_id);
+        return colour !== undefined && this.client.db.wasCapturedBetween(context.commander.getRaidStart(), moment.utc(), palaceID, colour);
     }
 }
 
@@ -513,8 +531,7 @@ export class Castling extends Achievement<ts3.TagDown> {
     }
 }
 
-// fixme
-export class Ettin extends Achievement<ts3.TagDown> {
+export class Ettin extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mirror_Images.png", 
                       "Ettin", 
@@ -524,13 +541,12 @@ export class Ettin extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
+        return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length > 2;
     }
 }
 
-// fixme
-export class Hydra extends Achievement<ts3.TagDown> {
+export class Hydra extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mass_Invisibility.png", 
                       "Hydra", 
@@ -540,13 +556,13 @@ export class Hydra extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
+        return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length > 3;
     }
 }
 
 // fixme
-export class Shiftchange extends Achievement<ts3.TagDown> {
+export class Shiftchange extends TagUpAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png", 
                       "Schichtwechsel", 
@@ -556,7 +572,7 @@ export class Shiftchange extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagUp): boolean {
         return false;
     }
 }
@@ -577,7 +593,6 @@ export class Bulletproof extends Achievement<ts3.TagDown> {
     }
 }
 
-// fixme
 export class Boozecommander extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png", 
@@ -593,8 +608,7 @@ export class Boozecommander extends Achievement<ts3.TagDown> {
     }
 }
 
-// fixme
-export class FromAshes extends Achievement<ts3.TagDown> {
+export class FromAshes extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/c/c1/Phoenix.png", 
                       "Aus der Asche", 
@@ -604,29 +618,12 @@ export class FromAshes extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+        return context.lastMatchup && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
     }
 }
 
-// fixme
-export class ThePresident extends Achievement<ts3.TagDown> {
-    public constructor(client: BotgartClient) {
-        super(client, "https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png", 
-                      "Der Präsident", 
-                      Achievement.MEDIUM_COLOUR, 
-                      true, // repeatable
-                      false // announce repeats
-        );
-    }
-
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
-    }
-}
-
-// fixme
-export class MountainIsCalling extends Achievement<ts3.TagDown> {
+export class MountainIsCalling extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/a/a1/Inspiring_Reinforcement.png", 
                       "Der Berg Ruft", 
@@ -636,13 +633,12 @@ export class MountainIsCalling extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+        return context.lastMatchup && context.lastMatchup.tier === 3 && context.newMatchup.tier === 2;
     }
 }
 
-// fixme
-export class ThePeak extends Achievement<ts3.TagDown> {
+export class ThePeak extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/c/c7/Fortify.png", 
                       "Der Gipfel", 
@@ -652,7 +648,22 @@ export class ThePeak extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+        return context.lastMatchup && context.lastMatchup.tier === 2 && context.newMatchup.tier === 1;
+    }
+}
+
+export class TierSolidifier extends NewMatchupAchievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/3/31/%22Stand_Your_Ground%21%22.png", 
+                      "", 
+                      Achievement.MEDIUM_COLOUR, 
+                      true, // repeatable
+                      false // announce repeats
+        );
+    }
+
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+        return context.lastMatchup && context.lastMatchup.tier === context.newMatchup.tier;
     }
 }
