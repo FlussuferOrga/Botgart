@@ -278,9 +278,9 @@ export class CommanderStorage {
 
     public addCommander(commander: Commander) {
         if(this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
-            log("warning", "TS3Connection.js", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);           
-        } else {
             this.commanders.push(commander);    
+        } else {
+            log("warning", "TS3Connection.js", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);           
         } 
     }
 
