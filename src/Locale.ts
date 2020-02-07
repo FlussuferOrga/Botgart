@@ -229,13 +229,13 @@ EN = {
         "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Aid in raising the server from tier 3.",
         "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Rasta from Jamaica in Bavarian exile",
 
-        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Tier Solidifier",
-        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Aid in keeping the server in the current tier.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Nice tier. I'll take it.",
-
         "ACHIEVEMENT_NAME_THEPEAK": "The Peak",
         "ACHIEVEMENT_DESC_THEPEAK": "Aid in raising the server from tier 2.",
-        "ACHIEVEMENT_FLAV_THEPEAK": "The best view."
+        "ACHIEVEMENT_FLAV_THEPEAK": "The best view.",
+
+        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Tier Solidifier",
+        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Aid in keeping the server in the current tier.",
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Nice tier. I'll take it."        
     }
 };
 
@@ -397,7 +397,7 @@ DE = {
         "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
 
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
-        "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 5:00 Uhr für mindestens eine Stunde an.",
+        "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens eine Stunde an.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
         
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
@@ -461,24 +461,24 @@ DE = {
         "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "Das ist unfair! Die sind plötzlich doppelt so viele!",
 
         "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
-        "ACHIEVEMENT_DESC_FROMASHES": "Trage dazu bei, den Server aus dem T5 aufsteigen zu lassen.",
+        "ACHIEVEMENT_DESC_FROMASHES": "Trage dazu bei, den Server aus dem T4 aufsteigen zu lassen.",
         "ACHIEVEMENT_FLAV_FROMASHES": "Sie haben uns alles genommen. Auch unsere Furcht.",
 
         "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
-        "ACHIEVEMENT_DESC_THEPRESIDENT": "Trage dazu bei, den Server aus dem T4 aufsteigen zu lassen.",
-        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I nimm die Nummer drey.",
+        "ACHIEVEMENT_DESC_THEPRESIDENT": "",
+        "ACHIEVEMENT_FLAV_THEPRESIDENT": "",
 
         "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
         "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Trage dazu bei, den Server aus dem T3 aufsteigen zu lassen.",
         "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
 
-        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Stufenverdichter",
-        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Trage dazu bei, den Server im aktuellen Tier zu halten.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!",
-
         "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
         "ACHIEVEMENT_DESC_THEPEAK": "Trage dazu bei, den Server aus dem T2 aufsteigen zu lassen.",
-        "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht."
+        "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht.",
+
+        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Verfestiger",
+        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Trage dazu bei, den Server im aktuellen Tier zu halten.",
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!"        
     }
 };
 
