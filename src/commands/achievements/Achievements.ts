@@ -619,7 +619,7 @@ export class FromAshes extends NewMatchupAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
-        return context.lastMatchup && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
+        return context.lastMatchup !== undefined && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
     }
 }
 
@@ -634,7 +634,7 @@ export class MountainIsCalling extends NewMatchupAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
-        return context.lastMatchup && context.lastMatchup.tier === 3 && context.newMatchup.tier === 2;
+        return context.lastMatchup !== undefined && context.lastMatchup.tier === 3 && context.newMatchup.tier === 2;
     }
 }
 
@@ -649,7 +649,7 @@ export class ThePeak extends NewMatchupAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
-        return context.lastMatchup && context.lastMatchup.tier === 2 && context.newMatchup.tier === 1;
+        return context.lastMatchup !== undefined && context.lastMatchup.tier === 2 && context.newMatchup.tier === 1;
     }
 }
 
@@ -664,6 +664,6 @@ export class TierSolidifier extends NewMatchupAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
-        return context.lastMatchup && context.lastMatchup.tier === context.newMatchup.tier;
+        return context.lastMatchup !== undefined && context.lastMatchup.tier === context.newMatchup.tier;
     }
 }
