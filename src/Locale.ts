@@ -397,7 +397,7 @@ DE = {
         "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
 
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
-        "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens eine Stunde an.",
+        "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Frühschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens eine Stunde an.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
         
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
