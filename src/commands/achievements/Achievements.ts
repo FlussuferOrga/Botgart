@@ -656,7 +656,7 @@ export class ThePeak extends NewMatchupAchievement {
 export class TierSolidifier extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/31/%22Stand_Your_Ground%21%22.png", 
-                      "", 
+                      "Verfestiger", 
                       Achievement.MEDIUM_COLOUR, 
                       true, // repeatable
                       false // announce repeats
