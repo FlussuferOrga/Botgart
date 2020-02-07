@@ -159,7 +159,7 @@ EN = {
 
         "ACHIEVEMENT_NAME_EARLYBIRD": "Early Bird",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Tag up in the morning. For this to count, you need to tag up between 6 AM and 10 AM for at least one hour.",
-        "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! I love the smell of Sand Shades in the morning!",
+        "ACHIEVEMENT_FLAV_EARLYBIRD": "I love the smell of Sand Shades in the morning!",
 
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Annihilator",
         "ACHIEVEMENT_DESC_ANNIHILATOR": "Tag up while the server has a total KDR of 2.",
@@ -398,7 +398,7 @@ DE = {
 
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Frühschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens eine Stunde an.",
-        "ACHIEVEMENT_FLAV_EARLYBIRD": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
+        "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! ",
         
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
         "ACHIEVEMENT_DESC_ANNIHILATOR": "Der Server erreicht unter deiner Leitung eine gesamte KDR von 2.",
@@ -426,7 +426,7 @@ DE = {
 
         "ACHIEVEMENT_NAME_BOLDBESIEGER": "Dreister Belagerer",
         "ACHIEVEMENT_DESC_BOLDBESIEGER": "Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.",
-        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Hat das nicht eben noch uns gehört?! ",
+        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Hat das nicht eben noch uns gehört?!",
 
         "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Beharrlicher Belagerer",
         "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Nimm während deiner Raids 100 Befestigungen der Stufe 3 ein.",
