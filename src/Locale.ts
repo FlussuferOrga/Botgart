@@ -154,7 +154,7 @@ EN = {
         "ACHIEVEMENT_FLAV_TRAILBLAZER": "You are the calm before the storm.",
 
         "ACHIEVEMENT_NAME_OWL": "Owl",
-        "ACHIEVEMENT_DESC_OWL": "Tag up during the night. For this to count, you need to tag up between 11 PM and 5 AM for at least one hour.",
+        "ACHIEVEMENT_DESC_OWL": "Tag up during the night. For this to count, you need to tag up between 11 PM and 6 AM for at least one hour.",
         "ACHIEVEMENT_FLAV_OWL": "Who zergs there so late through the night dark and drear? It is the commander, he soweth the fear.",
 
         "ACHIEVEMENT_NAME_EARLYBIRD": "Early Bird",
@@ -393,7 +393,7 @@ DE = {
         "ACHIEVEMENT_FLAV_TRAILBLAZER": "Du bist die Ruhe vor dem Sturm.",
 
         "ACHIEVEMENT_NAME_OWL": "Eule",
-        "ACHIEVEMENT_DESC_OWL": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 5:00 Uhr für mindestens eine Stunde an.",
+        "ACHIEVEMENT_DESC_OWL": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 6:00 Uhr für mindestens eine Stunde an.",
         "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
 
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
