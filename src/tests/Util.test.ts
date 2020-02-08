@@ -87,6 +87,8 @@ describe("Util - Is Between", function() {
 
   it("is at end", () => expect(U.isBetweenTime(moment("2010-10-20 05:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
 
+  it("rollover", () => expect(U.isBetweenTime(moment("2010-10-20 04:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
+
   it("is before", () => expect(!U.isBetweenTime(moment("2010-10-20 22:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
 
   it("is after", () => expect(!U.isBetweenTime(moment("2010-10-20 06:00", "YYYY-MM-DD HH:mm") , "23:00:00", "05:00:00")));
