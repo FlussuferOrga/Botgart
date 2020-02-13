@@ -30,35 +30,23 @@ export class Help extends BotgartCommand {
         // Issueing this command through DMs give the full list. This is not a security issue,
         // since the restricted listing is just a convenience for users to present them with a
         // more compact help text.
-        const separator = "\n----\n";
+        const separator = "\n";
         let member = guild ? guild.members.find(m => m.id == responsible.id) : undefined;
         let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         let descs = "**COMMANDS:**\n\n"
                     .concat(Array.from(this.client.commandHandler.modules.values())
-                        .filter(m => !m.userPermissions || checkPermissions(m.userPermissions))
                         .map(m => <BotgartCommand>m)
+                        .filter(m => m.isAllowed(responsible))
                         .sort((m1,m2) => m1.id < m2.id ? -1 : 1)
                         .map(m => m.desc 
-                        ? "**`{0}`**\n({1}): {2}\n------\n\n".formatUnicorn(
+                        ? "**`{0}`**\n({1}): {2}\n------".formatUnicorn(
                             m.id,
                             m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "),
                             m.desc())
                         : m.id
                     ).join(separator));
 
-        // when having too many active commands, we could very well reach
-        // the maximum message length from all the descriptions.
-        // As a fallback, we break the message up to contain one command each.
-        let ms = descs.length < Const.MAX_MESSAGE_LENGTH ? [descs] : descs.split(separator);
-        ms.forEach(m => {
-            this.reply(message, responsible, m).then(
-                () => {},
-                (err) => log("error", "Help.js", err.message)
-            );
-        });
-        if(ms.length > 1) {
-            log("warning", "Help.js", "help-string exceeds maximum message length. This case is covered, but you should look into cutting down the desc-strings for some commands.");
-        }
+        message.reply(descs, {split: true});
     }
 }
 
