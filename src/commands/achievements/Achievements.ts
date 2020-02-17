@@ -376,7 +376,7 @@ export class Annihilator extends ObjectiveAchievement {
     }
 }
 
-export class NeverSurrender extends Achievement<ts3.TagUp> {
+export class NeverSurrender extends TagUpAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png", 
                       "Niemals aufgeben!", 
@@ -426,7 +426,7 @@ export class Conquerer extends ObjectiveAchievement {
 }
 
 // fixme
-export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
+export class UnchallengedSovereign extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/5/5f/Champion%27s_Crown.png", 
                       "Unbestrittener Beherrscher", 
@@ -441,7 +441,7 @@ export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
     }
 }
 
-export class AgileDefender extends Achievement<ts3.TagDown> {
+export class AgileDefender extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/33/Iron_Guards.png", 
                       "Agiler Verteidiger", 
@@ -470,7 +470,7 @@ export class AgileDefender extends Achievement<ts3.TagDown> {
 }
 
 // fixme
-export class ThoroughCommander extends Achievement<ts3.TagDown> {
+export class ThoroughCommander extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/85/Watchtower.png", 
                       "Gründlicher Kommandeur", 
@@ -485,7 +485,7 @@ export class ThoroughCommander extends Achievement<ts3.TagDown> {
     }
 }
 
-export class BoldBesieger extends Achievement<ts3.TagDown> {
+export class BoldBesieger extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png", 
                       "Dreister Belagerer", 
@@ -496,12 +496,14 @@ export class BoldBesieger extends Achievement<ts3.TagDown> {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+
         const reg = this.client.db.getUserByAccountName(context.commander.getAccountName());
+        console.log(reg.gw2account);
         return reg ? this.client.db.crashedT3ByCommander(reg.gw2account) >= 10 : false;          
     }
 }
 
-export class TenaciousBesieger extends Achievement<ts3.TagDown> {
+export class TenaciousBesieger extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png", 
                       "Beharrlicher Belagerer", 
@@ -535,7 +537,7 @@ export class Princess extends ObjectiveAchievement {
 }
 
 // fixme
-export class Castling extends Achievement<ts3.TagDown> {
+export class Castling extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png", 
                       "Rochade", 
@@ -597,7 +599,7 @@ export class Shiftchange extends TagUpAchievement {
 }
 
 // fixme
-export class Bulletproof extends Achievement<ts3.TagDown> {
+export class Bulletproof extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/2/24/Endure_Pain.png", 
                       "Kugelsicher", 
@@ -612,7 +614,7 @@ export class Bulletproof extends Achievement<ts3.TagDown> {
     }
 }
 
-export class Boozecommander extends Achievement<ts3.TagDown> {
+export class Boozecommander extends Achievement<any> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png", 
                       "Promillekommandeur", 
@@ -622,7 +624,7 @@ export class Boozecommander extends Achievement<ts3.TagDown> {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: any): boolean {
         return false;
     }
 }

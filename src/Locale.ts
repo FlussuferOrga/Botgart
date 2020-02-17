@@ -382,11 +382,11 @@ DE = {
 
         "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
         "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leite für einhundert Stunden.",
-        "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf euch.",
+        "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf Euch.",
 
         "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
         "ACHIEVEMENT_DESC_SUPERNOVA": "Leite für eintausend Stunden.",
-        "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren deiner.",
+        "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren Eurer.",
 
         "ACHIEVEMENT_NAME_TRAILBLAZER": "Vorreiter",
         "ACHIEVEMENT_DESC_TRAILBLAZER": "Leite während eines Resets. Schalte dazu deine Lampe schon vor dem Reset an leite ab dann mindestens zwei Stunden.",
