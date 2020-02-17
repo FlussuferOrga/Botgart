@@ -166,11 +166,11 @@ EN = {
         "ACHIEVEMENT_FLAV_ANNIHILATOR": "Colour the ground with their blood.",
 
         "ACHIEVEMENT_NAME_NEVERSURRENDER": "Never Surrender!",
-        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Tag up when the server has a KD of 0.5 or less.",
+        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Tag up when the server has a KD of 0.6 or less.",
         "ACHIEVEMENT_FLAV_NEVERSURRENDER": "They may take our lives, but they will never take our freedom!",
 
-        "ACHIEVEMENT_NAME_STRATEGIST": "Strategist",
-        "ACHIEVEMENT_DESC_STRATEGIST": "The server reaches a tick of at least 200 during your raid.",
+        "ACHIEVEMENT_NAME_STRATEGIST": "Conquerer",
+        "ACHIEVEMENT_DESC_STRATEGIST": "The server reaches a tick of at least 250 during your raid.",
         "ACHIEVEMENT_FLAV_STRATEGIST": "Colour the map with our colours.",
 
         "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unchallenged Sovereign",
@@ -178,7 +178,7 @@ EN = {
         "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "It is good to be the king.",
 
         "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agile Defender",
-        "ACHIEVEMENT_DESC_AGILEDEFENDER": "None of our objectives with tier 3 fell during your raid. This achievement is only awarded if at least one of our objectives was of tier 3 during your raid.",
+        "ACHIEVEMENT_DESC_AGILEDEFENDER": "None of our objectives with tier 3 fell during your raid. This achievement is only awarded if your raid started during prime time (somewhere between 6 PM and 9 PM), went on for one hour or more, and at least three of our objectives were of tier 3 at the start of your raid.",
         "ACHIEVEMENT_FLAV_AGILEDEFENDER": "When you call, we will come.",
 
         "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Thorough Commander",
@@ -405,11 +405,11 @@ DE = {
         "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
 
         "ACHIEVEMENT_NAME_NEVERSURRENDER": "Niemals Aufgeben!",
-        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Beginne einen Schlachtzug wenn der Server eine KD von 0,5 oder weniger hat.",
+        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Beginne einen Schlachtzug wenn der Server eine KD von 0,6 oder weniger hat.",
         "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
 
-        "ACHIEVEMENT_NAME_STRATEGIST": "Stratege",
-        "ACHIEVEMENT_DESC_STRATEGIST": "Der Server erreicht unter deiner Leitung einen Tick von 200.",
+        "ACHIEVEMENT_NAME_STRATEGIST": "Eroberer",
+        "ACHIEVEMENT_DESC_STRATEGIST": "Der Server erreicht unter deiner Leitung einen Tick von 250.",
         "ACHIEVEMENT_FLAV_STRATEGIST": "Färbe die Karte mit unseren Farben.",
 
         "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
@@ -417,7 +417,7 @@ DE = {
         "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, der König zu sein.",
 
         "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agiler Verteidiger",
-        "ACHIEVEMENT_DESC_AGILEDEFENDER": "Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden eingenommen. Dieses Achievement wird nur vergeben, wenn wir während deines Raids mindestens eine Befestigung der Stufe 3 kontrollieren.",
+        "ACHIEVEMENT_DESC_AGILEDEFENDER": "Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden eingenommen. Dieses Achievement wird nur vergeben, wenn dein Raid zur Primetime begann (zwischen 18:00 und 21:00), du mindestens eine Stunde lang leitest und wir bereits zu Beginn deines Raids mindestens drei Befestigungen der Stufe 3 kontrollieren.",
         "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Wenn ihr uns ruft, dann werden wir kommen.",
 
         "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Gründlicher Feldherr",

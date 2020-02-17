@@ -364,7 +364,7 @@ export class Annihilator extends ObjectiveAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
-        let holds = false;
+        let holds: boolean = false;
         const obj = context.objectives;
         const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(config.home_id))[0]; 
         if(ourColour === undefined) {
@@ -376,7 +376,6 @@ export class Annihilator extends ObjectiveAchievement {
     }
 }
 
-// fixme
 export class NeverSurrender extends Achievement<ts3.TagUp> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png", 
@@ -388,23 +387,41 @@ export class NeverSurrender extends Achievement<ts3.TagUp> {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagUp): boolean {
-        return false;
+        let holds: boolean = false;
+        const stats = this.client.db.getStatsAround(context.commander.getRaidStart());
+        if(stats) {
+            const ourColour = this.client.db.getColourOf(config.home_id, context.commander.getRaidStart());
+            if(ourColour === undefined) {
+                U.log("warning", "Achievements.js", `Unable to find our colour with world ID ${config.home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
+            } else {
+                const ourStats = stats.find(s => s.faction === ourColour);
+                holds = ourStats ? ourStats.kills / ourStats.deaths <= 0.6 : false;    
+            }            
+        }
+        return holds;
     }
 }
 
-// fixme
-export class Strategist extends Achievement<ts3.TagDown> {
+export class Conquerer extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png", 
-                      "Stratege", 
+                      "Eroberer", 
                       Achievement.MEDIUM_COLOUR, 
                       true, // repeatable
                       false // announce repeats
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+    public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
+        let holds = false;
+        const obj = context.objectives;
+        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(config.home_id))[0]; 
+        if(ourColour === undefined) {
+          U.log("warning", "Achievements.js", `Could not find our home id '${config.home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+        } else {
+          holds = obj.scores[ourColour] > 250;
+        }
+        return holds;
     }
 }
 
@@ -424,7 +441,6 @@ export class UnchallengedSovereign extends Achievement<ts3.TagDown> {
     }
 }
 
-// fixme
 export class AgileDefender extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/33/Iron_Guards.png", 
@@ -436,17 +452,20 @@ export class AgileDefender extends Achievement<ts3.TagDown> {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const holds: boolean = context.commander.getRaidTime() > 3600;
+        let holds: boolean = U.isBetweenTime(context.commander.getRaidStart(), "18:00:00", "21:00:00")
+                              && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if(holds) {
+            const ourColour = this.client.db.getColourOf(config.home_id, context.commander.getRaidStart());
             const t3AtStart: number[] = this.client.db.getObjectivesAround(context.commander.getRaidStart())
-                              .filter(obj => obj.tier === 3)
-                              .map(obj => obj.objective_id);
-            if(t3AtStart) {
-                this.client.db.getObjectivesAround()
-                .filter(obj => obj.tier === 3 && t3AtStart.includes(obj.objective_id));
+                                                      .filter(obj => obj.owner === ourColour && obj.tier === 3)
+                                                      .map(obj => obj.objective_id);
+            if(t3AtStart.length >= 3) { // we held at least three t3 objectives when they started
+                const lost = this.client.db.capturedBetween(context.commander.getRaidStart(), moment.utc().local())
+                                           .filter(c => c.old_owner === ourColour && c.old_tier === 3);
+                holds = lost.length === 0; // we lost none of the t3 structures
             }
         }
-        return false;
+        return holds;
     }
 }
 
@@ -466,7 +485,6 @@ export class ThoroughCommander extends Achievement<ts3.TagDown> {
     }
 }
 
-// fixme
 export class BoldBesieger extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png", 
@@ -478,11 +496,11 @@ export class BoldBesieger extends Achievement<ts3.TagDown> {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+        const reg = this.client.db.getUserByAccountName(context.commander.getAccountName());
+        return reg ? this.client.db.crashedT3ByCommander(reg.gw2account) >= 10 : false;          
     }
 }
 
-// fixme
 export class TenaciousBesieger extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png", 
@@ -494,7 +512,8 @@ export class TenaciousBesieger extends Achievement<ts3.TagDown> {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return false;
+        const reg = this.client.db.getUserByAccountName(context.commander.getAccountName());
+        return reg ? this.client.db.crashedT3ByCommander(reg.gw2account) >= 100 : false;
     }
 }
 
@@ -542,7 +561,7 @@ export class Ettin extends ObjectiveAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
-        return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length > 2;
+        return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length >= 2;
     }
 }
 
@@ -557,7 +576,7 @@ export class Hydra extends ObjectiveAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
-        return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length > 3;
+        return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length >= 3;
     }
 }
 

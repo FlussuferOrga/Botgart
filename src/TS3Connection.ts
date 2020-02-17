@@ -311,11 +311,6 @@ export class TS3Listener extends EventEmitter {
     private broadcastChannel: string;
     private pingRole: string;
     private commanderRole: string;
-    //private activeCommanders: {[key:string]: [string, string, moment.Moment]};
-    //private activeCommanders: {[key:string]: Commander};
-    //private commanders: CommanderCache;
-    //private users: {[key:string]:[moment.Moment,CommanderState]};
-    //private users: {[key: string]: Commander};
     private channels: {[key:string]:moment.Moment};
     private userDelay: number;
     private channelDelay: number;

@@ -1,3 +1,4 @@
+const config = require("../config.json");
 import * as Util from "./Util";
 import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
@@ -12,6 +13,7 @@ const REAUTH_DELAY : number = 5000;
 const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
 
 export type FactionColour = "Red" | "Blue" | "Green";
+export type StructureType = "Spawn" | "Ruins" | "Mercenary" | "Sentry" | "Camp" | "Tower" | "Keep" | "Castle";
 
 export interface Registration {
     readonly id: string;
@@ -35,6 +37,26 @@ export interface Matchup {
     readonly tier: number,
     readonly start: string,
     readonly end: string
+}
+
+export interface Capture {
+    readonly matchup_objective_id: number,
+    readonly matchup_id : number,
+    readonly objective_id  : number,
+    readonly map: string,
+    readonly type: StructureType,
+    readonly new_snapshot_id: number,
+    readonly new_owner: FactionColour,
+    readonly new_points_tick: number,
+    readonly new_points_capture: number ,
+    readonly new_last_flipped: string,
+    readonly old_snapshot_id: number,
+    readonly old_owner: FactionColour,
+    readonly old_points_tick: number,
+    readonly old_points_capture: number,
+    readonly old_last_flipped: string,
+    readonly old_yaks: number,
+    readonly old_tier: number
 }
 
 export class Database {
@@ -492,6 +514,29 @@ export class Database {
         return row ? row.colour : undefined;
     }
 
+    public crashedT3ByCommander(gw2account: string): number {
+        const crashed = this.client.db.execute(db => db.prepare(`
+                SELECT 
+                    tl.gw2account,
+                    COUNT(*) AS count
+                    
+                FROM 
+                    captured_objectives AS co 
+                    JOIN ts_leads AS tl 
+                      ON datetime(new_last_flipped, 'localtime') BETWEEN datetime(tl.start, 'localtime') AND datetime(tl.end, 'localtime')
+                    JOIN matchup_factions AS mf
+                      ON co.matchup_id = mf.matchup_id
+                         AND co.new_owner = mf.colour
+                WHERE 
+                    old_tier = 3
+                    AND mf.world_id = ?
+                    AND tl.gw2account = ?
+                GROUP BY
+                    gw2account
+                `).get(config.home_id, gw2account)).count;
+            return crashed !== undefined ? crashed : 0;
+    }
+
     public wasCapturedBetween(start: moment.Moment, end: moment.Moment, objectiveId: string, colour: FactionColour): boolean {
         return this.execute(db => db.prepare(`
                 SELECT 
@@ -501,10 +546,21 @@ export class Database {
                 WHERE
                     objective_id = ?
                     AND new_owner = ?
-                    AND new_last_flipped BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
+                    AND datetime(new_last_flipped, 'localtime') BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
                 LIMIT
                     1
             `).get(objectiveId, colour, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))) !== undefined;
+    }
+
+    public capturedBetween(start: moment.Moment, end: moment.Moment): Capture[] {
+        return this.execute(db => db.prepare(`
+                SELECT 
+                    *
+                FROM
+                    captured_objectives
+                WHERE 
+                    new_last_flipped BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
+            `).all(Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end)));
     }
 
     public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
@@ -561,13 +617,42 @@ export class Database {
     }
 
     /**
+    * Determines the colour of a world at a given Moment.
+    * The colour is obviously dependend on the matchup at the
+    * passed Moment, so this only works iff data about the matchup
+    * in question are in the DB.
+    * If no Moment is passed, the current UTC local is assumed. 
+    * If not data matches, undefined is returned.
+    * @param worldId the world ID to retrieve the colour for. 
+    * @param now the timestamp around which to check. 
+    * @returns a FactionColour, if it can be determined, or undefined
+    */
+    public getColourOf(worldId: number, now: moment.Moment = undefined): FactionColour | undefined {
+        if(!now) {
+            now = moment.utc().local();
+        }
+        return this.execute(db => db.prepare(`
+            SELECT
+                mf.colour
+            FROM 
+                matchup_factions AS mf 
+                JOIN matchups AS m 
+                  ON mf.matchup_id = m.matchup_id
+            WHERE
+                mf.world_id = ?
+                AND ? BETWEEN m.start AND m.end
+
+        `).get(worldId, Util.momentToLocalSqliteTimestamp(now))).colour
+    }
+
+    /**
     * Determines the objectives' states around a given moment. 
     * That is, based on the snapshot whose timestamp is closest
     * to the passed moment. 
     * If no moment is passed, the local NOW is assumed, resulting
     * in the latest state present in the database. 
-    * now: the moment around which the state should be determined
-    * returns: information about the state of all objectives
+    * @param now: the moment around which the state should be determined
+    * @returns: information about the state of all objectives
     */
     public getObjectivesAround(now: moment.Moment = undefined)
     : {
