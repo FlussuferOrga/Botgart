@@ -683,7 +683,7 @@ export class Database {
                     FROM
                         objectives_snapshots
                     WHERE
-                        datetime(?) >= timestamp
+                        datetime(?, 'localtime') >= timestamp
                     ORDER BY
                         timestamp DESC
                     LIMIT 1
@@ -695,7 +695,7 @@ export class Database {
                     FROM
                         objectives_snapshots
                     WHERE
-                        datetime(?) < timestamp
+                        datetime(?, 'localtime') < timestamp
                     ORDER BY
                         timestamp ASC
                     LIMIT 1
@@ -766,7 +766,7 @@ export class Database {
                     FROM
                         stats_snapshots
                     WHERE
-                        datetime(?) >= timestamp
+                        datetime(?, 'localtime') >= timestamp
                     ORDER BY
                         timestamp DESC
                     LIMIT 1
@@ -778,7 +778,7 @@ export class Database {
                     FROM
                         stats_snapshots
                     WHERE
-                        datetime(?) < timestamp
+                        datetime(?, 'localtime') < timestamp
                     ORDER BY
                         timestamp ASC
                     LIMIT 1
