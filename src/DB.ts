@@ -515,7 +515,7 @@ export class Database {
     }
 
     public crashedT3ByCommander(gw2account: string): number {
-        const crashed = this.client.db.execute(db => db.prepare(`
+        const crashed: {count:number} | undefined = this.client.db.execute(db => db.prepare(`
                 SELECT 
                     tl.gw2account,
                     COUNT(*) AS count
@@ -533,8 +533,8 @@ export class Database {
                     AND tl.gw2account = ?
                 GROUP BY
                     gw2account
-                `).get(config.home_id, gw2account)).count;
-            return crashed !== undefined ? crashed : 0;
+                `).get(config.home_id, gw2account));
+            return crashed !== undefined ? crashed.count : 0;
     }
 
     public wasCapturedBetween(start: moment.Moment, end: moment.Moment, objectiveId: string, colour: FactionColour): boolean {
@@ -631,7 +631,7 @@ export class Database {
         if(!now) {
             now = moment.utc().local();
         }
-        return this.execute(db => db.prepare(`
+        const res = this.execute(db => db.prepare(`
             SELECT
                 mf.colour
             FROM 
@@ -642,7 +642,8 @@ export class Database {
                 mf.world_id = ?
                 AND ? BETWEEN m.start AND m.end
 
-        `).get(worldId, Util.momentToLocalSqliteTimestamp(now))).colour
+        `).get(worldId, Util.momentToLocalSqliteTimestamp(now))); 
+        return res !== undefined ? res.colour : undefined
     }
 
     /**
