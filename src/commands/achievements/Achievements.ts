@@ -395,7 +395,10 @@ export class NeverSurrender extends TagUpAchievement {
                 U.log("warning", "Achievements.js", `Unable to find our colour with world ID ${config.home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
             } else {
                 const ourStats = stats.find(s => s.faction === ourColour);
-                holds = ourStats ? ourStats.kills / ourStats.deaths <= 0.6 : false;    
+                holds = ourStats 
+                            ? ourStats.kills > 1000 && ourStats.deaths > 1000 // make sure achievement is not awarded right at reset (sample morning of day 2 of matchup: ~6k kills)
+                                   && ourStats.kills / ourStats.deaths <= 0.6 
+                            : false; 
             }            
         }
         return holds;
