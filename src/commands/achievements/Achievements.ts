@@ -430,7 +430,10 @@ export class Conqueror extends ObjectiveAchievement {
         if(ourColour === undefined) {
           U.log("warning", "Achievements.js", `Could not find our home id '${config.home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
-          holds = obj.scores[ourColour] > 250;
+            const ppt: number = context.maps.reduce((teamPPT, m) => teamPPT + m.objectives
+                                                                           .filter(o => o.owner === ourColour)
+                                                                           .reduce((mapPPT, o) => mapPPT + o.points_tick, 0), 0);
+            holds = ppt > 250;
         }
         return holds;
     }
@@ -507,9 +510,7 @@ export class BoldBesieger extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-
         const reg = this.client.db.getUserByAccountName(context.commander.getAccountName());
-        console.log(reg.gw2account);
         return reg ? this.client.db.crashedT3ByCommander(reg.gw2account) >= 10 : false;          
     }
 }
