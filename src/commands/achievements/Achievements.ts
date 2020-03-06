@@ -210,12 +210,16 @@ abstract class ObjectiveAchievement extends Achievement<{"commander": ts3.Comman
     public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
           super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
-          client.gw2apiemitter.on("wvw-match", 
-                                  objs => this.client
-                                              .commanders
-                                              .getActiveCommanders()
-                                              .map(c => this.tryAward(c.getDiscordMember(), 
-                                                                     {"commander": c, "objectives": objs})));
+          client.gw2apiemitter.on("wvw-matches", 
+                                async (prom) => 
+                                {
+                                    const objs = await prom;
+                                    this.client
+                                        .commanders
+                                        .getActiveCommanders()
+                                        .map(c => this.tryAward(c.getDiscordMember(), 
+                                                                {"commander": c, "objectives": objs}))
+                                });
     }
 }
 
@@ -223,16 +227,20 @@ abstract class NewMatchupAchievement extends Achievement<{lastMatchup: db.Matchu
     public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
         client.wvwWatcher.on("new-matchup",
-                              mu => this.client 
-                                        .db
-                                        .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
-                                                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
-                                        .map(r => {
-                                            const guild: discord.Guild = client.guilds.get(r.guild);
-                                            return guild ? guild.members.get(r.user) : undefined;
-                                        })
-                                        .filter(c => c !== undefined)
-                                        .map(c => this.tryAward(c, mu)));
+                            mu => 
+                            {
+                                if(mu.lastMatchup === undefined) return; // ignore for very first matchup that is stored
+                                this.client 
+                                    .db
+                                    .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
+                                                         , U.sqliteTimestampToMoment(mu.lastMatchup.end))
+                                    .map(r => {
+                                        const guild: discord.Guild = client.guilds.get(r.guild);
+                                        return guild ? guild.members.get(r.user) : undefined;
+                                    })
+                                    .filter(c => c !== undefined)
+                                    .map(c => this.tryAward(c, mu))
+                            });
     }
 }
 
@@ -405,7 +413,7 @@ export class NeverSurrender extends TagUpAchievement {
     }
 }
 
-export class Conquerer extends ObjectiveAchievement {
+export class Conqueror extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png", 
                       "Eroberer", 
@@ -689,5 +697,35 @@ export class TierSolidifier extends NewMatchupAchievement {
 
     public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === context.newMatchup.tier;
+    }
+}
+
+export class StaminaCommander extends TagDownAchievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/9/92/Savage_Leap.png", 
+                      "Ausdauernder Kommandeur", 
+                      Achievement.MEDIUM_COLOUR, 
+                      true, // repeatable
+                      false // announce repeats
+        );
+    }
+
+    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+        return context.commander.getRaidTime() > 3600 * 5;
+    }
+}
+
+export class InfiniteStamina extends TagDownAchievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://wiki.guildwars2.com/images/4/42/Rush.png", 
+                      "Unerschöpfliche Ausdauer", 
+                      Achievement.HARD_COLOUR, 
+                      true, // repeatable
+                      false // announce repeats
+        );
+    }
+
+    public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
+        return context.commander.getRaidTime() > 3600 * 10;
     }
 }

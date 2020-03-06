@@ -169,9 +169,9 @@ EN = {
         "ACHIEVEMENT_DESC_NEVERSURRENDER": "Tag up when the server has a KD of 0.6 or less.",
         "ACHIEVEMENT_FLAV_NEVERSURRENDER": "They may take our lives, but they will never take our freedom!",
 
-        "ACHIEVEMENT_NAME_STRATEGIST": "Conquerer",
-        "ACHIEVEMENT_DESC_STRATEGIST": "The server reaches a tick of at least 250 during your raid.",
-        "ACHIEVEMENT_FLAV_STRATEGIST": "Colour the map with our colours.",
+        "ACHIEVEMENT_NAME_CONQUEROR": "Conqueror",
+        "ACHIEVEMENT_DESC_CONQUEROR": "The server reaches a tick of at least 250 during your raid.",
+        "ACHIEVEMENT_FLAV_CONQUEROR": "Colour the map with our colours.",
 
         "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unchallenged Sovereign",
         "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Stonemist Castle did not fall during your raid. For this to count, Stonemist Castle needs to be under our control for at least an hour during your raid.",
@@ -235,7 +235,15 @@ EN = {
 
         "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Tier Solidifier",
         "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Aid in keeping the server in the current tier.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Nice tier. I'll take it."        
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Nice tier. I'll take it.",
+
+        "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Sustained Commander",
+        "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Lead for five hours straight.",
+        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Probably fell asleep on their keyboard.",
+
+        "ACHIEVEMENT_NAME_INFINITESTAMINA": "Infinite Stamina",
+        "ACHIEVEMENT_DESC_INFINITESTAMINA": "Lead for ten hours straight.",
+        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "It's easy. Just brew your coffee with Red Bull.",        
     }
 };
 
@@ -408,9 +416,9 @@ DE = {
         "ACHIEVEMENT_DESC_NEVERSURRENDER": "Beginne einen Schlachtzug wenn der Server eine KD von 0,6 oder weniger hat.",
         "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
 
-        "ACHIEVEMENT_NAME_STRATEGIST": "Eroberer",
-        "ACHIEVEMENT_DESC_STRATEGIST": "Der Server erreicht unter deiner Leitung einen Tick von 250.",
-        "ACHIEVEMENT_FLAV_STRATEGIST": "Färbe die Karte mit unseren Farben.",
+        "ACHIEVEMENT_NAME_CONQUEROR": "Eroberer",
+        "ACHIEVEMENT_DESC_CONQUEROR": "Der Server erreicht unter deiner Leitung einen Tick von 250.",
+        "ACHIEVEMENT_FLAV_CONQUEROR": "Färbe die Karte mit unseren Farben.",
 
         "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
         "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Schloss Steinnebel ist während deiner Leitung nicht gefallen. Dazu muss Schloss Steinnebel mindestens eine Stunde lang während deines Schlachtzuges unter unserer Kontrolle stehen.",
@@ -478,7 +486,15 @@ DE = {
 
         "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Verfestiger",
         "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Trage dazu bei, den Server im aktuellen Tier zu halten.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!"        
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!",
+
+        "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Ausdauernder Kommandeur",
+        "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Leite für fünf Stunden am Stück.",
+        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Ist wahrscheinlich nur auf dem Keyboard eingeschlafen.",
+
+        "ACHIEVEMENT_NAME_INFINITESTAMINA": "Unerschöpfliche Ausdauer",
+        "ACHIEVEMENT_DESC_INFINITESTAMINA": "Leite für zehn Stunden am Stück.",
+        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "Gar nicht so schwierig. Einfach mal den Kaffee mit Red Bull aufgießen."
     }
 };
 

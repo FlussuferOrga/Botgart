@@ -82,9 +82,12 @@ export class BotgartClient extends AkairoClient {
             });
         });
 
+        // yes, both listeners listen to wvw-matches on purpose,
+        // as it contains the info on the stats as well as on the objectives!
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
                 if(stats === undefined) return;
+                Util.log("debug", "BotgartClient.js", "Starting to write WvWStats.");
                 const match = await this.wvwWatcher.getCurrentMatch();
                 const snapshotId = this.db.addStatsSnapshot();
                 for await(const mapData of stats.maps) {
@@ -100,13 +103,14 @@ export class BotgartClient extends AkairoClient {
                     }
                     
                 }
-
+                Util.log("debug", "BotgartClient.js", "Done writing WvWStats.");
             });
         });
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 if(match === undefined) return;
+                Util.log("debug", "BotgartClient.js", "Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 const snapshotId = this.db.addObjectivesSnapshot();
                 const objs = match.maps
@@ -114,7 +118,8 @@ export class BotgartClient extends AkairoClient {
                             //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                             .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                 this.db.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
-            })
+                Util.log("debug", "BotgartClient.js", "Done writing WvWMatches.");
+            });
         });
 
         Util.loadModuleClasses("built/commands/achievements/Achievements.js", [this], ["Achievement"]).forEach(achievement => {
