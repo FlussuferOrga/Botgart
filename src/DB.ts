@@ -59,6 +59,14 @@ export interface Capture {
     readonly old_tier: number
 }
 
+export interface Fish {
+    readonly fish_id: number,
+    readonly image: string,
+    readonly rarity: number,
+    readonly weight: number, 
+    readonly points_per_gramm: number
+}
+
 export class Database {
     readonly file: string;
     private client: BotgartClient;
@@ -1169,4 +1177,41 @@ export class Database {
     public findDuplicateRegistrations(): any {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
     }
+
+    public getRandomFish(): Fish {
+        return this.execute(db => db.prepare(`
+                WITH fs(fish_id, name, image, rarity, weight, points_per_gramm) AS (
+                    SELECT 
+                        fish_id,
+                        name,
+                        image, 
+                        rarity,
+                        ABS(RANDOM()) % (max_weight - min_weight) + min_weight AS weight,
+                        points_per_gramm
+                    FROM 
+                        fish 
+                    ORDER BY 
+                        ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC         
+                    --LIMIT 
+                    --    1
+                )
+                SELECT 
+                    fs.fish_id,
+                    fs.name,
+                    fs.image, 
+                    fs.rarity,
+                    fs.weight,
+                    fs.points_per_gramm,
+                    fs.weight * fs.points_per_gramm AS points
+                FROM 
+                    fs
+                ;
+            `).run())
+    }
+
+insert into fish(name, image, rarity, min_weight, max_weight, points_per_gramm) values
+('karpador', '', 2, 10, 100, 1),
+('garados', '', 1, 100, 1000, 10 ),
+('dorsch', '', 1, 20, 22, 4)
+;
 }

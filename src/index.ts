@@ -36,7 +36,7 @@ const args = commandlineargs.default([
 ]);
 
 // this is an in-order list of all patches
-const allPatches = ["Patch1", "Patch2", "Patch3", "Patch4", "Patch5", "Patch6", "Patch7", "Patch8"];
+const allPatches = ["Patch1", "Patch2", "Patch3", "Patch4", "Patch5", "Patch6", "Patch7", "Patch8", "Patch9"];
 
 function startBot() {
     console.log("Starting up...");
