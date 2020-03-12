@@ -61,10 +61,12 @@ export interface Capture {
 
 export interface Fish {
     readonly fish_id: number,
+    readonly name: string,
     readonly image: string,
     readonly rarity: number,
     readonly weight: number, 
-    readonly points_per_gramm: number
+    readonly points_per_gramm: number,
+    readonly reel_time_factor: number
 }
 
 export class Database {
@@ -1178,40 +1180,35 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account FROM registrations GROUP BY gw2account HAVING count > 1`).all());
     }
 
+    /**
+    * Randomly selects a Fish. 
+    * Weight is already randomly selected. 
+    * Fish with higher rarity value are more commonly found. 
+    * @returns a randomly selected Fish.
+    */
     public getRandomFish(): Fish {
         return this.execute(db => db.prepare(`
-                WITH fs(fish_id, name, image, rarity, weight, points_per_gramm) AS (
-                    SELECT 
-                        fish_id,
-                        name,
-                        image, 
-                        rarity,
-                        ABS(RANDOM()) % (max_weight - min_weight) + min_weight AS weight,
-                        points_per_gramm
-                    FROM 
-                        fish 
-                    ORDER BY 
-                        ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC         
-                    --LIMIT 
-                    --    1
-                )
                 SELECT 
-                    fs.fish_id,
-                    fs.name,
-                    fs.image, 
-                    fs.rarity,
-                    fs.weight,
-                    fs.points_per_gramm,
-                    fs.weight * fs.points_per_gramm AS points
+                    fish_id,
+                    name,
+                    image, 
+                    rarity,
+                    ABS(RANDOM()) % (max_weight - min_weight) + min_weight AS weight,
+                    points_per_gramm,
+                    reel_time_factor
                 FROM 
-                    fs
-                ;
-            `).run())
+                    fish 
+                ORDER BY 
+                    ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC         
+                LIMIT 
+                    1
+        `).get())
     }
 
-insert into fish(name, image, rarity, min_weight, max_weight, points_per_gramm) values
-('karpador', '', 2, 10, 100, 1),
-('garados', '', 1, 100, 1000, 10 ),
-('dorsch', '', 1, 20, 22, 4)
-;
+    public catchFish(user: discord.User, fish: Fish): void {
+        this.execute(db => db.prepare(`
+            INSERT INTO caught_fish(fish_id, weight, user)
+            VALUES (?,?,?)
+        `).run(fish.fish_id, fish.weight, user.id));
+    }
 }

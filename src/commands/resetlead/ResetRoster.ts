@@ -5,7 +5,7 @@ import * as L from "../../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
-import EventEmitter = require("events");
+import * as events from "events";
 import * as dateFormat from "dateformat";
 //import * as moment from 'moment';
 import moment = require('moment');
@@ -60,7 +60,7 @@ export class WvWMap {
     }
 }
 
-export class Roster extends EventEmitter {
+export class Roster extends events.EventEmitter {
     public readonly leads: {[key: string] : [WvWMap, Set<string>]};
     public readonly weekNumber: number;
     public readonly year: number;

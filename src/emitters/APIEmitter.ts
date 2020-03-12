@@ -1,6 +1,6 @@
 const config = require("../../config.json");
 import { log, api } from "../Util";
-import EventEmitter from "events"
+import * as events from "events"
 import { gw2 } from "gw2api-client"
 import { BotgartClient } from "../BotgartClient"
 
@@ -48,7 +48,7 @@ export interface WvWMatches {
     readonly maps: MapStats[]
 }
 
-export class APIEmitter extends EventEmitter {
+export class APIEmitter extends events.EventEmitter {
     public readonly name: string;
     public readonly interval: number;
 

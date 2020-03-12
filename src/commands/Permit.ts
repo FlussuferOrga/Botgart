@@ -23,19 +23,17 @@ export class Permit extends BotgartCommand {
                 {
                     id: "receiver",
                     type: (word: string, message: discord.Message, prevArgs: any[]) => { 
-                        let receiver;
-                        const snowflake = word.match(/<@(&)?(\d*)>/);
+                        let receiver: discord.GuildMember | discord.User | discord.Role;
+                        const snowflake = word.match(/<@[^\d]?(\d*)>/);
                         if(snowflake !== null) {
-                            const isGroup: boolean = snowflake[1] !== undefined;
-                            const snowflakeId: string = snowflake[2];                           
+                            const snowflakeId: string = snowflake[1];                           
                             if(message.guild) {
                                 // either group or guildmember
-                                receiver = isGroup 
-                                            ? message.guild.roles.find(r => r.id === snowflakeId)
-                                            : message.guild.members.find(m => m.id === snowflakeId);    
+                                receiver = message.guild.roles.find(r => r.id == snowflakeId) 
+                                           || message.guild.members.find(m => m.id == snowflakeId);
                             } else {
                                 // direct message -> user 
-                                receiver = this.client.users.find(u => u.id === snowflakeId);
+                                receiver = this.client.users.find(u => u.id == snowflakeId);
                             }    
                         } else {
                             // plaintext name -> try to resolve among guild members and roles as fallback

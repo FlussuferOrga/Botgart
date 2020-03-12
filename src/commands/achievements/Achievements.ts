@@ -430,7 +430,7 @@ export class Conqueror extends ObjectiveAchievement {
         if(ourColour === undefined) {
           U.log("warning", "Achievements.js", `Could not find our home id '${config.home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
-            const ppt: number = context.maps.reduce((teamPPT, m) => teamPPT + m.objectives
+            const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives
                                                                            .filter(o => o.owner === ourColour)
                                                                            .reduce((mapPPT, o) => mapPPT + o.points_tick, 0), 0);
             holds = ppt > 250;

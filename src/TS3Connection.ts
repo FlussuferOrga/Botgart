@@ -6,7 +6,7 @@ import * as moment from "moment";
 import * as L from "./Locale.js";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
-import EventEmitter from "events";
+import * as events from "events";
 import * as db from "./DB";
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
@@ -305,7 +305,7 @@ export class CommanderStorage {
 * Doing so will throw two events "tagup" and "tagdown". 
 * The latter will be thrown _after_ the ended lead has been written to the DB.
 */ 
-export class TS3Listener extends EventEmitter {
+export class TS3Listener extends events.EventEmitter {
     private connected: boolean;
     private ts3connection: TS3Connection;
     private broadcastChannel: string;

@@ -244,6 +244,16 @@ EN = {
         "ACHIEVEMENT_NAME_INFINITESTAMINA": "Infinite Stamina",
         "ACHIEVEMENT_DESC_INFINITESTAMINA": "Lead for ten hours straight.",
         "ACHIEVEMENT_FLAV_INFINITESTAMINA": "It's easy. Just brew your coffee with Red Bull.",        
+
+        "FISHING_IDLE_TITLE": "Fishing",
+        "FISHING_IDLE_DESCRIPTION": "Sit back and relax. But watch for your blinker! Click :fishing_pole_and_fish: once it pops up!",
+
+        "FISHING_ESCAPED_TITLE": "Escaped",
+        "FISHING_ESCAPED_DESCRIPTION": "You were too relaxed and the fish got away. But you had a nice, relaxing fishing trip anyway and the fish gets to swim home to its family.",
+
+        "FISHING_CAUGHT_TITLE": "Caught",
+        "FISHING_CAUGHT_DESCRIPTION": "You caught the fish! What a masterful angler you are!"
+
     }
 };
 
@@ -494,7 +504,16 @@ DE = {
 
         "ACHIEVEMENT_NAME_INFINITESTAMINA": "Unerschöpfliche Ausdauer",
         "ACHIEVEMENT_DESC_INFINITESTAMINA": "Leite für zehn Stunden am Stück.",
-        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "Gar nicht so schwierig. Einfach mal den Kaffee mit Red Bull aufgießen."
+        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "Gar nicht so schwierig. Einfach mal den Kaffee mit Red Bull aufgießen.",
+
+        "FISHING_IDLE_TITLE": "Angeln",
+        "FISHING_IDLE_DESCRIPTION": "Lehn dich zurück und entspann dich. Aber achte auf deine Angel! Klicke schnell auf :fishing_pole_and_fish: wenn es auftaucht!",
+
+        "FISHING_ESCAPED_TITLE": "Entwischt",
+        "FISHING_ESCAPED_DESCRIPTION": "Du warst zu entspannt und der Fisch ist entkommen. Aber du hattest trotzdem einen schönen Angelausflug und der Fisch darf sich darauf freuen, seine Familie wiederzusehen.",
+
+        "FISHING_CAUGHT_TITLE": "Gefangen",
+        "FISHING_CAUGHT_DESCRIPTION": "Du hast den Fisch geangelt! Was für ein meisterlicher Angler du bist!"
     }
 };
 
