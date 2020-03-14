@@ -40,7 +40,7 @@ export class FishingLadder extends BotgartCommand {
         const ladder: db.FishLadderEntry[] = this.getBotgartClient().db.fishLadder(length);
 
         Promise.all(ladder.map(fle => this.client.fetchUser(fle.user)
-                                                 .then(u => `${pad(fle.rank, 2)}: ${u.username} (${readableWeight(fle.total_weight)})`)))
+                                                 .then(u => `${pad(fle.rank, 2)}: ${u.username} ${fle.number_of_fish} 🐟 (${readableWeight(fle.total_weight)})`)))
                .then(xs => message.reply(`:fish::crown:\n\`\`\`${xs.join("\n")}\`\`\``, {split:true}));
     }
 }
