@@ -69,6 +69,13 @@ export interface Fish {
     readonly reel_time_factor: number
 }
 
+export interface FishLadderEntry {
+    readonly user: string, 
+    readonly rank: number,
+    readonly total_weight: number, 
+    readonly number_of_fish: number
+}
+
 export class Database {
     readonly file: string;
     private client: BotgartClient;
@@ -1205,10 +1212,38 @@ export class Database {
         `).get())
     }
 
+    /**
+    * Stores that a user has caught a fish. 
+    * @param user: who caught the fish . 
+    * @param fish: the fish that was caught 
+    */
     public catchFish(user: discord.User, fish: Fish): void {
         this.execute(db => db.prepare(`
             INSERT INTO caught_fish(fish_id, weight, user)
             VALUES (?,?,?)
         `).run(fish.fish_id, fish.weight, user.id));
+    }
+
+    /**
+    * Retrieves the ladder for fishing. 
+    * @param length: the number of ladder enties that should be retrieved. 
+    * @returns the ladder
+    */
+    public fishLadder(length: number = 10): FishLadderEntry[] {
+        return this.execute(db => db.prepare(`
+            SELECT 
+                user,
+                ROW_NUMBER() OVER () AS rank,
+                SUM(weight) AS total_weight,
+                COUNT(*) AS number_of_fish
+            FROM 
+                caught_fish
+            GROUP BY 
+                user 
+            ORDER BY 
+                SUM(weight) DESC
+            LIMIT 
+                ?
+        `).all(length));
     }
 }

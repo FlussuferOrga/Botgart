@@ -49,8 +49,6 @@ async function image(term: string): Promise<string> {
     return image;
 }
 
-image("river");
-
 class ActiveFisher {
     private client: BotgartClient;
     private fisher: discord.User;
@@ -72,7 +70,6 @@ class ActiveFisher {
                     .setColor(0x0000FF)
                     .setDescription(L.get("FISHING_IDLE_DESCRIPTION"))
                     .setImage(await image("river"))
-                    //.setImage("https://vignette.wikia.nocookie.net/leonhartimvu/images/2/2c/Fisherman_anime.png/revision/latest/scale-to-width-down/340?cb=20190610140922");
     }
 
     public async createBittenEmbed(): Promise<discord.RichEmbed> {
@@ -128,13 +125,10 @@ export class GoFish extends BotgartCommand {
             split: "quoted",
         },
         true,  // available per DM
-        false // cronable
+        false, // cronable
+        1 // everyone permission
         );
     }
-
-    checkArgs(args) {
-        return undefined;
-    }   
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const fish: db.Fish = this.getBotgartClient().db.getRandomFish();
@@ -146,7 +140,6 @@ export class GoFish extends BotgartCommand {
                 setTimeout(_ => af.bite(), Math.floor(Math.random() * 1000 * (WAIT_MAX_SECONDS - WAIT_MIN_SECONDS + 1) + WAIT_MIN_SECONDS));
             }
         });
-        
     }
 }
 

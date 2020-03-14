@@ -80,6 +80,7 @@ EN = {
         "HELPTEXT_REVOKE_ACHIEVEMENT": EN["HELPTEXT_PREFIX"] + "`<achievement name or achievement DB id>` (`<Discord user to revoke from, iff an achievement name was given>`)",
         "HELPTEXT_LIST_ACHIEVEMENTS": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": EN["HELPTEXT_PREFIX"] + "`<GW2 account name>`",
+        "HELPTEXT_GO_FISH": EN["HELPTEXT_PREFIX"] + "",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
@@ -112,6 +113,7 @@ EN = {
         "DESC_REVOKE_ACHIEVEMENT": "Revokes all instances of an achievement from a player or deletes a particular achievement entry.",
         "DESC_LIST_ACHIEVEMENTS": "Lists all achievable achievements.",
         "DESC_DELETE_TS_REGISTRATION": "Deletes all TS registrations from a GW2 account.",
+        "DESC_GO_FISH": "Head out for a relaxing day at the riverside.",
 
         "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
@@ -337,6 +339,7 @@ DE = {
         "HELPTEXT_REVOKE_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
         "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
+        "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -369,6 +372,7 @@ DE = {
         "DESC_REVOKE_ACHIEVEMENT": "Entfernt alle Instanzen einer Errungenschaft von einem Spieler oder entfernt einenbestimmten Errungenschaften-Eintrag aus der Datenbank.",
         "DESC_LIST_ACHIEVEMENTS": "Listet alle verfügbaren Errungenschaften auf.",
         "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
+        "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
 
         "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 

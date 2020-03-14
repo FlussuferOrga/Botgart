@@ -26,8 +26,7 @@ export class Say extends BotgartCommand {
                         id: "text",
                         type: "string"
                     }
-                ],
-                userPermissions: ["ADMINISTRATOR"]
+                ]
             },
             false, // available per DM
             true, // cronable

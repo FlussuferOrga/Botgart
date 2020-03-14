@@ -31,12 +31,12 @@ export class Help extends BotgartCommand {
         // since the restricted listing is just a convenience for users to present them with a
         // more compact help text.
         const separator = "\n";
-        let member = guild ? guild.members.find(m => m.id == responsible.id) : undefined;
-        let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
-        let descs = "**COMMANDS:**\n\n"
+        const user = guild ? guild.members.find(m => m.id == responsible.id) : responsible;
+        //let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
+        const descs = "**COMMANDS:**\n\n"
                     .concat(Array.from(this.client.commandHandler.modules.values())
                         .map(m => <BotgartCommand>m)
-                        .filter(m => m.isAllowed(responsible))
+                        .filter(m => m.isAllowed(user))
                         .sort((m1,m2) => m1.id < m2.id ? -1 : 1)
                         .map(m => m.desc 
                         ? "**`{0}`**\n({1}): {2}\n------".formatUnicorn(
