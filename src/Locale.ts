@@ -81,6 +81,7 @@ EN = {
         "HELPTEXT_LIST_ACHIEVEMENTS": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": EN["HELPTEXT_PREFIX"] + "`<GW2 account name>`",
         "HELPTEXT_GO_FISH": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_FISHING_LADDER": EN["HELPTEXT_PREFIX"] + "",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
@@ -114,6 +115,7 @@ EN = {
         "DESC_LIST_ACHIEVEMENTS": "Lists all achievable achievements.",
         "DESC_DELETE_TS_REGISTRATION": "Deletes all TS registrations from a GW2 account.",
         "DESC_GO_FISH": "Head out for a relaxing day at the riverside.",
+        "DESC_FISHING_LADDER": "Lists the most successful anglers. Ordered by the weight of their total caught fish.",
 
         "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
@@ -340,6 +342,7 @@ DE = {
         "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
         "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -373,6 +376,7 @@ DE = {
         "DESC_LIST_ACHIEVEMENTS": "Listet alle verfügbaren Errungenschaften auf.",
         "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
         "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
+        "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fisch.",
 
         "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 
