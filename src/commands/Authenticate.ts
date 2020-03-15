@@ -51,8 +51,8 @@ export class Authenticate extends BotgartCommand {
         // through a DM and is dedicated to Jey, who is a fucking 
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
-        this.client.guilds.forEach(function(g) {
-            let m = g.members.find(m => m.id == message.author.id);
+        this.client.guilds.cache.forEach(function(g) {
+            let m = g.members.cache.find(m => m.id == message.author.id);
             if(m) {
                 members.push({"guild": g, "member": m});
             }

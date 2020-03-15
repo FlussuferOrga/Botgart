@@ -64,20 +64,20 @@ class ActiveFisher {
         this.ended = false;
     }
 
-    public async createIdleEmbed(): Promise<discord.RichEmbed> {
-        return new discord.RichEmbed()
+    public async createIdleEmbed(): Promise<discord.MessageEmbed> {
+        return new discord.MessageEmbed()
                     .setTitle(L.get("FISHING_IDLE_TITLE", [], " | ", false))
                     .setColor(0x0000FF)
                     .setDescription(L.get("FISHING_IDLE_DESCRIPTION"))
                     .setImage(await image("river"))
     }
 
-    public async createBittenEmbed(): Promise<discord.RichEmbed> {
+    public async createBittenEmbed(): Promise<discord.MessageEmbed> {
         return this.createIdleEmbed();
     }
 
-    public async createCaughtEmbed(): Promise<discord.RichEmbed> {
-        return new discord.RichEmbed()
+    public async createCaughtEmbed(): Promise<discord.MessageEmbed> {
+        return new discord.MessageEmbed()
                     .setTitle(L.get("FISHING_CAUGHT_TITLE", [], " | ", false))
                     .setColor(0x00FF00)
                     .setDescription(L.get("FISHING_CAUGHT_DESCRIPTION"))
@@ -87,8 +87,8 @@ class ActiveFisher {
                     .addField(":moneybag:", `${this.fish.points_per_gramm * this.fish.weight}`, true);
     }
 
-    public async createEscapedEmbed(): Promise<discord.RichEmbed> {
-        return new discord.RichEmbed()
+    public async createEscapedEmbed(): Promise<discord.MessageEmbed> {
+        return new discord.MessageEmbed()
                     .setTitle(L.get("FISHING_ESCAPED_TITLE", [], " | ", false))
                     .setColor(0xFF0000)
                     .setDescription(L.get("FISHING_ESCAPED_DESCRIPTION"))
@@ -114,7 +114,7 @@ class ActiveFisher {
         } else {
             await this.message.edit(await this.createEscapedEmbed());
         }
-        this.message.reactions.deleteAll();
+        this.message.reactions.removeAll();
     }
 }
 

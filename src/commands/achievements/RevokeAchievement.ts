@@ -74,10 +74,10 @@ export class RevokeAchievement extends BotgartCommand {
                         // we need to resolve the player manually
                         userdata = db.getUserByGW2Account(achievementData.gw2account);
                         if(userdata) {
-                            const member = guild.members.find(m => m.id === userdata.user);
-                            const role: discord.Role = guild.roles.find(r => r.name === aobj.getRoleName());
+                            const member = guild.members.cache.find(m => m.id === userdata.user);
+                            const role: discord.Role = guild.roles.cache.find(r => r.name === aobj.getRoleName());
                             if(member && role) {
-                                member.removeRole(role);
+                                member.roles.remove(role);
                             }    
                         }                    
                     }
@@ -86,9 +86,9 @@ export class RevokeAchievement extends BotgartCommand {
                 // revoke all instances
                 // assert args.achievement instanceof Achievement
                 revokedCount = db.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
-                const role: discord.Role = guild.roles.find(r => r.name === args.achievement.getRoleName());
+                const role: discord.Role = guild.roles.cache.find(r => r.name === args.achievement.getRoleName());
                 if(role) {
-                    args.player.removeRole(role);
+                    args.player.roles.remove(role);
                 }
             }
             message.reply(L.get("REVOKE_ACHIEVEMENT_SUCCESS", [""+revokedCount]));

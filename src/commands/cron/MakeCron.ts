@@ -100,11 +100,11 @@ export class MakeCron extends BotgartCommand {
         cl.db.getCronjobs().forEach(cron => {
             let mod: BotgartCommand = <BotgartCommand>this.getBotgartClient().commandHandler.modules.get(cron.command);
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
-            let guild = this.client.guilds.find(g => g.id == cron.guild);
+            let guild = this.client.guilds.cache.find(g => g.id == cron.guild);
             if(!guild) {
                 log("error", "MakeCron.js", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
             } else {
-                let responsible = guild.members.find(m => m.user.id == cron.created_by);
+                let responsible = guild.members.cache.find(m => m.user.id == cron.created_by);
                 let job;
                 if(!responsible) {
                     log("warn", "MakeCron.js", "Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(cron.created_by, cron.id, guild.name));

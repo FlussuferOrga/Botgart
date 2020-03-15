@@ -17,14 +17,8 @@ process.exit(1);
 */
 
 const client = new BotgartClient({
-    ownerID: config.owner_ids,
-    prefix: config.prefix,
-    commandDirectory: "./built/commands/",
-    inhibitorDirectory: "./built/inhibitors/",
-    listenerDirectory: "./built/listeners/",
-    commandUtil: true,
-    commandUtilLifetime: 600000
-}, "./db/database.db");
+    ownerID: config.owner_ids
+}, {}, "./db/database.db");
 
 // bit weird but works only this way...
 const args = commandlineargs.default([

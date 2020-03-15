@@ -29,17 +29,17 @@ export class Permit extends BotgartCommand {
                             const snowflakeId: string = snowflake[1];                           
                             if(message.guild) {
                                 // either group or guildmember
-                                receiver = message.guild.roles.find(r => r.id == snowflakeId) 
-                                           || message.guild.members.find(m => m.id == snowflakeId);
+                                receiver = message.guild.roles.cache.find(r => r.id == snowflakeId) 
+                                           || message.guild.members.cache.find(m => m.id == snowflakeId);
                             } else {
                                 // direct message -> user 
-                                receiver = this.client.users.find(u => u.id == snowflakeId);
+                                receiver = this.client.users.cache.find(u => u.id == snowflakeId);
                             }    
                         } else {
                             // plaintext name -> try to resolve among guild members and roles as fallback
                             if(message.guild) {
-                                receiver = message.guild.members.find(m => m.displayName === phrase) 
-                                            || message.guild.roles.find(r => r.name === phrase) 
+                                receiver = message.guild.members.cache.find(m => m.displayName === phrase) 
+                                            || message.guild.roles.cache.find(r => r.name === phrase) 
                             }
                         }
                         return receiver;

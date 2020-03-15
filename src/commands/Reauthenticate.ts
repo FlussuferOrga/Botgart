@@ -38,7 +38,7 @@ export class Reauthenticate extends BotgartCommand {
                     if(!guild || guild.id != p.guild) {
                         // prunes come ordered by guild. This trick allows us to
                         // find each guild only once.
-                        guild = cl.guilds.find(g => g.id == p.guild);
+                        guild = cl.guilds.cache.find(g => g.id == p.guild);
                     }
                     if(!guild) {
                         log("error", "Reauthenticate.js", `Could not find a guild ${p.guild}. Have I been kicked?`)

@@ -53,8 +53,8 @@ export class Poll extends BotgartCommand {
 
     deserialiseArgs(jsonargs) {
         let args = JSON.parse(jsonargs);
-        let guild = this.client.guilds.find(g => g.id == args.channel.guild);
-        args.channel = guild.channels.find(c => c.id == args.channel.channel);
+        let guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
+        args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
         return args;
     }
 

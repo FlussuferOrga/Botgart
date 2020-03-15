@@ -29,10 +29,10 @@ export class RepairRoles extends BotgartCommand {
             if(!g || g.id != d.guild) {
                 // designations come ordered by guild. This trick allows us to
                 // find each guild only once.
-                g = cl.guilds.find(g => g.id == d.guild);
+                g = cl.guilds.cache.find(g => g.id == d.guild);
             }
             r = g.roles.find(role => role.name === d.registration_role);
-            m = guild.members.find(member => member.user.id === d.user);
+            m = guild.members.cache.find(member => member.user.id === d.user);
             if(!r) {
                 log("error", "RepairRoles.js", "Was supposed to assign role '{0}' to user, but could not find it.".formatUnicorn(d.registration_role));
             } else {

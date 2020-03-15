@@ -98,7 +98,7 @@ export abstract class Achievement<C> {
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
-            if(discordUser.roles.some(r => config.achievements.ignoring_roles.includes(r.name))) {
+            if(discordUser.roles.cache.some(r => config.achievements.ignoring_roles.includes(r.name))) {
                 // user is hiding their achievements
                 result = AchievementAwardResult.HIDDEN;
             } else {
@@ -107,7 +107,7 @@ export abstract class Achievement<C> {
 
                 if(rowId > -1 && (isNew || this.repeatable)) {
                     result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
-                    const achievementChannel: discord.Channel = guild.channels.find(c => c instanceof discord.TextChannel && c.name === config.achievements.channel);
+                    const achievementChannel: discord.Channel = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === config.achievements.channel);
 
                     if(achievementChannel) {
                         if(isNew || this.announceRepetitions) {
@@ -117,12 +117,12 @@ export abstract class Achievement<C> {
                         U.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
-                    const role: discord.Role = guild.roles.find(r => r.name === this.getRoleName());
+                    const role: discord.Role = guild.roles.cache.find(r => r.name === this.getRoleName());
                     if(role) {
-                        discordUser.addRole(role);
+                        discordUser.roles.add(role);
                     } else {
-                        guild.createRole({"name": this.roleName, "color": this.roleColour})
-                          .then(r => discordUser.addRole(r))
+                        guild.roles.create({ data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"})
+                          .then(r => discordUser.roles.add(r))
                           .catch(e => U.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));                    
                     }
                 }   
@@ -142,8 +142,8 @@ export abstract class Achievement<C> {
     }
 
     public createEmbed(discordUser: discord.GuildMember, dbId: number) {
-        return new discord.RichEmbed()
-            .setAuthor(discordUser.displayName, discordUser.user.displayAvatarURL)
+        return new discord.MessageEmbed()
+            .setAuthor(discordUser.displayName, discordUser.user.displayAvatarURL())
             .setColor(this.roleColour)
             .setTitle(`${this.getName()}`)
             .setThumbnail(this.imageURL)
@@ -163,9 +163,9 @@ export abstract class Achievement<C> {
     */
     public giveRole(discordUser: discord.GuildMember): boolean {
         let given = false;
-        const role = discordUser.guild.roles.find(r => r.name === this.getRoleName());
+        const role = discordUser.guild.roles.cache.find(r => r.name === this.getRoleName());
         if(role) {
-            discordUser.addRole(role);
+            discordUser.roles.add(role);
             given = true;
         }
         return given;
@@ -179,9 +179,9 @@ export abstract class Achievement<C> {
     */
     public removeRole(discordUser: discord.GuildMember): boolean {
         let removed = false;
-        const role = discordUser.guild.roles.find(r => r.name === this.getRoleName());
+        const role = discordUser.guild.roles.cache.find(r => r.name === this.getRoleName());
         if(role) {
-            discordUser.removeRole(role);
+            discordUser.roles.remove(role);
             removed = true;
         }
         return removed;
@@ -235,8 +235,8 @@ abstract class NewMatchupAchievement extends Achievement<{lastMatchup: db.Matchu
                                     .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
                                                          , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                                     .map(r => {
-                                        const guild: discord.Guild = client.guilds.get(r.guild);
-                                        return guild ? guild.members.get(r.user) : undefined;
+                                        const guild: discord.Guild = client.guilds.cache.get(r.guild);
+                                        return guild ? guild.members.cache.get(r.user) : undefined;
                                     })
                                     .filter(c => c !== undefined)
                                     .map(c => this.tryAward(c, mu))

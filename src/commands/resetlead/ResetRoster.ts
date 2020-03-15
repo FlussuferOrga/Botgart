@@ -145,8 +145,8 @@ export class Roster extends events.EventEmitter {
         return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
     }
 
-    public toRichEmbed(): discord.RichEmbed {
-        const re = new discord.RichEmbed()
+    public toMessageEmbed(): discord.MessageEmbed {
+        const re = new discord.MessageEmbed()
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${moment(this.getResetDate()).format("DD.MM.YYYY")})`)
@@ -155,7 +155,7 @@ export class Roster extends events.EventEmitter {
         for(const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
             re.addField("{0} {1}".formatUnicorn(wvwmap.emote, wvwmap.getLocalisedName(" | ", false)), leads.size === 0 ? "-" : Array.from(leads).join(", "))
-              .addBlankField();
+              .addField('\u200b', '\u200b'); // discord.js v12 version of addBlankField()
         }
         return re;
     }
@@ -204,7 +204,7 @@ export class ResetRoster extends BotgartCommand {
     }
 
     public init(client: BotgartClient): void {
-        client.guilds.forEach(
+        client.guilds.cache.forEach(
             g => Promise.all(client.db.getActiveRosters(g))
                 .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
                    .forEach(([dbRoster, dbChannel, dbMessage]) => {
@@ -251,7 +251,7 @@ export class ResetRoster extends BotgartCommand {
                 if(this.syncScheduled) return;
                 this.syncScheduled = true;
                 cl.db.upsertRosterPost(guild, r, message);
-                message.edit(r.toRichEmbed());
+                message.edit(r.toMessageEmbed());
 
                 if(roster.isUpcoming()) {
                     this.syncToTS3(roster);
@@ -268,14 +268,14 @@ export class ResetRoster extends BotgartCommand {
         message.createReactionCollector(e => 
             this.emotes.includes(e.emoji.name) , {}).on("collect", (r) => {
                 const m = WvWMap.getMapByEmote(r.emoji.name);
-                r.users.filter(u => u.id !== this.client.user.id).map(u => { // reactions coming from anyone but the bot
+                r.users.cache.filter(u => u.id !== this.client.user.id).map(u => { // reactions coming from anyone but the bot
                     if(!m) {
                         // no map has been found -> X -> user wants to remove themselves from roster
                         roster.removeLead(undefined, Util.formatUserPing(u.id));
                     } else {
                         roster.addLead(m, Util.formatUserPing(u.id));
                     }
-                    r.remove(u);
+                    r.users.remove(u);
                 });
             });
     }
@@ -288,7 +288,7 @@ export class ResetRoster extends BotgartCommand {
             if(dbRoster === undefined) {
                 // no roster for this guild+week -> create one
                 const roster = new Roster(rosterWeek, rosterYear);
-                (<discord.TextChannel>args.channel).send(roster.toRichEmbed())
+                (<discord.TextChannel>args.channel).send(roster.toMessageEmbed())
                 .then(async (mes: discord.Message) => {
                     for(const e of this.emotes) {
                         await mes.react(e);
@@ -317,8 +317,8 @@ export class ResetRoster extends BotgartCommand {
 
     deserialiseArgs(jsonargs) {
         let args = JSON.parse(jsonargs);
-        let guild = this.client.guilds.find(g => g.id == args.channel.guild);
-        args.channel = guild.channels.find(c => c.id == args.channel.channel);
+        let guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
+        args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
         return args;
     }
 }

@@ -338,7 +338,7 @@ export class TS3Listener extends events.EventEmitter {
             if(data.constructor == Object && "commanders" in data) {
                 const now: moment.Moment = moment.utc();
                 const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
-                that.botgartClient.guilds.forEach(g => {
+                that.botgartClient.guilds.cache.forEach(g => {
                     data.commanders.forEach(c => {
                         const account  = c.account_name; // for lookup
                         const uid      = c.ts_cluid; // for this.users
@@ -419,20 +419,20 @@ export class TS3Listener extends events.EventEmitter {
         const registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
         if(registration) {
             // the commander is member of the current discord -> give role
-            const crole = g.roles.find(r => r.name === this.commanderRole);
-            commander.setDiscordMember(g.members.find(m => m.id === registration.user));
+            const crole = g.roles.cache.find(r => r.name === this.commanderRole);
+            commander.setDiscordMember(g.members.cache.find(m => m.id === registration.user));
             if(crole && commander.getDiscordMember()) {
-                commander.getDiscordMember().addRole(crole);
+                commander.getDiscordMember().roles.add(crole);
             }
             displayname = `${displayname} (${registration.registration_role})`;
         }
 
         // broadcast the message                    
-        const dchan: discord.TextChannel = <discord.TextChannel>g.channels.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
+        const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
         if(!dchan) {
             log("warning", "TS3Listener.js", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
-            const pingRole = g.roles.find(r => r.name === this.pingRole);
+            const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
             const mes: string = L.get("COMMANDER_TAG_UP", [displayname, commander.getTS3Channel(), pingRole ? pingRole.toString() : ""]);
             dchan.send(mes);
         }
@@ -453,16 +453,16 @@ export class TS3Listener extends events.EventEmitter {
         let dmember: discord.GuildMember = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
-            const crole = g.roles.find(r => r.name === this.commanderRole);
-            dmember = g.members.find(m => m.id === registration.user);
+            const crole = g.roles.cache.find(r => r.name === this.commanderRole);
+            dmember = g.members.cache.find(m => m.id === registration.user);
             if(crole && dmember) {
                 log("info", "TS3Listener.js", `Tagging down ${dmember.displayName} in ${g.name}.`);
-                dmember.removeRole(crole).catch(e => {
+                dmember.roles.remove(crole).catch(e => {
                     log("warning", "TS3Listener.js", `Could not remove role '${this.commanderRole}' from user '${dmember.nickname}' which was expected to be there. Maybe someone else already removed it.`)
                 });
             }
             // do not write leads of members which hide their roles
-            const writeToDB: boolean = !(dmember && dmember.roles.find(r => config.achievements.ignoring_roles.includes(r.name)));
+            const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => config.achievements.ignoring_roles.includes(r.name)));
             if(writeToDB) {
                 this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
             }

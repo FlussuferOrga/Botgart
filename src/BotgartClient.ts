@@ -63,10 +63,10 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
-    public readonly options;
+    //public readonly options;
 
-    constructor(options, dbfile) {
-        super(options, {});
+    constructor(options, clientoptions, dbfile) {
+        super(options, clientoptions);
         this.db = new db.Database(dbfile, this);
         this.cronjobs = {};
         this.rosters = {};
@@ -77,19 +77,25 @@ export class BotgartClient extends akairo.AkairoClient {
         this.wvwWatcher = new WvWWatcher(this.db, Util.api);
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
-        this.options = options;
+        //this.options = options;
         
         this.commandHandler = new akairo.CommandHandler(this, {
-            directory: './commands/'
+            directory: './built/commands/',
+            prefix: config.prefix,
+            commandUtil: true,
+            commandUtilLifetime: 600000
         });
+        this.commandHandler.loadAll();
 
         this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: './listeners/'
+            directory: './built/listeners/'
         });
+        this.listenerHandler.loadAll();
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: './inhibitors/'
+            directory: './built/inhibitors/'
         });
+        this.inhibitorHandler.loadAll();
 
         this.on("ready", () =>
             this.commandHandler.modules.forEach(m => {
@@ -197,7 +203,7 @@ export class BotgartClient extends akairo.AkairoClient {
             log("debug", "BotgartClient.js", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
-            const channel: discord.GuildChannel = guild.channels.find(c => c.id === cid);
+            const channel: discord.GuildChannel = guild.channels.cache.find(c => c.id === cid);
             if(!channel) {
                 log("error", "BotgartClient.js", "Channel for type '{0}' for guild '{1}' is set to channel '{2}'' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
             } else if(!(channel instanceof discord.TextChannel)) {

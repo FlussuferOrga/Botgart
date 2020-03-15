@@ -253,7 +253,7 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
 
     if(currentRole !== null) {
         // remove currentRole
-        member.removeRole(currentRole).then(
+        member.roles.remove(currentRole).then(
             ()    => log("info", "Util.js", "Removed role {0} from user {1}".formatUnicorn(currentRole.name, member.displayName)),
             (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
         );
@@ -261,7 +261,7 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
 
     if(admittedRole !== null) {
         // assign admittedRole
-        member.addRole(admittedRole).then(
+        member.roles.add(admittedRole).then(
             ()    => log("info", "Util.js", "Gave role {0} to user {1}".formatUnicorn(admittedRole.name, member.displayName)),
             (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
         );
@@ -393,11 +393,11 @@ export function getAccountName(apikey: string): Promise<string|boolean> {
 export function resolveDiscordUser(client: discord.Client, uid: string): discord.GuildMember|null {
     let user: discord.GuildMember = null;
     let i = 0;
-    const gs = client.guilds.array();
+    const gs = client.guilds.cache.array();
     let l = gs.length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
     
     while(!user && i < l) {
-        user = gs[i].members.find(m => m.user.id === uid);
+        user = gs[i].members.cache.find(m => m.user.id === uid);
         i++;
     }
     return user;

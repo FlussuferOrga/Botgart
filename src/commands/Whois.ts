@@ -34,7 +34,8 @@ export class Whois extends BotgartCommand {
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const name = args.name.toLowerCase();
         const res = (<BotgartClient>this.client).db.whois(name, 
-                                                          message.guild.members.filter(m => m.displayName.toLowerCase().search(name) > -1)
+                                                          message.guild.members.cache
+                                                                              .filter(m => m.displayName.toLowerCase().search(name) > -1)
                                                                                .map(m => m.user));
         if(res.length === 0) {
             this.reply(message, responsible, L.get("WHOIS_EMPTY_RESULT"));
