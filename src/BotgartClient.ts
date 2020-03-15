@@ -145,9 +145,13 @@ export class BotgartClient extends akairo.AkairoClient {
         });
 
         Util.loadModuleClasses("built/commands/achievements/Achievements.js", [this], ["Achievement"]).forEach(achievement => {
-            if(achievement instanceof achievements.Achievement) {
-                this.registerAchievement(achievement);
-                Util.log("info", "Botgart.js", `Registered achievement '${achievement.name}'.`);
+            // instanceof doesn't seem to work on dynamically loaded classes anymore?
+            // See doc of Util.isa.
+            //if(achievement instanceof achievements.Achievement) {
+            if(Util.isa(achievement, achievements.Achievement)) {
+                const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
+                this.registerAchievement(ach);
+                Util.log("info", "Botgart.js", `Registered achievement '${ach.name}'.`);
             }            
         });
     }

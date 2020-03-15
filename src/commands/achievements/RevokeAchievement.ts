@@ -75,10 +75,10 @@ export class RevokeAchievement extends BotgartCommand {
                         userdata = db.getUserByGW2Account(achievementData.gw2account);
                         if(userdata) {
                             const member = guild.members.cache.find(m => m.id === userdata.user);
-                            const role: discord.Role = guild.roles.cache.find(r => r.name === aobj.getRoleName());
-                            if(member && role) {
-                                member.roles.remove(role);
-                            }    
+                            if(member) {
+                                guild.roles.cache.filter(r => r.name === aobj.getRoleName())
+                                                 .forEach(r => member.roles.remove(r));
+                            }
                         }                    
                     }
                 }

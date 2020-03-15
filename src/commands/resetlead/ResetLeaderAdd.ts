@@ -23,7 +23,7 @@ export class AddResetLeader extends BotgartCommand {
                 },
                 {
                     id: "map",
-                    type: (message: discord.Message, phrase: string) => WvWMap.getAllMapNames().includes(phrase)
+                    type: (message: discord.Message, phrase: string) => WvWMap.getAllMapNames().includes(phrase) ? phrase : null
                 },
                 {
                     id: "weekNumber",

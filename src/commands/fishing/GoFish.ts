@@ -114,7 +114,6 @@ class ActiveFisher {
         } else {
             await this.message.edit(await this.createEscapedEmbed());
         }
-        this.message.reactions.removeAll();
     }
 }
 

@@ -61,6 +61,27 @@ export function determineTier(yaksDelivered: number) {
     return yd < 1 ? 0 : Math.min(3, Math.floor(Math.log2(yd)));
 }
 
+/**
+* Cheating instanceof(x,c)
+* When loading classes with loadDirectoryModuleClasses, 
+* the instanceof fails since upgrading Node. 
+* So this low-effort but also kinda dangerous method 
+* (only checks for name, no namespace checking or anything!)
+* serves as a replacement, especially when loading the Achievements. 
+* @param x: the object to check the class of. 
+* @param c: the class of which x should be an instance of (subclasses are allowed). 
+* @returns true, if c is somewhere in the inheritance chain of x.
+*/
+export function isa(x: any, c: any) { 
+  let is = false;
+  let cls = Object.getPrototypeOf(x);
+  do {
+    is = cls.constructor.name == c.name;
+    cls = Object.getPrototypeOf(cls);    
+  } while(!is && cls != null);
+  return is;
+}
+
 export function loadDirectoryModuleClasses(directory: string, args: any[] = [], blacklist: string[] = []): object[] {
     // careful! Skips variables, but WILL instantiate non-class-functions! 
     return glob.sync(directory).map(file => loadModuleClasses(file, args, blacklist)).reduce((acc, cls) => acc.concat(cls), []);

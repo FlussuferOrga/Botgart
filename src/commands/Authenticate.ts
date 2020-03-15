@@ -45,16 +45,16 @@ export class Authenticate extends BotgartCommand {
             return;
         }
 
-        let members = []; // plural, as this command takes place on all servers this bot shares with the user
+        let members: {guild: discord.Guild, member: discord.GuildMember}[] = []; // plural, as this command takes place on all servers this bot shares with the user
         let reply = "";
         // this snippet allows users to authenticate themselves
         // through a DM and is dedicated to Jey, who is a fucking 
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
         this.client.guilds.cache.forEach(function(g) {
-            let m = g.members.cache.find(m => m.id == message.author.id);
+            let m: discord.GuildMember = g.members.cache.find(m => m.id == message.author.id);
             if(m) {
-                members.push({"guild": g, "member": m});
+                members.push({guild: g, member: m});
             }
         });
 
@@ -82,13 +82,13 @@ export class Authenticate extends BotgartCommand {
                         responsible.send(reply);                    
                     } else {
                         Util.getAccountGUID(args.key).then(async guid => {
-                            await Util.asyncForEach(members, async m => {
-                                let r = m.guild.roles.find(r => r.name === role);
+                            await Util.asyncForEach(members, async (m: {guild: discord.Guild, member: discord.GuildMember}) => {
+                                let r: discord.Role = m.guild.roles.cache.find(r => r.name === role);
                                 if(!r) {
                                     Util.log("error", "Authenticate.js", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
-                                    let accountName = await Util.getAccountName(args.key);
+                                    let accountName: string | boolean = await Util.getAccountName(args.key);
                                     let i = 3;
                                     while(accountName === false && i > 0) {
                                         accountName = await Util.getAccountName(args.key);
@@ -107,7 +107,7 @@ export class Authenticate extends BotgartCommand {
                                         for(const achievement of cl.db.getPlayerAchievements(guid.toString()).map(an => cl.getAchievement(an.achievement_name)).filter(a => a !== undefined)) {
                                             achievement.giveRole(m.member);
                                         }
-                                        cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName, r.name]), false);
+                                        cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);
                                         reply = L.get("KEY_ACCEPTED")
                                     } else {
                                         Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
