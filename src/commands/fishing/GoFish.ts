@@ -121,8 +121,7 @@ class ActiveFisher {
 export class GoFish extends BotgartCommand {
     constructor() {
         super("gofish", {
-            aliases: ["gofish"],
-            split: "quoted",
+            aliases: ["gofish"]
         },
         true,  // available per DM
         false, // cronable

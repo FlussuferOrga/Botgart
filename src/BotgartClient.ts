@@ -1,5 +1,5 @@
 const config = require("../config.json")
-import { AkairoClient } from "discord-akairo"
+import * as akairo from "discord-akairo"
 import { BotgartCommand } from "./BotgartCommand.js"
 import * as db from "./DB.js"
 import * as discord from "discord.js"
@@ -50,7 +50,7 @@ export class WvWWatcher extends EventEmitter {
     }
 }
 
-export class BotgartClient extends AkairoClient {
+export class BotgartClient extends akairo.AkairoClient {
     public db: db.Database;
     public cronjobs: Object;
     private ts3connection : TS3Connection;
@@ -60,6 +60,10 @@ export class BotgartClient extends AkairoClient {
     public readonly wvwWatcher: WvWWatcher;
     public readonly commanders: CommanderStorage;
     private achievements: {[key:string] : achievements.Achievement<any>};
+    public readonly commandHandler: akairo.CommandHandler;
+    public readonly listenerHandler: akairo.ListenerHandler;
+    public readonly inhibitorHandler: akairo.InhibitorHandler;
+    public readonly options;
 
     constructor(options, dbfile) {
         super(options, {});
@@ -73,14 +77,26 @@ export class BotgartClient extends AkairoClient {
         this.wvwWatcher = new WvWWatcher(this.db, Util.api);
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
+        this.options = options;
         
-        this.on("ready", () => {
+        this.commandHandler = new akairo.CommandHandler(this, {
+            directory: './commands/'
+        });
+
+        this.listenerHandler = new akairo.ListenerHandler(this, {
+            directory: './listeners/'
+        });
+
+        this.inhibitorHandler = new akairo.InhibitorHandler(this, {
+            directory: './inhibitors/'
+        });
+
+        this.on("ready", () =>
             this.commandHandler.modules.forEach(m => {
                 if(m instanceof BotgartCommand) {
                     (<BotgartCommand>m).init(this);
                 }
-            });
-        });
+            }));
 
         // yes, both listeners listen to wvw-matches on purpose,
         // as it contains the info on the stats as well as on the objectives!

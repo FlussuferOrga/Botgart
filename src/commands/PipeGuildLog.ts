@@ -17,7 +17,7 @@ export class PipeGuildLog extends BotgartCommand {
     constructor() {
         super("pipeguildlog", {
                 aliases: ["glog"],
-                split: "quoted",
+                quoted: true,
                 args: [
                     {
                         id: "guildname",

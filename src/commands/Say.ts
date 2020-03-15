@@ -16,7 +16,7 @@ export class Say extends BotgartCommand {
     constructor() {
         super("say", {
                 aliases: ["say","speak"],
-                split: "quoted",
+                quoted: true,
                 args: [
                     {
                         id: "channel",

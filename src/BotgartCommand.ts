@@ -1,6 +1,7 @@
 const config = require("../config.json");
 import * as discord from "discord.js";
 import * as L from "./Locale";
+import * as akairo from "discord-akairo";
 import { BotgartClient } from "./BotgartClient";
 import { Command, CommandOptions } from "discord-akairo"; 
 
@@ -13,12 +14,14 @@ export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
+    protected args: akairo.ArgumentOptions[] | akairo.ArgumentGenerator;
 
     constructor(id: string, options: CommandOptions, availableAsDM: boolean = false, cronable: boolean = true, everyonePermission: number = 0) {
         super(id, options);
         this.availableAsDM = availableAsDM;
         this.cronable = cronable;
         this.everyonePermission = everyonePermission;
+        this.args = options.args;
         //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
     }  
 

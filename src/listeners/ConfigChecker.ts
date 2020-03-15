@@ -51,7 +51,7 @@ export class ConfigChecker extends Listener {
     constructor() {
         super("ConfigChecker", {
             emitter: "client",
-            eventName: "ready"
+            event: "ready"
         });
     }
 

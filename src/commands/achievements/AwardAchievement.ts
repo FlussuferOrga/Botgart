@@ -16,11 +16,11 @@ export class AwardAchievement extends BotgartCommand {
      constructor() {
         super("awardachievement", {
             aliases: ["awardachievement", "grantachievement"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "achievement",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => this.getBotgartClient().getAchievement(word)
+                    type: (message: discord.Message, phrase: string) => this.getBotgartClient().getAchievement(phrase)
                 },
                 {
                     id: "player",
@@ -28,7 +28,7 @@ export class AwardAchievement extends BotgartCommand {
                 },
                 {
                     id: "timestamp",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => moment.utc(word),
+                    type: (message: discord.Message, phrase: string) => moment.utc(phrase),
                     default: moment.utc()
                 }
             ]

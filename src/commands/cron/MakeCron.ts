@@ -17,7 +17,7 @@ export class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
                 aliases: ["makecron", "mkcron"],
-                split: "quoted",
+                quoted: true,
                 args: [
                     {
                         id: "schedule",
@@ -53,7 +53,7 @@ export class MakeCron extends BotgartCommand {
         // but then invalid commands just result in undefined.
         // That doesn't give us the opportunity to give feedback to the user what his faulty command string was.
         // So we look for the command for ourselves from a plain string.
-        let mod = this.client.commandHandler.modules[cmd] || Array.from(this.client.commandHandler.modules.values()).find(m => m.aliases.includes(cmd));
+        let mod = this.getBotgartClient().commandHandler.modules[cmd] || Array.from(this.getBotgartClient().commandHandler.modules.values()).find(m => m.aliases.includes(cmd));
         if(!mod) {
             return message.util.send(L.get("NO_SUCH_COMMAND").formatUnicorn(cmd));
         }
@@ -98,7 +98,7 @@ export class MakeCron extends BotgartCommand {
         let croncount = 0;
         let cl = <BotgartClient>this.client;
         cl.db.getCronjobs().forEach(cron => {
-            let mod: BotgartCommand = <BotgartCommand>this.client.commandHandler.modules.get(cron.command);
+            let mod: BotgartCommand = <BotgartCommand>this.getBotgartClient().commandHandler.modules.get(cron.command);
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             let guild = this.client.guilds.find(g => g.id == cron.guild);
             if(!guild) {

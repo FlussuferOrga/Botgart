@@ -34,7 +34,7 @@ export class Help extends BotgartCommand {
         const user = guild ? guild.members.find(m => m.id == responsible.id) : responsible;
         //let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         const descs = "**COMMANDS:**\n\n"
-                    .concat(Array.from(this.client.commandHandler.modules.values())
+                    .concat(Array.from(this.getBotgartClient().commandHandler.modules.values())
                         .map(m => <BotgartCommand>m)
                         .filter(m => m.isAllowed(user))
                         .sort((m1,m2) => m1.id < m2.id ? -1 : 1)

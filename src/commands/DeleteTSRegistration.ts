@@ -15,7 +15,7 @@ export class DeleteTsRegistration extends BotgartCommand {
     constructor() {
         super("deletetsregistration", {
             aliases: ["rmtsreg"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "gw2account",

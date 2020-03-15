@@ -14,7 +14,7 @@ export class Permit extends BotgartCommand {
     constructor() {
         super("permit", {
             aliases: ["permit", "allow", "permission"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "command",
@@ -22,9 +22,9 @@ export class Permit extends BotgartCommand {
                 },
                 {
                     id: "receiver",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => { 
+                    type: (message: discord.Message, phrase: string) => { 
                         let receiver: discord.GuildMember | discord.User | discord.Role;
-                        const snowflake = word.match(/<@[^\d]?(\d*)>/);
+                        const snowflake = phrase.match(/<@[^\d]?(\d*)>/);
                         if(snowflake !== null) {
                             const snowflakeId: string = snowflake[1];                           
                             if(message.guild) {
@@ -38,8 +38,8 @@ export class Permit extends BotgartCommand {
                         } else {
                             // plaintext name -> try to resolve among guild members and roles as fallback
                             if(message.guild) {
-                                receiver = message.guild.members.find(m => m.displayName === word) 
-                                            || message.guild.roles.find(r => r.name === word) 
+                                receiver = message.guild.members.find(m => m.displayName === phrase) 
+                                            || message.guild.roles.find(r => r.name === phrase) 
                             }
                         }
                         return receiver;

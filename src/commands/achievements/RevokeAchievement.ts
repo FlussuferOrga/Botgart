@@ -16,14 +16,14 @@ export class RevokeAchievement extends BotgartCommand {
      constructor() {
         super("revokeachievement", {
             aliases: ["revokeachievement","rmachievement"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "achievement",
-                    type: (word: string, message: discord.Message, prevArgs: any[]): number | Achievement<any> => {
-                        let achievement: number | Achievement<any> = parseInt(word);
+                    type: (message: discord.Message, phrase: string): number | Achievement<any> => {
+                        let achievement: number | Achievement<any> = parseInt(phrase);
                         if(isNaN(achievement)) {
-                            achievement = this.getBotgartClient().getAchievement(word);
+                            achievement = this.getBotgartClient().getAchievement(phrase);
                         }
                         return achievement;
                     }

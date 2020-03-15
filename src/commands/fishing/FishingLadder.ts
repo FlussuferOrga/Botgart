@@ -26,8 +26,7 @@ function readableWeight(n: number): string {
 export class FishingLadder extends BotgartCommand {
     constructor() {
         super("fishingladder", {
-            aliases: ["fishingladder", "epeen"],
-            split: "quoted",
+            aliases: ["fishingladder", "epeen"]
         },
         true,  // available per DM
         false, // cronable

@@ -9,7 +9,7 @@ export class IgnoringRolesListener extends Listener {
     constructor() {
         super("IgnoringRolesListener", {
             emitter: "client",
-            eventName: "guildMemberUpdate"
+            event: "guildMemberUpdate"
         });
     }
 

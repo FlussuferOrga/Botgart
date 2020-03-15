@@ -3,6 +3,7 @@ import * as Const from "../Const";
 import * as L from "../Locale";
 import { BotgartCommand } from "../BotgartCommand";
 import { log } from "../Util";
+import * as discord from "discord.js";
 
 /**
 Testcases:
@@ -17,7 +18,7 @@ export class Poll extends BotgartCommand {
     constructor() {
         super("poll", {
             aliases: ["poll","vote"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "channel",
@@ -30,7 +31,7 @@ export class Poll extends BotgartCommand {
                 {
                     id: "emotes",
                     //type: "string"
-                    type: es => es ? es.split(" ") : []
+                    type: (message: discord.Message, emotes: string) => emotes ? emotes.split(" ") : []
                 }
             ],
             userPermissions: ["ADMINISTRATOR"]

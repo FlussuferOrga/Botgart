@@ -5,7 +5,7 @@ export class JoinListener extends Listener {
     constructor() {
         super("JoinListener", {
             emitter: "client",
-            eventName: "guildMemberAdd"
+            event: "guildMemberAdd"
         });
     }
 
