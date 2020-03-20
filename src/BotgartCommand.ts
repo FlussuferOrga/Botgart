@@ -1,6 +1,7 @@
 const config = require("../config.json");
 import * as discord from "discord.js";
 import * as L from "./Locale";
+import * as akairo from "discord-akairo";
 import { BotgartClient } from "./BotgartClient";
 import { Command, CommandOptions } from "discord-akairo"; 
 
@@ -13,12 +14,14 @@ export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
+    protected cmdargs: akairo.ArgumentOptions[] | akairo.ArgumentGenerator;
 
     constructor(id: string, options: CommandOptions, availableAsDM: boolean = false, cronable: boolean = true, everyonePermission: number = 0) {
         super(id, options);
         this.availableAsDM = availableAsDM;
         this.cronable = cronable;
         this.everyonePermission = everyonePermission;
+        this.cmdargs = options.args === undefined ? [] : options.args;
         //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
     }  
 
@@ -78,7 +81,7 @@ export class BotgartCommand extends Command {
     public isAllowed(user: (discord.GuildMember|discord.User)) {
         const uid = user.id;
         const gid = user instanceof discord.GuildMember ? user.guild.id : null;
-        const roles = user instanceof discord.GuildMember ? user.roles.map(r => r.id) : [];
+        const roles = user instanceof discord.GuildMember ? user.roles.cache.map(r => r.id) : [];
         const [allowed, perm] = (<BotgartClient>this.client).db.checkPermission(this.id, uid, roles, gid);
         //console.log(allowed, perm);
         //console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
@@ -124,9 +127,9 @@ export class BotgartCommand extends Command {
     public checkArgs(args: Object): string | undefined {
         let argsPresent: boolean = args !== undefined;
         let i = 0;
-        while(argsPresent && i < this.args.length) {
-            const arg = args[this.args[i].id];
-            argsPresent = arg !== undefined && arg !== "";
+        while(argsPresent && i < this.cmdargs.length) {
+            const arg = args[this.cmdargs[i].id];
+            argsPresent = arg !== undefined && arg !== "" && arg !== null;
             i++;
         }
         return argsPresent ? undefined : L.get(this.helptextKey());

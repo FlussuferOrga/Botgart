@@ -26,8 +26,7 @@ function readableWeight(n: number): string {
 export class FishingLadder extends BotgartCommand {
     constructor() {
         super("fishingladder", {
-            aliases: ["fishingladder", "epeen"],
-            split: "quoted",
+            aliases: ["fishingladder", "epeen"]
         },
         true,  // available per DM
         false, // cronable
@@ -39,8 +38,8 @@ export class FishingLadder extends BotgartCommand {
         const length = 10;
         const ladder: db.FishLadderEntry[] = this.getBotgartClient().db.fishLadder(length);
 
-        Promise.all(ladder.map(fle => this.client.fetchUser(fle.user)
-                                                 .then(u => `\`${pad(fle.rank, 2)}\`: ${u.username} ${fle.number_of_fish} 🐟 (${readableWeight(fle.total_weight)})`)))
+        Promise.all(ladder.map(fle => this.client.users.fetch(fle.user)
+                                                 .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))
                .then(xs => message.reply(`:fish::crown:\n${xs.join("\n")}`, {split:true}));
     }
 }

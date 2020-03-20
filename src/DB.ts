@@ -918,10 +918,10 @@ export class Database {
         let channel: discord.TextChannel;
         let message: discord.Message;
         if(entries.length > 0) {
-            channel = await <discord.TextChannel>guild.channels.find(c => c.id === entries[0].channel);
+            channel = await <discord.TextChannel>guild.channels.cache.find(c => c.id === entries[0].channel);
             if(channel) {
                 try {
-                    message = await (<discord.TextChannel>channel).fetchMessage(entries[0].message);    
+                    message = await (<discord.TextChannel>channel).messages.fetch(entries[0].message);    
                     postExists = true;
                 } catch(e) {
                     postExists = false;

@@ -15,7 +15,7 @@ export class AddResetLeader extends BotgartCommand {
      constructor() {
         super("addresetlead", {
             aliases: ["addresetlead"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "player",
@@ -23,7 +23,7 @@ export class AddResetLeader extends BotgartCommand {
                 },
                 {
                     id: "map",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => WvWMap.getAllMapNames().includes(word)
+                    type: (message: discord.Message, phrase: string) => WvWMap.getAllMapNames().includes(phrase) ? phrase : null
                 },
                 {
                     id: "weekNumber",

@@ -16,14 +16,14 @@ export class RevokeAchievement extends BotgartCommand {
      constructor() {
         super("revokeachievement", {
             aliases: ["revokeachievement","rmachievement"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "achievement",
-                    type: (word: string, message: discord.Message, prevArgs: any[]): number | Achievement<any> => {
-                        let achievement: number | Achievement<any> = parseInt(word);
+                    type: (message: discord.Message, phrase: string): number | Achievement<any> => {
+                        let achievement: number | Achievement<any> = parseInt(phrase);
                         if(isNaN(achievement)) {
-                            achievement = this.getBotgartClient().getAchievement(word);
+                            achievement = this.getBotgartClient().getAchievement(phrase);
                         }
                         return achievement;
                     }
@@ -74,11 +74,11 @@ export class RevokeAchievement extends BotgartCommand {
                         // we need to resolve the player manually
                         userdata = db.getUserByGW2Account(achievementData.gw2account);
                         if(userdata) {
-                            const member = guild.members.find(m => m.id === userdata.user);
-                            const role: discord.Role = guild.roles.find(r => r.name === aobj.getRoleName());
-                            if(member && role) {
-                                member.removeRole(role);
-                            }    
+                            const member = guild.members.cache.find(m => m.id === userdata.user);
+                            if(member) {
+                                guild.roles.cache.filter(r => r.name === aobj.getRoleName())
+                                                 .forEach(r => member.roles.remove(r));
+                            }
                         }                    
                     }
                 }
@@ -86,9 +86,9 @@ export class RevokeAchievement extends BotgartCommand {
                 // revoke all instances
                 // assert args.achievement instanceof Achievement
                 revokedCount = db.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
-                const role: discord.Role = guild.roles.find(r => r.name === args.achievement.getRoleName());
+                const role: discord.Role = guild.roles.cache.find(r => r.name === args.achievement.getRoleName());
                 if(role) {
-                    args.player.removeRole(role);
+                    args.player.roles.remove(role);
                 }
             }
             message.reply(L.get("REVOKE_ACHIEVEMENT_SUCCESS", [""+revokedCount]));

@@ -1,5 +1,5 @@
 const config = require("../config.json")
-import { AkairoClient } from "discord-akairo"
+import * as akairo from "discord-akairo"
 import { BotgartCommand } from "./BotgartCommand.js"
 import * as db from "./DB.js"
 import * as discord from "discord.js"
@@ -50,7 +50,7 @@ export class WvWWatcher extends EventEmitter {
     }
 }
 
-export class BotgartClient extends AkairoClient {
+export class BotgartClient extends akairo.AkairoClient {
     public db: db.Database;
     public cronjobs: Object;
     private ts3connection : TS3Connection;
@@ -60,9 +60,13 @@ export class BotgartClient extends AkairoClient {
     public readonly wvwWatcher: WvWWatcher;
     public readonly commanders: CommanderStorage;
     private achievements: {[key:string] : achievements.Achievement<any>};
+    public readonly commandHandler: akairo.CommandHandler;
+    public readonly listenerHandler: akairo.ListenerHandler;
+    public readonly inhibitorHandler: akairo.InhibitorHandler;
+    //public readonly options;
 
-    constructor(options, dbfile) {
-        super(options, {});
+    constructor(options, clientoptions, dbfile) {
+        super(options, clientoptions);
         this.db = new db.Database(dbfile, this);
         this.cronjobs = {};
         this.rosters = {};
@@ -73,14 +77,32 @@ export class BotgartClient extends AkairoClient {
         this.wvwWatcher = new WvWWatcher(this.db, Util.api);
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
+        //this.options = options;
         
-        this.on("ready", () => {
+        this.commandHandler = new akairo.CommandHandler(this, {
+            directory: './built/commands/',
+            prefix: config.prefix,
+            commandUtil: true,
+            commandUtilLifetime: 600000
+        });
+        this.commandHandler.loadAll();
+
+        this.listenerHandler = new akairo.ListenerHandler(this, {
+            directory: './built/listeners/'
+        });
+        this.listenerHandler.loadAll();
+
+        this.inhibitorHandler = new akairo.InhibitorHandler(this, {
+            directory: './built/inhibitors/'
+        });
+        this.inhibitorHandler.loadAll();
+
+        this.on("ready", () =>
             this.commandHandler.modules.forEach(m => {
                 if(m instanceof BotgartCommand) {
                     (<BotgartCommand>m).init(this);
                 }
-            });
-        });
+            }));
 
         // yes, both listeners listen to wvw-matches on purpose,
         // as it contains the info on the stats as well as on the objectives!
@@ -123,9 +145,13 @@ export class BotgartClient extends AkairoClient {
         });
 
         Util.loadModuleClasses("built/commands/achievements/Achievements.js", [this], ["Achievement"]).forEach(achievement => {
-            if(achievement instanceof achievements.Achievement) {
-                this.registerAchievement(achievement);
-                Util.log("info", "Botgart.js", `Registered achievement '${achievement.name}'.`);
+            // instanceof doesn't seem to work on dynamically loaded classes anymore?
+            // See doc of Util.isa.
+            //if(achievement instanceof achievements.Achievement) {
+            if(Util.isa(achievement, achievements.Achievement)) {
+                const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
+                this.registerAchievement(ach);
+                Util.log("info", "Botgart.js", `Registered achievement '${ach.name}'.`);
             }            
         });
     }
@@ -181,7 +207,7 @@ export class BotgartClient extends AkairoClient {
             log("debug", "BotgartClient.js", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
-            const channel: discord.GuildChannel = guild.channels.find(c => c.id === cid);
+            const channel: discord.GuildChannel = guild.channels.cache.find(c => c.id === cid);
             if(!channel) {
                 log("error", "BotgartClient.js", "Channel for type '{0}' for guild '{1}' is set to channel '{2}'' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
             } else if(!(channel instanceof discord.TextChannel)) {

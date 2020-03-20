@@ -17,11 +17,11 @@ export class MakeFaq extends BotgartCommand {
     constructor() {
         super("addfaq", {
             aliases: ["addfaq","addrtfm"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "keys",
-                    type: es => es ? es.split(";").filter(e => e) : []
+                    type: (message: discord.Message, es: string) => es ? es.split(";").filter(e => e) : []
                 },
                 {
                     id: "text",

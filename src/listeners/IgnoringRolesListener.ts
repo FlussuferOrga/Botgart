@@ -9,13 +9,13 @@ export class IgnoringRolesListener extends Listener {
     constructor() {
         super("IgnoringRolesListener", {
             emitter: "client",
-            eventName: "guildMemberUpdate"
+            event: "guildMemberUpdate"
         });
     }
 
     exec(oldMember: discord.GuildMember, newMember: discord.GuildMember) {
-        const oldRoles = oldMember.roles.map(r => r.name);
-        const newRoles: discord.Role[] = newMember.roles.filter(r => !oldRoles.includes(r.name)).array();
+        const oldRoles = oldMember.roles.cache.map(r => r.name);
+        const newRoles: discord.Role[] = newMember.roles.cache.filter(r => !oldRoles.includes(r.name)).array();
         const ignoringRoles = newRoles.filter(r => config.achievements.ignoring_roles.includes(r.name));
         if(ignoringRoles.length > 0) {
             const client = <BotgartClient>this.client;
@@ -23,9 +23,9 @@ export class IgnoringRolesListener extends Listener {
             let deletedLeads = 0;
             let revokedAchievements = 0;
             for(const achievement of client.getAchievements()) {
-                const role: discord.Role = newMember.guild.roles.find(r => r.name === achievement.getRoleName());
+                const role: discord.Role = newMember.guild.roles.cache.find(r => r.name === achievement.getRoleName());
                 if(role) {
-                    newMember.removeRole(role);
+                    newMember.roles.remove(role);
                 }
             }
             if(userdata) {

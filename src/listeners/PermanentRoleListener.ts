@@ -7,7 +7,7 @@ export class PermanentRoleListener extends Listener {
     constructor() {
         super("PermanentRoleListener", {
             emitter: "client",
-            eventName: "guildMemberAdd"
+            event: "guildMemberAdd"
         });
     }
 

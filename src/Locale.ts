@@ -315,7 +315,7 @@ DE = {
         "FAQ_NOT_DELETED": "Der FAQ-Eintrag für '{0}' konnte nicht gelöscht werden.",
         "FAQ_NOT_FOUND": "Es gibt keinen FAQ-Eintrag zu dem Stichwort '{0}'.",
         "CIRCULAR_CRON": "Cronjobs dürfen aus Sicherheitsgründen selbst keine Cronjobs schedulen.",
-        "TS_UNREGISTER_SENT": "Successfully sent request to remove TS registration.",
+        "TS_UNREGISTER_SENT": "Anfrage die TS-Registrierung zu löschen wurde erfolgreich abgeschickt.",
 
         "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 

@@ -15,12 +15,12 @@ export class AddEvent extends BotgartCommand {
     constructor() {
         super("addevent", {
             aliases: ["mkevent","newevent"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "date",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => {
-                        const res = Util.parseCronDate(word);
+                    type: (message: discord.Message, phrase: string) => {
+                        const res = Util.parseCronDate(phrase);
                         return res === false ? undefined : res;
                     },
                     prompt: {

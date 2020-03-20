@@ -13,7 +13,7 @@ export class DiscordLog extends BotgartCommand {
     constructor() {
         super("discordlog", {
                 aliases: ["discordlog"],
-                split: "quoted",
+                quoted: true,
                 args: [
                     {
                         id: "type",

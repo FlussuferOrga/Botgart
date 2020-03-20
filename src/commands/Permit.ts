@@ -14,7 +14,7 @@ export class Permit extends BotgartCommand {
     constructor() {
         super("permit", {
             aliases: ["permit", "allow", "permission"],
-            split: "quoted",
+            quoted: true,
             args: [
                 {
                     id: "command",
@@ -22,24 +22,24 @@ export class Permit extends BotgartCommand {
                 },
                 {
                     id: "receiver",
-                    type: (word: string, message: discord.Message, prevArgs: any[]) => { 
+                    type: (message: discord.Message, phrase: string) => { 
                         let receiver: discord.GuildMember | discord.User | discord.Role;
-                        const snowflake = word.match(/<@[^\d]?(\d*)>/);
+                        const snowflake = phrase.match(/<@[^\d]?(\d*)>/);
                         if(snowflake !== null) {
                             const snowflakeId: string = snowflake[1];                           
                             if(message.guild) {
                                 // either group or guildmember
-                                receiver = message.guild.roles.find(r => r.id == snowflakeId) 
-                                           || message.guild.members.find(m => m.id == snowflakeId);
+                                receiver = message.guild.roles.cache.find(r => r.id == snowflakeId) 
+                                           || message.guild.members.cache.find(m => m.id == snowflakeId);
                             } else {
                                 // direct message -> user 
-                                receiver = this.client.users.find(u => u.id == snowflakeId);
+                                receiver = this.client.users.cache.find(u => u.id == snowflakeId);
                             }    
                         } else {
                             // plaintext name -> try to resolve among guild members and roles as fallback
                             if(message.guild) {
-                                receiver = message.guild.members.find(m => m.displayName === word) 
-                                            || message.guild.roles.find(r => r.name === word) 
+                                receiver = message.guild.members.cache.find(m => m.displayName === phrase) 
+                                            || message.guild.roles.cache.find(r => r.name === phrase) 
                             }
                         }
                         return receiver;

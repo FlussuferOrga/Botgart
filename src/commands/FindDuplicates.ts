@@ -20,7 +20,7 @@ export class FindDuplicates extends BotgartCommand {
         let cl = <BotgartClient>this.client;
         cl.db.findDuplicateRegistrations().forEach(d => {
             // unknown users are already filtered out. Maybe we want to change that and notify the caller
-            let users = d.users.split(",").map(u => guild.members.get(u)).filter(u => u);
+            let users = d.users.split(",").map(u => guild.members.cache.get(u)).filter(u => u);
             responsible.send("{0}: {1}".formatUnicorn(d.gw2account, users.join(", ")));
         });
         log("info", "FindDuplicates.js", "Finding duplicates complete.");      

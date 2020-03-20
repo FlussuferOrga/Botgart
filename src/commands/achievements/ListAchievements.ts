@@ -15,7 +15,7 @@ export class ListAchievements extends BotgartCommand {
      constructor() {
         super("listachievements", {
             aliases: ["lsachievements"],
-            split: "quoted",
+            quoted: true,
             args: []
         },
         true,  // available per DM
