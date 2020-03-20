@@ -87,6 +87,15 @@ export class BotgartClient extends akairo.AkairoClient {
         });
         this.commandHandler.loadAll();
 
+        this.commandHandler.on("cooldown", (message: discord.Message, command: akairo.Command, remaining: number) => {
+            if(command instanceof BotgartCommand) {
+                const mes: string = command.cooldownMessage(message, remaining);
+                if(mes) {
+                    message.reply(mes);
+                }    
+            }
+        });
+
         this.listenerHandler = new akairo.ListenerHandler(this, {
             directory: './built/listeners/'
         });

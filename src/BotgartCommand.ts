@@ -56,7 +56,11 @@ export class BotgartCommand extends Command {
     }
 
     protected descriptionKey(): string {
-        return `DESC_${this.snakeCaseName()}`
+        return `DESC_${this.snakeCaseName()}`;
+    }
+
+    protected cooldownKey(): string {
+        return `COOLDOWN_${this.snakeCaseName()}`;
     }
 
     /**
@@ -107,6 +111,19 @@ export class BotgartCommand extends Command {
     */
     public desc() {
         return L.get(this.descriptionKey(), [], " ");
+    }
+
+    /**
+    * Creates a cooldown message for this command. 
+    * Note that since most commands have no cooldown, 
+    * creating a message for each command does not make sense. 
+    * The default implementation passes the remaining seconds to the template string.
+    * @param message: the original message that triggered the cooldown. 
+    * @param remaining: remaining milliseconds, until the command can be used again. 
+    * @returns a message specifying what is wrong.
+    */
+    public cooldownMessage(message: discord.Message, remaining: number) {
+        return L.get(this.cooldownKey(), [""+Math.ceil(remaining/1000)]);
     }
 
     /**

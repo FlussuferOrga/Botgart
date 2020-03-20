@@ -117,6 +117,8 @@ EN = {
         "DESC_GO_FISH": "Head out for a relaxing day at the riverside.",
         "DESC_FISHING_LADDER": "Lists the most successful anglers. Ordered by the weight of their total caught fish.",
 
+        "COOLDOWN_GO_FISH": "You are still totally relxed from your last fishing trip. Wait another {0} second(s). :relieved:",
+
         "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
         "RED_BORDERLANDS": "Red Borderlands",
@@ -256,7 +258,7 @@ EN = {
         "FISHING_ESCAPED_DESCRIPTION": "You were too relaxed and the fish got away. But you had a nice, relaxing fishing trip anyway and the fish gets to swim home to its family.",
 
         "FISHING_CAUGHT_TITLE": "Caught",
-        "FISHING_CAUGHT_DESCRIPTION": "You caught the fish! What a masterful angler you are!"
+        "FISHING_CAUGHT_DESCRIPTION": "You caught something! What a masterful angler you are!"
 
     }
 };
@@ -377,6 +379,8 @@ DE = {
         "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
         "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
         "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fische.",
+
+        "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
 
         "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
 
@@ -521,7 +525,7 @@ DE = {
         "FISHING_ESCAPED_DESCRIPTION": "Du warst zu entspannt und der Fisch ist entkommen. Aber du hattest trotzdem einen schönen Angelausflug und der Fisch darf sich darauf freuen, seine Familie wiederzusehen.",
 
         "FISHING_CAUGHT_TITLE": "Gefangen",
-        "FISHING_CAUGHT_DESCRIPTION": "Du hast den Fisch geangelt! Was für ein meisterlicher Angler du bist!"
+        "FISHING_CAUGHT_DESCRIPTION": "Du hast etwas gefangen! Was für ein meisterlicher Angler du bist!"
     }
 };
 

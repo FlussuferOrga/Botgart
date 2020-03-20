@@ -120,7 +120,9 @@ class ActiveFisher {
 export class GoFish extends BotgartCommand {
     constructor() {
         super("gofish", {
-            aliases: ["gofish"]
+            aliases: ["gofish"],
+            cooldown: WAIT_MAX_SECONDS * 1000,
+            ratelimit: 1
         },
         true,  // available per DM
         false, // cronable
