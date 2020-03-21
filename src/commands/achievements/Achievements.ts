@@ -136,8 +136,12 @@ export abstract class Achievement<C> {
     * If so, they will be awarded, if not, nothing happens.
     */
     public tryAward(discordUser: discord.GuildMember, context: C) {
+        U.log("debug", "Achievement.js", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
         if(this.checkCondition(discordUser, context)) {
+            U.log("debug", "Achievement.js", `Success! Awarding achievement to user.`);
             this.awardIn(discordUser.guild, discordUser);
+        } else {
+            U.log("debug", "Achievement.js", `User did not pass condition.`)
         }
     }
 
