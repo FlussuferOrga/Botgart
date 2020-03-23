@@ -338,6 +338,7 @@ export class TS3Listener extends events.EventEmitter {
             if(data.constructor == Object && "commanders" in data) {
                 const now: moment.Moment = moment.utc();
                 const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
+                log("debug", "TS3Listener.js", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
                 that.botgartClient.guilds.cache.forEach(g => {
                     data.commanders.forEach(c => {
                         const account  = c.account_name; // for lookup
