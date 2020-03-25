@@ -15,8 +15,8 @@ Testcases:
 */
 const REEL_EMOTE = "🎣";
 const REEL_BASE_TIME = 5000;
-const WAIT_MIN_SECONDS = 2;
-const WAIT_MAX_SECONDS = 7; //150;
+const WAIT_MIN_SECONDS = 10;
+const WAIT_MAX_SECONDS = 150;
 
 function gets(url: string, options = {}): Promise<string> {
  return new Promise<string>((resolve, reject) => {
