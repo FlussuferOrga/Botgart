@@ -194,7 +194,12 @@ export async function asyncForEach(array, callback) {
   }
 }
 
-export function setMinus<T>(s1: Iterable<T>, s2: Set<T>) {
+export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
+    // https://stackoverflow.com/a/44827922
+    return s1.size === s2.size && [...s1].every(value => s2.has(value));
+}
+
+export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
 

@@ -117,3 +117,33 @@ describe("Util - Crons", function() {
   it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
 
 });
+
+console.log(new Set([]) === new Set([]));
+
+describe("Util - Sets", function() {
+  it("empty equal", () => assert(U.setEqual(new Set([]), new Set([]))));
+
+  it("equal sets 1", () => assert(U.setEqual(new Set([1,2]), new Set([1,2]))));
+
+  it("equal sets 2", () => assert(U.setEqual(new Set([1,2,2,2,2]), new Set([1,2]))));
+
+  it("equal sets 3", () => assert(U.setEqual(new Set([1,2]), new Set([1,2,2,2,2]))));
+
+  it("unequal sets", () => assert(!U.setEqual(new Set([1,2]), new Set([3,4]))));
+
+  it("overlapping sets", () => assert(!U.setEqual(new Set([1,2]), new Set([2,3]))));
+
+  it("empty set",   () => assert(U.setEqual(U.setMinus([1,2,3],new Set([])), new Set([1,2,3]))));
+
+  it("empty list",  () => assert(U.setEqual(U.setMinus([],new Set([1,2,3])), new Set([]))));
+
+  it("empty both",  () => assert(U.setEqual(U.setMinus([],new Set([])), new Set([]))));
+
+  it("remove all",  () => assert(U.setEqual(U.setMinus([1,2],new Set([1,2,3])), new Set([]))));
+
+  it("remove none", () => assert(U.setEqual(U.setMinus([1,2,3],new Set([4,5])), new Set([1,2,3]))));
+
+  it("remove some", () => assert(U.setEqual(U.setMinus([1,2,3,4,5],new Set([2,5])), new Set([1,3,4]))));
+
+  it("remove duplicates", () => assert(U.setEqual(U.setMinus([1,2,3,1,2,3,1,2,3],new Set([1,2])), new Set([3,3,3]))));
+});
