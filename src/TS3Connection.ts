@@ -404,6 +404,8 @@ export class TS3Listener extends events.EventEmitter {
                         log("debug", "TS3Listener.js", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
                     })
                 });
+            } else {
+                log("warning", "TS3Listener.js", `The above data received from TS-Bot could not be processed as it did not match any known command.`);
             }
         });
     }
