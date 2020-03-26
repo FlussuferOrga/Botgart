@@ -3,7 +3,7 @@ import { log, setMinus } from "./Util";
 import * as net from "net";
 import CircularBuffer from "circular-buffer";
 import * as moment from "moment";
-import * as L from "./Locale.js";
+import * as L from "./Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import * as events from "events";
@@ -336,7 +336,8 @@ export class TS3Listener extends events.EventEmitter {
             log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             // COMMANDERS BROADCAST
             if(data.constructor == Object && "commanders" in data) {
-                const now: moment.Moment = moment.utc();
+                const now: moment.Moment = moment.utc("Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
+                log("debug", "TS3Listener.js", "")
                 const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
                 log("debug", "TS3Listener.js", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
                 that.botgartClient.guilds.cache.forEach(g => {

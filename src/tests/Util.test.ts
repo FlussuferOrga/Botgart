@@ -118,8 +118,6 @@ describe("Util - Crons", function() {
 
 });
 
-console.log(new Set([]) === new Set([]));
-
 describe("Util - Sets", function() {
   it("empty equal", () => assert(U.setEqual(new Set([]), new Set([]))));
 
