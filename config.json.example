@@ -3,6 +3,8 @@
     "prefix": ",",
     "token": "xxxxxxxxx",
     "home_id": 2202,
+    "home_role": "Awesome Server",
+    "linked_role": "Linked Server",
     "world_assignments": [{"world_id": 2202, "role": "rolename (must exist!)"}],
     "ts_listener": {
         "ip": "127.0.0.1",

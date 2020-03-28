@@ -7,6 +7,7 @@ import { inspect } from "util";
 import * as stringSimilarity from "string-similarity";
 import moment = require("moment");
 import * as db from "./DB";
+import * as botgart from "./BotgartClient";
 
 import glob from "glob" // dynamic module loading
 import path from "path" // ^
@@ -215,29 +216,39 @@ export function shallowInspect(o: any): void {
 * Tries to validate the passed API key.
 * @param {string} apikey - valid apikey. No format checking will be done at this point.
 * @returns {string|bool|int} - either
-*           (1) resolves to the name of the role the user should be assigned, according to the config (string)
+*           (1) resolves to the names of the role the user should be assigned, according to the config (string[]).
+                That can be a world name, the linked- or home-role or both.
 *           (2) resolves to false if the world the user plays on is not qualified to get any role
 *           (3) rejects to an error from validateWorld.ERRORS if 
 *                   (a) the world is faulty within the config
 *                   (b) a network error occured
 *                   (c) the key is structurally valid, but not known to the API (invalid key)
+*               Note that the return type only applies to resolve() https://github.com/microsoft/TypeScript/issues/7588#issuecomment-198700729
 */
-export function validateWorld(apikey: string): Promise<string|boolean|number> {
-    let accepted = config.world_assignments;
+export function validateWorld(client: botgart.BotgartClient, apikey: string): Promise<string[]|false> {
+    const accepted: {[world: number]: string}[] = config.world_assignments;
     api.authenticate(apikey);
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
-            let match = config.world_assignments.filter(a => a.world_id === acc.world);
-            if(match.length > 1) {
-                // config broken
-                return reject(exports.validateWorld.ERRORS.config_world_duplicate);
-            } else if(match.length === 1) {
-                // world admitted -> name of role the user should have
-                return resolve(match[0].role);
+            const roles: Set<string> = new Set<string>();
+            // first, check if the server is either the home world or one of the links
+            if(acc.world === config.home_id) {
+                roles.add(config.home_role);
             } else {
-                // world not admitted -> false
-                return resolve(false);
+                const link: db.LinkInfo = client.db.getLatestServerLinkInfo().find(li => li.server_id === acc.world);
+                if(link !== undefined) {
+                    roles.add(config.linked_role);
+                }
+            } 
+
+            // check if the server has a manual assignment of serverid -> rolename
+            const worldRole: string = config.world_assignments.find(a => a.world_id === acc.world);
+            if(worldRole !== undefined) {
+                roles.add(worldRole);
             }
+
+            // if the user does not receive at least one role -> false
+            return resolve(roles.size > 0 ? Array.from(roles.values()) : false);
         }),
         err => new Promise((resolve, reject) => {
             log("error", "Util.js", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
@@ -258,41 +269,44 @@ validateWorld.ERRORS = {
 /**
 * Assigns a role to user if needed. This method can be used for either assigning
 * roles to new users or assigning them new, mutual exclusive ones:
-* assignServerRole(u, A, null): u currently has role A, but should have no role (left server)
-* assignServerRole(u, null, A): u currently has no role, but should have role A (new user)
-* assignServerRole(u, A, B): u currently has role A, but should have role B (changed server to another admitted server)
-* assignServerRole(u, A, A): u already has the role they should have. This is just proper revalidation and will do nothing.
+* assignServerRole(u, A, []): u currently has roles A, but should have no role (left server)
+* assignServerRole(u, [], A): u currently has no role, but should have roles A (new user)
+* assignServerRole(u, A, B): u currently has roles A, but should have roles B (changed server to another admitted server)
+* assignServerRole(u, A, A): u already has the roles they should have. This is just proper revalidation and will do nothing.
 *
 * @param {GuildMember} member - the member to assign a server role to.
 * @param {Role|null} currentRole - the role the member was assigned last.
 * @param {Role|null} admittedRole - the role the member should actually have.
 * @returns {Role|null} - the role the member is now assigned.
 */
-export function assignServerRole(member: discord.GuildMember, currentRole: discord.Role | null, admittedRole: discord.Role | null) : discord.Role | null {
+export function assignServerRoles(member: discord.GuildMember, currentRoles: discord.Role[], admittedRoles: discord.Role[]) : discord.Role[] {
     // FIXME: the asynchronous erroring could leave the user in an undefined state, where the system
     // assumes him to now have role A, but in fact assigning him role A has failed!
 
-    if(currentRole !== null && admittedRole !== null && currentRole.name === admittedRole.name) {
+    const shouldGet: Set<discord.Role> = setMinus(new Set(admittedRoles), new Set(currentRoles));
+    const shouldLose: Set<discord.Role> = setMinus(new Set(currentRoles), new Set(admittedRoles));
+
+    if(shouldGet.size === 0 && shouldLose.size === 0) {
         // member already has proper role
-        return admittedRole;
+        return currentRoles;
     }
 
-    if(currentRole !== null) {
-        // remove currentRole
-        member.roles.remove(currentRole).then(
-            ()    => log("info", "Util.js", "Removed role {0} from user {1}".formatUnicorn(currentRole.name, member.displayName)),
-            (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
-        );
+    // remove currentRole
+    for(const r of shouldLose) {
+        member.roles.remove(r).then(
+            ()    => log("info", "Util.js", "Removed role {0} from user {1}".formatUnicorn(r.name, member.displayName)),
+            (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(r.name, member.displayName, err.message))
+        );            
     }
 
-    if(admittedRole !== null) {
+    for(const r of shouldGet) {
         // assign admittedRole
-        member.roles.add(admittedRole).then(
-            ()    => log("info", "Util.js", "Gave role {0} to user {1}".formatUnicorn(admittedRole.name, member.displayName)),
-            (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
+        member.roles.add(r).then(
+            ()    => log("info", "Util.js", "Gave role {0} to user {1}".formatUnicorn(r.name, member.displayName)),
+            (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(r.name, member.displayName, err.message))
         );
     }
-    return admittedRole;
+    return Array.from(shouldGet);
 };
 
 /**

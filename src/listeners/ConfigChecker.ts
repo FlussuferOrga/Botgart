@@ -84,7 +84,13 @@ export class ConfigChecker extends Listener {
             numericality: {
               strict: true
             }
-          },
+         },
+         home_role: {
+           presence: true
+         },
+         linked_role: {
+           presence: true
+         },
          world_assignments: {
             presence: true,
             isArray: {},

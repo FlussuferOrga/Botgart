@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import { formatUserPing, log, validateWorld, assignServerRole } from "../Util";
+import { formatUserPing, log, validateWorld, assignServerRoles } from "../Util";
 import * as L from "../Locale";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
@@ -70,7 +70,7 @@ export class Reauthenticate extends BotgartCommand {
                                     m.send(L.get("KEY_INVALIDATED"));
                                 } else {
                                     // user transed to another admitted server -> update role
-                                    assignServerRole(m, currentRole, admittedRole);
+                                    assignServerRoles(m, currentRole, admittedRole);
                                 }
                             }
                         }

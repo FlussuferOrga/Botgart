@@ -18,62 +18,68 @@ export type StructureType = "Spawn" | "Ruins" | "Mercenary" | "Sentry" | "Camp" 
 export interface Registration {
     readonly id: string;
     readonly user: string;
-    readonly guild: string, 
-    readonly api_key: string,
-    readonly gw2account: string,
-    readonly registration_role: string,
-    readonly account_name: string, 
-    readonly created: string
+    readonly guild: string; 
+    readonly api_key: string;
+    readonly gw2account: string;
+    readonly registration_role: string;
+    readonly account_name: string; 
+    readonly created: string;
 }
 
 export interface Lead extends Registration {
-    readonly channel: string,
-    readonly start: string,
-    readonly end: string
+    readonly channel: string;
+    readonly start: string;
+    readonly end: string;
 }
 
 export interface Matchup {
-    readonly matchup_id: number,
-    readonly tier: number,
-    readonly start: string,
-    readonly end: string
+    readonly matchup_id: number;
+    readonly tier: number;
+    readonly start: string;
+    readonly end: string;
 }
 
 export interface Capture {
-    readonly matchup_objective_id: number,
-    readonly matchup_id : number,
-    readonly objective_id  : number,
-    readonly map: string,
-    readonly type: StructureType,
-    readonly new_snapshot_id: number,
-    readonly new_owner: FactionColour,
-    readonly new_points_tick: number,
-    readonly new_points_capture: number ,
-    readonly new_last_flipped: string,
-    readonly old_snapshot_id: number,
-    readonly old_owner: FactionColour,
-    readonly old_points_tick: number,
-    readonly old_points_capture: number,
-    readonly old_last_flipped: string,
-    readonly old_yaks: number,
-    readonly old_tier: number
+    readonly matchup_objective_id: number;
+    readonly matchup_id : number;
+    readonly objective_id  : number;
+    readonly map: string;
+    readonly type: StructureType;
+    readonly new_snapshot_id: number;
+    readonly new_owner: FactionColour;
+    readonly new_points_tick: number;
+    readonly new_points_capture: number ;
+    readonly new_last_flipped: string;
+    readonly old_snapshot_id: number;
+    readonly old_owner: FactionColour;
+    readonly old_points_tick: number;
+    readonly old_points_capture: number;
+    readonly old_last_flipped: string;
+    readonly old_yaks: number;
+    readonly old_tier: number;
 }
 
 export interface Fish {
-    readonly fish_id: number,
-    readonly name: string,
-    readonly image: string,
-    readonly rarity: number,
-    readonly weight: number, 
-    readonly points_per_gramm: number,
-    readonly reel_time_factor: number
+    readonly fish_id: number;
+    readonly name: string;
+    readonly image: string;
+    readonly rarity: number;
+    readonly weight: number; 
+    readonly points_per_gramm: number;
+    readonly reel_time_factor: number;
 }
 
 export interface FishLadderEntry {
-    readonly user: string, 
-    readonly rank: number,
-    readonly total_weight: number, 
-    readonly number_of_fish: number
+    readonly user: string; 
+    readonly rank: number;
+    readonly total_weight: number; 
+    readonly number_of_fish: number;
+}
+
+export interface LinkInfo {
+    readonly link_id: number;
+    readonly server_id: number;
+    readonly is_main: boolean;
 }
 
 export class Database {
@@ -1054,17 +1060,24 @@ export class Database {
         return this.execute(db => db.prepare(`SELECT * FROM faqs AS f JOIN faq_keys AS fk ON f.id = fk.faq_id WHERE fk.guild = ?`).all(guild));
     }
 
-    public storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean|undefined {
-        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role) VALUES(?,?,?,?,?,?)`;
-        return this.execute(db => {
-                    try {
-                        db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
-                        return true;
-                    } catch(err) {
-                        Util.log("error", "DB.js", "Error while trying to store API key: {0}.".formatUnicorn(err.message));
-                        return false;
-                    }
-                });
+    public storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, roles: string[]): boolean|undefined {
+        return this.execute(db => 
+                        db.transaction((_) => {
+                            try {
+                                db.prepare(`INSERT INTO registrations(user, guild, api_key, gw2account, account_name) VALUES(?,?,?,?,?)`)
+                                  .run(user, guild, key, gw2account, accountName);
+                                const lastId: number = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                                const stmt = db.prepare(`INSERT INTO registration_roles(registration_id, role) VALUES(?,?)`);
+                                for(const r in roles) {
+                                    stmt.run(lastId, r);
+                                }
+                                return true;
+                            } catch(err) {
+                                Util.log("error", "DB.js", "Error while trying to store API key: {0}.".formatUnicorn(err.message));
+                                return false;
+                            }                            
+                        })(null)
+                    );
     }
 
     /**
@@ -1245,5 +1258,42 @@ export class Database {
             LIMIT 
                 ?
         `).all(length));
+    }
+
+
+    public createServerLink(servers: number[], main: number): void {
+        return this.execute(db =>
+            db.transaction((_) => {
+                db.prepare(`INSERT INTO server_links DEFAULT VALUES`).run();
+                const lastId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                const stmt = db.prepare(`INSERT INTO linked_servers(link_id, server_id, is_main) VALUES (?,?,?)`);
+                for(const sid of servers) {
+                    stmt.run(lastId, sid, sid === main ? 1 : 0);
+                }
+            })(null)
+        );
+    }
+
+    public getLatestServerLinkInfo(): LinkInfo[] {
+        return this.execute(db => db.prepare(`
+           WITH latest_link(link_id) AS (
+                SELECT 
+                    link_id
+                FROM 
+                    server_links
+                ORDER BY 
+                    link_is DESC 
+                LIMIT
+                    1
+           )
+           SELECT 
+               ll.link_id, 
+               ls.server_id, 
+               ls.is_main
+           FROM 
+               latest_link AS ll 
+               JOIN linked_servers AS ls 
+                 ON ll.link_id = ls.link_id 
+        `).all());
     }
 }

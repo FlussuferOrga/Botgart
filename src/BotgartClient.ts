@@ -24,7 +24,9 @@ export class WvWWatcher extends EventEmitter {
 
     /**
     * Resolves the Database entry for the currently ongoing match for the home world.  
-    * If no match exists for that time, a new match will be created in the database 
+    * If no match exists for that time, a new match will be created in the database. 
+    * If the new match also implies a new link, that will also be written to the db
+    * and emit an event.
     * with data retrieved from the API and that newly created match is returned. 
     * returns: the DB matchup info for the ongoing match. 
     *          If no such match existed during the call, it will be created
@@ -45,6 +47,24 @@ export class WvWWatcher extends EventEmitter {
                 currentMatchupInfo.all_worlds.blue);
             dbMatchup = this.db.getCurrentMatchup(now);
             this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
+
+            // since we have new match at hand, we could also have had a relink! Check that too. 
+            const currentLink: [number, number[]] = <[number, number[]]>[
+                                [currentMatchupInfo.worlds.red, currentMatchupInfo.all_worlds.red],
+                                [currentMatchupInfo.worlds.green, currentMatchupInfo.all_worlds.green],
+                                [currentMatchupInfo.worlds.blue, currentMatchupInfo.all_worlds.blue]
+                               ].find((ws: [number, number[]]) => ws[1].includes(config.home_id));
+            if(currentLink === undefined) {
+                Util.log("error", "BotgartClient.js", `Tried to create new link info. But our match does not seem to contain our world id ${config.home_id} in any team.`);
+            } else {
+                const linkInfo: db.LinkInfo[] = this.db.getLatestServerLinkInfo();
+                if(linkInfo.length === 0 // very first link info ever written to DB // fixme: might be undefined
+                    || !Util.setEqual(new Set<number>(currentLink[1]), new Set<number>(linkInfo.map(li => li.server_id))))  // link partner has changed
+                { 
+                    this.db.createServerLink(currentLink[1], currentLink[0]);
+                    this.emit("new-link", {servers: currentLink[1], main: currentLink[0]});
+                }
+            }                               
         }
         return dbMatchup;
     }
@@ -77,7 +97,6 @@ export class BotgartClient extends akairo.AkairoClient {
         this.wvwWatcher = new WvWWatcher(this.db, Util.api);
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
         this.ts3connection.exec();
-        //this.options = options;
         
         this.commandHandler = new akairo.CommandHandler(this, {
             directory: './built/commands/',
