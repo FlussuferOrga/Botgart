@@ -1233,7 +1233,7 @@ export class Database {
         return this.execute(db => db.prepare(`
             SELECT 
                 user,
-                ROW_NUMBER() OVER () AS rank,
+                ROW_NUMBER() OVER (ORDER BY SUM(weight)) AS rank,
                 SUM(weight) AS total_weight,
                 COUNT(*) AS number_of_fish
             FROM 
