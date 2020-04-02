@@ -336,7 +336,9 @@ export class TS3Listener extends events.EventEmitter {
             log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             // COMMANDERS BROADCAST
             if(data.constructor == Object && "commanders" in data) {
+                log("debug", "TS3Listener.js", "Received commanders from TS-Bot.");
                 const now: moment.Moment = moment.utc();
+                log("debug", "TS3Listener.js", `It is now ${now}`);
                 log("debug", "TS3Listener.js", "Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
                 const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
                 log("debug", "TS3Listener.js", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
