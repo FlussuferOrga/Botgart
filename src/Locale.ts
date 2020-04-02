@@ -117,7 +117,7 @@ EN = {
         "DESC_GO_FISH": "Head out for a relaxing day at the riverside.",
         "DESC_FISHING_LADDER": "Lists the most successful anglers. Ordered by the weight of their total caught fish.",
 
-        "COOLDOWN_GO_FISH": "You are still totally relxed from your last fishing trip. Wait another {0} second(s). :relieved:",
+        "COOLDOWN_GO_FISH": "You are still totally relaxed from your last fishing trip. Wait another {0} second(s). :relieved:",
 
         "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
 
