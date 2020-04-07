@@ -82,6 +82,7 @@ EN = {
         "HELPTEXT_DELETE_TS_REGISTRATION": EN["HELPTEXT_PREFIX"] + "`<GW2 account name>`",
         "HELPTEXT_GO_FISH": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_REACTION_SNAPSHOT": EN["HELPTEXT_PREFIX"] + "`<URL to the post that should be snapshoted (bot must have access to the guild, channel and post!)>`",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
@@ -116,6 +117,7 @@ EN = {
         "DESC_DELETE_TS_REGISTRATION": "Deletes all TS registrations from a GW2 account.",
         "DESC_GO_FISH": "Head out for a relaxing day at the riverside.",
         "DESC_FISHING_LADDER": "Lists the most successful anglers. Ordered by the weight of their total caught fish.",
+        "DESC_REACTION_SNAPSHOT": "Lists the current reactions on a given posts.",
 
         "COOLDOWN_GO_FISH": "You are still totally relaxed from your last fishing trip. Wait another {0} second(s). :relieved:",
 
@@ -345,6 +347,7 @@ DE = {
         "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
         "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_REACTION_SNAPSHOT": EN["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -379,6 +382,7 @@ DE = {
         "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
         "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
         "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fische.",
+        "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
 
         "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
 
