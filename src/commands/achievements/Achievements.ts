@@ -198,7 +198,11 @@ abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
     public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
           super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
-          client.ts3listener.on("tagup", x => this.tryAward(x.commander.discordMember, x));
+          client.ts3listener.on("tagup", (x: {
+                "guild": discord.Guild, 
+                "commander": ts3.Commander,
+                "dbRegistration": db.Registration
+            }) => this.tryAward(x.commander.getDiscordMember(), x));
       }
 }
 
@@ -206,7 +210,7 @@ abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
           super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
-          client.ts3listener.on("tagdown", x => this.tryAward(x.commander.discordMember, x));
+          client.ts3listener.on("tagdown", x => this.tryAward(x.commander.getDiscordMember(), x));
       }
 }
 

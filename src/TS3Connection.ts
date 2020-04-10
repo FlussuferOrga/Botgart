@@ -234,7 +234,7 @@ export class Commander {
         this.state = state;
     }
 
-    public getDiscordMember(): discord.GuildMember {
+    public getDiscordMember(): discord.GuildMember | undefined {
         return this.discordMember;
     }
 
