@@ -202,7 +202,13 @@ abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
                 "guild": discord.Guild, 
                 "commander": ts3.Commander,
                 "dbRegistration": db.Registration
-            }) => this.tryAward(x.commander.getDiscordMember(), x));
+            }) => {
+                if(x.commander.getDiscordMember()) {
+                    this.tryAward(x.commander.getDiscordMember(), x);
+                } else {
+                    U.log("warning", "Achievement.js", `Tries to check tagup-achivement for user without Discord account ${x.dbRegistration}!`);
+                }                
+            });
       }
 }
 
@@ -210,7 +216,13 @@ abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
           super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
-          client.ts3listener.on("tagdown", x => this.tryAward(x.commander.getDiscordMember(), x));
+          client.ts3listener.on("tagdown", x => {
+                if(x.commander.getDiscordMember()) {
+                    this.tryAward(x.commander.getDiscordMember(), x);
+                } else {
+                    U.log("warning", "Achievement.js", `Tries to check tagdown-achivement for user without Discord account ${x.dbRegistration}!`);
+                }    
+          });
       }
 }
 
