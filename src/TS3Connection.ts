@@ -299,6 +299,18 @@ export class CommanderStorage {
     }
 }
 
+export interface TagUpEvent {
+   readonly guild: discord.Guild;
+   readonly commander: Commander;
+   readonly dbRegistration: db.Registration;
+}
+
+export interface TagDownEvent {
+   readonly guild: discord.Guild;
+   readonly commander: Commander;
+   readonly dbRegistration: db.Registration;
+}
+
 /**
 * This class listens for changes in the commander list.
 * That is, it reacts to when a commander tags up or down in Teamspeak. 
@@ -405,7 +417,7 @@ export class TS3Listener extends events.EventEmitter {
                         commander.setState(CommanderState.TAG_DOWN);
                         that.tagDown(g, commander);
                         log("debug", "TS3Listener.js", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
-                    })
+                    });
                 });
             } else {
                 log("warning", "TS3Listener.js", `The above data received from TS-Bot could not be processed as it did not match any known command.`);
@@ -426,7 +438,11 @@ export class TS3Listener extends events.EventEmitter {
         if(registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
-            commander.setDiscordMember(g.members.cache.find(m => m.id === registration.user));
+            const duser: discord.GuildMember | undefined = g.members.cache.find(m => m.id === registration.user);
+            if(duser === undefined) {
+                log("warning", "TS3Listener.js", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
+            }
+            commander.setDiscordMember(duser);
             if(crole && commander.getDiscordMember()) {
                 commander.getDiscordMember().roles.add(crole);
             }
