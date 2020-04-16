@@ -344,7 +344,14 @@ export class TS3Listener extends events.EventEmitter {
 
         const that = this;
         this.ts3connection.getSocket().on("data", (raw : Buffer) => {
-            const data = JSON.parse(raw.toString());
+            let data = null; 
+            try {
+                data = JSON.parse(raw.toString());
+            } catch(e) {
+                log("error", "TS3Listener.js", `Received malformed message from TS: ${raw.toString()}. Aborting handling.`);
+                return;
+            }
+            
             log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             // COMMANDERS BROADCAST
             if(data.constructor == Object && "commanders" in data) {
