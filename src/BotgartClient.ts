@@ -44,7 +44,12 @@ export class WvWWatcher extends EventEmitter {
                 currentMatchupInfo.all_worlds.green,
                 currentMatchupInfo.all_worlds.blue);
             dbMatchup = this.db.getCurrentMatchup(now);
-            this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
+            if(dbMatchup == undefined) {
+                Util.log("error", "BotgartClient.js", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
+            } else {
+                this.emit("new-matchup", { lastMatchup: latestDbMatchup, newMatchup: dbMatchup });    
+            }
+            
         }
         return dbMatchup;
     }

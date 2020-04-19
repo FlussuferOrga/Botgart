@@ -76,8 +76,6 @@ export class TS3Connection {
         this.writeCommand("post", command, args);
     }
 
-
-
     public delete(command: string, args: object) {
         this.writeCommand("delete", command, args);
     }
@@ -120,7 +118,7 @@ export class TS3Connection {
                 log("info", "TS3Connection.js", "TS3Bot is currently not reachable. Is the bot down? Attempting to connect again shortly.".formatUnicorn(that.name));
             }
             else {
-                console.log(e);
+                log("info", "TS3Connection.js", `Error in socket: ${e}.`);
             }
             
         }); 
