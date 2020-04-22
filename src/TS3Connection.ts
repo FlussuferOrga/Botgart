@@ -485,7 +485,7 @@ export class TS3Listener extends events.EventEmitter {
             if(crole && dmember) {
                 log("info", "TS3Listener.js", `Tagging down ${dmember.displayName} in ${g.name}.`);
                 dmember.roles.remove(crole).catch(e => {
-                    log("warning", "TS3Listener.js", `Could not remove role '${this.commanderRole}' from user '${dmember.nickname}' which was expected to be there. Maybe someone else already removed it.`)
+                    log("warning", "TS3Listener.js", `Could not remove role '${this.commanderRole}' from user '${dmember.displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
             }
             // do not write leads of members which hide their roles
