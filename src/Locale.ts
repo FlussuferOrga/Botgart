@@ -58,6 +58,7 @@ EN = {
 
         "GUILD_LOG_PERMISSION_FAIL": "I need the API-key of a guild leader to retrieve the guild log.",
 
+        "HELPTEXT_AUTHENTICATE": EN["HELPTEXT_PREFIX"] + "GW2 API key with the permissions 'account' and 'characters', which you can retrieve from https://account.arena.net/applications",
         "HELPTEXT_PERMIT": EN["HELPTEXT_PREFIX"] + "`\"<name or alias of a command>\" \"<snowflake or name of the player or role (MUST EXIST)>\" <numerical permission value, positive to allow, negative to disallow>`",
         "HELPTEXT_SAY": EN["HELPTEXT_PREFIX"] + "`<Channel, in which the bot should speak> \"<Text to speak>\"`.",
         "HELPTEXT_MAKE_CRON": EN["HELPTEXT_PREFIX"] + "\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Command to execute>`\" `<Parameters for that command as specified by the help text>`.",
@@ -323,6 +324,7 @@ DE = {
 
         "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 
+        "HELPTEXT_AUTHENTICATE": DE["HELPTEXT_PREFIX"] + "GW2 API-Key mit den Berechtigungen 'account' und 'characters', den du unter https://account.arena.net/applications erhalten kannst.",
         "HELPTEXT_PERMIT": DE["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
         "HELPTEXT_SAY": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
         "HELPTEXT_MAKE_CRON": DE["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
