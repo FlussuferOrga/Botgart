@@ -125,19 +125,23 @@ export class BotgartClient extends akairo.AkairoClient {
                 if(stats === undefined) return;
                 Util.log("debug", "BotgartClient.js", "Starting to write WvWStats.");
                 const match = await this.wvwWatcher.getCurrentMatch();
-                const snapshotId = this.db.addStatsSnapshot();
-                for await(const mapData of stats.maps) {
-                    for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
-                        this.db.addMatchupStats(
-                                    match.matchup_id, 
-                                    snapshotId, 
-                                    mapData.type, // map 
-                                    Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
-                                    mapData.deaths[faction], 
-                                    mapData.kills[faction],
-                                    mapData.scores[faction])
-                    }
-                    
+                if(match === undefined) {
+                    Util.log("error", "BotgartClient.js", "Could not produce a proper matchup. API might be down.");
+                } else {
+                    const snapshotId = this.db.addStatsSnapshot();
+                    for await(const mapData of stats.maps) {
+                        for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
+                            this.db.addMatchupStats(
+                                        match.matchup_id, 
+                                        snapshotId, 
+                                        mapData.type, // map 
+                                        Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
+                                        mapData.deaths[faction], 
+                                        mapData.kills[faction],
+                                        mapData.scores[faction])
+                        }
+                        
+                    }                    
                 }
                 Util.log("debug", "BotgartClient.js", "Done writing WvWStats.");
             });

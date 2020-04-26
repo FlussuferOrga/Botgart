@@ -247,16 +247,18 @@ abstract class NewMatchupAchievement extends Achievement<{lastMatchup: db.Matchu
                             mu => 
                             {
                                 if(mu.lastMatchup === undefined) return; // ignore for very first matchup that is stored
-                                this.client 
-                                    .db
-                                    .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
-                                                         , U.sqliteTimestampToMoment(mu.lastMatchup.end))
-                                    .map(r => {
-                                        const guild: discord.Guild = client.guilds.cache.get(r.guild);
-                                        return guild ? guild.members.cache.get(r.user) : undefined;
-                                    })
-                                    .filter(c => c !== undefined)
-                                    .map(c => this.tryAward(c, mu))
+                                Promise.all(
+                                    this.client.db
+                                        .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
+                                                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
+                                        .map(async r => {
+                                            const guild: discord.Guild = client.guilds.cache.get(r.guild);
+                                            return guild ? await guild.members.fetch(r.user) : undefined // .cache.get(r.user) : undefined;
+                                        })
+                                ).then(gm => 
+                                    gm.filter(c => c !== undefined)
+                                      .map(c => this.tryAward(c, mu))
+                                );
                             });
     }
 }

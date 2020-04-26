@@ -102,9 +102,7 @@ export class TS3Connection {
         this.socket.on("close", () => {
             that.connected = false;
             log("info", "TS3Connection.js", "(Re)connection to TS3-Bot failed. Will attempt to reconnect {0} in {1} milliseconds".formatUnicorn(that.name, RECONNECT_TIMER_MS));
-            setTimeout(async () => {
-                await this.connect().catch(e => {});
-            }, RECONNECT_TIMER_MS);
+            setTimeout(async () =>  await this.connect().catch(e => log("info", "TS3Connection.js", `TS3 socket closed. Probably reconnecting after ${RECONNECT_TIMER_MS}ms.`)), RECONNECT_TIMER_MS);
         });
 
         this.socket.on("error", (e) => {
@@ -436,14 +434,14 @@ export class TS3Listener extends events.EventEmitter {
     * - if the user is not just in TS, but also in Discord, he will gain the commander status there
     * - a mapping of the TS-UID to the Discord-username is created
     */
-    private tagUp(g: discord.Guild, commander: Commander) {
+    private async tagUp(g: discord.Guild, commander: Commander) {
         let displayname = commander.getTS3DisplayName();
         log("info", "TS3Listener.js", `Tagging up ${displayname} in ${g.name}.`);
         const registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
         if(registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
-            const duser: discord.GuildMember | undefined = g.members.cache.find(m => m.id === registration.user);
+            const duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(duser === undefined) {
                 log("warning", "TS3Listener.js", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
             }
@@ -475,13 +473,13 @@ export class TS3Listener extends events.EventEmitter {
     * - the role is removed from the user if he is present in the Discord
     * - the user's TS-UID-Discordname is forgotten
     */
-    private tagDown(g: discord.Guild, commander: Commander) {
+    private async tagDown(g: discord.Guild, commander: Commander) {
         let registration: db.Registration | undefined = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
-            dmember = g.members.cache.find(m => m.id === registration.user);
+            dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(crole && dmember) {
                 log("info", "TS3Listener.js", `Tagging down ${dmember.displayName} in ${g.name}.`);
                 dmember.roles.remove(crole).catch(e => {

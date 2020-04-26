@@ -34,7 +34,7 @@ export class Reauthenticate extends BotgartCommand {
                 let currentRole: discord.Role;
                 let admittedRole: discord.Role;
                 // filter out users for which we encountered errors
-                update.filter(r => r !== undefined).forEach(row => {
+                update.filter(r => r !== undefined).forEach(async row => {
                     let [p,admittedRoleName] = row;
                     let currentRoleName = p.registration_role;
 
@@ -55,7 +55,7 @@ export class Reauthenticate extends BotgartCommand {
                             log("error", "Reauthenticate.js", `Can not find a role ${currentRoleName} that should be currently used.`);
                         }
                         if((admittedRole || admittedRoleName === false) && currentRole) { // admittedRoleName === false means: user must be unauthed
-                            let m = g.members.cache.find(member => p.user == member.user.id);
+                            const m: discord.GuildMember = await g.members.fetch(p.user); // cache.find(member => p.user == member.user.id);
                             if(!m) {
                                 log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
                                 cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));

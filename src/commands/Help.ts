@@ -24,14 +24,14 @@ export class Help extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
         // if this command is issued on a server, only the commands the user can execute
         // are listed.
         // Issueing this command through DMs give the full list. This is not a security issue,
         // since the restricted listing is just a convenience for users to present them with a
         // more compact help text.
         const separator = "\n";
-        const user = guild ? guild.members.cache.find(m => m.id == responsible.id) : responsible;
+        const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; //cache.find(m => m.id == responsible.id) : responsible;
         //let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         const descs = "**COMMANDS:**\n\n"
                     .concat(Array.from(this.getBotgartClient().commandHandler.modules.values())
@@ -39,10 +39,7 @@ export class Help extends BotgartCommand {
                         .filter(m => m.isAllowed(user))
                         .sort((m1,m2) => m1.id < m2.id ? -1 : 1)
                         .map(m => m.desc 
-                        ? "**`{0}`**\n({1}): {2}\n------".formatUnicorn(
-                            m.id,
-                            m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", "),
-                            m.desc())
+                        ? `**${m.id}**\n(${m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}): ${m.desc()}\n-------`
                         : m.id
                     ).join(separator));
 

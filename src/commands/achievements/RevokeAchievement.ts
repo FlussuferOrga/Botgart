@@ -51,7 +51,7 @@ export class RevokeAchievement extends BotgartCommand {
                 : L.get(this.helptextKey());
     }    
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: {achievement: any, player?: discord.GuildMember}): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: {achievement: any, player?: discord.GuildMember}): Promise<void> {
         // note that args.achievement is not typed Achievement|number on purpose, as it would prevent stuff like 
         // Number.isInteger(args.achievement) (which only takes number as argument) and would make the code a whole lot more clunky
         // for very little benefit.
@@ -74,7 +74,7 @@ export class RevokeAchievement extends BotgartCommand {
                         // we need to resolve the player manually
                         userdata = db.getUserByGW2Account(achievementData.gw2account);
                         if(userdata) {
-                            const member = guild.members.cache.find(m => m.id === userdata.user);
+                            const member = await guild.members.fetch(userdata.user); // cache.find(m => m.id === userdata.user);
                             if(member) {
                                 guild.roles.cache.filter(r => r.name === aobj.getRoleName())
                                                  .forEach(r => member.roles.remove(r));

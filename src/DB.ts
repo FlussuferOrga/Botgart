@@ -9,8 +9,8 @@ import Timeout from "await-timeout";
 import {Semaphore} from "await-semaphore";
 import * as moment from "moment";
 
-const REAUTH_DELAY : number = 5000;
-const REAUTH_MAX_PARALLEL_REQUESTS : number = 3;
+const REAUTH_DELAY : number = 10000;
+const REAUTH_MAX_PARALLEL_REQUESTS : number = 2;
 
 export type FactionColour = "Red" | "Blue" | "Green";
 export type StructureType = "Spawn" | "Ruins" | "Mercenary" | "Sentry" | "Camp" | "Tower" | "Keep" | "Castle";
@@ -74,6 +74,12 @@ export interface FishLadderEntry {
     readonly rank: number,
     readonly total_weight: number, 
     readonly number_of_fish: number
+}
+
+export interface DesignatedRole {
+   readonly user: string;
+   readonly guild: string;
+   readonly registration_role: string;
 }
 
 export class Database {
@@ -924,6 +930,7 @@ export class Database {
                     message = await (<discord.TextChannel>channel).messages.fetch(entries[0].message);    
                     postExists = true;
                 } catch(e) {
+                    Util.log("error", "DB.js", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`)
                     postExists = false;
                 }
             }            
@@ -1017,7 +1024,7 @@ export class Database {
                                     .run(accnames.join(",")).all());
     }
 
-    public getDesignatedRoles() {
+    public getDesignatedRoles(): DesignatedRole[] {
         return this.execute(db => db.prepare(`SELECT user, guild, registration_role FROM registrations ORDER BY guild`).all());
     }
 

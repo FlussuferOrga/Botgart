@@ -51,8 +51,8 @@ export class Authenticate extends BotgartCommand {
         // through a DM and is dedicated to Jey, who is a fucking 
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
-        this.client.guilds.cache.forEach(function(g) {
-            let m: discord.GuildMember = g.members.cache.find(m => m.id == message.author.id);
+        this.client.guilds.cache.forEach(async g => {
+            const m: discord.GuildMember = await g.members.fetch(message.author.id); // cache.find(m => m.id == message.author.id);
             if(m) {
                 members.push({guild: g, member: m});
             }
@@ -60,7 +60,7 @@ export class Authenticate extends BotgartCommand {
 
         message.util.send(L.get("CHECKING_KEY"))
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
-        let validFormat = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
+        const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
         if(!validFormat) {
             message.util.send(L.get("KEY_INVALID_FORMAT"));
             return;
@@ -73,7 +73,7 @@ export class Authenticate extends BotgartCommand {
                     message.util.send(L.get("NO_DEL_PERM"));
                 }
             }
-            let cl = <BotgartClient>this.client;
+            const cl: BotgartClient = this.getBotgartClient();
             Util.validateWorld(args.key).then(
                 role => {
                     if(role === false) {
