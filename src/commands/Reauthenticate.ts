@@ -27,7 +27,7 @@ export class Reauthenticate extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
-        let cl = this.getBotgartClient();
+        const cl: BotgartClient = this.getBotgartClient();
         cl.db.revalidateKeys().then(
             update => {                    
                 let g: discord.Guild; 
@@ -36,7 +36,7 @@ export class Reauthenticate extends BotgartCommand {
                 // filter out users for which we encountered errors
                 update.filter(r => r !== undefined).forEach(async row => {
                     let [p,admittedRoleName] = row;
-                    let currentRoleName = p.registration_role;
+                    let currentRoleName: string = p.registration_role;
 
                     if(!g || g.id != p.guild) {
                         // prunes come ordered by guild. This trick allows us to
@@ -57,7 +57,7 @@ export class Reauthenticate extends BotgartCommand {
                         if((admittedRole || admittedRoleName === false) && currentRole) { // admittedRoleName === false means: user must be unauthed
                             const m: discord.GuildMember = await g.members.fetch(p.user); // cache.find(member => p.user == member.user.id);
                             if(!m) {
-                                log("info", "Reauthenticate.js", "{0} is no longer part of the guild. Deleting their key.".formatUnicorn(p.user));
+                                log("info", "Reauthenticate.js", `${p.user} is no longer part of the guild. Deleting their key.`);
                                 cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
                                 cl.db.deleteKey(p.api_key);
                             } else {

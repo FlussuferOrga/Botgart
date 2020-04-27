@@ -220,14 +220,14 @@ export class BotgartClient extends akairo.AkairoClient {
     * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback. 
     */
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
-        const channels = this.db.getLogChannels(guild, type);
+        const channels: string[] = this.db.getLogChannels(guild, type);
         if(channels.length === 0 && disposable === false) {
             log("debug", "BotgartClient.js", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
             const channel: discord.GuildChannel = guild.channels.cache.find(c => c.id === cid);
             if(!channel) {
-                log("error", "BotgartClient.js", "Channel for type '{0}' for guild '{1}' is set to channel '{2}'' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
+                log("error", "BotgartClient.js", "Channel for type '{0}' for guild '{1}' is set to channel '{2}' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
             } else if(!(channel instanceof discord.TextChannel)) {
                 log("error", "BotgartClient.js", "Channel '{0}' in guild '{1}' to log type '{2}' was found, but appears to be a voice channel. Skipping.".formatUnicorn(cid, guild.name, type));
             } else {

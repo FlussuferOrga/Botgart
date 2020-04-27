@@ -945,8 +945,11 @@ export class Database {
     }
 
     public getLogChannels(guild: discord.Guild, type: string): string[] {
-        return this.execute(db => db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")
-                                    .all(guild.id, type).map(c => c.channel));
+        return this.execute(db => {
+            const channels = db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")
+                               .all(guild.id, type);
+            return channels === undefined ? [] : channels.map(c => c.channel);
+          });
     }
 
     public addLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): void {
