@@ -68,7 +68,7 @@ export class Poll extends BotgartCommand {
                     _ => {
                         const reg = /<a?:[a-zA-Z0-9_]+:(\d+)>/;
                         const match = react.match(reg);
-                        const customEmote = match ? args.channel.guild.emojis.find(e => e.id === match[1]) : undefined;
+                        const customEmote = match ? args.channel.guild.emojis.cache.find(match[1]) : undefined;
                         
                         // could still be garbage or from another server -> just ignore it in that case
                         if(customEmote) {
