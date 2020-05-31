@@ -478,7 +478,10 @@ export class TS3Listener extends events.EventEmitter {
         let dmember: discord.GuildMember = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
-            const crole = g.roles.cache.find(r => r.name === this.commanderRole);
+            // since removing roles has gone wrong a lot lately,
+            // we're updating the cache manually
+            // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
+            const crole: discord.Role = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(crole && dmember) {
                 log("info", "TS3Listener.js", `Tagging down ${dmember.displayName} in ${g.name}.`);
