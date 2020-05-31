@@ -1,43 +1,20 @@
-const config = require("../../config.json")
-import { YES, NO } from "../Const";
-import { Command, Argument } from "discord-akairo";
-import { log } from "../Util";
-import * as Const from "../Const";
-import * as L from "../Locale";
+const config = require("../../../config.json")
+import { log } from "../../Util";
+import * as Const from "../../Const";
+import * as L from "../../Locale";
 import * as discord from "discord.js";
-import { BotgartCommand, PermissionTypes } from "../BotgartCommand";
-import { BotgartClient } from "../BotgartClient";
+import { BotgartCommand, PermissionTypes } from "../../BotgartCommand";
+import { BotgartClient } from "../../BotgartClient";
 
 /**
 Testcases:
 
 */
-export class GuildCreate extends BotgartCommand {
+export class TsGuildAdd extends BotgartCommand {
     constructor() {
-        super("createguild", {
-            aliases: ["createguild", "mkguild"],
+        super("tsguildadd", {
+            aliases: ["tsguildadd", "mkguild", "createguild"],
             quoted: true
-                /*[
-                {
-                    id: "guildName",
-                    type: "string"
-                },
-                {
-                    id: "guildTag",
-                    type: "string"
-                },
-                {
-                    id: "contacts",
-                    type: (message: discord.Message, phrase: string) => phrase.split(",")
-                                                                              .map(s => s.trim().match(/^.+\.\d{4}$/))
-                                                                              .filter(s => s !== null)
-                                                                              .map(s => s[0])
-                },
-                {
-                    id: "guildTSGroup",
-                    type: "string"
-                }
-            ]*/
         },
         false, // available per DM
         true, // cronable
@@ -59,9 +36,9 @@ export class GuildCreate extends BotgartCommand {
         const guildTSGroup = yield { type: (m: discord.Message, p: string) => p ? p : guildTag };
         const confirm = yield { type: (m: discord.Message, p: string) => {
                                         let res = undefined;
-                                        if(YES.includes(p.toLowerCase())) {
+                                        if(Const.YES.includes(p.toLowerCase())) {
                                             res = true;
-                                        } else if (NO.includes(p.toLowerCase())) {
+                                        } else if (Const.NO.includes(p.toLowerCase())) {
                                             res = false;
                                         }
                                         return res;
@@ -91,4 +68,4 @@ export class GuildCreate extends BotgartCommand {
     }
 }
 
-module.exports = GuildCreate;
+module.exports = TsGuildAdd;
