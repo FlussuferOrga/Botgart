@@ -51,10 +51,7 @@ export class Permit extends BotgartCommand {
                 }
             ]
             //userPermissions: ["ADMINISTRATOR"]
-        },
-        false, // available per DM
-        true, // cronable
-        0
+        }
         );
     }
 

@@ -32,9 +32,7 @@ export class AwardAchievement extends BotgartCommand {
                     default: moment.utc()
                 }
             ]
-        },
-        false,  // available per DM
-        false // cronable
+        }
         );
     }
 

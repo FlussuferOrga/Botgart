@@ -34,9 +34,7 @@ export class RevokeAchievement extends BotgartCommand {
                 },
                 
             ]
-        },
-        false,  // available per DM
-        false // cronable
+        }
         );
     }
 

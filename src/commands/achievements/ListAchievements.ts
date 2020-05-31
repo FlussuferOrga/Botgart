@@ -18,8 +18,9 @@ export class ListAchievements extends BotgartCommand {
             quoted: true,
             args: []
         },
-        true,  // available per DM
-        false // cronable
+        {
+          availableAsDM: true
+        }
         );
     }
 

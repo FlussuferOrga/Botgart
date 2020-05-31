@@ -28,9 +28,10 @@ export class FishingLadder extends BotgartCommand {
         super("fishingladder", {
             aliases: ["fishingladder", "epeen"]
         },
-        true,  // available per DM
-        false, // cronable
-        1 // everyone permission
+        {
+            availableAsDM: true,
+            everyonePermission: 1
+        }
         );
     }
 

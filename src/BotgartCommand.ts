@@ -10,19 +10,36 @@ export enum PermissionTypes {
     role = "role",
     other = "other"
 }
+
+interface BotgartCommandOptions {
+    availableAsDM?: boolean, 
+    cronable?: boolean, 
+    everyonePermission?: number
+}
+
 export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
     protected cmdargs: akairo.ArgumentOptions[] | akairo.ArgumentGenerator;
 
-    constructor(id: string, options: CommandOptions, availableAsDM: boolean = false, cronable: boolean = true, everyonePermission: number = 0) {
+    /**
+    * Constructor
+    * @param id - unique identifier
+    * @param options - options for the Akairo Command
+    * @param botgartOptions - additional options for the Botgart Command. Defaults are:
+    *                        availableAsDM: false
+    *                        cronable: false
+    *                        everyonePermission: 0
+    */
+    constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptions) {
         super(id, options);
-        this.availableAsDM = availableAsDM;
-        this.cronable = cronable;
-        this.everyonePermission = everyonePermission;
+        const defaults: BotgartCommandOptions = { availableAsDM: false, cronable: false, everyonePermission: 0 };
+        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : Object.assign({}, defaults, botgartOptions);
+        this.availableAsDM = settings.availableAsDM;
+        this.cronable = settings.cronable;
+        this.everyonePermission = settings.everyonePermission;
         this.cmdargs = options.args === undefined ? [] : options.args;
-        //(<BotgartClient>this.client).db.setPermission(this.constructor.name, "everyone", PermissionTypes.other, everyonePermission, null);
     }  
 
     /**

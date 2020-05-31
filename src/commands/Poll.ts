@@ -36,8 +36,9 @@ export class Poll extends BotgartCommand {
             ],
             userPermissions: ["ADMINISTRATOR"]
         },
-        false, // available per DM
-        true // cronable
+        {
+            cronable: true
+        }
         );
     }
 

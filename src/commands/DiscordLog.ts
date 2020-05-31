@@ -27,9 +27,9 @@ export class DiscordLog extends BotgartCommand {
                 ],
                 userPermissions: ["ADMINISTRATOR"]
             },
-            false, // available per DM
-            true, // cronable
-            0, // everyone permission
+            {
+                cronable: true
+            }
         );
     }
 

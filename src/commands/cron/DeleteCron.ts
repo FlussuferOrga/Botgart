@@ -24,9 +24,7 @@ export class DeleteCron extends BotgartCommand {
                     }
                 ],
                 userPermissions: ["ADMINISTRATOR"]
-            }, 
-            false, // available per DM
-            false // cronable
+            }
         );
     }
 

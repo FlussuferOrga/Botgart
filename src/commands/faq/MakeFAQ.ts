@@ -30,8 +30,9 @@ export class MakeFaq extends BotgartCommand {
             ],
             userPermissions: ["ADMINISTRATOR"]
         },
-        false,  // available per DM
-        true // cronable
+        {
+            cronable: true
+        }
         );
     }
 

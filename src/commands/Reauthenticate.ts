@@ -21,8 +21,10 @@ export class Reauthenticate extends BotgartCommand {
             aliases: ["reauthenticate","reauth"],
             userPermissions: ['ADMINISTRATOR']
         },
-        true, // available per DM
-        true // cronable
+        {
+            availableAsDM: true,
+            cronable: true
+        }
         );
     }
 

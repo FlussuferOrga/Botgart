@@ -39,9 +39,9 @@ export class ReactionSnapshot extends BotgartCommand {
             ],
             userPermissions: ["ADMINISTRATOR"]
         },
-        false, // available per DM
-        true, // cronable
-        0
+        {
+            cronable: true
+        }
         );
     }
 

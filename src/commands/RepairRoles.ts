@@ -17,8 +17,10 @@ export class RepairRoles extends BotgartCommand {
                 aliases: ["rolerepair"],
                 userPermissions: ["ADMINISTRATOR"]
             },
-            true, // available as DM
-            true // cronable
+            {
+                availableAsDM: true,
+                cronable: true
+            }
         );
     }
 

@@ -55,9 +55,7 @@ export class AddEvent extends BotgartCommand {
                 }
             ],
             userPermissions: [],
-        },
-        false,  // available per DM
-        false // cronable
+        }
         );
     }
 

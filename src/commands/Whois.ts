@@ -20,10 +20,7 @@ export class Whois extends BotgartCommand {
                     type: "string"
                 }
             ],
-        },
-        false, // available per DM
-        true, // cronable
-        0 // everyone permission
+        }
         );
     }
 

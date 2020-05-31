@@ -26,8 +26,9 @@ export class DeleteFaq extends BotgartCommand {
             ],
             userPermissions: ["ADMINISTRATOR"]
         },
-        false,  // available per DM
-        true // cronable
+        {
+            cronable: true
+        }
         );
     }
 

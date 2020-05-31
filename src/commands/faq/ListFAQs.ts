@@ -16,9 +16,9 @@ export class ListFaqs extends BotgartCommand {
         super("listfaqs", {
                 aliases: ["listfaqs","lsfaqs","lsrtfms"]
             }, 
-            false, // available per DM
-            false, // cronable
-            1 // everyone permissions
+            {
+                everyonePermission: 1
+            }
         );
     }
 

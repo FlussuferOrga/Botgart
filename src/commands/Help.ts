@@ -17,10 +17,12 @@ export class Help extends BotgartCommand {
     constructor() {
         super("help", {
             aliases: ["help", "commands", "hilfe"],
-        },
-        true, // available per DM
-        true, // cronable
-        1 // everyone permission
+        }, 
+        {
+            availableAsDM: true,
+            cronable: true,
+            everyonePermission: 1
+        }
         );
     }
 

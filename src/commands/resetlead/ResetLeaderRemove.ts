@@ -32,9 +32,7 @@ export class RemoveResetLeader extends BotgartCommand {
                     default: new Date().getFullYear()
                 }
             ]
-        },
-        false,  // available per DM
-        false // cronable
+        }
         );
     }
 

@@ -27,9 +27,7 @@ export class AddPermanentRole extends BotgartCommand {
             ],
             userPermissions: ["ADMINISTRATOR"]
 
-        },
-        false,  // available per DM
-        false // cronable
+        }
         );
     }
 

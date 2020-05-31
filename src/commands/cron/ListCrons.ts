@@ -18,8 +18,9 @@ export class ListCrons extends BotgartCommand {
                 aliases: ["listcrons","lscrons"],
                 userPermissions: ["ADMINISTRATOR"]
             }, 
-            true, // available per DM
-            false // cronable
+            {
+                availableAsDM: true
+            }
         );
     }
 

@@ -28,9 +28,9 @@ export class Say extends BotgartCommand {
                     }
                 ]
             },
-            false, // available per DM
-            true, // cronable
-            0, // everyone permission
+            {
+                cronable: true
+            }
         );
     }
 

@@ -124,9 +124,10 @@ export class GoFish extends BotgartCommand {
             cooldown: WAIT_MAX_SECONDS * 1000,
             ratelimit: 1
         },
-        true,  // available per DM
-        false, // cronable
-        1 // everyone permission
+        {
+            availableAsDM: true,
+            everyonePermission: 1
+        }
         );
     }
 

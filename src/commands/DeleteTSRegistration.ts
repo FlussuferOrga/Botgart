@@ -22,10 +22,7 @@ export class DeleteTsRegistration extends BotgartCommand {
                     type: "string"
                 }
             ]
-        },
-        false, // available per DM
-        true, // cronable
-        0
+        }
         );
     }
 

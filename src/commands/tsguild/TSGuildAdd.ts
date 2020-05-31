@@ -15,10 +15,7 @@ export class TsGuildAdd extends BotgartCommand {
         super("tsguildadd", {
             aliases: ["tsguildadd", "mkguild", "createguild"],
             quoted: true
-        },
-        false, // available per DM
-        true, // cronable
-        0
+        }
         );
     }
     

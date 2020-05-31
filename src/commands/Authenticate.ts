@@ -33,9 +33,10 @@ export class Authenticate extends BotgartCommand {
                 },
             ]
         },
-        true,  // available per DM
-        false, // cronable
-        10 // everyone permission
+        {
+            availableAsDM: true,
+            everyonePermission: 1
+        }
         );
     }
 

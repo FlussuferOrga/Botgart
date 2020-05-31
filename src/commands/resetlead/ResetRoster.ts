@@ -190,8 +190,9 @@ export class ResetRoster extends BotgartCommand {
             userPermissions: ["ADMINISTRATOR"]
 
         },
-        false,  // available per DM
-        true // cronable
+        {
+            cronable: true
+        }
         );
         this.messages = {};
         this.emotes = WvWMap.getMaps().map(m => m.emote);

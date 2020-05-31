@@ -10,9 +10,7 @@ export class FindDuplicates extends BotgartCommand {
         super("findduplicates", {
             aliases: ["findduplicates", "finddupes"],
             userPermissions: ['ADMINISTRATOR']
-        },
-        false, // available per DM
-        false // cronable
+        }
         );
     }
 

@@ -36,9 +36,7 @@ export class AddResetLeader extends BotgartCommand {
                     default: new Date().getFullYear()
                 }
             ]
-        },
-        false,  // available per DM
-        false // cronable
+        }
         );
     }
 

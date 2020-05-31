@@ -23,10 +23,7 @@ export class TsGuildDelete extends BotgartCommand {
                                                                               .join(" ")
                 }
             ]
-        },
-        false, // available per DM
-        true, // cronable
-        0
+        }
         );
     }
 
