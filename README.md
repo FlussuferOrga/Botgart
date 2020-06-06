@@ -58,7 +58,7 @@ The `db/` directory contains a script `make_backup.sh` for seven-day-rotating da
 ```
 version: "3.3"
 services:
-  ts-bot:
+  botgart:
     build: https://github.com/ogrady/Botgart.git
     environment:
       TS_LISTENER_IP: "ts3bot.local" #hostname or ip
