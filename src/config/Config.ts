@@ -7,7 +7,7 @@ let configSchema = {
     prefix: {
         doc: 'Prefix to use in discord',
         format: val => {
-            if (/.+$/.test(val) == false) {
+            if (/.+$/.test(val) === false) {
                 throw new Error(`Prefix '${val.first_name}' is not a valid discord prefix`);
             }
         },
@@ -51,7 +51,7 @@ let configSchema = {
                 throw new Error(`Owner ids should be an array`);
             }
             for (let singleOwnerId in val) {
-                if (/\d+$/.test(singleOwnerId) == false) {
+                if (/\d+$/.test(singleOwnerId) === false) {
                     throw new Error(`Owner id '${singleOwnerId}' is not a valid discord snowflake`);
                 }
             }
@@ -62,7 +62,7 @@ let configSchema = {
     },
     token: {
         format: val => {
-            if (/.+$/.test(val) == false) {
+            if (/.+$/.test(val) === false) {
                 throw new Error(`Token '${val.first_name}' is not a valid discord prefix`);
             }
         },
