@@ -62,7 +62,7 @@ services:
     build: https://github.com/ogrady/Botgart.git
     environment:
       TS_LISTENER_IP: "ts3bot.local" #hostname or ip
-      TS_LISTENER_PORT: "10137" #hostname or ip
+      TS_LISTENER_PORT: "10137"
     volumes:
       - ./botgart/log:/app/log
       - ./botgart/db:/app/db

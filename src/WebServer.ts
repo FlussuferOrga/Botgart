@@ -1,6 +1,6 @@
 import express, {Express} from "express";
 import * as http from "http";
-import {configuration} from "./Config";
+import {configuration} from "./config/Config";
 
 // Create a new express app instance
 
@@ -9,10 +9,7 @@ export class WebServer {
     private server: http.Server;
 
     constructor() {
-
-
         this.app = express();
-
         this.registerRoutes();
     }
 

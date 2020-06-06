@@ -1,4 +1,4 @@
-import {configuration} from "./Config";
+import {configuration} from "./config/Config";
 import {log} from "./Util";
 import * as net from "net";
 import CircularBuffer from "circular-buffer";

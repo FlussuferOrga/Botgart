@@ -1,4 +1,4 @@
-import {configuration} from "./Config";
+import {configuration} from "./config/Config";
 import * as Util from "./Util";
 import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
@@ -84,11 +84,9 @@ export interface DesignatedRole {
 
 export class Database {
     readonly file: string;
-    private client: BotgartClient;
 
-    constructor(file: string, client: BotgartClient) {
+    constructor(file: string) {
         this.file = file;
-        this.client = client;
     }
 
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
@@ -538,7 +536,7 @@ export class Database {
     }
 
     public crashedT3ByCommander(gw2account: string): number {
-        const crashed: {count:number} | undefined = this.client.db.execute(db => db.prepare(`
+        const crashed: {count:number} | undefined = this.execute(db => db.prepare(`
                 SELECT 
                     tl.gw2account,
                     COUNT(*) AS count

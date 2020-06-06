@@ -1,4 +1,4 @@
-import {configuration} from "./Config";
+import {configuration} from "./config/Config";
 import * as discord from "discord.js";
 import * as winston from "winston";
 //import * as gw2 from "gw2api-client";
@@ -437,7 +437,7 @@ export function assertType(obj:any, t:string): void {
     //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
 }
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   levels: winston.config.syslog.levels,
   format: winston.format.combine(
     winston.format.timestamp(),

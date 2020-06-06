@@ -1,5 +1,5 @@
 
-import { configuration} from "./Config";
+import { configuration} from "./config/Config";
 import { WebServer } from "./WebServer";
 import { BotgartClient } from  "./BotgartClient";
 import { Patch } from "./patches/Patch.js";

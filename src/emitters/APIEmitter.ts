@@ -1,4 +1,4 @@
-import {configuration} from "../Config";
+import {configuration} from "../config/Config";
 import {api} from "../Util";
 import * as events from "events"
 
@@ -6,7 +6,7 @@ import * as events from "events"
 enum WvWMapNames {
     Center = "Center",
     BlueHome = "BlueHome",
-    GreenHome= "GreenHome",
+    GreenHome = "GreenHome",
     RedHome = "RedHome"
 }
 
@@ -41,9 +41,9 @@ export interface WvWMatches {
     readonly worlds: RGBNumbers;
     readonly all_worlds: { red: number[], blue: number[], green: number[] };
     readonly deaths: RGBNumbers;
-    readonly kills:  RGBNumbers;
+    readonly kills: RGBNumbers;
     readonly victory_points: RGBNumbers;
-    readonly skirmishes: {id: number, scores: any[], map_scores: any[]}[]
+    readonly skirmishes: { id: number, scores: any[], map_scores: any[] }[]
     readonly maps: MapStats[]
 }
 
@@ -55,12 +55,15 @@ export class APIEmitter extends events.EventEmitter {
         super();
         //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
         //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
-        this.schedule("wvw-stats", api => api.wvw().matches().live().stats().world(configuration.get().home_id)
-                                             .catch(err => console.log(`Error while fetching match stats: ${err}`))
-                                 , configuration.get().gw2api.delays.wvw_stats)
-        this.schedule("wvw-matches", api => api.wvw().matches().live().world(configuration.get().home_id)
-                                               .catch(err => console.log(`Error while fetching match details: ${err}`))
-                                   , configuration.get().gw2api.delays.wvw_matches);
+        let homeId = configuration.get().home_id;
+        this.schedule("wvw-stats",
+            api => api.wvw().matches().live().stats().world(homeId)
+                .catch(err => console.log(`Error while fetching match stats: ${err}`)),
+            configuration.get().gw2api.delays.wvw_stats)
+        this.schedule("wvw-matches",
+            api => api.wvw().matches().live().world(homeId)
+                .catch(err => console.log(`Error while fetching match details: ${err}`)),
+            configuration.get().gw2api.delays.wvw_matches);
 
     }
 
