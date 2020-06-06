@@ -7,6 +7,7 @@ import { inspect } from "util";
 import * as stringSimilarity from "string-similarity";
 import moment = require("moment");
 import * as db from "./DB";
+import callsites from "callsites";
 
 import glob from "glob" // dynamic module loading
 import path from "path" // ^
@@ -466,8 +467,10 @@ const logger = winston.createLogger({
   ]
 });
 export function log(level: string, label: string, message: string): winston.Logger {
+    const callFile = callsites()[0].getFileName().split("/");
+    const file = callFile[callFile.length - 1];
     return logger.log({
-        "label": label,
+        "label": file, // label,
         "level": level,
         "message": message
     });
