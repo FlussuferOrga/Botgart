@@ -1,9 +1,9 @@
-const config = require("../config.json");
+import {configuration} from "./Config";
 import * as Util from "./Util";
 import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
-import { BotgartClient } from "./BotgartClient";
-import { PermissionTypes } from "./BotgartCommand";
+import {BotgartClient} from "./BotgartClient";
+import {PermissionTypes} from "./BotgartCommand";
 import * as ResetLead from "./commands/resetlead/ResetRoster";
 import Timeout from "await-timeout";
 import {Semaphore} from "await-semaphore";
@@ -556,7 +556,7 @@ export class Database {
                     AND tl.gw2account = ?
                 GROUP BY
                     gw2account
-                `).get(config.home_id, gw2account));
+                `).get(configuration.get().home_id, gw2account));
             return crashed !== undefined ? crashed.count : 0;
     }
 

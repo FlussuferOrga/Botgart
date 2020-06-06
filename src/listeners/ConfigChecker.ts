@@ -1,8 +1,10 @@
-const config = require("../../config.json");
-import { Listener } from "discord-akairo";
-import { log } from "../Util";
+import {configuration} from "../Config";
+import {Listener} from "discord-akairo";
+import {log} from "../Util";
 import * as validate from "validate.js";
-const gw2 = require("gw2api-client");
+
+import gw2 from "gw2api-client";
+
 const api = gw2();
 
 validate.validators.isArray = (value, options, key, attributes) => { 
@@ -194,8 +196,8 @@ export class ConfigChecker extends Listener {
             return errors !== undefined;
         };
 
-        let shutDown = handleErrors(validate.validate(config, constraints));
-        validate.async(config, asyncConstraints).then(
+        let shutDown = handleErrors(validate.validate(configuration.get(), constraints));
+        validate.async(configuration.get(), asyncConstraints).then(
             _ => null,
             errs => {
                 shutDown = shutDown || handleErrors(errs);

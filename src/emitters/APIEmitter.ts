@@ -1,8 +1,7 @@
-const config = require("../../config.json");
-import { log, api } from "../Util";
+import {configuration} from "../Config";
+import {api} from "../Util";
 import * as events from "events"
-import { gw2 } from "gw2api-client"
-import { BotgartClient } from "../BotgartClient"
+
 
 enum WvWMapNames {
     Center = "Center",
@@ -56,12 +55,12 @@ export class APIEmitter extends events.EventEmitter {
         super();
         //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
         //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
-        this.schedule("wvw-stats", api => api.wvw().matches().live().stats().world(config.home_id)
+        this.schedule("wvw-stats", api => api.wvw().matches().live().stats().world(configuration.get().home_id)
                                              .catch(err => console.log(`Error while fetching match stats: ${err}`))
-                                 , config.gw2api.delays.wvw_stats)
-        this.schedule("wvw-matches", api => api.wvw().matches().live().world(config.home_id)
+                                 , configuration.get().gw2api.delays.wvw_stats)
+        this.schedule("wvw-matches", api => api.wvw().matches().live().world(configuration.get().home_id)
                                                .catch(err => console.log(`Error while fetching match details: ${err}`))
-                                   , config.gw2api.delays.wvw_matches);
+                                   , configuration.get().gw2api.delays.wvw_matches);
 
     }
 

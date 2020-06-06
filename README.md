@@ -53,3 +53,23 @@ Botgart uses several dependencies (that are automatically installed in one of th
 
 ## Backups
 The `db/` directory contains a script `make_backup.sh` for seven-day-rotating database backups in the directory `db/bak/`. The script can either be run manually or be added as a cron, as described on [the site I have taken the script from](https://www.zzzzzzzzz.net/daily-backup-sqlite3-database-shell-script/).
+
+## Docker Compose
+```
+version: "3.3"
+services:
+  ts-bot:
+    build: https://github.com/ogrady/Botgart.git
+    environment:
+      TS_LISTENER_IP: "ts3bot.local" #hostname or ip
+      TS_LISTENER_PORT: "10137" #hostname or ip
+    volumes:
+      - ./botgart/log:/app/log
+      - ./botgart/db:/app/db
+      - ./botgart/config.json:/app/config.json
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+```
+A list of environment variables can be seen in Config.ts

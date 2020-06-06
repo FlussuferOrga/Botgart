@@ -1,6 +1,7 @@
 built/
 *.sublime-project
 *.sublime-workspace
+.idea
 
 *.db
 config.json

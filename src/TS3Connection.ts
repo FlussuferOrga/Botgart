@@ -1,11 +1,11 @@
-const config = require("../config.json");
-import { log, setMinus } from "./Util";
+import {configuration} from "./Config";
+import {log} from "./Util";
 import * as net from "net";
 import CircularBuffer from "circular-buffer";
 import * as moment from "moment";
 import * as L from "./Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "./BotgartClient";
+import {BotgartClient} from "./BotgartClient";
 import * as events from "events";
 import * as db from "./DB";
 
@@ -327,6 +327,9 @@ export class TS3Listener extends events.EventEmitter {
 
     constructor(bgclient: BotgartClient) {
         super();
+
+        let config = configuration.get();
+
         this.botgartClient = bgclient;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
         this.broadcastChannel = config.ts_listener.broadcast_channel;
@@ -490,7 +493,7 @@ export class TS3Listener extends events.EventEmitter {
                 });
             }
             // do not write leads of members which hide their roles
-            const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => config.achievements.ignoring_roles.includes(r.name)));
+            const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => configuration.get().achievements.ignoring_roles.includes(r.name)));
             if(writeToDB) {
                 this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
             }

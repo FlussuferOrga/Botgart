@@ -1,4 +1,3 @@
-const config = require("../config.json")
 import * as akairo from "discord-akairo"
 import { BotgartCommand } from "./BotgartCommand.js"
 import * as db from "./DB.js"
@@ -11,6 +10,7 @@ import { EventEmitter } from "events";
 import * as Util from "./Util";
 import * as moment from "moment";
 import * as achievements from "./commands/achievements/Achievements";
+import {configuration} from "./Config";
 
 export class WvWWatcher extends EventEmitter {
     private db: db.Database;
@@ -34,7 +34,7 @@ export class WvWWatcher extends EventEmitter {
         let dbMatchup: db.Matchup = this.db.getCurrentMatchup(now);
         if(dbMatchup === undefined) {
             const latestDbMatchup: db.Matchup = this.db.getLatestMatchup();
-            const currentMatchupInfo = await this.api.wvw().matches().overview().world(config.home_id);
+            const currentMatchupInfo = await this.api.wvw().matches().overview().world(configuration.get().home_id);
             const tier = currentMatchupInfo.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
             this.db.addMatchup(
                 tier,
@@ -80,13 +80,13 @@ export class BotgartClient extends akairo.AkairoClient {
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
         this.wvwWatcher = new WvWWatcher(this.db, Util.api);
-        this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port, "MainConnection");
+        this.ts3connection = new TS3Connection(configuration.get().ts_listener.ip, configuration.get().ts_listener.port, "MainConnection");
         this.ts3connection.exec();
         //this.options = options;
         
         this.commandHandler = new akairo.CommandHandler(this, {
             directory: './built/commands/',
-            prefix: config.prefix,
+            prefix: configuration.get().prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
         });
