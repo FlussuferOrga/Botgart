@@ -174,6 +174,6 @@ function logConfig(config:convict.Config<any>) {
     //probably we shouldn't log a token.
     configJsonString = configJsonString.replace(config.get("token"),"***REDACTED***")
 
-    Util.log("info", __filename, `Resolved Configuration:\n${configJsonString}`);
+    Util.log("info", `Resolved Configuration:\n${configJsonString}`);
 }
 
