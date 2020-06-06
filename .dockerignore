@@ -1,0 +1,14 @@
+.idea
+
+# node modules will be pulled on build
+node_modules
+
+db
+log
+*.md
+run_devel.sh
+Dockerfile
+.*ignore
+
+# do not pack the dev config.
+config.json

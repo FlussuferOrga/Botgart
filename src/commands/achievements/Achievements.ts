@@ -1,12 +1,11 @@
-const config = require("../../../config.json");
+import {configuration} from "../../Config";
 import * as moment from "moment";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "../../BotgartClient";
+import {BotgartClient} from "../../BotgartClient";
 import * as U from "../../Util";
-import { Commander } from "../../TS3Connection";
-import * as db from "../../DB";
 import * as ts3 from "../../TS3Connection";
+import * as db from "../../DB";
 import * as gw2api from "../../emitters/APIEmitter";
 
 export enum AchievementAwardResult {
@@ -98,7 +97,7 @@ export abstract class Achievement<C> {
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
-            if(discordUser.roles.cache.some(r => config.achievements.ignoring_roles.includes(r.name))) {
+            if(discordUser.roles.cache.some(r => configuration.get().achievements.ignoring_roles.includes(r.name))) {
                 // user is hiding their achievements
                 result = AchievementAwardResult.HIDDEN;
             } else {
@@ -107,7 +106,7 @@ export abstract class Achievement<C> {
 
                 if(rowId > -1 && (isNew || this.repeatable)) {
                     result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
-                    const achievementChannel: discord.Channel = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === config.achievements.channel);
+                    const achievementChannel: discord.Channel = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === configuration.get().achievements.channel);
 
                     if(achievementChannel) {
                         if(isNew || this.announceRepetitions) {
@@ -123,7 +122,7 @@ export abstract class Achievement<C> {
                     } else {
                         guild.roles.create({ data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"})
                           .then(r => discordUser.roles.add(r))
-                          .catch(e => U.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));                    
+                          .catch(e => U.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
                     }
                 }   
             } 
@@ -393,9 +392,9 @@ export class Annihilator extends ObjectiveAchievement {
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         let holds: boolean = false;
         const obj = context.objectives;
-        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(config.home_id))[0]; 
+        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(configuration.get().home_id))[0];
         if(ourColour === undefined) {
-          U.log("warning", `Could not find our home id '${config.home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+          U.log("warning", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
           holds = obj.kills[ourColour]/obj.kills[ourColour] >= 2.0;
         }
@@ -417,9 +416,9 @@ export class NeverSurrender extends TagUpAchievement {
         let holds: boolean = false;
         const stats = this.client.db.getStatsAround(context.commander.getRaidStart());
         if(stats) {
-            const ourColour = this.client.db.getColourOf(config.home_id, context.commander.getRaidStart());
+            const ourColour = this.client.db.getColourOf(configuration.get().home_id, context.commander.getRaidStart());
             if(ourColour === undefined) {
-                U.log("warning", `Unable to find our colour with world ID ${config.home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
+                U.log("warning", `Unable to find our colour with world ID ${configuration.get().home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
             } else {
                 const ourStats = stats.find(s => s.faction === ourColour);
                 holds = ourStats 
@@ -445,9 +444,9 @@ export class Conqueror extends ObjectiveAchievement {
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         let holds = false;
         const obj = context.objectives;
-        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(config.home_id))[0]; 
+        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(configuration.get().home_id))[0];
         if(ourColour === undefined) {
-          U.log("warning", `Could not find our home id '${config.home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+          U.log("warning", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
             const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives
                                                                            .filter(o => o.owner === ourColour)
@@ -488,7 +487,7 @@ export class AgileDefender extends TagDownAchievement {
         let holds: boolean = U.isBetweenTime(context.commander.getRaidStart(), "18:00:00", "21:00:00")
                               && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if(holds) {
-            const ourColour = this.client.db.getColourOf(config.home_id, context.commander.getRaidStart());
+            const ourColour = this.client.db.getColourOf(configuration.get().home_id, context.commander.getRaidStart());
             const t3AtStart: number[] = this.client.db.getObjectivesAround(context.commander.getRaidStart())
                                                       .filter(obj => obj.owner === ourColour && obj.tier === 3)
                                                       .map(obj => obj.objective_id);
@@ -562,7 +561,7 @@ export class Princess extends ObjectiveAchievement {
 
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         const palaceID: string = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
-        const colour: db.FactionColour = this.client.db.getFactionColour(moment.utc(), config.home_id);
+        const colour: db.FactionColour = this.client.db.getFactionColour(moment.utc(), configuration.get().home_id);
         return colour !== undefined && this.client.db.wasCapturedBetween(context.commander.getRaidStart(), moment.utc(), palaceID, colour);
     }
 }

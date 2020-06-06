@@ -1,18 +1,15 @@
-const config = require("../config.json");
+import {configuration} from "./Config";
 import * as discord from "discord.js";
 import * as winston from "winston";
 //import * as gw2 from "gw2api-client";
-import * as assert from "assert";
-import { inspect } from "util";
 import * as stringSimilarity from "string-similarity";
-import moment = require("moment");
-import * as db from "./DB";
 import callsites from "callsites";
 
 import glob from "glob" // dynamic module loading
 import path from "path" // ^
+import gw2 from "gw2api-client";
+import moment = require("moment");
 
-const gw2 = require("gw2api-client");
 export const api = gw2();
 
 api.schema('2019-03-26T00:00:00Z');
@@ -224,11 +221,11 @@ export function shallowInspect(o: any): void {
 *                   (c) the key is structurally valid, but not known to the API (invalid key)
 */
 export function validateWorld(apikey: string): Promise<string|boolean|number> {
-    let accepted = config.world_assignments;
+    let accepted = configuration.get().world_assignments;
     api.authenticate(apikey);
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
-            let match = config.world_assignments.filter(a => a.world_id === acc.world);
+            let match = configuration.get().world_assignments.filter(a => a.world_id === acc.world);
             if(match.length > 1) {
                 // config broken
                 return reject(exports.validateWorld.ERRORS.config_world_duplicate);
@@ -355,7 +352,7 @@ export function resolveWvWMap(userInput: string): Promise<[boolean, string]> {
             let m = mapAliases[best.target];
             if(m === "homes") {
                 // resolve home colour
-                res = resolveMatchColour(config.home_id).then(
+                res = resolveMatchColour(configuration.get().home_id).then(
                     home => new Promise((resolve, reject) => resolve([true, mapAliases[home]]))
                 );
             } else {
@@ -380,7 +377,7 @@ export function resolveMatchColour(worldId: number): Promise<"red"|"blue"|"green
                 .map(k => matchUp.all_worlds[k].includes(worldId) ? k : null)
                 .filter(x => x !== null)
             if(home.length !== 1) {
-                log("error", "Expected to find world with ID = {0} in exactly one team. But found it in {1} teams.".formatUnicorn(worldId, home.length));    
+                log("error", "Expected to find world with ID = {0} in exactly one team. But found it in {1} teams.".formatUnicorn(worldId, home.length));
             }
             return home[0];
         },

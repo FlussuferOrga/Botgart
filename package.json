@@ -30,7 +30,11 @@
     "sqlite": "^3.0.3",
     "string-similarity": "^3.0.0",
     "validate.js": "^0.12.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "@types/express": "^4.17.6",
+    "express": "^4.17.1",
+    "convict": "^5.2.0",
+    "@types/convict": "^5.2.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",

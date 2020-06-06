@@ -1,7 +1,4 @@
-const config = require("../../config.json");
-import { Command } from "discord-akairo";
 import * as Util from "../Util";
-import * as Const from "../Const";
 import * as L from "../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";

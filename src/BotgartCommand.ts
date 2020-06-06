@@ -1,9 +1,9 @@
-const config = require("../config.json");
+import {configuration} from "./Config";
 import * as discord from "discord.js";
 import * as L from "./Locale";
 import * as akairo from "discord-akairo";
-import { BotgartClient } from "./BotgartClient";
-import { Command, CommandOptions } from "discord-akairo"; 
+import {Command, CommandOptions} from "discord-akairo";
+import {BotgartClient} from "./BotgartClient";
 
 export enum PermissionTypes {
     user = "user",
@@ -118,7 +118,7 @@ export class BotgartCommand extends Command {
     * @returns - true, if the user is an owner.
     */ 
     public isOwner(user: (discord.GuildMember|discord.User)) {
-        return Array.isArray(config.owner_ids) && config.owner_ids.includes(user.id);
+        return Array.isArray(configuration.get().owner_ids) && configuration.get().owner_ids.includes(user.id);
     }
 
     /**
