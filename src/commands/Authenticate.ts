@@ -39,7 +39,7 @@ export class Authenticate extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!message) {
-            Util.log("error", "Authenticate.js", "Mandatory message parameter missing. This command can not be issued as cron.");
+            Util.log("error", "Mandatory message parameter missing. This command can not be issued as cron.");
             return;
         }
 
@@ -75,7 +75,7 @@ export class Authenticate extends BotgartCommand {
             Util.validateWorld(args.key).then(
                 role => {
                     if(role === false) {
-                        Util.log("info", "Authenticate.js", "Declined API key {0}.".formatUnicorn(args.key));
+                        Util.log("info", "Declined API key {0}.".formatUnicorn(args.key));
                         reply = L.get("KEY_DECLINED");
                         responsible.send(reply);                    
                     } else {
@@ -83,7 +83,7 @@ export class Authenticate extends BotgartCommand {
                             await Util.asyncForEach(members, async (m: {guild: discord.Guild, member: discord.GuildMember}) => {
                                 let r: discord.Role = m.guild.roles.cache.find(r => r.name === role);
                                 if(!r) {
-                                    Util.log("error", "Authenticate.js", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
+                                    Util.log("error", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
                                     let accountName: string | boolean = await Util.getAccountName(args.key);
@@ -93,12 +93,12 @@ export class Authenticate extends BotgartCommand {
                                         i--;
                                     }
                                     if(accountName === false) {
-                                        Util.log("warning", "Authenticate.js", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
+                                        Util.log("warning", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
                                         accountName = null;
                                     }
                                     let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if(unique) {
-                                        Util.log("info", "Authenticate.js", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
+                                        Util.log("info", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                         Util.assignServerRole(m.member, null, r);
                                         // give earned achievement roles again
@@ -108,7 +108,7 @@ export class Authenticate extends BotgartCommand {
                                         cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);
                                         reply = L.get("KEY_ACCEPTED")
                                     } else {
-                                        Util.log("info", "Authenticate.js", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
+                                        Util.log("info", "Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
                                         reply = L.get("KEY_NOT_UNIQUE")
                                     }
                                 }
@@ -119,20 +119,20 @@ export class Authenticate extends BotgartCommand {
                 }, err => {
                     switch(err) {
                         case Util.validateWorld.ERRORS.config_world_duplicate:
-                            Util.log("error", "Authenticate.js", "A world is defined more than once in the config. Please fix the config file.");  
+                            Util.log("error", "A world is defined more than once in the config. Please fix the config file.");  
                             responsible.send(L.get("INTERNAL_ERROR"));
                             break;
                         case Util.validateWorld.ERRORS.network_error:
-                            Util.log("error", "Authenticate.js", "Network error while trying to resolve world.");
+                            Util.log("error", "Network error while trying to resolve world.");
                             responsible.send(L.get("INTERNAL_ERROR"));
                             break;
                          case Util.validateWorld.ERRORS.invalid_key:
-                            Util.log("error", "Authenticate.js", "Invalid key: {0}".formatUnicorn(args.key));
+                            Util.log("error", "Invalid key: {0}".formatUnicorn(args.key));
                             responsible.send(L.get("KEY_DECLINED"));
                             break;
                         default:
-                            Util.log("error", "Authenticate.js", "Unexpected error occured while validating world.");
-                            Util.log("error", "Authenticate.js", err);
+                            Util.log("error", "Unexpected error occured while validating world.");
+                            Util.log("error", err);
                             responsible.send(L.get("INTERNAL_ERROR"));
                     }
                 }

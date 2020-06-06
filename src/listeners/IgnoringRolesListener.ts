@@ -30,7 +30,7 @@ export class IgnoringRolesListener extends Listener {
             if(userdata) {
                 [deletedLeads, revokedAchievements] = client.db.deleteAchievementInformation(userdata.gw2account);
             }
-            U.log("info", "IngoringRolesListener.js", `Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`);
+            U.log("info", `Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`);
         }
     }
 }

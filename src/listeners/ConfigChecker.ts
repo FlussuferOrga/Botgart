@@ -186,12 +186,12 @@ export class ConfigChecker extends Listener {
 
         let handleErrors = errors => {
             for(let k in errors) {
-                log("error", "ConfigChecker.js", "Error while validating config entry '{0}': {1}".formatUnicorn(k, JSON.stringify(errors[k])));
+                log("error", "Error while validating config entry '{0}': {1}".formatUnicorn(k, JSON.stringify(errors[k])));
             }
             if(errors) {
-                log("crit", "ConfigChecker.js", "config.json contains invalid entries. Shutting down preventively. Please fix the config according to the log.");
+                log("crit", "config.json contains invalid entries. Shutting down preventively. Please fix the config according to the log.");
             } else {
-                log("info", "ConfigChecker.js", "Done checking config.json. No errors detected.");    
+                log("info", "Done checking config.json. No errors detected.");    
             }
             return errors !== undefined;
         };

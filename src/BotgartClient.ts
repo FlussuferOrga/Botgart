@@ -45,7 +45,7 @@ export class WvWWatcher extends EventEmitter {
                 currentMatchupInfo.all_worlds.blue);
             dbMatchup = this.db.getCurrentMatchup(now);
             if(dbMatchup == undefined) {
-                Util.log("error", "BotgartClient.js", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
+                Util.log("error", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
             } else {
                 this.emit("new-matchup", { lastMatchup: latestDbMatchup, newMatchup: dbMatchup });    
             }
@@ -123,10 +123,10 @@ export class BotgartClient extends akairo.AkairoClient {
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
                 if(stats === undefined) return;
-                Util.log("debug", "BotgartClient.js", "Starting to write WvWStats.");
+                Util.log("debug", "Starting to write WvWStats.");
                 const match = await this.wvwWatcher.getCurrentMatch();
                 if(match === undefined) {
-                    Util.log("error", "BotgartClient.js", "Could not produce a proper matchup. API might be down.");
+                    Util.log("error", "Could not produce a proper matchup. API might be down.");
                 } else {
                     const snapshotId = this.db.addStatsSnapshot();
                     for await(const mapData of stats.maps) {
@@ -143,14 +143,14 @@ export class BotgartClient extends akairo.AkairoClient {
                         
                     }                    
                 }
-                Util.log("debug", "BotgartClient.js", "Done writing WvWStats.");
+                Util.log("debug", "Done writing WvWStats.");
             });
         });
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 if(match === undefined) return;
-                Util.log("debug", "BotgartClient.js", "Starting to write WvWMatches.");
+                Util.log("debug", "Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 const snapshotId = this.db.addObjectivesSnapshot();
                 const objs = match.maps
@@ -158,7 +158,7 @@ export class BotgartClient extends akairo.AkairoClient {
                             //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                             .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                 this.db.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
-                Util.log("debug", "BotgartClient.js", "Done writing WvWMatches.");
+                Util.log("debug", "Done writing WvWMatches.");
             });
         });
 
@@ -169,7 +169,7 @@ export class BotgartClient extends akairo.AkairoClient {
             if(Util.isa(achievement, achievements.Achievement)) {
                 const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
                 this.registerAchievement(ach);
-                Util.log("info", "Botgart.js", `Registered achievement '${ach.name}'.`);
+                Util.log("info", `Registered achievement '${ach.name}'.`);
             }            
         });
     }
@@ -222,14 +222,14 @@ export class BotgartClient extends akairo.AkairoClient {
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels: string[] = this.db.getLogChannels(guild, type);
         if(channels.length === 0 && disposable === false) {
-            log("debug", "BotgartClient.js", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
+            log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
             const channel: discord.GuildChannel = guild.channels.cache.find(c => c.id === cid);
             if(!channel) {
-                log("error", "BotgartClient.js", "Channel for type '{0}' for guild '{1}' is set to channel '{2}' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
+                log("error", "Channel for type '{0}' for guild '{1}' is set to channel '{2}' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
             } else if(!(channel instanceof discord.TextChannel)) {
-                log("error", "BotgartClient.js", "Channel '{0}' in guild '{1}' to log type '{2}' was found, but appears to be a voice channel. Skipping.".formatUnicorn(cid, guild.name, type));
+                log("error", "Channel '{0}' in guild '{1}' to log type '{2}' was found, but appears to be a voice channel. Skipping.".formatUnicorn(cid, guild.name, type));
             } else {
                 (<discord.TextChannel>channel).send(message);
             }

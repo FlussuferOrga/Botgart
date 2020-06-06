@@ -63,11 +63,11 @@ export class DeleteCron extends BotgartCommand {
             cl.cronjobs[id].cancel();
             delete cl.cronjobs[id];
             canceled = true;
-            log("info", "DeleteCron.js", "Canceled cronjob with ID {0}.".formatUnicorn(id));
+            log("info", "Canceled cronjob with ID {0}.".formatUnicorn(id));
         }
         if(cl.db.deleteCronjob(id)) {
             deletedFromDB = true;
-            log("info", "DeleteCron.js", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
+            log("info", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
         }
         return canceled || deletedFromDB;
     }

@@ -73,21 +73,21 @@ export class Patch {
 
     public async execute(): Promise<void> { 
         if(await this.satisfied()) {
-            log("notice", "Patch.js", "Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name))
+            log("notice", "Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name))
             return;
         }
         if(! await this.checkPreconditions()) {
-            log("error", "Patch.js", "Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name))
+            log("error", "Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name))
             return;
         }
-        log("info", "Patch.js", "Attempting to apply patch {0}.".formatUnicorn(this.constructor.name))
+        log("info", "Attempting to apply patch {0}.".formatUnicorn(this.constructor.name))
         await this.apply();
-        log("info", "Patch.js", "Application finished.")
+        log("info", "Application finished.")
         if(await this.checkPostconditions()) {
-            log("notice", "Patch.js", "Postconditions for patch {0} are met. Committing.".formatUnicorn(this.constructor.name))
+            log("notice", "Postconditions for patch {0} are met. Committing.".formatUnicorn(this.constructor.name))
             await this.commit();
         } else {
-            log("error", "Patch.js", "Postconditions for patch {0} are not met. Rolling back.".formatUnicorn(this.constructor.name))
+            log("error", "Postconditions for patch {0} are not met. Rolling back.".formatUnicorn(this.constructor.name))
             await this.rollback();
         }
     }

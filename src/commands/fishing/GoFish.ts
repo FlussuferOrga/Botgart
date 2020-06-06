@@ -44,7 +44,7 @@ async function image(term: string): Promise<string> {
         const urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
         image = urls.length === 0 ? "" : urls[Math.floor(Math.random() * urls.length)];
     } catch(e) {
-        Util.log("error", "Fish.js", `Error while trying to retrieve random image from Dogpile: ${e}`);
+        Util.log("error", `Error while trying to retrieve random image from Dogpile: ${e}`);
     }
     return image;
 }

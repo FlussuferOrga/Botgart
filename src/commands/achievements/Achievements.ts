@@ -93,7 +93,7 @@ export abstract class Achievement<C> {
 
         const userdata = this.client.db.getUserByDiscordId(discordUser.user);
         if(userdata === undefined) {
-            U.log("warning", "Achievements.js", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
+            U.log("warning", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
@@ -113,7 +113,7 @@ export abstract class Achievement<C> {
                            (<discord.TextChannel>achievementChannel).send({reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
                         }                       
                     } else {
-                        U.log("warning", "Achievements.js", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+                        U.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
                     const role: discord.Role = guild.roles.cache.find(r => r.name === this.getRoleName());
@@ -122,7 +122,7 @@ export abstract class Achievement<C> {
                     } else {
                         guild.roles.create({ data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"})
                           .then(r => discordUser.roles.add(r))
-                          .catch(e => U.log("error", "Achievements.js", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));                    
+                          .catch(e => U.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
                     }
                 }   
             } 
@@ -135,12 +135,12 @@ export abstract class Achievement<C> {
     * If so, they will be awarded, if not, nothing happens.
     */
     public tryAward(discordUser: discord.GuildMember, context: C) {
-        U.log("debug", "Achievement.js", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
+        U.log("debug", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
         if(this.checkCondition(discordUser, context)) {
-            U.log("debug", "Achievement.js", `Success! Awarding achievement to user.`);
+            U.log("debug", `Success! Awarding achievement to user.`);
             this.awardIn(discordUser.guild, discordUser);
         } else {
-            U.log("debug", "Achievement.js", `User did not pass condition.`)
+            U.log("debug", `User did not pass condition.`)
         }
     }
 
@@ -201,7 +201,7 @@ abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
                 if(x.commander.getDiscordMember()) {
                     this.tryAward(x.commander.getDiscordMember(), x);
                 } else {
-                    U.log("warning", "Achievement.js", `Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
+                    U.log("warning", `Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
                 }                
             });
       }
@@ -215,7 +215,7 @@ abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
                 if(x.commander.getDiscordMember()) {
                     this.tryAward(x.commander.getDiscordMember(), x);
                 } else {
-                    U.log("warning", "Achievement.js", `Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
+                    U.log("warning", `Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
                 }    
           });
       }
@@ -394,7 +394,7 @@ export class Annihilator extends ObjectiveAchievement {
         const obj = context.objectives;
         const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(configuration.get().home_id))[0];
         if(ourColour === undefined) {
-          U.log("warning", "Achievements.js", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+          U.log("warning", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
           holds = obj.kills[ourColour]/obj.kills[ourColour] >= 2.0;
         }
@@ -418,7 +418,7 @@ export class NeverSurrender extends TagUpAchievement {
         if(stats) {
             const ourColour = this.client.db.getColourOf(configuration.get().home_id, context.commander.getRaidStart());
             if(ourColour === undefined) {
-                U.log("warning", "Achievements.js", `Unable to find our colour with world ID ${configuration.get().home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
+                U.log("warning", `Unable to find our colour with world ID ${configuration.get().home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
             } else {
                 const ourStats = stats.find(s => s.faction === ourColour);
                 holds = ourStats 
@@ -446,7 +446,7 @@ export class Conqueror extends ObjectiveAchievement {
         const obj = context.objectives;
         const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(configuration.get().home_id))[0];
         if(ourColour === undefined) {
-          U.log("warning", "Achievements.js", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+          U.log("warning", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
             const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives
                                                                            .filter(o => o.owner === ourColour)

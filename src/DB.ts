@@ -159,7 +159,7 @@ export class Database {
             res = f(db);
         } catch(err) {
             res = undefined;
-            Util.log("error", "DB.js", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
+            Util.log("error", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
         }
 
         db.close();
@@ -930,7 +930,7 @@ export class Database {
                     message = await (<discord.TextChannel>channel).messages.fetch(entries[0].message);    
                     postExists = true;
                 } catch(e) {
-                    Util.log("error", "DB.js", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`)
+                    Util.log("error", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`)
                     postExists = false;
                 }
             }            
@@ -1023,7 +1023,7 @@ export class Database {
 
 
     public getGW2Accounts(accnames: [string]): [object] {
-        return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created WHERE gw2account IN (?)`)
+        return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created FROM registrations WHERE gw2account IN (?)`)
                                     .run(accnames.join(",")).all());
     }
 
@@ -1071,7 +1071,7 @@ export class Database {
                         db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
                         return true;
                     } catch(err) {
-                        Util.log("error", "DB.js", "Error while trying to store API key: {0}.".formatUnicorn(err.message));
+                        Util.log("error", "Error while trying to store API key: {0}.".formatUnicorn(err.message));
                         return false;
                     }
                 });
@@ -1100,7 +1100,7 @@ export class Database {
                                     // => remove the validation role from the user
                                     return [r,false];
                                 } else {
-                                    Util.log("error", "DB.js", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
+                                    Util.log("error", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
                                     return undefined;
                                 }
                             }
@@ -1170,7 +1170,7 @@ export class Database {
                         db.prepare(sql).run(guild, user, role);
                         return true;
                     } catch(err) {
-                        Util.log("error", "DB.js", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                        Util.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
                         return false;
                     }
                 });
@@ -1187,7 +1187,7 @@ export class Database {
                         db.prepare(sql).run(guild, user, role);
                         return true;
                     } catch(err) {
-                        Util.log("error", "DB.js", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                        Util.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
                         return false;
                     }
                 });        

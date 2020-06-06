@@ -46,26 +46,26 @@ export class Reauthenticate extends BotgartCommand {
                         g = cl.guilds.cache.find(g => g.id == p.guild);
                     }
                     if(!g) {
-                        log("error", "Reauthenticate.js", `Could not find a guild ${p.guild}. Have I been kicked?`)
+                        log("error", `Could not find a guild ${p.guild}. Have I been kicked?`)
                     } else {
                         admittedRole = g.roles.cache.find(r => r.name === admittedRoleName);
                         currentRole  = g.roles.cache.find(r => r.name === currentRoleName);
                         if(admittedRoleName !== false && !admittedRole) { // false -> no role should be assigned assigned at all
-                            log("error", "Reauthenticate.js", `Can not find a role ${admittedRoleName} to assign.`);
+                            log("error", `Can not find a role ${admittedRoleName} to assign.`);
                         }
                         if(!currentRole) {
-                            log("error", "Reauthenticate.js", `Can not find a role ${currentRoleName} that should be currently used.`);
+                            log("error", `Can not find a role ${currentRoleName} that should be currently used.`);
                         }
                         if((admittedRole || admittedRoleName === false) && currentRole) { // admittedRoleName === false means: user must be unauthed
                             const m: discord.GuildMember = await g.members.fetch(p.user); // cache.find(member => p.user == member.user.id);
                             if(!m) {
-                                log("info", "Reauthenticate.js", `${p.user} is no longer part of the guild. Deleting their key.`);
+                                log("info", `${p.user} is no longer part of the guild. Deleting their key.`);
                                 cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
                                 cl.db.deleteKey(p.api_key);
                             } else {
                                 if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
                                     // user should be pruned: user has either transed (false) or deleted their key (invalid key)
-                                    log("info", "Reauthenticate.js", "Unauthing {0}.".formatUnicorn(m.user.username));
+                                    log("info", "Unauthing {0}.".formatUnicorn(m.user.username));
                                     m.roles.remove(currentRole);
                                     cl.db.deleteKey(p.api_key);
                                     cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
@@ -80,7 +80,7 @@ export class Reauthenticate extends BotgartCommand {
                 });
             }
         );
-        log("info", "Reauthenticate.js", "Reauthentication complete.");      
+        log("info", "Reauthentication complete.");      
     }
 
     postExecHook(message, args, result) {

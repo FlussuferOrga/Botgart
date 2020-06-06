@@ -28,7 +28,7 @@ export class ListCrons extends BotgartCommand {
         assertType(responsible, "User");
         assertType(guild, "Guild");
         if(!responsible) {
-            log("error", "ListCrons.js", "Can not execute lscron without member to reply to. Canceling.");
+            log("error", "Can not execute lscron without member to reply to. Canceling.");
             return;
         }
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
