@@ -1023,7 +1023,7 @@ export class Database {
 
 
     public getGW2Accounts(accnames: [string]): [object] {
-        return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created WHERE gw2account IN (?)`)
+        return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created FROM registrations WHERE gw2account IN (?)`)
                                     .run(accnames.join(",")).all());
     }
 
