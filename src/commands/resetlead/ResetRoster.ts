@@ -265,7 +265,7 @@ export class ResetRoster extends BotgartCommand {
     }
 
     private watchMessage(message: discord.Message, roster: Roster): void {
-        Util.log("debug", "ResetRoster.js", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
+        Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
         message.createReactionCollector(e => 
             this.emotes.includes(e.emoji.name) , {}).on("collect", (r) => {
                 const m = WvWMap.getMapByEmote(r.emoji.name);
@@ -304,7 +304,7 @@ export class ResetRoster extends BotgartCommand {
                 }
             } else {
                 // there is already a roster-post for this guild+week -> do nothing, log warning
-                Util.log("warning", "ResetLead.js", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
+                Util.log("warning", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });

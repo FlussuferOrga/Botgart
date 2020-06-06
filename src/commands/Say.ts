@@ -41,16 +41,16 @@ export class Say extends BotgartCommand {
         let result;
         let g = this.client.guilds.cache.find(g => g.id == guild.id);
         if(!g) {
-            log("error", "Say.js", "I am not a member of guild {0}.".formatUnicorn(guild.id));
+            log("error", "I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
             let c:discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
             if(!c) {
-                log("error", "Say.js", "Can not find a channel {0}.".formatUnicorn(args.channel.id));
+                log("error", "Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
             } else {
                 c.send(args.text);
-                log("info", "Say.js", "Executed Say.");
+                log("info", "Executed Say.");
                 result = true;
             }
         }

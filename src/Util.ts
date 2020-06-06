@@ -241,7 +241,7 @@ export function validateWorld(apikey: string): Promise<string|boolean|number> {
             }
         }),
         err => new Promise((resolve, reject) => {
-            log("error", "Util.js", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
+            log("error", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
             if(err.content.text === "invalid key") {
                 return reject(exports.validateWorld.ERRORS.invalid_key);
             } else {
@@ -281,16 +281,16 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
     if(currentRole !== null) {
         // remove currentRole
         member.roles.remove(currentRole).then(
-            ()    => log("info", "Util.js", "Removed role {0} from user {1}".formatUnicorn(currentRole.name, member.displayName)),
-            (err) => log("error", "Util.js", "Error while removing role {0} from user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
+            ()    => log("info", "Removed role {0} from user {1}".formatUnicorn(currentRole.name, member.displayName)),
+            (err) => log("error", "Error while removing role {0} from user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
         );
     }
 
     if(admittedRole !== null) {
         // assign admittedRole
         member.roles.add(admittedRole).then(
-            ()    => log("info", "Util.js", "Gave role {0} to user {1}".formatUnicorn(admittedRole.name, member.displayName)),
-            (err) => log("error", "Util.js", "Error while giving role {0} to user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
+            ()    => log("info", "Gave role {0} to user {1}".formatUnicorn(admittedRole.name, member.displayName)),
+            (err) => log("error", "Error while giving role {0} to user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
         );
     }
     return admittedRole;
@@ -380,12 +380,12 @@ export function resolveMatchColour(worldId: number): Promise<"red"|"blue"|"green
                 .map(k => matchUp.all_worlds[k].includes(worldId) ? k : null)
                 .filter(x => x !== null)
             if(home.length !== 1) {
-                log("error", "Util.js", "Expected to find world with ID = {0} in exactly one team. But found it in {1} teams.".formatUnicorn(worldId, home.length));    
+                log("error", "Expected to find world with ID = {0} in exactly one team. But found it in {1} teams.".formatUnicorn(worldId, home.length));    
             }
             return home[0];
         },
         err => {
-            log("error", "Util.js", "Error '{0}' when trying to resolve colour for world with ID = {1}".formatUnicorn(err.content.text, worldId));
+            log("error", "Error '{0}' when trying to resolve colour for world with ID = {1}".formatUnicorn(err.content.text, worldId));
             return null;
         }
     );
@@ -466,8 +466,8 @@ const logger = winston.createLogger({
     })
   ]
 });
-export function log(level: string, label: string, message: string): winston.Logger {
-    const callFile = callsites()[0].getFileName().split("/");
+export function log(level: string, message: string): winston.Logger {
+    const callFile = callsites()[1].getFileName().split("/");
     const file = callFile[callFile.length - 1];
     return logger.log({
         "label": file, // label,

@@ -81,7 +81,7 @@ export class MakeCron extends BotgartCommand {
                                                 message.member.user.id, 
                                                 message.guild.id);
                     cl.cronjobs[cid] = job;
-                    log("info", "MakeCron.js", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
+                    log("info", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
                     return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
                 }
             }
@@ -100,17 +100,17 @@ export class MakeCron extends BotgartCommand {
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             let guild = this.client.guilds.cache.find(g => g.id == cron.guild);
             if(!guild) {
-                log("error", "MakeCron.js", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
+                log("error", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id));
             } else {
                 const responsible: discord.GuildMember = await guild.members.fetch(cron.created_by); // cache.find(m => m.user.id == cron.created_by);
                 let job;
                 if(!responsible) {
-                    log("warn", "MakeCron.js", "Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(cron.created_by, cron.id, guild.name));
+                    log("warn", "Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(cron.created_by, cron.id, guild.name));
                 } else {
                     job = this.scheduleCronjob(cron.schedule, responsible.user, guild, mod, args);
                 }
                 if(!job) {
-                    log("error", "MakeCron.js", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
+                    log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
                 } else {
                     if(cron.id in cl.cronjobs && cl.cronjobs[cron.id]) {
                         // just to be safe, cancel any remaining jobs before rescheduling them
@@ -118,11 +118,11 @@ export class MakeCron extends BotgartCommand {
                     }
                     cl.cronjobs[cron.id] = job;
                     croncount++;
-                    log("info", "MakeCron.js", "Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command));
+                    log("info", "Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command));
                 }
             }
         });
-        log("info", "MakeCron.js", "Done rescheduling {0} cronjobs.".formatUnicorn(croncount));
+        log("info", "Done rescheduling {0} cronjobs.".formatUnicorn(croncount));
         return croncount;
     }
 

@@ -11,7 +11,7 @@ import * as db from "./DB";
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
-const RECONNECT_TIMER_MS = 30000; 
+const RECONNECT_TIMER_MS = 3000; 
 
 export interface TagDown {
     readonly guild: discord.Guild;
@@ -58,7 +58,7 @@ export class TS3Connection {
                 this.buffer.enq(message);
             }    
         }
-        //log("debug", "TS3Connection.js", `${this.name} Sending ${message}, ${sent}`);
+        //log("debug", `${this.name} Sending ${message}, ${sent}`);
         return sent;
     }
 
@@ -91,18 +91,18 @@ export class TS3Connection {
         const that = this;
 
         this.socket.on("connect", () => {
-            log("info", "TS3Connection.js", "Successfully connected {0} to TS3-Bot on {1}:{2}".formatUnicorn(that.name, that.ip, that.port));
+            log("info", "Successfully connected {0} to TS3-Bot on {1}:{2}".formatUnicorn(that.name, that.ip, that.port));
             that.connected = true;
             while(this.buffer.size() > 0) {
-                log("debug", "TS3Connection.js", "Emptying buffer after re-establishing connection to TS3-Bot.");
+                log("debug", "Emptying buffer after re-establishing connection to TS3-Bot.");
                 this.socket.write(this.buffer.deq()); // directly use the socket.write method to avoid endless loops when the socket is already broken again
             }
         });
 
         this.socket.on("close", () => {
             that.connected = false;
-            log("info", "TS3Connection.js", "(Re)connection to TS3-Bot failed. Will attempt to reconnect {0} in {1} milliseconds".formatUnicorn(that.name, RECONNECT_TIMER_MS));
-            setTimeout(async () =>  await this.connect().catch(e => log("info", "TS3Connection.js", `TS3 socket closed. Probably reconnecting after ${RECONNECT_TIMER_MS}ms.`)), RECONNECT_TIMER_MS);
+            log("info", "(Re)connection to TS3-Bot failed. Will attempt to reconnect {0} in {1} milliseconds".formatUnicorn(that.name, RECONNECT_TIMER_MS));
+            setTimeout(async () =>  await this.connect().catch(e => log("info", `TS3 socket closed. Probably reconnecting after ${RECONNECT_TIMER_MS}ms.`)), RECONNECT_TIMER_MS);
         });
 
         this.socket.on("error", (e) => {
@@ -111,12 +111,12 @@ export class TS3Connection {
                 // the server may reject one with error EALREADY, which means
                 // another connection is in the process of connecting. 
                 // In that case, we just wait a bit and retry (caught through onclose)
-                log("info", "TS3Connection.js", "Lockout during TS3Connections. Reconnecting {0} shortly.".formatUnicorn(that.name));
+                log("info", "Lockout during TS3Connections. Reconnecting {0} shortly.".formatUnicorn(that.name));
             } else if(e.message.includes("ECONNREFUSED")) {
-                log("info", "TS3Connection.js", "TS3Bot is currently not reachable. Is the bot down? Attempting to connect again shortly.".formatUnicorn(that.name));
+                log("info", "TS3Bot is currently not reachable. Is the bot down? Attempting to connect again shortly.".formatUnicorn(that.name));
             }
             else {
-                log("info", "TS3Connection.js", `Error in socket: ${e}.`);
+                log("info", `Error in socket: ${e}.`);
             }
             
         }); 
@@ -276,7 +276,7 @@ export class CommanderStorage {
         if(this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
             this.commanders.push(commander);    
         } else {
-            log("warning", "TS3Connection.js", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);           
+            log("warning", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);           
         } 
     }
 
@@ -344,19 +344,19 @@ export class TS3Listener extends events.EventEmitter {
             try {
                 data = JSON.parse(raw.toString());
             } catch(e) {
-                log("error", "TS3Listener.js", `Received malformed message from TS: ${raw.toString()}. Aborting handling.`);
+                log("error", `Received malformed message from TS: ${raw.toString()}. Aborting handling.`);
                 return;
             }
             
-            log("debug", "TS3Listener.js", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
+            log("debug", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             // COMMANDERS BROADCAST
             if(data.constructor == Object && "commanders" in data) {
-                log("debug", "TS3Listener.js", "Received commanders from TS-Bot.");
+                log("debug", "Received commanders from TS-Bot.");
                 const now: moment.Moment = moment.utc();
-                log("debug", "TS3Listener.js", `It is now ${now}`);
-                log("debug", "TS3Listener.js", "Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
+                log("debug", `It is now ${now}`);
+                log("debug", "Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
                 const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
-                log("debug", "TS3Listener.js", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
+                log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
                 that.botgartClient.guilds.cache.forEach(g => {
                     data.commanders.forEach(c => {
                         const account  = c.account_name; // for lookup
@@ -370,7 +370,7 @@ export class TS3Listener extends events.EventEmitter {
                             commander = new Commander(account, username, uid, channel);
                             commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
                             that.botgartClient.commanders.addCommander(commander);
-                            log("debug", "TS3Listener.js", `Moving newly discovered ${username} to TAG_UP state.`);
+                            log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
                         }
 
                         const elapsed = now.valueOf() - commander.getLastUpdate().valueOf();
@@ -383,7 +383,7 @@ export class TS3Listener extends events.EventEmitter {
                                     commander.setState(CommanderState.COMMANDER);
                                     commander.setTS3Channel(channel);
                                     that.tagUp(g, commander);
-                                    log("debug", "TS3Listener.js", `Moving ${username} from TAG_UP to COMMANDER state.`);
+                                    log("debug", `Moving ${username} from TAG_UP to COMMANDER state.`);
                                 }
                             break;
 
@@ -392,7 +392,7 @@ export class TS3Listener extends events.EventEmitter {
                                 if(elapsed > that.userDelay) {
                                     commander.setLastUpdate(now);
                                     commander.setState(CommanderState.TAG_UP);
-                                    log("debug", "TS3Listener.js", `Moving ${username} from COOLDOWN to TAG_UP state.`);
+                                    log("debug", `Moving ${username} from COOLDOWN to TAG_UP state.`);
                                 }
                             break;
 
@@ -402,10 +402,10 @@ export class TS3Listener extends events.EventEmitter {
                                 if(elapsed > that.userDelay) {
                                     commander.setLastUpdate(now);
                                     commander.setState(CommanderState.TAG_UP);
-                                    log("debug", "TS3Listener.js", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
+                                    log("debug", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
                                 } else {
                                     commander.setState(CommanderState.COOLDOWN);
-                                    log("debug", "TS3Listener.js", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
+                                    log("debug", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
                                 }
                             break;
 
@@ -419,11 +419,11 @@ export class TS3Listener extends events.EventEmitter {
                         commander.setLastUpdate(now);
                         commander.setState(CommanderState.TAG_DOWN);
                         that.tagDown(g, commander);
-                        log("debug", "TS3Listener.js", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
+                        log("debug", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
                     });
                 });
             } else {
-                log("warning", "TS3Listener.js", `The above data received from TS-Bot could not be processed as it did not match any known command.`);
+                log("warning", `The above data received from TS-Bot could not be processed as it did not match any known command.`);
             }
         });
     }
@@ -436,14 +436,14 @@ export class TS3Listener extends events.EventEmitter {
     */
     private async tagUp(g: discord.Guild, commander: Commander) {
         let displayname = commander.getTS3DisplayName();
-        log("info", "TS3Listener.js", `Tagging up ${displayname} in ${g.name}.`);
+        log("info", `Tagging up ${displayname} in ${g.name}.`);
         const registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
         if(registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
             const duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(duser === undefined) {
-                log("warning", "TS3Listener.js", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
+                log("warning", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
             }
             commander.setDiscordMember(duser);
             if(crole && commander.getDiscordMember()) {
@@ -455,7 +455,7 @@ export class TS3Listener extends events.EventEmitter {
         // broadcast the message                    
         const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
         if(!dchan) {
-            log("warning", "TS3Listener.js", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
+            log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
             const mes: string = L.get("COMMANDER_TAG_UP", [displayname, commander.getTS3Channel(), pingRole ? pingRole.toString() : ""]);
@@ -484,9 +484,9 @@ export class TS3Listener extends events.EventEmitter {
             const crole: discord.Role = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(crole && dmember) {
-                log("info", "TS3Listener.js", `Tagging down ${dmember.displayName} in ${g.name}.`);
+                log("info", `Tagging down ${dmember.displayName} in ${g.name}.`);
                 dmember.roles.remove(crole).catch(e => {
-                    log("warning", "TS3Listener.js", `Could not remove role '${this.commanderRole}' from user '${dmember.displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
+                    log("warning", `Could not remove role '${this.commanderRole}' from user '${dmember.displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
             }
             // do not write leads of members which hide their roles

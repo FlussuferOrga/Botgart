@@ -64,7 +64,7 @@ export class Permit extends BotgartCommand {
         const perm = (<BotgartClient>this.client).db.setPermission(cmd, receiver, type, value, message.guild.id);
         this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm])).then(
             () => {},
-            (err) => log("error", "PermitCommand.js", err.message)
+            (err) => log("error", err.message)
         );
     }
 }

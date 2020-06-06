@@ -24,7 +24,7 @@ export class ListFaqs extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!responsible) {
-            log("error", "ListFAQs.js", "Can not execute lsfaqs without member to reply to. Canceling.");
+            log("error", "Can not execute lsfaqs without member to reply to. Canceling.");
             return;
         }
         let format: string = "{0} | {1}";
