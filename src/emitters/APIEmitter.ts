@@ -1,6 +1,6 @@
-import { configuration } from "../config/Config";
-import { api } from "../Util";
 import * as events from "events"
+import { configuration } from "../config/Config";
+import { api } from "../Gw2ApiUtils";
 
 
 enum WvWMapNames {

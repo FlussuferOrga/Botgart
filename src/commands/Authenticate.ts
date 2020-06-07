@@ -1,8 +1,9 @@
-import * as Util from "../Util";
-import * as L from "../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
+import { getAccountGUID, getAccountName, validateWorld } from "../Gw2ApiUtils";
+import * as L from "../Locale";
+import * as Util from "../Util";
 
 /**
 Testcases:
@@ -72,24 +73,24 @@ export class Authenticate extends BotgartCommand {
                 }
             }
             const cl: BotgartClient = this.getBotgartClient();
-            Util.validateWorld(args.key).then(
+            validateWorld(args.key).then(
                 role => {
                     if(role === false) {
                         Util.log("info", "Declined API key {0}.".formatUnicorn(args.key));
                         reply = L.get("KEY_DECLINED");
                         responsible.send(reply);                    
                     } else {
-                        Util.getAccountGUID(args.key).then(async guid => {
+                        getAccountGUID(args.key).then(async guid => {
                             await Util.asyncForEach(members, async (m: {guild: discord.Guild, member: discord.GuildMember}) => {
                                 let r: discord.Role = m.guild.roles.cache.find(r => r.name === role);
                                 if(!r) {
                                     Util.log("error", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
-                                    let accountName: string | boolean = await Util.getAccountName(args.key);
+                                    let accountName: string | boolean = await getAccountName(args.key);
                                     let i = 3;
                                     while(accountName === false && i > 0) {
-                                        accountName = await Util.getAccountName(args.key);
+                                        accountName = await getAccountName(args.key);
                                         i--;
                                     }
                                     if(accountName === false) {
@@ -118,15 +119,15 @@ export class Authenticate extends BotgartCommand {
                     }
                 }, err => {
                     switch(err) {
-                        case Util.validateWorld.ERRORS.config_world_duplicate:
+                        case validateWorld.ERRORS.config_world_duplicate:
                             Util.log("error", "A world is defined more than once in the config. Please fix the config file.");  
                             responsible.send(L.get("INTERNAL_ERROR"));
                             break;
-                        case Util.validateWorld.ERRORS.network_error:
+                        case validateWorld.ERRORS.network_error:
                             Util.log("error", "Network error while trying to resolve world.");
                             responsible.send(L.get("INTERNAL_ERROR"));
                             break;
-                         case Util.validateWorld.ERRORS.invalid_key:
+                         case validateWorld.ERRORS.invalid_key:
                             Util.log("error", "Invalid key: {0}".formatUnicorn(args.key));
                             responsible.send(L.get("KEY_DECLINED"));
                             break;

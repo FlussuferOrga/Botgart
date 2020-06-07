@@ -1,6 +1,7 @@
 import express, { Express } from "express";
 import * as http from "http";
 import { configuration } from "./config/Config";
+import { log } from "./Util";
 
 // Create a new express app instance
 
@@ -22,7 +23,7 @@ export class WebServer {
     public start() {
         let httpConfig = configuration.get().http;
         this.server = this.app.listen(parseInt(httpConfig.port), httpConfig.host, function () {
-            console.log(`Listening on ${httpConfig.host}:${httpConfig.port} .`);
+            log("info",`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
         });
     }
 

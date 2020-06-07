@@ -1,7 +1,7 @@
 import { Listener } from "discord-akairo";
-import { log } from "../Util";
 import { BotgartClient } from "../BotgartClient";
 import { MakeCron } from "../commands/cron/MakeCron";
+import { log } from "../Util";
 
 export class Startup extends Listener {
     constructor() {
@@ -14,8 +14,6 @@ export class Startup extends Listener {
     exec() {
         log("info", "Bot started!");
         let cl: BotgartClient = <BotgartClient>this.client;
-        cl.db.initSchema();
-        log("info", "Database initialised.");
         log("info", "Rescheduling cronjobs from database.");
         (<MakeCron>cl.commandHandler.modules.get("makecron")).rescheduleCronjobs();
         let help = cl.commandHandler.modules.get("help").id;

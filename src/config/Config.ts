@@ -1,6 +1,6 @@
 import convict from "convict";
-import * as Util from "../Util";
 import fs from 'fs';
+import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 
 let configSchema = {
@@ -63,7 +63,7 @@ let configSchema = {
     token: {
         format: val => {
             if (/.+$/.test(val) === false) {
-                throw new Error(`Token '${val.first_name}' is not a valid discord prefix`);
+                throw new Error(`Token '${val.first_name}' is not a valid discord token`);
             }
         },
         default: '',
@@ -227,7 +227,6 @@ function logConfig(config: convict.Config<any>) {
 
     //probably we shouldn't log a token.
     configJsonString = configJsonString.replace(config.get("token"), "***REDACTED***")
-
-    Util.log("info", `Resolved Configuration:\n${configJsonString}`);
+    Util.log("debug", `Resolved Configuration:\n${configJsonString}`);
 }
 

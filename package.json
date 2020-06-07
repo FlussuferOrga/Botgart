@@ -6,8 +6,8 @@
   "scripts": {
     "test": "mocha -r ts-node/register src/tests/**/*.test.ts",
     "build": "node ./node_modules/typescript/bin/tsc",
-    "run": "node ./built/index.js",
-    "run-patchall": "node ./built/index.js --patchall"
+    "run": "npm run build && node ./built/index.js",
+    "run-patchall": "npm run build && node ./built/index.js --patchall"
   },
   "author": "Daniel O'Grady",
   "license": "ISC",

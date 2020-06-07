@@ -1,12 +1,22 @@
-import { configuration } from "./config/Config";
-import * as Util from "./Util";
+import { Semaphore } from "await-semaphore";
+import Timeout from "await-timeout";
 import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
+import * as moment from "moment";
 import { PermissionTypes } from "./BotgartCommand";
 import * as ResetLead from "./commands/resetlead/ResetRoster";
-import Timeout from "await-timeout";
-import { Semaphore } from "await-semaphore";
-import * as moment from "moment";
+import { configuration } from "./config/Config";
+import * as Gw2ApiUtils from "./Gw2ApiUtils";
+import * as Util from "./Util";
+import { log } from "./Util";
+
+export function initialize(databaseFilePath: string = "./db/database.db") {
+    const database = new Database(databaseFilePath);
+    database.initSchema();
+    log("info", "Database initialised.");
+    return database;
+}
+
 
 const REAUTH_DELAY : number = 10000;
 const REAUTH_MAX_PARALLEL_REQUESTS : number = 2;
@@ -1087,10 +1097,10 @@ export class Database {
                 db.prepare(`SELECT api_key, guild, user, registration_role, account_name FROM registrations ORDER BY guild`).all()
                     .map(async r => {
                         let release = await semaphore.acquire();
-                        let res = await Util.validateWorld(r.api_key).then(
+                        let res = await Gw2ApiUtils.validateWorld(r.api_key).then(
                             admittedRole => [r, admittedRole],
                             error => {
-                                if(error === Util.validateWorld.ERRORS.invalid_key) {
+                                if(error === Gw2ApiUtils.validateWorld.ERRORS.invalid_key) {
                                     // while this was an actual error when initially registering (=> tell user their key is invalid),
                                     // in the context of revalidation this is actually a valid case: the user must have given a valid key
                                     // upon registration (or else it would not have ended up in the DB) and has now deleted the key

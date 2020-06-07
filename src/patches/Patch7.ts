@@ -1,5 +1,5 @@
-import { Database } from "../DB.js";
-import { DBPatch } from "./DBPatch.js";
+import { Database } from "../DB";
+import { DBPatch } from "./DBPatch";
 
 /**
 * Adds the year column to the reset_roster table

@@ -1,7 +1,8 @@
-import { getAccountName, log } from "../Util";
-import { Database } from "../DB.js";
-import { DBPatch } from "./DBPatch.js";
 import { Semaphore } from "await-semaphore";
+import { Database } from "../DB";
+import { getAccountName } from "../Gw2ApiUtils";
+import { log } from "../Util";
+import { DBPatch } from "./DBPatch";
 
 /**
 * Adds the account-name column to the registrations table and populates it.

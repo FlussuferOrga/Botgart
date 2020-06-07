@@ -1,8 +1,8 @@
-import { configuration } from "../config/Config";
 import { Listener } from "discord-akairo";
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
-import * as U from "../Util.js";
+import { configuration } from "../config/Config";
+import * as U from "../Util";
 
 export class IgnoringRolesListener extends Listener {
     constructor() {
