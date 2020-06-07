@@ -81,7 +81,6 @@ export class BotgartClient extends akairo.AkairoClient {
         this.ts3listener = new TS3Listener(this);
         this.wvwWatcher = new WvWWatcher(this.db, Util.api);
         this.ts3connection = new TS3Connection(configuration.get().ts_listener.ip, configuration.get().ts_listener.port, "MainConnection");
-        this.ts3connection.exec();
         //this.options = options;
         
         this.commandHandler = new akairo.CommandHandler(this, {
