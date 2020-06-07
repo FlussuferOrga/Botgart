@@ -1,4 +1,4 @@
-import {configuration} from "../Config";
+import {configuration} from "../config/Config";
 import {Listener} from "discord-akairo";
 import * as discord from "discord.js";
 import {BotgartClient} from "../BotgartClient";

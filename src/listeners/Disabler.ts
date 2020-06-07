@@ -1,4 +1,4 @@
-import {configuration} from "../Config";
+import {configuration} from "../config/Config";
 import {Listener} from "discord-akairo";
 import {log} from "../Util";
 import {BotgartClient} from "../BotgartClient";

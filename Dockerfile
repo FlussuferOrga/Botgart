@@ -20,7 +20,7 @@ FROM base AS build
 # copy production node_modules
 COPY --from=dependencies /app/node_modules /app/node_modules
 COPY . .
-RUN ./node_modules/typescript/bin/tsc
+RUN npm run build
 
 # ---- final ----
 FROM base AS final

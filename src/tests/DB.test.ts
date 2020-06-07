@@ -3,7 +3,7 @@ import * as U from "../Util";
 import {Client, Guild, TextChannel, Message} from 'discord.js';
 import * as DB from "../DB";
 
-const db = new DB.Database("./db/database.db", null);
+const db = new DB.Database("./db/database.db");
 const testGuild = "00000";
 
 db.execute(db => db.prepare("DELETE FROM environment_variables WHERE guild = ?").run(testGuild));

@@ -1,4 +1,4 @@
-import {configuration} from "../Config";
+import {configuration} from "../config/Config";
 import * as L from "../Locale";
 import * as discord from "discord.js";
 import {BotgartCommand} from "../BotgartCommand";

@@ -10,7 +10,7 @@ import { EventEmitter } from "events";
 import * as Util from "./Util";
 import * as moment from "moment";
 import * as achievements from "./commands/achievements/Achievements";
-import {configuration} from "./Config";
+import {configuration} from "./config/Config";
 
 export class WvWWatcher extends EventEmitter {
     private db: db.Database;
@@ -34,7 +34,7 @@ export class WvWWatcher extends EventEmitter {
         let dbMatchup: db.Matchup = this.db.getCurrentMatchup(now);
         if(dbMatchup === undefined) {
             const latestDbMatchup: db.Matchup = this.db.getLatestMatchup();
-            const currentMatchupInfo = await this.api.wvw().matches().overview().world(configuration.get().home_id);
+            const currentMatchupInfo = await this.api.wvw().matches().overview().world((await configuration).get().home_id);
             const tier = currentMatchupInfo.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
             this.db.addMatchup(
                 tier,
@@ -72,7 +72,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
     constructor(options, clientoptions, dbfile) {
         super(options, clientoptions);
-        this.db = new db.Database(dbfile, this);
+        this.db = new db.Database(dbfile);
         this.cronjobs = {};
         this.rosters = {};
         this.achievements = {};

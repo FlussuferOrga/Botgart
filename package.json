@@ -4,7 +4,10 @@
   "description": "Discord bot for Riverside Discord server",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register src/tests/**/*.test.ts"
+    "test": "mocha -r ts-node/register src/tests/**/*.test.ts",
+    "build": "./node_modules/typescript/bin/tsc",
+    "run": "node ./built/index.js",
+    "run-patchall": "node ./built/index.js --patchall"
   },
   "author": "Daniel O'Grady",
   "license": "ISC",
