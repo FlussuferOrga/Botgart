@@ -1,8 +1,9 @@
-import { assignServerRole, formatUserPing, log, validateWorld } from "../Util";
-import * as L from "../Locale";
+import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
-import * as discord from "discord.js";
+import { validateWorld } from "../Gw2ApiUtils";
+import * as L from "../Locale";
+import { assignServerRole, formatUserPing, log } from "../Util";
 
 /**
 Testcases:

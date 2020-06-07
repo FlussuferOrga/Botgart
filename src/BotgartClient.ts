@@ -1,16 +1,17 @@
 import * as akairo from "discord-akairo"
-import { BotgartCommand } from "./BotgartCommand.js"
-import * as db from "./DB.js"
 import * as discord from "discord.js"
-import { log } from "./Util.js"
-import { Roster } from "./commands/resetlead/ResetRoster"
-import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
-import { APIEmitter } from "./emitters/APIEmitter"
 import { EventEmitter } from "events";
-import * as Util from "./Util";
 import * as moment from "moment";
+import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
+import { Roster } from "./commands/resetlead/ResetRoster"
 import { configuration } from "./config/Config";
+import * as db from "./DB"
+import { APIEmitter } from "./emitters/APIEmitter"
+import { api } from "./Gw2ApiUtils";
+import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
+import * as Util from "./Util";
+import { log } from "./Util";
 
 export class WvWWatcher extends EventEmitter {
     private db: db.Database;
@@ -70,16 +71,16 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly inhibitorHandler: akairo.InhibitorHandler;
     //public readonly options;
 
-    constructor(options, clientoptions, dbfile) {
+    constructor(options, clientoptions, db: db.Database) {
         super(options, clientoptions);
-        this.db = new db.Database(dbfile);
+        this.db = db;
         this.cronjobs = {};
         this.rosters = {};
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
-        this.wvwWatcher = new WvWWatcher(this.db, Util.api);
+        this.wvwWatcher = new WvWWatcher(this.db, api);
         this.ts3connection = new TS3Connection(configuration.get().ts_listener.ip, configuration.get().ts_listener.port, "MainConnection");
         //this.options = options;
         
@@ -153,23 +154,21 @@ export class BotgartClient extends akairo.AkairoClient {
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 const snapshotId = this.db.addObjectivesSnapshot();
                 const objs = match.maps
-                            .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
-                            //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
-                            .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
+                    .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
+                    //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+                    .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                 this.db.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
                 Util.log("debug", "Done writing WvWMatches.");
             });
         });
 
-        Util.loadModuleClasses("built/commands/achievements/Achievements.js", [this], ["Achievement"]).forEach(achievement => {
-            // instanceof doesn't seem to work on dynamically loaded classes anymore?
-            // See doc of Util.isa.
-            //if(achievement instanceof achievements.Achievement) {
-            if(Util.isa(achievement, achievements.Achievement)) {
-                const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
-                this.registerAchievement(ach);
-                Util.log("info", `Registered achievement '${ach.name}'.`);
-            }            
+        let achievementsList = Util.loadModuleClasses(__dirname+"/commands/achievements/Achievements.js", [this], ["Achievement"])
+            .filter(value => Util.isa(value, achievements.Achievement))
+            .map(value => <achievements.Achievement<any>>value);
+        Util.log("info", `Registering achievements: [${achievementsList.map(value => value.name).join(", ")}].`);
+        achievementsList.forEach(achievement => {
+            const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
+            this.registerAchievement(ach);
         });
     }
 

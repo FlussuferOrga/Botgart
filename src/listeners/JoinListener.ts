@@ -1,5 +1,5 @@
 import { Listener } from "discord-akairo";
-import * as L from "../Locale.js";
+import * as L from "../Locale";
 
 export class JoinListener extends Listener {
     constructor() {

@@ -1,6 +1,6 @@
-import { Database } from "../DB.js";
-import { Patch } from "./Patch.js";
 import * as sqlite3 from "better-sqlite3";
+import { Database } from "../DB";
+import { Patch } from "./Patch";
 
 export class DBPatch extends Patch {
     protected db: Database;
@@ -43,5 +43,9 @@ export class DBPatch extends Patch {
 
     protected dbrollback(): void {
         this.connection.prepare("ROLLBACK").run();
+    }
+
+    public close(): void {
+        this.connection.close();
     }
 }
