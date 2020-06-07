@@ -1,7 +1,6 @@
-import * as L from "../../Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
+import * as L from "../../Locale";
 
 /**
 Testcases:
@@ -29,7 +28,7 @@ export class GetFaq extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
-        let faq = (<BotgartClient>this.client).db.getFAQ(args.key, guild.id);
+        let faq = this.getBotgartClient().faqRepository.getFAQ(args.key, guild.id);
         let response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
         this.reply(message, responsible, response);
     }

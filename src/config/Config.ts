@@ -3,7 +3,7 @@ import fs from 'fs';
 import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 
-let configSchema = {
+const configSchema = {
     prefix: {
         doc: 'Prefix to use in discord',
         format: val => {
@@ -207,19 +207,38 @@ let configSchema = {
     }
 };
 
-export const configuration = loadConfiguration();
+let cachedConfig; //store loaded config
+/**
+ * This is preserves the implicit typing of the cached value.
+ * @param fn
+ */
+function singleton<T extends Function>(fn: T): T {
+    if (cachedConfig == null) {
+        cachedConfig = fn();
+    }
+    return cachedConfig
+}
+
+export function getConfig() {
+    return singleton(loadConfiguration)();
+}
 
 function loadConfiguration() {
-    const config = convict(configSchema);
+    try {
+        const config = convict(configSchema);
 
-    if (fs.existsSync("./config.json")) {
-        config.loadFile("./config.json");
+        if (fs.existsSync("./config.json")) {
+            config.loadFile("./config.json");
+        }
+
+        logConfig(config);
+        config.validate({allowed: 'strict'});// throws error if config does not conform to schema
+
+        return config;
+    } catch (e) {
+        Util.log("error", "Could not load configuration: " + e)
+        process.exit(1)
     }
-
-    logConfig(config);
-    config.validate({allowed: 'strict'});// throws error if config does not conform to schema
-
-    return config;
 }
 
 function logConfig(config: convict.Config<any>) {

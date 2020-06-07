@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
-import * as db from "../../DB";
+import { FishLadderEntry } from "../../repositories/FishingRepository";
 
 /**
 Testcases:
@@ -30,7 +30,7 @@ export class FishingLadder extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const length = 10;
-        const ladder: db.FishLadderEntry[] = this.getBotgartClient().db.fishLadder(length);
+        const ladder: FishLadderEntry[] = this.getBotgartClient().fishingRepository.fishLadder(length);
 
         Promise.all(ladder.map(fle => this.client.users.fetch(fle.user)
                                                  .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))

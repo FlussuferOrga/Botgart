@@ -1,7 +1,7 @@
-import { configuration } from "../config/Config";
-import * as L from "../Locale";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
+import { getConfig } from "../config/Config";
+import * as L from "../Locale";
 
 
 /**
@@ -25,7 +25,7 @@ export class DeleteTsRegistration extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const gw2account: string = args.gw2account;
-        if(configuration.get().ts_unregister_protection.includes(gw2account)) {
+        if(getConfig().get().ts_unregister_protection.includes(gw2account)) {
             this.reply(message, responsible, L.get("TS_UNREGISTER_PROTECTION"));
         } else {
             this.getBotgartClient().getTS3Connection().delete("user", {"gw2account": gw2account});

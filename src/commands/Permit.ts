@@ -1,8 +1,7 @@
-import { log } from "../Util";
-import * as L from "../Locale";
 import * as discord from "discord.js";
 import { BotgartCommand, PermissionTypes } from "../BotgartCommand";
-import { BotgartClient } from "../BotgartClient";
+import * as L from "../Locale";
+import { log } from "../Util";
 
 /**
 Testcases:
@@ -59,7 +58,7 @@ export class Permit extends BotgartCommand {
         const type = (args.receiver instanceof discord.Role) ? PermissionTypes.role : PermissionTypes.user;
         const receiverName = (args.receiver instanceof discord.Role) ? args.receiver.name : args.receiver.displayName;
         const value = args.value;
-        const perm = (<BotgartClient>this.client).db.setPermission(cmd, receiver, type, value, message.guild.id);
+        const perm = this.getBotgartClient().commandPermissionRepository.setPermission(cmd, receiver, type, value, message.guild.id);
         this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm])).then(
             () => {},
             (err) => log("error", err.message)

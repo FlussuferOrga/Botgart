@@ -1,8 +1,7 @@
-import { assertType, log } from "../../Util";
-import * as Const from "../../Const";
-import { BotgartClient } from "../../BotgartClient";
-import { BotgartCommand } from "../../BotgartCommand";
 import * as discord from "discord.js";
+import { BotgartCommand } from "../../BotgartCommand";
+import * as Const from "../../Const";
+import { assertType, log } from "../../Util";
 
 /**
 Testcases:
@@ -32,7 +31,7 @@ export class ListCrons extends BotgartCommand {
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
         let header = format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") + "\n";
         let mes = header;
-        (<BotgartClient>this.client).db.getCronjobs().forEach((cron) => {
+        this.getBotgartClient().cronjobRepository.getCronjobs().forEach((cron) => {
             let line = format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
             if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
                 // leave some space for the backticks and additional linebreaks

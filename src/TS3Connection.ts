@@ -1,13 +1,13 @@
-import { configuration } from "./config/Config";
-import { log } from "./Util";
 import CircularBuffer from "circular-buffer";
-import * as moment from "moment";
-import * as L from "./Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "./BotgartClient";
 import * as events from "events";
-import * as db from "./DB";
 import * as http from "http";
+import * as moment from "moment";
+import { BotgartClient } from "./BotgartClient";
+import { getConfig } from "./config/Config";
+import * as L from "./Locale";
+import { Registration } from "./repositories/RegistrationRepository";
+import { log } from "./Util";
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
@@ -16,13 +16,13 @@ const RECONNECT_TIMER_MS = 3000;
 export interface TagDown {
     readonly guild: discord.Guild;
     readonly commander: Commander,
-    readonly dbRegistration: db.Registration
+    readonly dbRegistration: Registration
 }
 
 export interface TagUp {
     readonly guild: discord.Guild,
     readonly commander: Commander,
-    readonly dbRegistration: db.Registration
+    readonly dbRegistration: Registration
 }
 
 interface TS3Commander {
@@ -273,13 +273,13 @@ export class CommanderStorage {
 export interface TagUpEvent {
    readonly guild: discord.Guild;
    readonly commander: Commander;
-   readonly dbRegistration: db.Registration;
+   readonly dbRegistration: Registration;
 }
 
 export interface TagDownEvent {
    readonly guild: discord.Guild;
    readonly commander: Commander;
-   readonly dbRegistration: db.Registration;
+   readonly dbRegistration: Registration;
 }
 
 /**
@@ -303,7 +303,7 @@ export class TS3Listener extends events.EventEmitter {
     constructor(bgclient: BotgartClient) {
         super();
 
-        const config = configuration.get();
+        const config = getConfig().get();
 
         this.botgartClient = bgclient;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
@@ -404,7 +404,7 @@ export class TS3Listener extends events.EventEmitter {
     private async tagUp(g: discord.Guild, commander: Commander) {
         let displayname = commander.getTS3DisplayName();
         log("info", `Tagging up ${displayname} in ${g.name}.`);
-        const registration = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
+        const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         if(registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
@@ -441,7 +441,7 @@ export class TS3Listener extends events.EventEmitter {
     * - the user's TS-UID-Discordname is forgotten
     */
     private async tagDown(g: discord.Guild, commander: Commander) {
-        let registration: db.Registration | undefined = this.botgartClient.db.getUserByAccountName(commander.getAccountName());
+        let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
@@ -457,9 +457,9 @@ export class TS3Listener extends events.EventEmitter {
                 });
             }
             // do not write leads of members which hide their roles
-            const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => configuration.get().achievements.ignoring_roles.includes(r.name)));
+            const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
             if(writeToDB) {
-                this.botgartClient.db.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
+                this.botgartClient.tsLeadRepository.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
             }
         }
         

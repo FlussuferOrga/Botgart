@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { log } from "../Util";
 import { BotgartCommand } from "../BotgartCommand";
-import * as db from "../DB";
+import { DesignatedRole } from "../repositories/RegistrationRepository";
+import { log } from "../Util";
 
 /**
 Testcases:
@@ -24,7 +24,7 @@ export class RepairRoles extends BotgartCommand {
 
     public command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Object): void {
         const cl = this.getBotgartClient();
-        const designations: db.DesignatedRole[] = cl.db.getDesignatedRoles();
+        const designations: DesignatedRole[] = cl.registrationRepository.getDesignatedRoles();
         let g: discord.Guild;
         let m: discord.GuildMember;
         let r: discord.Role;

@@ -1,19 +1,23 @@
 import gw2 from "gw2api-client";
-import * as stringSimilarity from "string-similarity";
-import { configuration } from "./config/Config";
 import { log } from "./Util";
 
-export const api = gw2();
+export const api = initApi();
 
-api.schema('2019-03-26T00:00:00Z');
-api.language('en');
+function initApi() {
+    const api = gw2();
+    api.schema('2019-03-26T00:00:00Z');
+    api.language('en');
 
-// retry some times and be polite about it
-api.fetch.retry(tries => tries <= 5)
-api.fetch.retryWait(tries => tries * 3000)
+    // retry some times and be polite about it
+    api.fetch.retry(tries => tries <= 5)
+    api.fetch.retryWait(tries => tries * 3000)
+    return api;
+}
+
 /**
  * Tries to validate the passed API key.
  * @param {string} apikey - valid apikey. No format checking will be done at this point.
+ * @param worldAssignments a map of world_id to role
  * @returns {string|bool|int} - either
  *           (1) resolves to the name of the role the user should be assigned, according to the config (string)
  *           (2) resolves to false if the world the user plays on is not qualified to get any role
@@ -22,16 +26,15 @@ api.fetch.retryWait(tries => tries * 3000)
  *                   (b) a network error occured
  *                   (c) the key is structurally valid, but not known to the API (invalid key)
  */
-export function validateWorld(apikey: string): Promise<string|boolean|number> {
-    let accepted = configuration.get().world_assignments;
+export function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string|boolean|number> {
     api.authenticate(apikey);
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
-            let match = configuration.get().world_assignments.filter(a => a.world_id === acc.world);
-            if(match.length > 1) {
+            let match = worldAssignments.filter(a => a.world_id === acc.world);
+            if (match.length > 1) {
                 // config broken
                 return reject(exports.validateWorld.ERRORS.config_world_duplicate);
-            } else if(match.length === 1) {
+            } else if (match.length === 1) {
                 // world admitted -> name of role the user should have
                 return resolve(match[0].role);
             } else {
@@ -55,16 +58,6 @@ validateWorld.ERRORS = {
     "invalid_key": 3
 };
 
-export function getOwnedGuilds(apikey: string): any {
-    api.authenticate(apikey);
-    return undefined; // FIXME
-    //return api.getAccount().then(
-    //   res => new Promise()
-    //   res => new Promise((resolve, reject) => resolve(res.world === config.world_id)),
-    //   res => new Promise((resolve, reject) => resolve(false))
-    //);
-}
-
 export function getAccountGUID(apikey: string): Promise<number|boolean> {
     api.authenticate(apikey);
     return api.account().get().then(
@@ -81,43 +74,16 @@ export function getAccountName(apikey: string): Promise<string|boolean> {
     );
 }
 
-/**
- * Tries to resolve user input to a proper (localised) objective name.
- *
- * @param objectiveInput - whatever the user inputs as the objective name
- * @param mapInput - whatever the user inputs as the map name. Optional, if nothing is put here, ambiguities on alpine borderlands may occur
- * @returns a Promise resolving to either
- *    [<resolved objective name>:string, <resolved map name>:string, <map id>:number, <objective id>:string] if we found a promising match
- *    [<original user objective input>:string, <original user map input>: string, null, null] if no match could be found
- */
-export function resolveWvWObjective(objectiveInput: string, mapInput?: string): Promise<[string,string,number,string]|[string,string,null,null]> {
-    return api.language("de").wvw().objectives().all().then(
-        res => resolveWvWMap(mapInput)
-            .then(([resolved, wvwMap]) => {
-                let mapFilter = resolved ? [wvwMap] : ["BlueHome", "RedHome", "GreenHome", "Center"];
-                let objectives = res
-                    .filter(o => o.map_id != 94) // filter out the obsolete red alpine borderland
-                    .filter(o => mapFilter.includes(o.map_type))
-                    .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
-                    .map(o => [o.name, o])
-                    .reduce((acc, [k,v]) => { acc[k] = v; return acc; }, {});
-                let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
-                return new Promise((resolve, reject) => {
-                    resolve(best.rating === 0
-                        ? [objectiveInput, wvwMap, null, null]
-                        : [best.target, wvwMap, objectives[best.target].map_id, objectives[best.target].id])
-                });
-            })
-    );
-}
+/*
+UNUSED:
 
 
-/**
+/!**
  * Finds the colour of a world specified by its ID in its current matchup.
  *
  * @param worldId - the ID of the world to find the colour for
  * @returns Promise "red", "blue" or "green" if it could be resolved or Promise<null> if the ID could not be resolved.
- */
+ *!/
 export function resolveMatchColour(worldId: number): Promise<"red"|"blue"|"green"|null> {
     return api.wvw().matches().overview().world(worldId).then(
         matchUp => {
@@ -136,6 +102,7 @@ export function resolveMatchColour(worldId: number): Promise<"red"|"blue"|"green
     );
 }
 
+
 let mapAliasesPairs : [string, string[]][] = [
     ["Center",   ["ebg", "ewige", "es"]],
     ["BlueHome", ["blaue", "blue", "bgl", "bbl"]],
@@ -143,17 +110,21 @@ let mapAliasesPairs : [string, string[]][] = [
     ["RedHome",  ["rote", "red", "rgl", "rbl", "wüste", "dessert"]],
     ["homes",    ["home", "homes", "heimat"]]
 ];
+
+
+
 let mapAliases = mapAliasesPairs
     .reduce((acc, [k,vs]) => { vs.map(v => acc[v] = k); return acc; }, {});
 
-/**
+
+/!**
  * Tries to resolve the given user input to a standard world name.
  *
  * @param userInput - what the user typed as string for the map name
  * @returns a Promise resolving to a pair to either
  *        [true, the resolved name] (special case, strings akin to "home" are resolved to the current home map, as specified in the config)
  *      , [false, the original user input]
- */
+ *!/
 export function resolveWvWMap(userInput: string): Promise<[boolean, string]> {
     let res: Promise<[boolean, string]> = new Promise((resolve, reject) => resolve([false, null]));
     if(userInput !== null && userInput !== undefined) {
@@ -176,3 +147,35 @@ export function resolveWvWMap(userInput: string): Promise<[boolean, string]> {
     }
     return res;
 }
+
+/!**
+ * Tries to resolve user input to a proper (localised) objective name.
+ *
+ * @param objectiveInput - whatever the user inputs as the objective name
+ * @param mapInput - whatever the user inputs as the map name. Optional, if nothing is put here, ambiguities on alpine borderlands may occur
+ * @returns a Promise resolving to either
+ *    [<resolved objective name>:string, <resolved map name>:string, <map id>:number, <objective id>:string] if we found a promising match
+ *    [<original user objective input>:string, <original user map input>: string, null, null] if no match could be found
+ *!/
+export function resolveWvWObjective(objectiveInput: string, mapInput?: string): Promise<[string,string,number,string]|[string,string,null,null]> {
+    return api.language("de").wvw().objectives().all().then(
+        res => resolveWvWMap(mapInput)
+            .then(([resolved, wvwMap]) => {
+                let mapFilter = resolved ? [wvwMap] : ["BlueHome", "RedHome", "GreenHome", "Center"];
+                let objectives = res
+                    .filter(o => o.map_id != 94) // filter out the obsolete red alpine borderland
+                    .filter(o => mapFilter.includes(o.map_type))
+                    .filter(o => ["Camp", "Tower", "Keep"].includes(o.type))
+                    .map(o => [o.name, o])
+                    .reduce((acc, [k,v]) => { acc[k] = v; return acc; }, {});
+                let best = stringSimilarity.findBestMatch(objectiveInput, Object.keys(objectives)).bestMatch;
+                return new Promise((resolve, reject) => {
+                    resolve(best.rating === 0
+                        ? [objectiveInput, wvwMap, null, null]
+                        : [best.target, wvwMap, objectives[best.target].map_id, objectives[best.target].id])
+                });
+            })
+    );
+}
+
+*/

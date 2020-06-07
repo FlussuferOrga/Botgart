@@ -1,63 +1,41 @@
 import * as akairo from "discord-akairo"
 import * as discord from "discord.js"
-import { EventEmitter } from "events";
-import * as moment from "moment";
 import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
 import { Roster } from "./commands/resetlead/ResetRoster"
-import { configuration } from "./config/Config";
+import { getConfig } from "./config/Config";
 import * as db from "./DB"
 import { APIEmitter } from "./emitters/APIEmitter"
 import { api } from "./Gw2ApiUtils";
+import { AchievementRepository } from "./repositories/AchievementRepository";
+import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
+import { CronjobRepository } from "./repositories/CronjobRepository";
+import { FaqRepository } from "./repositories/FaqRepository";
+import { FishingRepository } from "./repositories/FishingRepository";
+import { LogChannelRepository } from "./repositories/LogChannelRepository";
+import { MatchupRepository } from "./repositories/MatchupRepository";
+import { PermanentRoleRepository } from "./repositories/PermanentRoleRepository";
+import { RegistrationRepository } from "./repositories/RegistrationRepository";
+import { RosterRepository } from "./repositories/RosterRepository";
+import { TsLeadRepository } from "./repositories/TsLeadRepository";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
 import { log } from "./Util";
-
-export class WvWWatcher extends EventEmitter {
-    private db: db.Database;
-    private api;
-
-    public constructor(db: db.Database, api) {
-        super();
-        this.db = db;
-        this.api = api;
-    }
-
-    /**
-    * Resolves the Database entry for the currently ongoing match for the home world.  
-    * If no match exists for that time, a new match will be created in the database 
-    * with data retrieved from the API and that newly created match is returned. 
-    * returns: the DB matchup info for the ongoing match. 
-    *          If no such match existed during the call, it will be created
-    */
-    public async getCurrentMatch(): Promise<db.Matchup> {
-        const now: moment.Moment = moment.utc();
-        let dbMatchup: db.Matchup = this.db.getCurrentMatchup(now);
-        if(dbMatchup === undefined) {
-            const latestDbMatchup: db.Matchup = this.db.getLatestMatchup();
-            const currentMatchupInfo = await this.api.wvw().matches().overview().world((await configuration).get().home_id);
-            const tier = currentMatchupInfo.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
-            this.db.addMatchup(
-                tier,
-                moment.utc(currentMatchupInfo.start_time),
-                moment.utc(currentMatchupInfo.end_time),
-                currentMatchupInfo.all_worlds.red, 
-                currentMatchupInfo.all_worlds.green,
-                currentMatchupInfo.all_worlds.blue);
-            dbMatchup = this.db.getCurrentMatchup(now);
-            if(dbMatchup == undefined) {
-                Util.log("error", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
-            } else {
-                this.emit("new-matchup", { lastMatchup: latestDbMatchup, newMatchup: dbMatchup });    
-            }
-            
-        }
-        return dbMatchup;
-    }
-}
+import { WvWWatcher } from "./WvWWatcher";
 
 export class BotgartClient extends akairo.AkairoClient {
-    public db: db.Database;
+    public fishingRepository: FishingRepository;
+    public registrationRepository: RegistrationRepository;
+    public achievementRepository: AchievementRepository;
+    public tsLeadRepository: TsLeadRepository;
+    public matchupRepository: MatchupRepository;
+    public rosterRepository: RosterRepository;
+    public cronjobRepository: CronjobRepository;
+    public faqRepository: FaqRepository;
+    public permanentRoleRepository: PermanentRoleRepository;
+    public commandPermissionRepository: CommandPermissionRepository;
+    public logChannelRepository: LogChannelRepository;
+
     public cronjobs: Object;
     private ts3connection : TS3Connection;
     private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
@@ -73,20 +51,32 @@ export class BotgartClient extends akairo.AkairoClient {
 
     constructor(options, clientoptions, db: db.Database) {
         super(options, clientoptions);
-        this.db = db;
+
+        //Repositories
+        this.fishingRepository = new FishingRepository(db);
+        this.registrationRepository = new RegistrationRepository(db);
+        this.achievementRepository = new AchievementRepository(db)
+        this.tsLeadRepository = new TsLeadRepository(db)
+        this.matchupRepository = new MatchupRepository(db)
+        this.rosterRepository = new RosterRepository(db)
+        this.cronjobRepository = new CronjobRepository(db)
+        this.faqRepository = new FaqRepository(db)
+        this.permanentRoleRepository = new PermanentRoleRepository(db)
+        this.commandPermissionRepository = new CommandPermissionRepository(db)
+        this.logChannelRepository = new LogChannelRepository(db)
+
         this.cronjobs = {};
         this.rosters = {};
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
-        this.wvwWatcher = new WvWWatcher(this.db, api);
-        this.ts3connection = new TS3Connection(configuration.get().ts_listener.ip, configuration.get().ts_listener.port, "MainConnection");
-        //this.options = options;
-        
+        this.wvwWatcher = new WvWWatcher(this.matchupRepository, api);
+        this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
+
         this.commandHandler = new akairo.CommandHandler(this, {
             directory: './built/commands/',
-            prefix: configuration.get().prefix,
+            prefix: getConfig().get().prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
         });
@@ -128,10 +118,10 @@ export class BotgartClient extends akairo.AkairoClient {
                 if(match === undefined) {
                     Util.log("error", "Could not produce a proper matchup. API might be down.");
                 } else {
-                    const snapshotId = this.db.addStatsSnapshot();
+                    const snapshotId = this.matchupRepository.addStatsSnapshot();
                     for await(const mapData of stats.maps) {
                         for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
-                            this.db.addMatchupStats(
+                            this.matchupRepository.addMatchupStats(
                                         match.matchup_id, 
                                         snapshotId, 
                                         mapData.type, // map 
@@ -152,12 +142,12 @@ export class BotgartClient extends akairo.AkairoClient {
                 if(match === undefined) return;
                 Util.log("debug", "Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
-                const snapshotId = this.db.addObjectivesSnapshot();
+                const snapshotId = this.matchupRepository.addObjectivesSnapshot();
                 const objs = match.maps
                     .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
                     //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                     .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
-                this.db.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
+                this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
                 Util.log("debug", "Done writing WvWMatches.");
             });
         });
@@ -218,7 +208,7 @@ export class BotgartClient extends akairo.AkairoClient {
     * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback. 
     */
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
-        const channels: string[] = this.db.getLogChannels(guild, type);
+        const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
         if(channels.length === 0 && disposable === false) {
             log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {

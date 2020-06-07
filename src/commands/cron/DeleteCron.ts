@@ -1,7 +1,6 @@
-import * as L from "../../Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
+import * as L from "../../Locale";
 import { log } from "../../Util";
 
 /**
@@ -57,14 +56,14 @@ export class DeleteCron extends BotgartCommand {
     deleteCronjob(id: number): boolean {
         let canceled = false;
         let deletedFromDB = false;
-        let cl = <BotgartClient>this.client;
-        if(id in cl.cronjobs) {
+        let cl = this.getBotgartClient();
+        if (id in cl.cronjobs) {
             cl.cronjobs[id].cancel();
             delete cl.cronjobs[id];
             canceled = true;
             log("info", "Canceled cronjob with ID {0}.".formatUnicorn(id));
         }
-        if(cl.db.deleteCronjob(id)) {
+        if (cl.cronjobRepository.deleteCronjob(id)) {
             deletedFromDB = true;
             log("info", "Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
         }

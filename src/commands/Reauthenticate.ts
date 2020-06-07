@@ -30,7 +30,7 @@ export class Reauthenticate extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
         const cl: BotgartClient = this.getBotgartClient();
-        cl.db.revalidateKeys().then(
+        cl.registrationRepository.revalidateKeys().then(
             update => {                    
                 let g: discord.Guild; 
                 let currentRole: discord.Role;
@@ -61,13 +61,13 @@ export class Reauthenticate extends BotgartCommand {
                             if(!m) {
                                 log("info", `${p.user} is no longer part of the guild. Deleting their key.`);
                                 cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
-                                cl.db.deleteKey(p.api_key);
+                                cl.registrationRepository.deleteKey(p.api_key);
                             } else {
                                 if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
                                     // user should be pruned: user has either transed (false) or deleted their key (invalid key)
                                     log("info", "Unauthing {0}.".formatUnicorn(m.user.username));
                                     m.roles.remove(currentRole);
-                                    cl.db.deleteKey(p.api_key);
+                                    cl.registrationRepository.deleteKey(p.api_key);
                                     cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
                                     m.send(L.get("KEY_INVALIDATED"));
                                 } else {

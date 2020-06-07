@@ -1,11 +1,11 @@
-import * as Util from "../../Util";
-import * as L from "../../Locale";
+import * as cheerio from "cheerio";
 import * as discord from "discord.js";
+import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
-import * as db from "../../DB";
-import * as https from "https";
-import * as cheerio from "cheerio";
+import * as L from "../../Locale";
+import { Fish } from "../../repositories/FishingRepository";
+import * as Util from "../../Util";
 
 /**
 Testcases:
@@ -51,10 +51,10 @@ class ActiveFisher {
     private client: BotgartClient;
     private fisher: discord.User;
     private message: discord.Message;
-    private fish: db.Fish;
+    private fish: Fish;
     private ended: boolean;
 
-    public constructor(client: BotgartClient, fisher: discord.User, message: discord.Message, fish: db.Fish) {
+    public constructor(client: BotgartClient, fisher: discord.User, message: discord.Message, fish: Fish) {
         this.client = client;
         this.fisher = fisher;
         this.message = message;
@@ -99,7 +99,6 @@ class ActiveFisher {
         this.message.createReactionCollector((e,u) => u.id !== this.client.user.id && e.emoji.name === REEL_EMOTE, {time: REEL_BASE_TIME * this.fish.reel_time_factor})
                     .on("collect", r => this.end(true))
                     .on("end", rs => this.end(rs.size > 0));
-        ;
     }
 
     private async end(reeled: boolean): Promise<void> {
@@ -107,7 +106,7 @@ class ActiveFisher {
         this.ended = true;
 
         if(reeled) {
-            this.client.db.catchFish(this.fisher, this.fish);
+            this.client.fishingRepository.catchFish(this.fisher, this.fish);
             await this.message.edit(await this.createCaughtEmbed());
         } else {
             await this.message.edit(await this.createEscapedEmbed());
@@ -130,7 +129,7 @@ export class GoFish extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        const fish: db.Fish = this.getBotgartClient().db.getRandomFish();
+        const fish: Fish = this.getBotgartClient().fishingRepository.getRandomFish();
 
         responsible.send(":fish:").then(async message => {
             if(message instanceof discord.Message) {

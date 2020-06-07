@@ -1,8 +1,7 @@
-import { log } from "../../Util";
-import * as Const from "../../Const";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
-import { BotgartClient } from "../../BotgartClient";
+import * as Const from "../../Const";
+import { log } from "../../Util";
 
 const TEASER_LENGTH = 30;
 /**
@@ -28,7 +27,7 @@ export class ListFaqs extends BotgartCommand {
         let format: string = "{0} | {1}";
         let header: string = format.formatUnicorn("KEY", "       TEXT      ") + "\n";
         let mes: string = header;
-        (<BotgartClient>this.client).db.getFAQs(guild.id).forEach((faq) => {
+        this.getBotgartClient().faqRepository.getFAQs(guild.id).forEach((faq) => {
             let t = faq.text.length < TEASER_LENGTH ? faq.text : faq.text.substring(0,TEASER_LENGTH - 3) + "...";
             let line = format.formatUnicorn(faq.key, t) + "\n";
             if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {

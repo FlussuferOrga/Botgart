@@ -1,12 +1,12 @@
-import { configuration } from "../../config/Config";
-import * as moment from "moment";
-import * as L from "../../Locale";
 import * as discord from "discord.js";
+import * as moment from "moment";
 import { BotgartClient } from "../../BotgartClient";
-import * as U from "../../Util";
-import * as ts3 from "../../TS3Connection";
-import * as db from "../../DB";
+import { getConfig } from "../../config/Config";
 import * as gw2api from "../../emitters/APIEmitter";
+import * as L from "../../Locale";
+import { FactionColour, Matchup } from "../../repositories/MatchupRepository";
+import * as ts3 from "../../TS3Connection";
+import * as U from "../../Util";
 
 export enum AchievementAwardResult {
     AWARDED_FIRST_TIME,
@@ -73,10 +73,11 @@ export abstract class Achievement<C> {
     */
     private award(gw2account: string, by: string = null, timestamp: moment.Moment = null): [number, boolean] {
         timestamp = timestamp || moment.utc();
-        const has: boolean = this.client.db.checkAchievement(this.name, gw2account).length > 0;
+        const repo = this.client.achievementRepository;
+        const has: boolean = repo.checkAchievement(this.name, gw2account).length > 0;
         let rowId: number = -1;
         if(this.repeatable || !has) {
-            rowId = this.client.db.awardAchievement(this.name, gw2account, by, timestamp);
+            rowId = repo.awardAchievement(this.name, gw2account, by, timestamp);
         }
         return [rowId, !has];
     }
@@ -91,13 +92,13 @@ export abstract class Achievement<C> {
     public awardIn(guild: discord.Guild, discordUser: discord.GuildMember, by: string = null, timestamp: moment.Moment = null): AchievementAwardResult {
         let result: AchievementAwardResult = AchievementAwardResult.NOT_AWARDED;
 
-        const userdata = this.client.db.getUserByDiscordId(discordUser.user);
+        const userdata = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
         if(userdata === undefined) {
             U.log("warning", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
-            if(discordUser.roles.cache.some(r => configuration.get().achievements.ignoring_roles.includes(r.name))) {
+            if(discordUser.roles.cache.some(r => getConfig().get().achievements.ignoring_roles.includes(r.name))) {
                 // user is hiding their achievements
                 result = AchievementAwardResult.HIDDEN;
             } else {
@@ -106,7 +107,7 @@ export abstract class Achievement<C> {
 
                 if(rowId > -1 && (isNew || this.repeatable)) {
                     result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
-                    const achievementChannel: discord.Channel = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === configuration.get().achievements.channel);
+                    const achievementChannel: discord.Channel = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
 
                     if(achievementChannel) {
                         if(isNew || this.announceRepetitions) {
@@ -239,7 +240,7 @@ abstract class ObjectiveAchievement extends Achievement<{"commander": ts3.Comman
     }
 }
 
-abstract class NewMatchupAchievement extends Achievement<{lastMatchup: db.Matchup, newMatchup: db.Matchup}> {
+abstract class NewMatchupAchievement extends Achievement<{lastMatchup: Matchup, newMatchup: Matchup}> {
     public constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
         client.wvwWatcher.on("new-matchup",
@@ -247,7 +248,7 @@ abstract class NewMatchupAchievement extends Achievement<{lastMatchup: db.Matchu
                             {
                                 if(mu.lastMatchup === undefined) return; // ignore for very first matchup that is stored
                                 Promise.all(
-                                    this.client.db
+                                    this.client.tsLeadRepository
                                         .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
                                                              , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                                         .map(async r => {
@@ -277,8 +278,8 @@ export class Glimmer extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const user = this.client.db.getUserByDiscordId(discordUser.user);
-        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 : false;
+        const user = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
+        return user ? this.client.tsLeadRepository.getTotalLeadTime(user.gw2account) > 3600 : false;
     }
 }
 
@@ -293,8 +294,8 @@ export class Sunray extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const user = this.client.db.getUserByDiscordId(discordUser.user);
-        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 10 : false;
+        const user = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
+        return user ? this.client.tsLeadRepository.getTotalLeadTime(user.gw2account) > 3600 * 10 : false;
     }
 }
 
@@ -309,8 +310,8 @@ export class BlazingLight extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const user = this.client.db.getUserByDiscordId(discordUser.user);
-        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 100 : false;
+        const user = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
+        return user ? this.client.tsLeadRepository.getTotalLeadTime(user.gw2account) > 3600 * 100 : false;
     }
 }
 
@@ -325,8 +326,8 @@ export class Supernova extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const user = this.client.db.getUserByDiscordId(discordUser.user);
-        return user ? this.client.db.getTotalLeadTime(user.gw2account) > 3600 * 1000 : false;
+        const user = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
+        return user ? this.client.tsLeadRepository.getTotalLeadTime(user.gw2account) > 3600 * 1000 : false;
     }
 }
 
@@ -392,9 +393,9 @@ export class Annihilator extends ObjectiveAchievement {
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         let holds: boolean = false;
         const obj = context.objectives;
-        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(configuration.get().home_id))[0];
+        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id))[0];
         if(ourColour === undefined) {
-          U.log("warning", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+          U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
           holds = obj.kills[ourColour]/obj.kills[ourColour] >= 2.0;
         }
@@ -414,11 +415,11 @@ export class NeverSurrender extends TagUpAchievement {
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagUp): boolean {
         let holds: boolean = false;
-        const stats = this.client.db.getStatsAround(context.commander.getRaidStart());
+        const stats = this.client.matchupRepository.getStatsAround(context.commander.getRaidStart());
         if(stats) {
-            const ourColour = this.client.db.getColourOf(configuration.get().home_id, context.commander.getRaidStart());
+            const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
             if(ourColour === undefined) {
-                U.log("warning", `Unable to find our colour with world ID ${configuration.get().home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
+                U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
             } else {
                 const ourStats = stats.find(s => s.faction === ourColour);
                 holds = ourStats 
@@ -444,9 +445,9 @@ export class Conqueror extends ObjectiveAchievement {
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         let holds = false;
         const obj = context.objectives;
-        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(configuration.get().home_id))[0];
+        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id))[0];
         if(ourColour === undefined) {
-          U.log("warning", `Could not find our home id '${configuration.get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+          U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
             const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives
                                                                            .filter(o => o.owner === ourColour)
@@ -487,12 +488,12 @@ export class AgileDefender extends TagDownAchievement {
         let holds: boolean = U.isBetweenTime(context.commander.getRaidStart(), "18:00:00", "21:00:00")
                               && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if(holds) {
-            const ourColour = this.client.db.getColourOf(configuration.get().home_id, context.commander.getRaidStart());
-            const t3AtStart: number[] = this.client.db.getObjectivesAround(context.commander.getRaidStart())
+            const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
+            const t3AtStart: number[] = this.client.matchupRepository.getObjectivesAround(context.commander.getRaidStart())
                                                       .filter(obj => obj.owner === ourColour && obj.tier === 3)
                                                       .map(obj => obj.objective_id);
             if(t3AtStart.length >= 3) { // we held at least three t3 objectives when they started
-                const lost = this.client.db.capturedBetween(context.commander.getRaidStart(), moment.utc().local())
+                const lost = this.client.matchupRepository.capturedBetween(context.commander.getRaidStart(), moment.utc().local())
                                            .filter(c => c.old_owner === ourColour && c.old_tier === 3);
                 holds = lost.length === 0; // we lost none of the t3 structures
             }
@@ -528,8 +529,8 @@ export class BoldBesieger extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const reg = this.client.db.getUserByAccountName(context.commander.getAccountName());
-        return reg ? this.client.db.crashedT3ByCommander(reg.gw2account) >= 10 : false;          
+        const reg = this.client.registrationRepository.getUserByAccountName(context.commander.getAccountName());
+        return reg ? this.client.matchupRepository.crashedT3ByCommander(getConfig().get().home_id, reg.gw2account) >= 10 : false;
     }
 }
 
@@ -544,8 +545,8 @@ export class TenaciousBesieger extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const reg = this.client.db.getUserByAccountName(context.commander.getAccountName());
-        return reg ? this.client.db.crashedT3ByCommander(reg.gw2account) >= 100 : false;
+        const reg = this.client.registrationRepository.getUserByAccountName(context.commander.getAccountName());
+        return reg ? this.client.matchupRepository.crashedT3ByCommander(getConfig().get().home_id, reg.gw2account) >= 100 : false;
     }
 }
 
@@ -561,8 +562,8 @@ export class Princess extends ObjectiveAchievement {
 
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         const palaceID: string = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
-        const colour: db.FactionColour = this.client.db.getFactionColour(moment.utc(), configuration.get().home_id);
-        return colour !== undefined && this.client.db.wasCapturedBetween(context.commander.getRaidStart(), moment.utc(), palaceID, colour);
+        const colour: FactionColour = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
+        return colour !== undefined && this.client.matchupRepository.wasCapturedBetween(context.commander.getRaidStart(), moment.utc(), palaceID, colour);
     }
 }
 
@@ -669,7 +670,7 @@ export class FromAshes extends NewMatchupAchievement {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: Matchup, newMatchup: Matchup}): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
     }
 }
@@ -684,7 +685,7 @@ export class MountainIsCalling extends NewMatchupAchievement {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: Matchup, newMatchup: Matchup}): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 3 && context.newMatchup.tier === 2;
     }
 }
@@ -699,7 +700,7 @@ export class ThePeak extends NewMatchupAchievement {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: Matchup, newMatchup: Matchup}): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 2 && context.newMatchup.tier === 1;
     }
 }
@@ -714,7 +715,7 @@ export class TierSolidifier extends NewMatchupAchievement {
         );
     }
 
-    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: db.Matchup, newMatchup: db.Matchup}): boolean {
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: Matchup, newMatchup: Matchup}): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === context.newMatchup.tier;
     }
 }

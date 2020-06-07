@@ -1,6 +1,7 @@
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
+import { getConfig } from "../config/Config";
 import { getAccountGUID, getAccountName, validateWorld } from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import * as Util from "../Util";
@@ -73,7 +74,8 @@ export class Authenticate extends BotgartCommand {
                 }
             }
             const cl: BotgartClient = this.getBotgartClient();
-            validateWorld(args.key).then(
+            const worldAssignments = getConfig().get().world_assignments;
+            validateWorld(args.key, worldAssignments).then(
                 role => {
                     if(role === false) {
                         Util.log("info", "Declined API key {0}.".formatUnicorn(args.key));
@@ -97,13 +99,13 @@ export class Authenticate extends BotgartCommand {
                                         Util.log("warning", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
                                         accountName = null;
                                     }
-                                    let unique = cl.db.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
+                                    let unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if(unique) {
                                         Util.log("info", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
                                         Util.assignServerRole(m.member, null, r);
                                         // give earned achievement roles again
-                                        for(const achievement of cl.db.getPlayerAchievements(guid.toString()).map(an => cl.getAchievement(an.achievement_name)).filter(a => a !== undefined)) {
+                                        for(const achievement of cl.achievementRepository.getPlayerAchievements(guid.toString()).map(an => cl.getAchievement(an.achievement_name)).filter(a => a !== undefined)) {
                                             achievement.giveRole(m.member);
                                         }
                                         cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);

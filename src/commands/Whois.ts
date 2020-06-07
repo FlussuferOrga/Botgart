@@ -1,7 +1,7 @@
-import * as L from "../Locale";
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
 import { BotgartClient } from "../BotgartClient";
+import { BotgartCommand } from "../BotgartCommand";
+import * as L from "../Locale";
 
 /**
 Testcases:
@@ -27,7 +27,7 @@ export class Whois extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const name = args.name.toLowerCase();
-        const res = (<BotgartClient>this.client).db.whois(name, 
+        const res = (<BotgartClient>this.client).registrationRepository.whois(name,
                                                           message.guild.members.cache
                                                                                .filter(m => m.displayName.toLowerCase().search(name) > -1)
                                                                                .map(m => m.user));

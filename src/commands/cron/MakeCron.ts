@@ -1,9 +1,9 @@
 import { Command } from "discord-akairo";
-import * as schedule from "node-schedule";
-import * as L from "../../Locale";
 import * as discord from "discord.js";
+import * as schedule from "node-schedule";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
+import * as L from "../../Locale";
 import { log } from "../../Util";
 
 // FIXME: move exec to command
@@ -74,7 +74,7 @@ export class MakeCron extends BotgartCommand {
                 if(!job) {
                     return message.util.send(L.get("CRONJOB_NOT_STORED"));
                 } else {
-                    let cid = cl.db.storeCronjob(schedule, 
+                    let cid = cl.cronjobRepository.storeCronjob(schedule,
                                                 mod.id, 
                                                 mod.serialiseArgs(parsedArgs), 
                                                 message.member.user.id, 
@@ -94,7 +94,7 @@ export class MakeCron extends BotgartCommand {
     rescheduleCronjobs() {
         let croncount = 0;
         let cl = <BotgartClient>this.client;
-        cl.db.getCronjobs().forEach(async cron => {
+        cl.cronjobRepository.getCronjobs().forEach(async cron => {
             let mod: BotgartCommand = <BotgartCommand>this.getBotgartClient().commandHandler.modules.get(cron.command);
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             let guild = this.client.guilds.cache.find(g => g.id == cron.guild);

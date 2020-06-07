@@ -1,5 +1,5 @@
 import * as events from "events"
-import { configuration } from "../config/Config";
+import { getConfig } from "../config/Config";
 import { api } from "../Gw2ApiUtils";
 
 
@@ -55,15 +55,15 @@ export class APIEmitter extends events.EventEmitter {
         super();
         //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
         //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
-        let homeId = configuration.get().home_id;
+        let homeId = getConfig().get().home_id;
         this.schedule("wvw-stats",
             api => api.wvw().matches().live().stats().world(homeId)
                 .catch(err => console.log(`Error while fetching match stats: ${err}`)),
-            configuration.get().gw2api.delays.wvw_stats)
+            getConfig().get().gw2api.delays.wvw_stats)
         this.schedule("wvw-matches",
             api => api.wvw().matches().live().world(homeId)
                 .catch(err => console.log(`Error while fetching match details: ${err}`)),
-            configuration.get().gw2api.delays.wvw_matches);
+            getConfig().get().gw2api.delays.wvw_matches);
 
     }
 
