@@ -32,7 +32,7 @@ let configSchema = {
             if (!Array.isArray(values)) {
                 throw new Error('must be of type Array');
             }
-            for (let value of values) {
+            for (const value of values) {
                 if (value.role !== null && isValidWorldId(value.world_id) == false) {
                     throw new Error('World id is not valid');
                 }
@@ -50,7 +50,7 @@ let configSchema = {
             if (!Array.isArray(val)) {
                 throw new Error(`Owner ids should be an array`);
             }
-            for (let singleOwnerId in val) {
+            for (const singleOwnerId of val) {
                 if (/\d+$/.test(singleOwnerId) === false) {
                     throw new Error(`Owner id '${singleOwnerId}' is not a valid discord snowflake`);
                 }
@@ -75,7 +75,7 @@ let configSchema = {
             if (!Array.isArray(values)) {
                 throw new Error(`ts_unregister_protection should be an array`);
             }
-            for (let value in values) {
+            for (const value of values) {
                 if (!isValidGuildWars2AccountHandle(value)) {
                     throw new Error(`'${value}' is not a valid GuildWars 2 Account Handle`);
                 }
