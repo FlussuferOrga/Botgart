@@ -1,5 +1,4 @@
-import { Listener } from  "discord-akairo";
-import * as L from "../Locale.js";
+import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { log } from "../Util";
 

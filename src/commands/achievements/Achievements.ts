@@ -1,8 +1,8 @@
-import {configuration} from "../../config/Config";
+import { configuration } from "../../config/Config";
 import * as moment from "moment";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
-import {BotgartClient} from "../../BotgartClient";
+import { BotgartClient } from "../../BotgartClient";
 import * as U from "../../Util";
 import * as ts3 from "../../TS3Connection";
 import * as db from "../../DB";

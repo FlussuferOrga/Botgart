@@ -1,4 +1,4 @@
-import {configuration} from "./config/Config";
+import { configuration } from "./config/Config";
 import * as discord from "discord.js";
 import * as winston from "winston";
 //import * as gw2 from "gw2api-client";

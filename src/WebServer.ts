@@ -1,6 +1,6 @@
-import express, {Express} from "express";
+import express, { Express } from "express";
 import * as http from "http";
-import {configuration} from "./config/Config";
+import { configuration } from "./config/Config";
 
 // Create a new express app instance
 

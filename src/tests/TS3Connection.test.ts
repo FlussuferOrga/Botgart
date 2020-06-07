@@ -1,6 +1,4 @@
-import { expect, assert } from  "chai";
-import * as U from "../Util";
-import {Client, Guild, TextChannel, Message} from 'discord.js';
+import { expect } from "chai";
 import * as ts3 from "../TS3Connection";
 
 

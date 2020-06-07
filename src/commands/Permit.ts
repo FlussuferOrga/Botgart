@@ -1,6 +1,4 @@
-import { Command, Argument } from "discord-akairo";
 import { log } from "../Util";
-import * as Const from "../Const";
 import * as L from "../Locale";
 import * as discord from "discord.js";
 import { BotgartCommand, PermissionTypes } from "../BotgartCommand";

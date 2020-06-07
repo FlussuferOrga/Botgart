@@ -1,7 +1,7 @@
 import convict from "convict";
 import * as Util from "../Util";
 import fs from 'fs';
-import {isValidGuildWars2AccountHandle, isValidWorldId} from "./Validators";
+import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 
 let configSchema = {
     prefix: {

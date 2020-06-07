@@ -1,9 +1,9 @@
-import {configuration} from "./config/Config";
+import { configuration } from "./config/Config";
 import * as discord from "discord.js";
 import * as L from "./Locale";
 import * as akairo from "discord-akairo";
-import {Command, CommandOptions} from "discord-akairo";
-import {BotgartClient} from "./BotgartClient";
+import { Command, CommandOptions } from "discord-akairo";
+import { BotgartClient } from "./BotgartClient";
 
 export enum PermissionTypes {
     user = "user",
