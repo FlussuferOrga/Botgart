@@ -1,7 +1,7 @@
 import * as CommandLineArgs from "command-line-args";
 import { BotgartClient } from "./BotgartClient";
-import { configuration } from "./config/Config";
-import * as db from "./DB"
+import { getConfig } from "./config/Config";
+import { Database } from "./DB";
 import { DatabasePatcher } from "./patches/DatabasePatcher";
 import { allPatches, getPatch } from "./patches/PatchRegistry";
 import { log } from "./Util";
@@ -17,7 +17,7 @@ const args = CommandLineArgs.default([
 
 // this is an in-order list of all patches
 
-const database = db.initialize();
+const database = Database.getInstance("./db/database.db");
 
 if (args.patchall || args.patch) {
     let patcher = new DatabasePatcher(database);
@@ -30,9 +30,11 @@ if (args.patchall || args.patch) {
         patcher.applyPatch(getPatch(args.patch), args.revert === true).then(_ => process.exit(0));
     }
 } else {
+    const config = getConfig();
+
     log("info", "Starting Botgart...")
 
-    const client = new BotgartClient({ownerID: configuration.get("owner_ids")}, {}, database);
+    const client = new BotgartClient({ownerID: config.get("owner_ids")}, {}, database);
     const webServer = new WebServer();
 
     //shutdown listener
@@ -45,7 +47,7 @@ if (args.patchall || args.patch) {
     });
 
     log("info", "Starting up...");
-    client.login(configuration.get().token).then(() => {
+    client.login(config.get().token).then(() => {
         log("info", "Started up...");
 
         log("info", "Starting WebServer...")

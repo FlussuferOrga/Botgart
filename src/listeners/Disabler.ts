@@ -1,7 +1,7 @@
-import { configuration } from "../config/Config";
 import { Listener } from "discord-akairo";
-import { log } from "../Util";
 import { BotgartClient } from "../BotgartClient";
+import { getConfig } from "../config/Config";
+import { log } from "../Util";
 
 export class Disabler extends Listener {
     constructor() {
@@ -26,9 +26,9 @@ export class Disabler extends Listener {
 
         const cl: BotgartClient = <BotgartClient>this.client;
         let disabled = 0;
-        disabled += configuration.get().disabled.listeners.reduce((acc, l) => acc + disabler(l, cl.listenerHandler), 0);
-        disabled += configuration.get().disabled.inhibitors.reduce((acc, l) => acc + disabler(l, cl.inhibitorHandler), 0);
-        disabled += configuration.get().disabled.commands.reduce((acc, l) => acc + disabler(l, cl.commandHandler), 0);
+        disabled += getConfig().get().disabled.listeners.reduce((acc, l) => acc + disabler(l, cl.listenerHandler), 0);
+        disabled += getConfig().get().disabled.inhibitors.reduce((acc, l) => acc + disabler(l, cl.inhibitorHandler), 0);
+        disabled += getConfig().get().disabled.commands.reduce((acc, l) => acc + disabler(l, cl.commandHandler), 0);
         log("info", "Done disabling {0} modules as specified by the config.".formatUnicorn(disabled));
     }
 }

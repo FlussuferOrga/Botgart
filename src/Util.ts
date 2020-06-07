@@ -276,7 +276,7 @@ export const logger = winston.createLogger({
   ]
 });
 export function log(level: string, message: string): winston.Logger {
-    const callFile = callsites()[1].getFileName().split("/");
+    const callFile = callsites()[1].getFileName().split(path.sep);
     const file = callFile[callFile.length - 1];
     return logger.log({
         "label": file, // label,
@@ -306,3 +306,13 @@ String.prototype.formatUnicorn = function (...fnargs: any[]): string {
     }
     return str;
 };
+
+export function getNextResetDate(now = new Date()): Date {
+    const resetDay = getResetDay(getNumberOfWeek(now), now.getFullYear());
+    const nowWeekDay = (now.getDay() + 6)%7; // makes SUN 6
+    const resetWeekDay = (RESET_WEEKDAY + 6)%7;
+    if(nowWeekDay > resetWeekDay) {
+        resetDay.setDate(resetDay.getDate() + 7);
+    }
+    return resetDay;
+}

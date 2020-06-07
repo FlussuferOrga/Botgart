@@ -1,9 +1,9 @@
-import { configuration } from "./config/Config";
-import * as discord from "discord.js";
-import * as L from "./Locale";
 import * as akairo from "discord-akairo";
 import { Command, CommandOptions } from "discord-akairo";
+import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
+import { getConfig } from "./config/Config";
+import * as L from "./Locale";
 
 export enum PermissionTypes {
     user = "user",
@@ -103,7 +103,7 @@ export class BotgartCommand extends Command {
         const uid = user.id;
         const gid = user instanceof discord.GuildMember ? user.guild.id : null;
         const roles = user instanceof discord.GuildMember ? user.roles.cache.map(r => r.id) : [];
-        const [allowed, perm] = (<BotgartClient>this.client).db.checkPermission(this.id, uid, roles, gid);
+        const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
         //console.log(allowed, perm);
         //console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
         return this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0;
@@ -118,7 +118,8 @@ export class BotgartCommand extends Command {
     * @returns - true, if the user is an owner.
     */ 
     public isOwner(user: (discord.GuildMember|discord.User)) {
-        return Array.isArray(configuration.get().owner_ids) && configuration.get().owner_ids.includes(user.id);
+        const ownerIds = getConfig().get().owner_ids;
+        return Array.isArray(ownerIds) && ownerIds.includes(user.id);
     }
 
     /**

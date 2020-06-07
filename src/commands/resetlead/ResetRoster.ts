@@ -1,10 +1,10 @@
-import * as Util from "../../Util";
-import * as L from "../../Locale";
+import * as dateFormat from "dateformat";
 import * as discord from "discord.js";
+import * as events from "events";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
-import * as events from "events";
-import * as dateFormat from "dateformat";
+import * as L from "../../Locale";
+import * as Util from "../../Util";
 //import * as moment from 'moment';
 import moment = require('moment');
 
@@ -63,16 +63,6 @@ export class Roster extends events.EventEmitter {
     public readonly weekNumber: number;
     public readonly year: number;
 
-    public static getNextResetDate(now = new Date()): Date {
-        const resetDay = Util.getResetDay(Util.getNumberOfWeek(now), now.getFullYear());
-        const nowWeekDay = (now.getDay() + 6)%7; // makes SUN 6
-        const resetWeekDay = (Util.RESET_WEEKDAY + 6)%7;
-        if(nowWeekDay > resetWeekDay) {
-            resetDay.setDate(resetDay.getDate() + 7);
-        }
-        return resetDay;
-    }
-
     public constructor(weekNumber: number, year: number) {
         super();
         this.weekNumber = weekNumber;
@@ -93,7 +83,7 @@ export class Roster extends events.EventEmitter {
     }
 
     public isUpcoming() : boolean {
-        return Util.compareDatesWithoutTime(this.getResetDate(), Roster.getNextResetDate());
+        return Util.compareDatesWithoutTime(this.getResetDate(), Util.getNextResetDate());
     }
 
     public getMapLeaders(map: WvWMap) : Set<string> {
@@ -204,7 +194,7 @@ export class ResetRoster extends BotgartCommand {
 
     public init(client: BotgartClient): void {
         client.guilds.cache.forEach(
-            g => Promise.all(client.db.getActiveRosters(g))
+            g => Promise.all(client.rosterRepository.getActiveRosters(g))
                 .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
                    .forEach(([dbRoster, dbChannel, dbMessage]) => {
                        client.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
@@ -249,7 +239,7 @@ export class ResetRoster extends BotgartCommand {
                 // pulls back, instead for once for every map.
                 if(this.syncScheduled) return;
                 this.syncScheduled = true;
-                cl.db.upsertRosterPost(guild, r, message);
+                cl.rosterRepository.upsertRosterPost(guild, r, message);
                 message.edit(r.toMessageEmbed());
 
                 if(roster.isUpcoming()) {
@@ -283,7 +273,7 @@ export class ResetRoster extends BotgartCommand {
         const currentWeek = Util.getNumberOfWeek();
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
         const rosterYear = !args.year ? new Date().getFullYear() : args.year;
-        this.getBotgartClient().db.getRosterPost(guild, rosterWeek, rosterYear).then(([dbRoster, dbChannel, dbMessage]) => {
+        this.getBotgartClient().rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(([dbRoster, dbChannel, dbMessage]) => {
             if(dbRoster === undefined) {
                 // no roster for this guild+week -> create one
                 const roster = new Roster(rosterWeek, rosterYear);
@@ -293,7 +283,7 @@ export class ResetRoster extends BotgartCommand {
                         await mes.react(e);
                     }
                     this.getBotgartClient().setRoster(roster.weekNumber, roster.year, guild, mes, roster);
-                    this.getBotgartClient().db.upsertRosterPost(guild, roster, mes); // initial save
+                    this.getBotgartClient().rosterRepository.upsertRosterPost(guild, roster, mes); // initial save
                     this.watchMessage(mes, roster);
                     this.watchRoster(guild, roster);
                 });

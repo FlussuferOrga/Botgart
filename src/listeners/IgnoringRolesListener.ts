@@ -1,7 +1,7 @@
 import { Listener } from "discord-akairo";
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
-import { configuration } from "../config/Config";
+import { getConfig } from "../config/Config";
 import * as U from "../Util";
 
 export class IgnoringRolesListener extends Listener {
@@ -15,10 +15,10 @@ export class IgnoringRolesListener extends Listener {
     exec(oldMember: discord.GuildMember, newMember: discord.GuildMember) {
         const oldRoles = oldMember.roles.cache.map(r => r.name);
         const newRoles: discord.Role[] = newMember.roles.cache.filter(r => !oldRoles.includes(r.name)).array();
-        const ignoringRoles = newRoles.filter(r => configuration.get().achievements.ignoring_roles.includes(r.name));
+        const ignoringRoles = newRoles.filter(r => getConfig().get().achievements.ignoring_roles.includes(r.name));
         if(ignoringRoles.length > 0) {
             const client = <BotgartClient>this.client;
-            const userdata = client.db.getUserByDiscordId(newMember.user);
+            const userdata = client.registrationRepository.getUserByDiscordId(newMember.user);
             let deletedLeads = 0;
             let revokedAchievements = 0;
             for(const achievement of client.getAchievements()) {
@@ -28,7 +28,7 @@ export class IgnoringRolesListener extends Listener {
                 }
             }
             if(userdata) {
-                [deletedLeads, revokedAchievements] = client.db.deleteAchievementInformation(userdata.gw2account);
+                [deletedLeads, revokedAchievements] = client.achievementRepository.deleteAchievementInformation(userdata.gw2account);
             }
             U.log("info", `Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`);
         }

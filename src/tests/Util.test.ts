@@ -1,6 +1,5 @@
 import { assert, expect } from "chai";
 import * as U from "../Util";
-import * as R from "../commands/resetlead/ResetRoster"
 import moment = require("moment");
 
 describe("Util - Date", function() {
@@ -48,15 +47,15 @@ describe("Util - Date", function() {
 
 describe("Util - WvW", function() {
   it("upcoming reset before Friday", () => 
-    assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,10,12))), 
+    assert(U.compareDatesWithoutTime(U.getNextResetDate(new Date(Date.UTC(2019,10,12))),
                                      new Date(Date.UTC(2019,10,15)))));
 
   it("upcoming reset after Friday", () => 
-    assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,10,16))), 
+    assert(U.compareDatesWithoutTime(U.getNextResetDate(new Date(Date.UTC(2019,10,16))),
                                      new Date(Date.UTC(2019,10,22)))));
 
   it("upcoming reset between years", () => 
-    assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,11,31))), 
+    assert(U.compareDatesWithoutTime(U.getNextResetDate(new Date(Date.UTC(2019,11,31))),
                                      new Date(Date.UTC(2020,0,3)))));
 
   it("determine tier", () => {

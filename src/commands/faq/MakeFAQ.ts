@@ -1,7 +1,6 @@
-import * as L from "../../Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
+import * as L from "../../Locale";
 
 /**
 Testcases:
@@ -39,7 +38,7 @@ export class MakeFaq extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any) {
-        (<BotgartClient>this.client).db.storeFAQ(responsible.id, guild.id, args.keys, args.text);
+        this.getBotgartClient().faqRepository.storeFAQ(responsible.id, guild.id, args.keys, args.text);
         if(message) {
             message.util.send(L.get("FAQ_STORED"));
         } else {
