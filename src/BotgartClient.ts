@@ -2,15 +2,15 @@ import * as akairo from "discord-akairo"
 import { BotgartCommand } from "./BotgartCommand.js"
 import * as db from "./DB.js"
 import * as discord from "discord.js"
-import { log, loadModuleClasses } from "./Util.js"
+import { log } from "./Util.js"
 import { Roster } from "./commands/resetlead/ResetRoster"
-import { TS3Connection, TS3Listener, CommanderStorage } from "./TS3Connection"
+import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import { APIEmitter } from "./emitters/APIEmitter"
 import { EventEmitter } from "events";
 import * as Util from "./Util";
 import * as moment from "moment";
 import * as achievements from "./commands/achievements/Achievements";
-import {configuration} from "./config/Config";
+import { configuration } from "./config/Config";
 
 export class WvWWatcher extends EventEmitter {
     private db: db.Database;
