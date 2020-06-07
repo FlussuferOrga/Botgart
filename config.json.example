@@ -29,5 +29,6 @@
             "wvw_matches": 10000
         }
     },
-    "ts_unregister_protection": []
+    "ts_unregister_protection": [],
+    "ts_commander_check_interval": 300000
 }

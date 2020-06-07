@@ -26,12 +26,19 @@ export interface TagUp {
     readonly dbRegistration: db.Registration
 }
 
+interface TS3Commander {
+    readonly account_name: string;
+    readonly ts_cluid: string;
+    readonly ts_display_name: string;
+    readonly ts_channel_name:string;
+}
+
 interface HTTPRequestOptions {
-    hostname?: string;
-    port?: number;
-    path?: string;
-    method?: "GET" | "POST" | "PUT" | "DELETE"
-    headers?: {
+    readonly hostname?: string;
+    readonly port?: number;
+    readonly path?: string;
+    readonly method?: "GET" | "POST" | "PUT" | "DELETE"
+    readonly headers?: {
         "Content-Type": "application/json",
         "Content-Length": number
     }
@@ -62,7 +69,6 @@ export class TS3Connection {
         const settings: HTTPRequestOptions = options === undefined ? defaults : Object.assign({}, defaults, options);
         return new Promise<string>((resolve, reject) => {
             const req = http.request(settings, (response) => {
-                console.log("~~~~~CODE~~~~", response.statusCode);
                 let body = "";
                 response.on("data", (chunk) => body += chunk);
                 response.on("end", () => resolve(body));
@@ -73,15 +79,21 @@ export class TS3Connection {
         });      
     }
 
-    public post(command: string, args: object) {
-        //this.writeCommand("post", command, args);
+    public get(command: string, args: object = {}): Promise<string> {
+        return this.request(args, {
+            path: command, 
+            method: "GET"
+        });
+    }
+
+    public post(command: string, args: object = {}): Promise<string> {
         return this.request(args, {
             path: command, 
             method: "POST"
         });
     }
 
-    public delete(command: string, args: object) {
+    public delete(command: string, args: object = {}): Promise<string> {
         return this.request(args, {
             path: command, 
             method: "DELETE"
@@ -96,7 +108,6 @@ export class TS3Connection {
         this.post("/resetroster", {}).then(r => console.log(r)).catch(er => console.log("OH NO", er));
     }
 }
-
 
 /*
 *********************************************************************************
@@ -293,7 +304,7 @@ export class TS3Listener extends events.EventEmitter {
     constructor(bgclient: BotgartClient) {
         super();
 
-        let config = configuration.get();
+        const config = configuration.get();
 
         this.botgartClient = bgclient;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
@@ -307,7 +318,8 @@ export class TS3Listener extends events.EventEmitter {
         this.setMaxListeners(24);
 
         const that = this;
-        // FIXME: repeat every n seconds
+        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);
+        
         /*
         this.ts3connection.getSocket().on("data", (raw : Buffer) => {
             let data = null; 
@@ -321,82 +333,88 @@ export class TS3Listener extends events.EventEmitter {
             log("debug", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
             // COMMANDERS BROADCAST
             if(data.constructor == Object && "commanders" in data) {
-                log("debug", "Received commanders from TS-Bot.");
-                const now: moment.Moment = moment.utc();
-                log("debug", `It is now ${now}`);
-                log("debug", "Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
-                const taggedDown: Commander[] = that.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
-                log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
-                that.botgartClient.guilds.cache.forEach(g => {
-                    data.commanders.forEach(c => {
-                        const account  = c.account_name; // for lookup
-                        const uid      = c.ts_cluid; // for this.users
-                        const username = c.ts_display_name; // for broadcast
-                        const channel  = c.ts_channel_name; // for broadcast and this.channels
-                        
-                        let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
-                        if(commander === undefined) {
-                            // user was newly discovered as tagged up -> save user without cooldown
-                            commander = new Commander(account, username, uid, channel);
-                            commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
-                            that.botgartClient.commanders.addCommander(commander);
-                            log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
-                        }
-
-                        const elapsed = now.valueOf() - commander.getLastUpdate().valueOf();
-                        switch(commander.getState()) {
-                            case CommanderState.TAG_UP:
-                                // user tagged up and is waiting to gain commander status
-                                if(elapsed > that.gracePeriod) {
-                                    commander.setLastUpdate(now);
-                                    commander.setRaidStart(now);
-                                    commander.setState(CommanderState.COMMANDER);
-                                    commander.setTS3Channel(channel);
-                                    that.tagUp(g, commander);
-                                    log("debug", `Moving ${username} from TAG_UP to COMMANDER state.`);
-                                }
-                            break;
-
-                            case CommanderState.COOLDOWN:
-                                // user tagged up again too quickly -> wait out delay and then go into TAG_UP
-                                if(elapsed > that.userDelay) {
-                                    commander.setLastUpdate(now);
-                                    commander.setState(CommanderState.TAG_UP);
-                                    log("debug", `Moving ${username} from COOLDOWN to TAG_UP state.`);
-                                }
-                            break;
-
-                            case CommanderState.TAG_DOWN:
-                                // user raided before, but tagged down in between
-                                // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
-                                if(elapsed > that.userDelay) {
-                                    commander.setLastUpdate(now);
-                                    commander.setState(CommanderState.TAG_UP);
-                                    log("debug", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
-                                } else {
-                                    commander.setState(CommanderState.COOLDOWN);
-                                    log("debug", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
-                                }
-                            break;
-
-                            case CommanderState.COMMANDER:
-                                // still raiding -> update timestamp
-                                commander.setLastUpdate(now);
-                            break;
-                        } 
-                    });
-                    taggedDown.forEach((commander: Commander) => {
-                        commander.setLastUpdate(now);
-                        commander.setState(CommanderState.TAG_DOWN);
-                        that.tagDown(g, commander);
-                        log("debug", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
-                    });
-                });
+                
             } else {
                 log("warning", `The above data received from TS-Bot could not be processed as it did not match any known command.`);
             }
         });
         */
+        
+    }
+
+    private async checkCommanders(): Promise<void> {
+        log("debug", "Requesting commanders from TS-Bot.");
+        const now: moment.Moment = moment.utc();
+        const res: string = await this.ts3connection.get("commanders");
+        const data: {commanders: TS3Commander[]} = JSON.parse(res); // FIXME: error check
+        log("debug", "Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
+        const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
+        log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
+        this.botgartClient.guilds.cache.forEach(g => {
+            data.commanders.forEach(c => {
+                const account  = c.account_name; // for lookup
+                const uid      = c.ts_cluid; // for this.users
+                const username = c.ts_display_name; // for broadcast
+                const channel  = c.ts_channel_name; // for broadcast and this.channels
+                
+                let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
+                if(commander === undefined) {
+                    // user was newly discovered as tagged up -> save user without cooldown
+                    commander = new Commander(account, username, uid, channel);
+                    commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
+                    this.botgartClient.commanders.addCommander(commander);
+                    log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
+                }
+
+                const elapsed = now.valueOf() - commander.getLastUpdate().valueOf();
+                switch(commander.getState()) {
+                    case CommanderState.TAG_UP:
+                        // user tagged up and is waiting to gain commander status
+                        if(elapsed > this.gracePeriod) {
+                            commander.setLastUpdate(now);
+                            commander.setRaidStart(now);
+                            commander.setState(CommanderState.COMMANDER);
+                            commander.setTS3Channel(channel);
+                            this.tagUp(g, commander);
+                            log("debug", `Moving ${username} from TAG_UP to COMMANDER state.`);
+                        }
+                    break;
+
+                    case CommanderState.COOLDOWN:
+                        // user tagged up again too quickly -> wait out delay and then go into TAG_UP
+                        if(elapsed > this.userDelay) {
+                            commander.setLastUpdate(now);
+                            commander.setState(CommanderState.TAG_UP);
+                            log("debug", `Moving ${username} from COOLDOWN to TAG_UP state.`);
+                        }
+                    break;
+
+                    case CommanderState.TAG_DOWN:
+                        // user raided before, but tagged down in between
+                        // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
+                        if(elapsed > this.userDelay) {
+                            commander.setLastUpdate(now);
+                            commander.setState(CommanderState.TAG_UP);
+                            log("debug", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
+                        } else {
+                            commander.setState(CommanderState.COOLDOWN);
+                            log("debug", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
+                        }
+                    break;
+
+                    case CommanderState.COMMANDER:
+                        // still raiding -> update timestamp
+                        commander.setLastUpdate(now);
+                    break;
+                } 
+            });
+            taggedDown.forEach((commander: Commander) => {
+                commander.setLastUpdate(now);
+                commander.setState(CommanderState.TAG_DOWN);
+                this.tagDown(g, commander);
+                log("debug", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
+            });
+        });
     }
 
     /**

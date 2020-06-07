@@ -85,6 +85,12 @@ let configSchema = {
         arg: 'ts-unregister-protection',
         env: 'TS_UNREGISTER_PROTECTION'
     },
+    ts_commander_check_interval: {
+        format: 'nat',
+        default: 300000,
+        arg: 'ts-commander-check-interval',
+        env: 'TS_COMMANDER_CHECK_INTERVAL'  
+    },
     ts_listener: {
         ip: {
             format: String,
