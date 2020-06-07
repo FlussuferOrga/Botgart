@@ -1,5 +1,5 @@
-import {configuration} from "../config/Config";
-import {api} from "../Util";
+import { configuration } from "../config/Config";
+import { api } from "../Util";
 import * as events from "events"
 
 

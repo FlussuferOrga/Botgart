@@ -1,4 +1,4 @@
-import { expect, assert } from  "chai";
+import { assert, expect } from "chai";
 import * as U from "../Util";
 import * as R from "../commands/resetlead/ResetRoster"
 import moment = require("moment");

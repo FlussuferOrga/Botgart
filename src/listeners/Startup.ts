@@ -1,8 +1,7 @@
 import { Listener } from "discord-akairo";
-import { log, resolveWvWObjective, resolveWvWMap, resolveMatchColour } from "../Util";
+import { log } from "../Util";
 import { BotgartClient } from "../BotgartClient";
 import { MakeCron } from "../commands/cron/MakeCron";
-import { get } from "../Locale";
 
 export class Startup extends Listener {
     constructor() {

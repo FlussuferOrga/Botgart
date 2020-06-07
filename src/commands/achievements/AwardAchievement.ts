@@ -1,11 +1,7 @@
-import { Command, Listener } from "discord-akairo";
-import * as Util from "../../Util";
-import * as Const from "../../Const";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
 import * as moment from "moment";
 import * as achievements from "./Achievements";
-import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 
 /**

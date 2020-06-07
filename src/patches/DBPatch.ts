@@ -1,4 +1,3 @@
-import { log } from "../Util";
 import { Database } from "../DB.js";
 import { Patch } from "./Patch.js";
 import * as sqlite3 from "better-sqlite3";

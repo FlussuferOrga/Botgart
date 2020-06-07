@@ -10,7 +10,6 @@
 * detected!
 */
 import { log } from "../Util";
-import { Database } from "../DB.js";
 
 export class Patch {
     /**

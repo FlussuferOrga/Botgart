@@ -1,8 +1,6 @@
-import { Command } from "discord-akairo";
 import { log } from "../Util";
 import * as L from "../Locale";
 import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 
 export class FindDuplicates extends BotgartCommand {

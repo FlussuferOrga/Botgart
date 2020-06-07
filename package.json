@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -r ts-node/register src/tests/**/*.test.ts",
-    "build": "./node_modules/typescript/bin/tsc",
+    "build": "node ./node_modules/typescript/bin/tsc",
     "run": "node ./built/index.js",
     "run-patchall": "node ./built/index.js --patchall"
   },

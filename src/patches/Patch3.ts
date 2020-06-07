@@ -1,7 +1,7 @@
-import { log, getAccountName, asyncForEach } from "../Util";
+import { getAccountName, log } from "../Util";
 import { Database } from "../DB.js";
 import { DBPatch } from "./DBPatch.js";
-import {Semaphore} from "await-semaphore";
+import { Semaphore } from "await-semaphore";
 
 /**
 * Adds the account-name column to the registrations table and populates it.

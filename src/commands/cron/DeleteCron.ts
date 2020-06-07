@@ -1,4 +1,3 @@
-import { Command } from "discord-akairo";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";

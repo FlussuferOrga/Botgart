@@ -1,5 +1,3 @@
-import { Command } from  "discord-akairo";
-import * as Const from "../Const";
 import * as L from "../Locale";
 import { BotgartCommand } from "../BotgartCommand";
 import { log } from "../Util";

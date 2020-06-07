@@ -1,7 +1,5 @@
 import * as discord from "discord.js";
 import { log } from "../Util";
-import * as L from "../Locale";
-import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import * as db from "../DB";
 

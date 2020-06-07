@@ -1,5 +1,4 @@
-import { Command } from "discord-akairo";
-import { formatUserPing, log, validateWorld, assignServerRole } from "../Util";
+import { assignServerRole, formatUserPing, log, validateWorld } from "../Util";
 import * as L from "../Locale";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";

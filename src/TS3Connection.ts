@@ -1,11 +1,10 @@
-import {configuration} from "./config/Config";
-import {log} from "./Util";
-import * as net from "net";
+import { configuration } from "./config/Config";
+import { log } from "./Util";
 import CircularBuffer from "circular-buffer";
 import * as moment from "moment";
 import * as L from "./Locale";
 import * as discord from "discord.js";
-import {BotgartClient} from "./BotgartClient";
+import { BotgartClient } from "./BotgartClient";
 import * as events from "events";
 import * as db from "./DB";
 import * as http from "http";

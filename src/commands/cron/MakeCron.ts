@@ -1,11 +1,10 @@
 import { Command } from "discord-akairo";
 import * as schedule from "node-schedule";
-import * as Const from "../../Const";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
-import {assertType, shallowInspect, log} from "../../Util";
+import { log } from "../../Util";
 
 // FIXME: move exec to command
 /**

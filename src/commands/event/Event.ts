@@ -1,7 +1,7 @@
 import moment = require("moment");
-import schedule = require("node-schedule")
-import discord = require("discord.js")
-import LinkedList = require("singly-linked-list")
+import schedule = require("node-schedule");
+import discord = require("discord.js");
+import LinkedList = require("singly-linked-list");
 
 export class EventCalendar {
     private events: Event[]

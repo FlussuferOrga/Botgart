@@ -1,7 +1,6 @@
-
-import { configuration} from "./config/Config";
+import { configuration } from "./config/Config";
 import { WebServer } from "./WebServer";
-import { BotgartClient } from  "./BotgartClient";
+import { BotgartClient } from "./BotgartClient";
 import { Patch } from "./patches/Patch.js";
 import * as commandlineargs from "command-line-args";
 import * as fs from "fs";

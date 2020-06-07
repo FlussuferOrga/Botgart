@@ -1,12 +1,11 @@
-import {configuration} from "./config/Config";
+import { configuration } from "./config/Config";
 import * as Util from "./Util";
 import * as sqlite3 from "better-sqlite3";
 import * as discord from "discord.js";
-import {BotgartClient} from "./BotgartClient";
-import {PermissionTypes} from "./BotgartCommand";
+import { PermissionTypes } from "./BotgartCommand";
 import * as ResetLead from "./commands/resetlead/ResetRoster";
 import Timeout from "await-timeout";
-import {Semaphore} from "await-semaphore";
+import { Semaphore } from "await-semaphore";
 import * as moment from "moment";
 
 const REAUTH_DELAY : number = 10000;

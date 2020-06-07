@@ -1,4 +1,3 @@
-import { log } from "../Util";
 import { Database } from "../DB.js";
 import { DBPatch } from "./DBPatch.js";
 
