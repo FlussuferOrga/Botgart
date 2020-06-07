@@ -318,28 +318,7 @@ export class TS3Listener extends events.EventEmitter {
         this.setMaxListeners(24);
 
         const that = this;
-        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);
-        
-        /*
-        this.ts3connection.getSocket().on("data", (raw : Buffer) => {
-            let data = null; 
-            try {
-                data = JSON.parse(raw.toString());
-            } catch(e) {
-                log("error", `Received malformed message from TS: ${raw.toString()}. Aborting handling.`);
-                return;
-            }
-            
-            log("debug", "Received from TS-Bot: {0}".formatUnicorn(JSON.stringify(data)));
-            // COMMANDERS BROADCAST
-            if(data.constructor == Object && "commanders" in data) {
-                
-            } else {
-                log("warning", `The above data received from TS-Bot could not be processed as it did not match any known command.`);
-            }
-        });
-        */
-        
+        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);       
     }
 
     private async checkCommanders(): Promise<void> {
