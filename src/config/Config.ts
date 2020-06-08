@@ -208,7 +208,11 @@ const configSchema = {
     }
 };
 
-export const getConfig = Memoizer.makeMemoized(loadConfiguration);
+
+const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
+export function getConfig() {
+    return getConfigInternal();
+}
 
 function loadConfiguration() {
     try {
