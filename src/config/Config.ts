@@ -2,6 +2,7 @@ import convict from "convict";
 import fs from 'fs';
 import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
+import {Memoizer} from "memoizer-ts";
 
 const configSchema = {
     prefix: {
@@ -207,21 +208,7 @@ const configSchema = {
     }
 };
 
-let cachedConfig; //store loaded config
-/**
- * This is preserves the implicit typing of the cached value.
- * @param fn
- */
-function singleton<T extends Function>(fn: T): T {
-    if (cachedConfig == null) {
-        cachedConfig = fn();
-    }
-    return cachedConfig
-}
-
-export function getConfig() {
-    return singleton(loadConfiguration)();
-}
+export const getConfig = Memoizer.makeMemoized(loadConfiguration);
 
 function loadConfiguration() {
     try {
