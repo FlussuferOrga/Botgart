@@ -50,13 +50,14 @@ export class TsGuildAdd extends BotgartCommand {
        if(args.confirm === false) {
            message.reply(L.get("MK_GUILD_CANCELED"));
        } else if(args.confirm === true) {
-           this.getBotgartClient().getTS3Connection().post("createguild", 
+           this.getBotgartClient().getTS3Connection().post("guild", 
                                                            { 
                                                              name: args.guildName, 
                                                              tag: args.guildTag, 
                                                              tsgroup: args.guildTSGroup, 
                                                              contacts: args.contacts
-                                                           });
+                                                           })
+               .then(res => message.reply(L.get("HTTP_REQUEST_RETURNED", [JSON.stringify(res)])));
            message.reply(L.get("MK_GUILD_COMPLETE"));
        }
     }

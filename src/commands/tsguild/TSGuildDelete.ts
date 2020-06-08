@@ -24,7 +24,8 @@ export class TsGuildDelete extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        this.getBotgartClient().getTS3Connection().delete("guild", { name: args.guildName });
+        this.getBotgartClient().getTS3Connection().delete("guild", { name: args.guildName })
+            .then(res => message.reply(L.get("HTTP_REQUEST_RETURNED", [JSON.stringify(res)])));
         this.reply(message, responsible, L.get("RM_GUILD_COMPLETE"));
     }
 }

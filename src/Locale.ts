@@ -9,6 +9,8 @@ EN = {
     ...{
         "INTERNAL_ERROR": "An internal error occured. Please contact an administrator about this.",
 
+        "HTTP_REQUEST_RETURNED": "The response to your request has returned: {0}",
+
         "NOT_PERMITTED": "You do not have the required permissions to execute this command.",
         "PERMISSION_SET_TO": "Permission for `{0}` for command `{1}` set to **{2}**.",
         "WELCOME": "Welcome to the Riverside-Discord. :)\n Much of this server isn't accessible to for guests. Please authenticate using an API-key:\n\n1. Visit https://account.arena.net/applications\n2. Click 'new key'\n3. Post `,auth` followed by your new key per direct message (this window) to me.\n\nEg: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
@@ -285,6 +287,8 @@ DE = {
     ...DE,
     ...{
         "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
+
+        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen mit: {0}",
 
         "NOT_PERMITTED": "Du hast nicht die nötigen Berechtigungen um diesen Befehl auszuführen.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf Befehl `{1}` ist jetzt **{2}**.",
