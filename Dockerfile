@@ -29,6 +29,9 @@ RUN apk add --no-cache curl
 COPY --from=dependencies /app/node_modules /app/node_modules
 COPY --from=build /app/built /app/built
 
+# --- Entrypoint ---
+COPY docker-entrypoint.sh /usr/local/bin/
+
 ENV HTTP_PORT 3000
 EXPOSE 3000
 
@@ -38,4 +41,5 @@ VOLUME /app/db
 
 HEALTHCHECK --interval=2m --timeout=5s CMD curl -f http://localhost:${HTTP_PORT}/health || exit 1
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node","/app/built/index.js"]
