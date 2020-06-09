@@ -29,6 +29,13 @@ The root directory holds a `config.json.example`. Copy it to `config.json` and a
 The bot token is how your app knows as which discord account it should connect.
 You can acquire one at the [application section of discord](https://discordapp.com/developers/applications/me).
 
+### Database migration
+At first, the database is only initialized with the original (first version). Therefore, we need to migrate the database by running the bot with the `patchall` parameter:
+```
+node built/index.js --patchall
+```
+This executes all patches lying in [src/patches](https://github.com/ogrady/Botgart/tree/master/src/patches).
+
 ## Run
 You can run your bot by using 
 
