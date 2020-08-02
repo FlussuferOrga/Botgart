@@ -104,7 +104,7 @@ export class TS3Connection {
         this.port = ts3port;
         this.name = name !== null ? name : `TS3Connection[${TS3Connection.CONNECTION_COUNTER++}]`;
         this.buffer = CircularBuffer<string>(TS3Connection.CIRCULAR_BUFFER_SIZE);
-        this.post("/resetroster", {}).then(r => console.log(r)).catch(er => console.log("OH NO", er));
+        this.post("/resetroster", {}).then(r => log("debug", r)).catch(er => log("error", er));
     }
 }
 
@@ -289,7 +289,6 @@ export interface TagDownEvent {
 * The latter will be thrown _after_ the ended lead has been written to the DB.
 */ 
 export class TS3Listener extends events.EventEmitter {
-    private connected: boolean;
     private ts3connection: TS3Connection;
     private broadcastChannel: string;
     private pingRole: string;

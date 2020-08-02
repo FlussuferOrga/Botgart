@@ -218,7 +218,7 @@ export class ResetRoster extends BotgartCommand {
             }
             return user;
         } 
-
+        console.log("going stronk");
         cl.getTS3Connection().post("resetroster", {
             "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
             "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
