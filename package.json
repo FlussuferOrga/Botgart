@@ -7,6 +7,7 @@
     "test": "mocha -r ts-node/register src/tests/**/*.test.ts",
     "build": "node ./node_modules/typescript/bin/tsc",
     "run": "npm run build && node ./built/index.js",
+    "run-debug": "npm run build && node --trace-warnings ./built/index.js",
     "run-patchall": "npm run build && node ./built/index.js --patchall"
   },
   "author": "Daniel O'Grady",
