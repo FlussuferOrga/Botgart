@@ -17,17 +17,20 @@ export class TsGuildAdd extends BotgartCommand {
     }
     
     *args(message) {
-        const guildName = yield { type: (m: discord.Message, p: string) => p.split(" ")
+        const guildName = yield { type: (m: discord.Message, p: string) => p.trim()
+                                                                            .split(" ")
                                                                             .map(t => t.charAt(0).toUpperCase() + t.slice(1))
                                                                             .join(" ") 
                                 };
-        const guildTag  = yield { type: "string" };
-        const contacts  = yield { type: (m: discord.Message, p: string) => p.split(",")
-                                                                            .map(s => s.trim().match(/^.+\.\d{4}$/))
-                                                                            .filter(s => s !== null)
-                                                                            .map(s => s[0])
+        const contacts  = yield { type: (m: discord.Message, p: string) => {
+                                                                            const cs = p.split(",")
+                                                                                        .map(s => s.trim().match(/^.+\.\d{4}$/))
+                                                                                        .filter(s => s !== null)
+                                                                                        .map(s => s[0]); // regex match
+                                                                            return cs.length > 0 ? cs : undefined;
+                                                                          }
                                };
-        const guildTSGroup = yield { type: (m: discord.Message, p: string) => p ? p : guildTag };
+        const guildTSGroup = yield { type: (m: discord.Message, p: string) => p ? p : null };
 
         // [1] the args-method expects all arguments to be set before forwarding them to the command-method.
         // That encompasses the confirmation prompt, which yields the unwanted behaviour of issuing the 
@@ -37,8 +40,8 @@ export class TsGuildAdd extends BotgartCommand {
         // and have the behaviour of the other commands to display the help text. 
         // We emulate this by doing a premature check at this point and only execute the prompt function,
         // if the mandatory arguments are set.
-        const present = x => x !== undefined && x !== null;
-        const confirm = present(guildName) && present(guildTag) && present(contacts) 
+        const present = x => x !== undefined && x !== null && !(typeof(x) === "string" && x.length === 0);
+        const confirm = present(guildName) && present(contacts) 
                         ? yield { type: (m: discord.Message, p: string) => {
                                         let res = undefined;
                                         if(Const.YES.includes(p.toLowerCase())) {
@@ -49,13 +52,15 @@ export class TsGuildAdd extends BotgartCommand {
                                         return res;
                                     },
                           prompt: {
-                              start: "\n" + L.get("MK_GUILD_CONFIRM", [guildName, guildTag, contacts.join(", "), guildTSGroup]),
+                              start: guildTSGroup
+                                      ? "\n" + L.get("MK_GUILD_CONFIRM", [guildName, contacts.join(", "), guildTSGroup])
+                                      : "\n" + L.get("MK_GUILD_CONFIRM_NO_GROUP", [guildName, contacts.join(", ")]),
                               timeout: "\n" + L.get("MK_EVENT_TIMEOUT")
                           }
                         }
                         : yield { type: (m: discord.Message, p: string) => undefined };
 
-        return { guildName, guildTag, contacts, guildTSGroup, confirm };
+        return { guildName, contacts, guildTSGroup, confirm };
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
@@ -65,7 +70,6 @@ export class TsGuildAdd extends BotgartCommand {
            this.getBotgartClient().getTS3Connection().post("guild", 
                                                            { 
                                                              name: args.guildName, 
-                                                             tag: args.guildTag, 
                                                              tsgroup: args.guildTSGroup, 
                                                              contacts: args.contacts
                                                            })

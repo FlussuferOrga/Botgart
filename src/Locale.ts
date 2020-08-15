@@ -86,7 +86,7 @@ EN = {
         "HELPTEXT_GO_FISH": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_REACTION_SNAPSHOT": EN["HELPTEXT_PREFIX"] + "`<URL to the post that should be snapshoted (bot must have access to the guild, channel and post!)>`",
-        "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + '"`<name of the guild>`" "`<tag of the guild, without brackets>`" "`<accounts of the contact persons, comma separated>`" "`<TS group (optional, default is the guild tag)>`"',
+        "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + '"`<name of the guild>`" "`<accounts of the contact persons, comma separated, must follow the format foo.1234>`" "`<TS group (optional, default is the guild tag)>`"',
         "HELPTEXT_TS_GUILD_DELETE": EN["HELPTEXT_PREFIX"] + "`<name of the guild>`",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
@@ -126,7 +126,8 @@ EN = {
         "DESC_TS_GUILD_ADD": "Creates a new Guild on the TS server.",
         "DESC_TS_GUILD_DELETE": "Deletes a guild from the TS server.",
 
-        "MK_GUILD_CONFIRM": "**Name:** {0}\n**Tag:** {1}\n**Contact:** {2}\n**TS-Group:** {3}\n\nIs this correct?",
+        "MK_GUILD_CONFIRM": "**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\n\nIs this correct?",
+        "MK_GUILD_CONFIRM_NO_GROUP": "**Name:** {0}\n**Contact:** {1}\n\nIs this correct?",
         "MK_GUILD_TIMEOUT": "The time for input ran out and guild creation was canceled. You can start over the event creation.",
         "MK_GUILD_CANCELED": "Guild creation has been canceled.",
         "MK_GUILD_COMPLETE": "Guild creation request has been sent to TS.",
@@ -365,7 +366,7 @@ DE = {
         "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_REACTION_SNAPSHOT": DE["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
-        "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Tag der Gilde ohne eckige Klammern>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
+        "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
         "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
@@ -405,7 +406,8 @@ DE = {
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem Teamspeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom Teamspeak-Server",
 
-        "MK_GUILD_CONFIRM": "**Name:** {0}\n**Tag:** {1}\n**Kontakt:** {2}\n**TS-Gruppe:** {3}\n\nIst das so in Ordnung?",
+        "MK_GUILD_CONFIRM": "**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\n\nIst das so in Ordnung?",
+        "MK_GUILD_CONFIRM_NO_GROUP": "**Name:** {0}\n**Kontakt:** {1}\n\nIst das so in Ordnung?",
         "MK_GUILD_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Gilden-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
         "MK_GUILD_CANCELED": "Gildenerstellung wurde abgebrochen.",
         "MK_GUILD_COMPLETE": "Anfrage zum Anlegen einer Gilde wurde an den Teamspeak-Server gesendet",
