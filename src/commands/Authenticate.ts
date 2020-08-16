@@ -58,11 +58,11 @@ export class Authenticate extends BotgartCommand {
             }
         });
 
-        message.util.send(L.get("CHECKING_KEY"))
+        message.util?.send(L.get("CHECKING_KEY"))
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
         const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
         if(!validFormat) {
-            message.util.send(L.get("KEY_INVALID_FORMAT"));
+            message.util?.send(L.get("KEY_INVALID_FORMAT"));
             return;
         } else {
             // try to delete the message for privacy reasons if it is not a direct message
@@ -70,7 +70,7 @@ export class Authenticate extends BotgartCommand {
                 if(message.deletable) {
                     message.delete();
                 } else {
-                    message.util.send(L.get("NO_DEL_PERM"));
+                    message.util?.send(L.get("NO_DEL_PERM"));
                 }
             }
             const cl: BotgartClient = this.getBotgartClient();
@@ -84,8 +84,8 @@ export class Authenticate extends BotgartCommand {
                     } else {
                         getAccountGUID(args.key).then(async guid => {
                             await Util.asyncForEach(members, async (m: {guild: discord.Guild, member: discord.GuildMember}) => {
-                                let r: discord.Role = m.guild.roles.cache.find(r => r.name === role);
-                                if(!r) {
+                                let r: discord.Role | undefined = m.guild.roles.cache.find(r => r.name === role);
+                                if(r === undefined) {
                                     Util.log("error", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
@@ -97,7 +97,7 @@ export class Authenticate extends BotgartCommand {
                                     }
                                     if(accountName === false) {
                                         Util.log("warning", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
-                                        accountName = null;
+                                        accountName = "";
                                     }
                                     let unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if(unique) {
@@ -106,7 +106,7 @@ export class Authenticate extends BotgartCommand {
                                         Util.assignServerRole(m.member, null, r);
                                         // give earned achievement roles again
                                         for(const achievement of cl.achievementRepository.getPlayerAchievements(guid.toString()).map(an => cl.getAchievement(an.achievement_name)).filter(a => a !== undefined)) {
-                                            achievement.giveRole(m.member);
+                                            achievement?.giveRole(m.member);
                                         }
                                         cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);
                                         reply = L.get("KEY_ACCEPTED")

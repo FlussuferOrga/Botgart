@@ -11,10 +11,16 @@ export enum PermissionTypes {
     other = "other"
 }
 
-interface BotgartCommandOptions {
+interface BotgartCommandOptionsNullable {
     availableAsDM?: boolean, 
     cronable?: boolean, 
     everyonePermission?: number
+}
+
+interface BotgartCommandOptions {
+    availableAsDM: boolean, 
+    cronable: boolean, 
+    everyonePermission: number
 }
 
 export class BotgartCommand extends Command {
@@ -32,7 +38,7 @@ export class BotgartCommand extends Command {
     *                        cronable: false
     *                        everyonePermission: 0
     */
-    constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptions) {
+    constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
         const defaults: BotgartCommandOptions = { availableAsDM: false, cronable: false, everyonePermission: 0 };
         const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : Object.assign({}, defaults, botgartOptions);
@@ -65,7 +71,8 @@ export class BotgartCommand extends Command {
     *          Useful for generating default locale keys.
     */
     protected snakeCaseName(): string {
-        return this.constructor.name.match(/([A-Z][a-z0-9]*)/g).map(t => t.toUpperCase()).join("_")
+        const match: string | undefined = this.constructor.name.match(/([A-Z][a-z0-9]*)/g)?.map(t => t.toUpperCase()).join("_");
+        return match === undefined ? this.constructor.name : match;
     }
 
     protected helptextKey(): string {
@@ -101,7 +108,7 @@ export class BotgartCommand extends Command {
     */
     public isAllowed(user: (discord.GuildMember|discord.User)) {
         const uid = user.id;
-        const gid = user instanceof discord.GuildMember ? user.guild.id : null;
+        const gid = user instanceof discord.GuildMember ? user.guild.id : undefined;
         const roles = user instanceof discord.GuildMember ? user.roles.cache.map(r => r.id) : [];
         const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
         //console.log(allowed, perm);
@@ -118,7 +125,7 @@ export class BotgartCommand extends Command {
     * @returns - true, if the user is an owner.
     */ 
     public isOwner(user: (discord.GuildMember|discord.User)) {
-        const ownerIds = getConfig().get().owner_ids;
+        const ownerIds = getConfig().get().owner_ids; // as string[]; // FIXME: this should actually come out of the config as string[] already
         return Array.isArray(ownerIds) && ownerIds.includes(user.id);
     }
 
@@ -241,7 +248,7 @@ export class BotgartCommand extends Command {
 
         let causer = message.member || message.author;
         if(!this.isAllowed(causer)) {
-            message.util.send(L.get("NOT_PERMITTED"));
+            message.util?.send(L.get("NOT_PERMITTED"));
             return;
         }
 

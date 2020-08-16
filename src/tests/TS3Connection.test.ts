@@ -14,8 +14,9 @@ filledStorage.addCommander(c1);
 filledStorage.addCommander(c2);
 filledStorage.addCommander(c3);
 
-const dataFromTS3 = {"commanders":[{"account_name":"Len.1879","ts_cluid":"111111","ts_display_name":"[RoE] Len","ts_channel_name":"Silas Kaffee-Raid 04:50AM till 6:00 AM"}]};
-const dataFromTS3Empty = {"commanders":[]};
+
+const dataFromTS3: {"commanders": ts3.TS3Commander[]} = {"commanders":[{"account_name":"Len.1879","ts_cluid":"111111","ts_display_name":"[RoE] Len","ts_channel_name":"Silas Kaffee-Raid 04:50AM till 6:00 AM"}]};
+const dataFromTS3Empty: {"commanders": ts3.TS3Commander[]} = {"commanders":[]};
 
 
 describe("TS3Connection", function() {

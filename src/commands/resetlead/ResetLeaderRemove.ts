@@ -41,8 +41,9 @@ export class RemoveResetLeader extends BotgartCommand {
         if(args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
         }
-        const [g,mes,roster] = this.getBotgartClient().getRoster(guild, args.weekNumber, args.year);
-        if(roster !== undefined) {
+        const dbRoster = this.getBotgartClient().getRoster(guild, args.weekNumber, args.year);
+        if(dbRoster !== undefined) {
+            const [g,mes,roster] = dbRoster;
             roster.removeLead(WvWMap.getMapByName(args.map), args.player);
             this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [args.player, args.weekNumber, mes.url]));
         }

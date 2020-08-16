@@ -14,15 +14,15 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository{
      * Gets the value of an environment variable as set for a guild.
      * guildId: ID of the guild to lookup the variable in.
      * name: name of the variable.
-     * returns: triple [0]: value es text,
+     * returns: triple [0]: value as text,
      *                 [1]: type of the value, as stored in the DB
      *                 [2]: casted version, if the type was among the supported types, else undefined
      */
-    public _getEnvironmentVariable(guildId: string, name: string): [string, string, (boolean|number|string|null)] {
+    public _getEnvironmentVariable(guildId: string, name: string): [string, string, (boolean | number | string | null)] {
         return this.execute(db => {
             const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
                 .get(guildId, name)
-            let casted = undefined;
+            let casted: string | number | boolean | null = null;
             switch(res.type) {
                 case "boolean":
                     casted = ("true" === res.value);
@@ -34,14 +34,15 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository{
                     casted = res.value;
                     break;
             }
-            return [res.value, res.type, casted];
-        });
+            return [""+res.value, ""+res.type, casted];
+        })
+        ?? ["null", "null", null];
     }
 
     /**
      * Convenience method for _setEnvironmentVariable.
      */
-    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string = null) {
+    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string | null = null) {
         return this._setEnvironmentVariable(guild.id, name, value, type);
     }
 
@@ -53,7 +54,7 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository{
      * name: name of the EV.
      * type: type of the variable as it should be stored. This will affect how it will be retrieved later on in getEnvironmentVariable.
      */
-    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string = null) {
+    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string | null = null) {
         type = type || typeof value;
         return this.execute(db => db.prepare(`
             INSERT INTO 

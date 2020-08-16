@@ -69,7 +69,7 @@ export function loadDirectoryModuleClasses(directory: string, args: any[] = [], 
 }
 
 export function loadModuleClasses(file: string, args: any[] = [], blacklist: string[] = []): object[] {
-    const loadedClasses = [];
+    const loadedClasses: object[] = [];
     const module = require(path.resolve(file));
     for(const exportName in module) {
         if(!blacklist.includes(exportName)) {
@@ -226,8 +226,8 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
 };
 
 
-export function resolveDiscordUser(client: discord.Client, uid: string): discord.GuildMember|null {
-    let user: discord.GuildMember = null;
+export function resolveDiscordUser(client: discord.Client, uid: string): discord.GuildMember | undefined {
+    let user: discord.GuildMember | undefined = undefined;
     let i = 0;
     const gs = client.guilds.cache.array();
     let l = gs.length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
@@ -276,7 +276,7 @@ export const logger = winston.createLogger({
   ]
 });
 export function log(level: string, message: string): winston.Logger {
-    const callFile = callsites()[1].getFileName().split(path.sep);
+    const callFile: string[] = callsites()[1].getFileName()?.split(path.sep) ?? ["UNKNOWN"];
     const file = callFile[callFile.length - 1];
     return logger.log({
         "label": file, // label,

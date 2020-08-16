@@ -57,7 +57,7 @@ const configSchema = {
                 }
             }
         },
-        default: [],
+        default: new Array<string>(),
         arg: 'owner-ids',
         env: 'OWNER_IDS'
     },
@@ -82,7 +82,7 @@ const configSchema = {
                 }
             }
         },
-        default: [],
+        default: new Array<string>(),
         arg: 'ts-unregister-protection',
         env: 'TS_UNREGISTER_PROTECTION'
     },
@@ -101,7 +101,7 @@ const configSchema = {
         },
         port: {
             format: 'port',
-            default: '10137',
+            default: 10137,
             arg: 'ts-listener-port',
             env: 'TS_LISTENER_PORT'
         },
@@ -189,19 +189,19 @@ const configSchema = {
     disabled: {
         listeners: {
             format: Array,
-            default: [],
+            default: new Array<string>(),
             arg: 'disabled-listeners',
             env: 'DISABLED_LISTENERS'
         },
         commands: {
             format: Array,
-            default: [],
+            default: new Array<string>(),
             arg: 'disabled-commands',
             env: 'DISABLED_COMMANDS'
         },
         inhibitors: {
             format: Array,
-            default: [],
+            default: new Array<string>(),
             arg: 'disabled-inhibitors',
             env: 'DISABLED_INHIBITORS'
         },

@@ -65,23 +65,28 @@ export class MakeCron extends BotgartCommand {
         }
 
         return mod.parse(cmdargs, message).then( parsedArgs => {
-            let checkError = mod.checkArgs(parsedArgs);
+            const checkError = mod.checkArgs(parsedArgs);
             if(checkError !== undefined) {
                 return message.util.send(checkError);
             } else {
-                let cl = <BotgartClient>this.client;
-                let job = this.scheduleCronjob(schedule, message.member.user, message.guild, mod, parsedArgs);
+                const cl = <BotgartClient>this.client;
+                const job = this.scheduleCronjob(schedule, message.member.user, message.guild, mod, parsedArgs);
                 if(!job) {
                     return message.util.send(L.get("CRONJOB_NOT_STORED"));
                 } else {
-                    let cid = cl.cronjobRepository.storeCronjob(schedule,
+                    const cid = cl.cronjobRepository.storeCronjob(schedule,
                                                 mod.id, 
                                                 mod.serialiseArgs(parsedArgs), 
                                                 message.member.user.id, 
                                                 message.guild.id);
-                    cl.cronjobs[cid] = job;
-                    log("info", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
-                    return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
+                    if(cid === undefined) {
+                        log("error", `An error was encountered while storing a cronjob for the command ${mod.name}, the DB returned an undefined ID.`);
+                    } else {
+                        cl.cronjobs[cid] = job;
+                        log("info", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));                        
+                        return message.util.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
+                    }
+                    return message.util.send(L.get("INTERNAL_ERROR"));
                 }
             }
         });        

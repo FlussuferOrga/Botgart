@@ -20,7 +20,7 @@ export class Permit extends BotgartCommand {
                 {
                     id: "receiver",
                     type: async (message: discord.Message, phrase: string) => { 
-                        let receiver: discord.GuildMember | discord.User | discord.Role;
+                        let receiver: discord.GuildMember | discord.User | discord.Role | undefined = undefined;
                         const snowflake = phrase.match(/<@[^\d]?(\d*)>/);
                         if(snowflake !== null) {
                             const snowflakeId: string = snowflake[1];                           
@@ -58,7 +58,7 @@ export class Permit extends BotgartCommand {
         const type = (args.receiver instanceof discord.Role) ? PermissionTypes.role : PermissionTypes.user;
         const receiverName = (args.receiver instanceof discord.Role) ? args.receiver.name : args.receiver.displayName;
         const value = args.value;
-        const perm = this.getBotgartClient().commandPermissionRepository.setPermission(cmd, receiver, type, value, message.guild.id);
+        const perm = this.getBotgartClient().commandPermissionRepository.setPermission(cmd, receiver, type, value, (<discord.Guild>message.guild).id);
         this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm])).then(
             () => {},
             (err) => log("error", err.message)

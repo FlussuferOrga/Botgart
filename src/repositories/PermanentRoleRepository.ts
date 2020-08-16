@@ -1,7 +1,7 @@
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class PermanentRoleRepository extends AbstractDbRepository{
+export class PermanentRoleRepository extends AbstractDbRepository {
     public storePermanentRole(user: string, guild: string, role: string) : boolean {
         let sql = `INSERT INTO permanent_roles(guild, user, role) VALUES(?,?,?)`;
         return this.execute(db => {
@@ -12,7 +12,7 @@ export class PermanentRoleRepository extends AbstractDbRepository{
                 Util.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
                 return false;
             }
-        });
+        }) as boolean;
     }
 
     public getPermanentRoles(user: string, guild: string) : string[] {
@@ -20,7 +20,7 @@ export class PermanentRoleRepository extends AbstractDbRepository{
     }
 
     public deletePermanentRole(user: string, guild: string, role: string): boolean {
-        let sql = `DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?`;
+        const sql = `DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?`;
         return this.execute(db => {
             try {
                 db.prepare(sql).run(guild, user, role);
@@ -29,6 +29,6 @@ export class PermanentRoleRepository extends AbstractDbRepository{
                 Util.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
                 return false;
             }
-        });
+        }) as boolean;
     }
 }

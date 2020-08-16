@@ -26,7 +26,7 @@ export class TsGuildAdd extends BotgartCommand {
                                                                             const cs = p.split(",")
                                                                                         .map(s => s.trim().match(/^.+\.\d{4}$/))
                                                                                         .filter(s => s !== null)
-                                                                                        .map(s => s[0]); // regex match
+                                                                                        .map((s: RegExpMatchArray) => s[0]); // regex match
                                                                             return cs.length > 0 ? cs : undefined;
                                                                           }
                                };
@@ -43,7 +43,7 @@ export class TsGuildAdd extends BotgartCommand {
         const present = x => x !== undefined && x !== null && !(typeof(x) === "string" && x.length === 0);
         const confirm = present(guildName) && present(contacts) 
                         ? yield { type: (m: discord.Message, p: string) => {
-                                        let res = undefined;
+                                        let res: boolean | undefined = undefined;
                                         if(Const.YES.includes(p.toLowerCase())) {
                                             res = true;
                                         } else if (Const.NO.includes(p.toLowerCase())) {

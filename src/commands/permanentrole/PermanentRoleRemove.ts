@@ -30,20 +30,20 @@ export class RemovePermanentRole extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        if(!message) {
-            Util.log("error", "Mandatory message parameter missing. This command can not be issued as cron.");
+        if(!message || !message.guild) {
+            Util.log("error", "Mandatory message parameter missing or it is a direct message. This command can not be issued as cron.");
             return;
         }
 
-        let cl = <BotgartClient>this.client;
-        let success = cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
+        const cl = <BotgartClient>this.client;
+        const success = cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
 
         if(success) {
             Util.log("info", "Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
-            message.util.send(L.get("PERMANENT_ROLE_RM_SUCC"));
+            message.util?.send(L.get("PERMANENT_ROLE_RM_SUCC"));
         } else {
             Util.log("info", "Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
-            message.util.send(L.get("PERMANENT_ROLE_RM_FAIL"));
+            message.util?.send(L.get("PERMANENT_ROLE_RM_FAIL"));
         }
     }
 }

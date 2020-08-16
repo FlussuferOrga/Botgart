@@ -32,9 +32,9 @@ export class Reauthenticate extends BotgartCommand {
         const cl: BotgartClient = this.getBotgartClient();
         cl.registrationRepository.revalidateKeys().then(
             update => {                    
-                let g: discord.Guild; 
-                let currentRole: discord.Role;
-                let admittedRole: discord.Role;
+                let g: discord.Guild | null; // resolve() can result in null, not undefined... 
+                let currentRole: discord.Role | undefined;
+                let admittedRole: discord.Role | undefined;
                 // filter out users for which we encountered errors
                 update.filter(r => r !== undefined).forEach(async row => {
                     let [p,admittedRoleName] = row;
@@ -72,7 +72,7 @@ export class Reauthenticate extends BotgartCommand {
                                     m.send(L.get("KEY_INVALIDATED"));
                                 } else {
                                     // user transed to another admitted server -> update role
-                                    assignServerRole(m, currentRole, admittedRole);
+                                    assignServerRole(m, currentRole, admittedRole === undefined ? null : admittedRole);
                                 }
                             }
                         }

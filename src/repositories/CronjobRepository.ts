@@ -1,7 +1,7 @@
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class CronjobRepository extends AbstractDbRepository{
-    public storeCronjob(schedule: string, command: string, args: string, creator: string, guild: string) : number|undefined {
+export class CronjobRepository extends AbstractDbRepository {
+    public storeCronjob(schedule: string, command: string, args: string, creator: string, guild: string) : number | undefined {
         let sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?,?,?,?,?)`;
         return this.execute(db => {
             let lastId = undefined;

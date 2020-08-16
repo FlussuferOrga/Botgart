@@ -63,7 +63,7 @@ export class Say extends BotgartCommand {
     deserialiseArgs(jsonargs) {
         let args = JSON.parse(jsonargs);
         let guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
-        args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
+        args.channel = guild?.channels.cache.find(c => c.id == args.channel.channel);
         return args;
     }
 }

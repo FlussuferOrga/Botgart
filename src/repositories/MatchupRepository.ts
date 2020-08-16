@@ -135,10 +135,8 @@ export class MatchupRepository extends AbstractDbRepository{
      * @param now the timestamp around which to check.
      * @returns a FactionColour, if it can be determined, or undefined
      */
-    public getColourOf(worldId: number, now: moment.Moment = undefined): FactionColour | undefined {
-        if(!now) {
-            now = moment.utc().local();
-        }
+    public getColourOf(worldId: number, now: moment.Moment | undefined = undefined): FactionColour | undefined {
+        const timestamp: moment.Moment = now ?? moment.utc().local();
         const res = this.execute(db => db.prepare(`
             SELECT
                 mf.colour
@@ -150,7 +148,7 @@ export class MatchupRepository extends AbstractDbRepository{
                 mf.world_id = ?
                 AND ? BETWEEN m.start AND m.end
 
-        `).get(worldId, Util.momentToLocalSqliteTimestamp(now)));
+        `).get(worldId, Util.momentToLocalSqliteTimestamp(timestamp)));
         return res !== undefined ? res.colour : undefined
     }
 
@@ -163,7 +161,7 @@ export class MatchupRepository extends AbstractDbRepository{
      * @param now: the moment around which the state should be determined
      * @returns: information about the state of all objectives
      */
-    public getObjectivesAround(now: moment.Moment = undefined)
+    public getObjectivesAround(now: moment.Moment | undefined = undefined)
         : {
         snapshot_id: number,
         timestamp: string,
@@ -249,7 +247,7 @@ export class MatchupRepository extends AbstractDbRepository{
      * now: the moment around which the stats should be determined
      * returns: information about the stats (not aggregated)
      */
-    public getStatsAround(now: moment.Moment = undefined)
+    public getStatsAround(now: moment.Moment | undefined = undefined)
         : {
         snapshot_id: number,
         timestamp: string,

@@ -97,7 +97,7 @@ describe("Util - Is Between", function() {
 describe("Util - Crons", function() {
   it("empty string", () => expect(!U.parseCronDate("")));
 
-  it("undefined", () => expect(!U.parseCronDate(undefined)));
+  //it("undefined", () => expect(!U.parseCronDate(undefined)));
 
   it("cron valid string 1", () => expect(U.parseCronDate("0 * 32 * 3")).equal("0 * 32 * 3"));
 

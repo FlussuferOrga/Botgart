@@ -34,18 +34,21 @@ export class DeleteCron extends BotgartCommand {
         return this.deleteCronjob(args.id);
     }
 
-    exec(message: discord.Message, args: any): Promise<discord.Message | discord.Message[]> {
+    exec(message: discord.Message, args: any): void {
         if(!message.member) {
-            return message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
+            message.util?.send(L.get("NOT_AVAILABLE_AS_DM"));
+            return;
         }
 
-        let errorMessage = this.checkArgs(args);
+        const errorMessage = this.checkArgs(args);
         if(errorMessage) {
-            return message.util.send(errorMessage);
+            message.util?.send(errorMessage);
+            return;
         }
         
-        let mes = this.command(message, message.author, message.guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
-        return message.util.send(mes);
+        // not cronable, can be casted
+        const mes = this.command(message, message.author, <discord.Guild>message.guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
+        message.util?.send(mes);
     }
 
     /**

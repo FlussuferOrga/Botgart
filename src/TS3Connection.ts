@@ -25,7 +25,7 @@ export interface TagUp {
     readonly dbRegistration: Registration
 }
 
-interface TS3Commander {
+export interface TS3Commander {
     readonly account_name: string;
     readonly ts_cluid: string;
     readonly ts_display_name: string;
@@ -99,10 +99,10 @@ export class TS3Connection {
         });
     }
 
-    public constructor(ts3host, ts3port, name = null) {
+    public constructor(ts3host: string, ts3port: number, name?: string) {
         this.host = ts3host;
         this.port = ts3port;
-        this.name = name !== null ? name : `TS3Connection[${TS3Connection.CONNECTION_COUNTER++}]`;
+        this.name = name !== undefined ? name : `TS3Connection[${TS3Connection.CONNECTION_COUNTER++}]`;
         this.buffer = CircularBuffer<string>(TS3Connection.CIRCULAR_BUFFER_SIZE);
         this.post("/resetroster", {}).then(r => log("debug", r)).catch(er => log("error", er));
     }
@@ -152,7 +152,7 @@ export class Commander {
     private ts3DisplayName: string;
     private ts3clientUID: string;
     private ts3channel: string;
-    private raidStart: moment.Moment;
+    private raidStart?: moment.Moment;
     private lastUpdate: moment.Moment;
     private state: CommanderState;
     private discordMember: discord.GuildMember;
@@ -181,7 +181,7 @@ export class Commander {
         this.ts3channel = ts3channel;
     }
 
-    public getRaidStart(): moment.Moment {
+    public getRaidStart(): moment.Moment | undefined {
         return this.raidStart;
     }
 
@@ -218,7 +218,8 @@ export class Commander {
     *          That means: when this method is called, it assumes the raid is still going on!
     */
     public getRaidTime(): number {
-        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - this.getRaidStart().valueOf())/1000 : 0;
+        // this cast is save, since we checked beforehand in the condition of the ternary...
+        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (<moment.Moment>this.getRaidStart()).valueOf())/1000 : 0;
     }
 
     public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string) {
@@ -417,7 +418,7 @@ export class TS3Listener extends events.EventEmitter {
             }
             commander.setDiscordMember(duser);
             if(crole && commander.getDiscordMember()) {
-                commander.getDiscordMember().roles.add(crole);
+                commander.getDiscordMember()?.roles.add(crole);
             }
             displayname = `${displayname} (${registration.registration_role})`;
         }
@@ -445,24 +446,29 @@ export class TS3Listener extends events.EventEmitter {
     */
     private async tagDown(g: discord.Guild, commander: Commander) {
         let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
-        let dmember: discord.GuildMember = undefined;
+        let dmember: discord.GuildMember | undefined = undefined;
         if(registration) {
             // the commander is member of the current discord -> remove role
             // since removing roles has gone wrong a lot lately,
             // we're updating the cache manually
             // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
-            const crole: discord.Role = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
+            const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(crole && dmember) {
                 log("info", `Tagging down ${dmember.displayName} in ${g.name}.`);
-                dmember.roles.remove(crole).catch(e => {
-                    log("warning", `Could not remove role '${this.commanderRole}' from user '${dmember.displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
+                dmember.roles.remove(crole.name).catch(e => { // FIXME: this always fails, so I will now try with just passing the name, I would prefer to pass the whole Roll object
+                    log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
             }
             // do not write leads of members which hide their roles
             const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
             if(writeToDB) {
-                this.botgartClient.tsLeadRepository.addLead(registration.gw2account, commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
+                if(commander.getRaidStart() === undefined) {
+                    log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
+                } else {
+                    this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
+                }
+                
             }
         }
         

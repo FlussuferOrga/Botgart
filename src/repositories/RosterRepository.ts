@@ -3,11 +3,12 @@ import * as ResetLead from "../commands/resetlead/ResetRoster";
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class RosterRepository extends AbstractDbRepository{
-    public getActiveRosters(guild: discord.Guild): Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]>[] {
+export class RosterRepository extends AbstractDbRepository {
+    public getActiveRosters(guild: discord.Guild): Promise<[ResetLead.Roster, discord.TextChannel, discord.Message]>[] {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
             .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
-            .map(row => this.getRosterPost(guild, row.wn, row.year)));
+            .map(row => this.getRosterPost(guild, row.wn, row.year)))
+            .filter(([roster, channel, message]) => roster !== undefined && channel !== undefined && message != undefined);
     }
 
     /**
@@ -33,13 +34,13 @@ export class RosterRepository extends AbstractDbRepository{
                     db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
                 }
                 let stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map) VALUES(?,?,?)`);
-                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader, map));
+                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader, map.name));
             })(null);
         });
     }
 
     async getRosterPost(guild: discord.Guild, weekNumber: number, year: number)
-        : Promise<[undefined, undefined, undefined] | [ResetLead.Roster, discord.TextChannel, discord.Message]> {
+        : Promise<undefined | [ResetLead.Roster, discord.TextChannel, discord.Message]> {
         let postExists = false;
         const roster = new ResetLead.Roster(weekNumber, year);
         const entries = this.execute(db => db.prepare(`
@@ -63,8 +64,8 @@ export class RosterRepository extends AbstractDbRepository{
             .all(guild.id, weekNumber, year));
         entries.forEach(r => roster.addLead(ResetLead.WvWMap.getMapByName(r.map), r.player));
 
-        let channel: discord.TextChannel;
-        let message: discord.Message;
+        let channel: discord.TextChannel | undefined = undefined;
+        let message: discord.Message | undefined = undefined;
         if(entries.length > 0) {
             channel = await <discord.TextChannel>guild.channels.cache.find(c => c.id === entries[0].channel);
             if(channel) {
@@ -83,7 +84,7 @@ export class RosterRepository extends AbstractDbRepository{
             }
         }
 
-        return entries && postExists ? [roster, channel, message] : [undefined,undefined,undefined];
+        return entries && postExists ? [<ResetLead.Roster>roster, <discord.TextChannel>channel, <discord.Message>message] : undefined;
     }
 
 }

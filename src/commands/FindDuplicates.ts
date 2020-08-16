@@ -23,8 +23,9 @@ export class FindDuplicates extends BotgartCommand {
         log("info", "Finding duplicates complete.");      
     }
 
-    postExecHook(message: discord.Message, args: any, result: any): Promise<discord.Message | discord.Message[]> {
-        return message.util.send(L.get("FIND_DUPLICATES_COMPLETE"));
+    postExecHook(message: discord.Message, args: any, result: any): void {
+        message.util?.send(L.get("FIND_DUPLICATES_COMPLETE"));
+
     }
 }
 

@@ -25,30 +25,36 @@ export class RepairRoles extends BotgartCommand {
     public command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Object): void {
         const cl = this.getBotgartClient();
         const designations: DesignatedRole[] = cl.registrationRepository.getDesignatedRoles();
-        let g: discord.Guild;
+        let g: discord.Guild | undefined = undefined;
         let m: discord.GuildMember;
-        let r: discord.Role;
+        let r: discord.Role | undefined;
         designations.forEach(async d => {
-            if(!g || g.id != d.guild) {
+            if(g === undefined || g.id != d.guild) {
                 // designations come ordered by guild. This trick allows us to
                 // find each guild only once.
                 g = cl.guilds.cache.find(g => g.id == d.guild);
             }
-            r = g.roles.cache.find(role => role.name === d.registration_role);
-            m = await guild.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
-            if(!r) {
-                log("error", "Was supposed to assign role '{0}' to user, but could not find it.".formatUnicorn(d.registration_role));
+            // check again, in case lookup fails
+            if(g === undefined) {
+                log("error", `Could not look up a guild with ID ${d.guild}. Have I been kicked?`);
             } else {
-                if(!m) {
-                    log("error", "User {0} is not present in this guild.".formatUnicorn(d.user));
+                r = g.roles.cache.find(role => role.name === d.registration_role);
+                m = await guild.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
+                if(r === undefined) {
+                    log("error", `Was supposed to assign role '${d.registration_role}' to user, but could not find it.`);
                 } else {
-                    if(!m.roles.cache.find(role => role.name === r.name)) {
-                        m.roles.add(r)
-                            .then(()   => log("info", "Gave role {0} to user {1}".formatUnicorn(r.name, m.displayName)))
-                            .catch(err => log("error", "Could not give role {0} to user {1}: {2}.".formatUnicorn(r.name, m.displayName, err)));
+                    if(!m) {
+                        log("error", `User ${d.user} is not present in this guild.`);
+                    } else {
+                        if(!m.roles.cache.find(role => role.name === (<discord.Role>r).name)) {
+                            m.roles.add((<discord.Role>r))
+                                .then(()   => log("info", `Gave role ${(<discord.Role>r).name} to user ${m.displayName}`))
+                                .catch(err => log("error", `Could not give role ${(<discord.Role>r).name} to user ${m.displayName}: ${err}.`));
+                        }
                     }
-                }
+                }                
             }
+
         });
     }
 }

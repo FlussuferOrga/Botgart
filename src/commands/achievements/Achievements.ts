@@ -71,8 +71,9 @@ export abstract class Achievement<C> {
     *          -1 implies that the achievement was not actually awarded, because it is not repeatable and the player already has the achievement. 
     *          and [1] whether this achievement was awarded for the first time, which will be relevant to determine whether to post something to Discord. 
     */
-    private award(gw2account: string, by: string = null, timestamp: moment.Moment = null): [number, boolean] {
+    private award(gw2account: string, by?: string, timestamp?: moment.Moment): [number, boolean] {
         timestamp = timestamp || moment.utc();
+        by = by ?? "";
         const repo = this.client.achievementRepository;
         const has: boolean = repo.checkAchievement(this.name, gw2account).length > 0;
         let rowId: number = -1;
@@ -89,7 +90,7 @@ export abstract class Achievement<C> {
     * by: see award()
     * timestamp: see award()
     */
-    public awardIn(guild: discord.Guild, discordUser: discord.GuildMember, by: string = null, timestamp: moment.Moment = null): AchievementAwardResult {
+    public awardIn(guild: discord.Guild, discordUser: discord.GuildMember, by?: string, timestamp?: moment.Moment): AchievementAwardResult {
         let result: AchievementAwardResult = AchievementAwardResult.NOT_AWARDED;
 
         const userdata = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
@@ -107,9 +108,9 @@ export abstract class Achievement<C> {
 
                 if(rowId > -1 && (isNew || this.repeatable)) {
                     result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
-                    const achievementChannel: discord.Channel = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
+                    const achievementChannel: discord.Channel | undefined = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
 
-                    if(achievementChannel) {
+                    if(achievementChannel !== undefined) {
                         if(isNew || this.announceRepetitions) {
                            (<discord.TextChannel>achievementChannel).send({reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
                         }                       
@@ -117,8 +118,8 @@ export abstract class Achievement<C> {
                         U.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
-                    const role: discord.Role = guild.roles.cache.find(r => r.name === this.getRoleName());
-                    if(role) {
+                    const role: discord.Role | undefined = guild.roles.cache.find(r => r.name === this.getRoleName());
+                    if(role !== undefined) {
                         discordUser.roles.add(role);
                     } else {
                         guild.roles.create({ data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"})
@@ -199,8 +200,8 @@ abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
           super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
           client.ts3listener.on("tagup", (x: ts3.TagUpEvent) => {
-                if(x.commander.getDiscordMember()) {
-                    this.tryAward(x.commander.getDiscordMember(), x);
+                if(x.commander.getDiscordMember() !== undefined) {
+                    this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
                 } else {
                     U.log("warning", `Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
                 }                
@@ -213,8 +214,8 @@ abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
           super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
           client.ts3listener.on("tagdown", (x: ts3.TagDownEvent) => {
-                if(x.commander.getDiscordMember()) {
-                    this.tryAward(x.commander.getDiscordMember(), x);
+                if(x.commander.getDiscordMember()  !== undefined) {
+                    this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
                 } else {
                     U.log("warning", `Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
                 }    
@@ -234,7 +235,7 @@ abstract class ObjectiveAchievement extends Achievement<{"commander": ts3.Comman
                                         .commanders
                                         .getActiveCommanders()
                                         .filter(c => c.getDiscordMember() !== undefined)
-                                        .map(c => this.tryAward(c.getDiscordMember(), 
+                                        .map(c => this.tryAward(<discord.GuildMember>c.getDiscordMember(), 
                                                                 {"commander": c, "objectives": objs}))
                                 });
     }
@@ -252,12 +253,12 @@ abstract class NewMatchupAchievement extends Achievement<{lastMatchup: Matchup, 
                                         .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
                                                              , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                                         .map(async r => {
-                                            const guild: discord.Guild = client.guilds.cache.get(r.guild);
-                                            return guild ? await guild.members.fetch(r.user) : undefined // .cache.get(r.user) : undefined;
+                                            const guild: discord.Guild | undefined = client.guilds.cache.get(r.guild);
+                                            return guild !== undefined ? await guild.members.fetch(r.user) : undefined // .cache.get(r.user) : undefined;
                                         })
                                 ).then(gm => 
                                     gm.filter(c => c !== undefined)
-                                      .map(c => this.tryAward(c, mu))
+                                      .map((c: discord.GuildMember) => this.tryAward(c, mu))
                                 );
                             });
     }
@@ -342,11 +343,11 @@ export class Trailblazer extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        const rs: moment.Moment = context.commander.getRaidStart();
+        const rs: moment.Moment | undefined = context.commander.getRaidStart();
         const min: number = U.getResetTime().minute();
         const before: moment.Moment = U.getResetTime().minute(min-20);
         const after: moment.Moment = U.getResetTime().minute(min+20);
-        return rs.weekday() === U.RESET_WEEKDAY && rs.isBetween(before,after) && context.commander.getRaidTime() > 3600;
+        return rs !== undefined && rs.weekday() === U.RESET_WEEKDAY && rs.isBetween(before,after) && context.commander.getRaidTime() > 3600;
     }
 }
 
@@ -361,7 +362,9 @@ export class Owl extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        return U.isBetweenTime(context.commander.getRaidStart(), "23:00:00", "06:00:00") && context.commander.getRaidTime() > 3600;
+        return context.commander.getRaidStart() !== undefined 
+                && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "23:00:00", "06:00:00") 
+                && context.commander.getRaidTime() > 3600;
     }
 }
 
@@ -376,7 +379,9 @@ export class Earlybird extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-      return U.isBetweenTime(context.commander.getRaidStart(), "06:00:00", "10:00:00") && context.commander.getRaidTime() > 3600;
+      return context.commander.getRaidStart() !== undefined 
+              && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "06:00:00", "10:00:00") 
+              && context.commander.getRaidTime() > 3600;
     }
 }
 
@@ -393,10 +398,11 @@ export class Annihilator extends ObjectiveAchievement {
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         let holds: boolean = false;
         const obj = context.objectives;
-        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id))[0];
-        if(ourColour === undefined) {
+        const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
+        if(ourTeam === undefined) {
           U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
+          const [ourColour, ourWorlds] = ourTeam;
           holds = obj.kills[ourColour]/obj.kills[ourColour] >= 2.0;
         }
         return holds;
@@ -419,7 +425,8 @@ export class NeverSurrender extends TagUpAchievement {
         if(stats) {
             const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
             if(ourColour === undefined) {
-                U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${U.momentToLocalSqliteTimestamp(context.commander.getRaidStart())}`);
+                const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";  
+                U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
             } else {
                 const ourStats = stats.find(s => s.faction === ourColour);
                 holds = ourStats 
@@ -445,10 +452,11 @@ export class Conqueror extends ObjectiveAchievement {
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         let holds = false;
         const obj = context.objectives;
-        const ourColour: string = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id))[0];
-        if(ourColour === undefined) {
+        const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
+        if(ourTeam === undefined) {
           U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
+            const [ourColour, ourWorlds] = ourTeam;
             const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives
                                                                            .filter(o => o.owner === ourColour)
                                                                            .reduce((mapPPT, o) => mapPPT + o.points_tick, 0), 0);
@@ -485,7 +493,8 @@ export class AgileDefender extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        let holds: boolean = U.isBetweenTime(context.commander.getRaidStart(), "18:00:00", "21:00:00")
+        let holds: boolean = context.commander.getRaidStart !== undefined 
+                                && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "18:00:00", "21:00:00")
                               && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if(holds) {
             const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
@@ -493,7 +502,7 @@ export class AgileDefender extends TagDownAchievement {
                                                       .filter(obj => obj.owner === ourColour && obj.tier === 3)
                                                       .map(obj => obj.objective_id);
             if(t3AtStart.length >= 3) { // we held at least three t3 objectives when they started
-                const lost = this.client.matchupRepository.capturedBetween(context.commander.getRaidStart(), moment.utc().local())
+                const lost = this.client.matchupRepository.capturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc().local())
                                            .filter(c => c.old_owner === ourColour && c.old_tier === 3);
                 holds = lost.length === 0; // we lost none of the t3 structures
             }
@@ -562,8 +571,10 @@ export class Princess extends ObjectiveAchievement {
 
     public checkCondition(discordUser: discord.GuildMember, context: {"commander": ts3.Commander, "objectives": gw2api.WvWMatches}): boolean {
         const palaceID: string = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
-        const colour: FactionColour = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
-        return colour !== undefined && this.client.matchupRepository.wasCapturedBetween(context.commander.getRaidStart(), moment.utc(), palaceID, colour);
+        const colour: FactionColour | undefined = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
+        return colour !== undefined 
+                && context.commander.getRaidStart() !== undefined
+                && this.client.matchupRepository.wasCapturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc(), palaceID, colour);
     }
 }
 

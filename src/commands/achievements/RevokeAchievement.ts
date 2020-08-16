@@ -2,6 +2,7 @@ import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
 import { Achievement } from "./Achievements";
+import * as Util from "../../Util";
 
 /**
 Testcases:
@@ -15,8 +16,8 @@ export class RevokeAchievement extends BotgartCommand {
             args: [
                 {
                     id: "achievement",
-                    type: (message: discord.Message, phrase: string): number | Achievement<any> => {
-                        let achievement: number | Achievement<any> = parseInt(phrase);
+                    type: (message: discord.Message, phrase: string): number | Achievement<any> | undefined => {
+                        let achievement: number | Achievement<any> | undefined = parseInt(phrase);
                         if(isNaN(achievement)) {
                             achievement = this.getBotgartClient().getAchievement(phrase);
                         }
@@ -61,8 +62,8 @@ export class RevokeAchievement extends BotgartCommand {
                 const achievementData = repo.deletePlayerAchievement(achievementId);
                 if(achievementData !== undefined) {
                     revokedCount = 1; // else stays at default 0
-                    const aobj: Achievement<any> = this.getBotgartClient().getAchievement(achievementData.achievement_name);
-                    if(achievementData && repo.checkAchievement(achievementData.achievement_name, achievementData.gw2account).length == 0) {
+                    const aobj: Achievement<any> | undefined = this.getBotgartClient().getAchievement(achievementData.achievement_name);
+                    if(aobj !== undefined && achievementData && repo.checkAchievement(achievementData.achievement_name, achievementData.gw2account).length == 0) {
                         // user lost their last instance of this achievement -> remove role
                         // since removing an entry from the DB does not require a player to be passed,
                         // we need to resolve the player manually
@@ -79,10 +80,15 @@ export class RevokeAchievement extends BotgartCommand {
             } else {
                 // revoke all instances
                 // assert args.achievement instanceof Achievement
-                revokedCount = repo.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
-                const role: discord.Role = guild.roles.cache.find(r => r.name === args.achievement.getRoleName());
-                if(role) {
-                    args.player.roles.remove(role);
+                if(userdata === undefined) {
+                    Util.log("error", `Should have revoked Achievement instance ${args.achievement.name} from a user which was not successfully determined.`);
+                    message.reply(L.get("REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
+                } else {
+                    revokedCount = repo.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
+                    const role: discord.Role | undefined = guild.roles.cache.find(r => r.name === args.achievement.getRoleName());
+                    if(role !== undefined) {
+                        args.player?.roles.remove(role);
+                    }
                 }
             }
             message.reply(L.get("REVOKE_ACHIEVEMENT_SUCCESS", [""+revokedCount]));

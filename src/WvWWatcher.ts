@@ -21,11 +21,11 @@ export class WvWWatcher extends EventEmitter {
      * returns: the DB matchup info for the ongoing match.
      *          If no such match existed during the call, it will be created
      */
-    public async getCurrentMatch(): Promise<Matchup> {
+    public async getCurrentMatch(): Promise<Matchup | undefined> {
         const now: moment.Moment = moment.utc();
-        let dbMatchup: Matchup = this.matchupRepository.getCurrentMatchup(now);
+        let dbMatchup: Matchup | undefined = this.matchupRepository.getCurrentMatchup(now);
         if (dbMatchup === undefined) {
-            const latestDbMatchup: Matchup = this.matchupRepository.getLatestMatchup();
+            const latestDbMatchup: Matchup | undefined = this.matchupRepository.getLatestMatchup();
             const homeId = (await getConfig()).get().home_id;
             const currentMatchupInfo = await this.api.wvw().matches().overview().world(homeId);
             const tier = currentMatchupInfo.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.

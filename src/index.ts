@@ -3,6 +3,7 @@ import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import { Database } from "./DB";
 import { DatabasePatcher } from "./patches/DatabasePatcher";
+import { DBPatch } from "./patches/DBPatch";
 import { allPatches, getPatch } from "./patches/PatchRegistry";
 import { log } from "./Util";
 import { WebServer } from "./WebServer";
@@ -27,7 +28,13 @@ if (args.patchall || args.patch) {
     } else if (args.patch) {
         // node built/index.js --patch=PatchX
         // node built/index.js --patch=PatchX --revert
-        patcher.applyPatch(getPatch(args.patch), args.revert === true).then(_ => process.exit(0));
+        const p: typeof DBPatch | undefined = getPatch(args.patch); // those are classes, not instances, so that they are only instantiated with the DB if needed
+        if(p === undefined) {
+            log("warning", `No patch ${args.patch} could be found to apply/revert.`);
+        } else {
+            patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));    
+        }
+        
     }
 } else {
     const config = getConfig();

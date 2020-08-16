@@ -142,12 +142,16 @@ export class BotgartClient extends akairo.AkairoClient {
                 if(match === undefined) return;
                 Util.log("debug", "Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
-                const snapshotId = this.matchupRepository.addObjectivesSnapshot();
-                const objs = match.maps
-                    .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
-                    //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
-                    .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
-                this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
+                if(matchInfo === undefined) {
+                    Util.log("error", "Current match should be available at this point, but getCurrentMatch created an empty result. Will not add objectives either.")
+                } else {
+                    const snapshotId = this.matchupRepository.addObjectivesSnapshot();
+                    const objs = match.maps
+                        .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
+                        //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+                        .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
+                    this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
+                }
                 Util.log("debug", "Done writing WvWMatches.");
             });
         });
@@ -166,7 +170,7 @@ export class BotgartClient extends akairo.AkairoClient {
         return Object.values(this.achievements);
     }
 
-    public getAchievement(name: string): achievements.Achievement<any> {
+    public getAchievement(name: string): achievements.Achievement<any> | undefined {
         name = name.toLowerCase();
         return name in this.achievements ? this.achievements[name] : undefined;
     }
@@ -183,9 +187,9 @@ export class BotgartClient extends akairo.AkairoClient {
         return this.ts3connection;
     }
 
-    public getRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | [undefined, undefined, undefined] {
+    public getRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | undefined {
         const k = this.toRosterKey(guild, weekNumber, year);
-        return k in this.rosters ? this.rosters[k] : [undefined, undefined, undefined];
+        return k in this.rosters ? this.rosters[k] : undefined;
     }
 
     public setRoster(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
@@ -213,7 +217,7 @@ export class BotgartClient extends akairo.AkairoClient {
             log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
-            const channel: discord.GuildChannel = guild.channels.cache.find(c => c.id === cid);
+            const channel: discord.GuildChannel | undefined = guild.channels.cache.find(c => c.id === cid);
             if(!channel) {
                 log("error", "Channel for type '{0}' for guild '{1}' is set to channel '{2}' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
             } else if(!(channel instanceof discord.TextChannel)) {

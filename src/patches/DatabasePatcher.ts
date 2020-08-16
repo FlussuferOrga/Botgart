@@ -14,7 +14,7 @@ export class DatabasePatcher {
     }
 
     async applyPatch(patchName: typeof DBPatch, revert: boolean = false) {
-        let patch: DBPatch;
+        let patch: DBPatch | undefined = undefined;
         try {
             patch = this.createPatch(patchName, this.database);
             if (patch) {
@@ -29,12 +29,14 @@ export class DatabasePatcher {
                 }
             }
         } finally {
-            patch.close() // free database after applying/reverting the patch
+            if(patch !== undefined) {
+                patch.close() // free database after applying/reverting the patch    
+            }
         }
     }
 
     async applyPatches(patches: typeof DBPatch[], revert: boolean = false) {
-        let ps = revert === true ? patches.reverse() : patches;
+        const ps = revert === true ? patches.reverse() : patches;
         for (let p of ps) {
             await this.applyPatch(p, revert === true);
         }

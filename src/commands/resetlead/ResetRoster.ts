@@ -91,11 +91,11 @@ export class Roster extends events.EventEmitter {
     }
 
     public getLeaders(): [WvWMap, string][] {
-        const leaders = [];
+        const leaders: [WvWMap, string][] = [];
         for(const m of WvWMap.getMaps()) {
             const [wvwmap, leads] = this.leads[m.name];
             for(const l of leads) {
-                leaders.push([m.name, l]);
+                leaders.push([m, l]);
             }
         }
         return leaders;
@@ -108,7 +108,7 @@ export class Roster extends events.EventEmitter {
         }
     }
 
-    public removeLead(map: WvWMap, player: string): void {
+    public removeLead(map: WvWMap | undefined, player: string): void {
         if(map === undefined) {
             for(const m in this.leads) {
                 this.leads[m][1].delete(player);
@@ -198,7 +198,7 @@ export class ResetRoster extends BotgartCommand {
                 .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
                    .forEach(([dbRoster, dbChannel, dbMessage]) => {
                        client.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
-                       this.watchRoster(dbMessage.guild, dbRoster);
+                       this.watchRoster(<discord.Guild>dbMessage.guild, dbRoster); // can not be initialised in direct messages anyway
                        this.watchMessage(dbMessage, dbRoster);
                     })));
     }    
@@ -211,14 +211,13 @@ export class ResetRoster extends BotgartCommand {
             const match = idregxp.exec(sid);
             let user = sid;
             if(match != null) {
-                const resolved: discord.GuildMember = Util.resolveDiscordUser(cl, match[1])
-                if(resolved != null) {
+                const resolved: discord.GuildMember | undefined = Util.resolveDiscordUser(cl, match[1])
+                if(resolved != undefined) {
                     user = resolved.displayName;
                 }
             }
             return user;
         } 
-        console.log("going stronk");
         cl.getTS3Connection().post("resetroster", {
             "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
             "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
@@ -230,7 +229,12 @@ export class ResetRoster extends BotgartCommand {
 
     private watchRoster(guild: discord.Guild, roster: Roster): void {
         const cl = this.getBotgartClient();
-        const [_, message, __] = cl.getRoster(guild, roster.weekNumber, roster.year);
+        const dbRoster = cl.getRoster(guild, roster.weekNumber, roster.year);
+        if(dbRoster === undefined) {
+            Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`)
+            return;
+        }
+        const [_, message, __] = dbRoster;
         const refresh = (r: Roster, map: string, p: string) => {
             setTimeout(function() { 
                 // only updating post, DB, and TS3 in fixed intervals
@@ -257,7 +261,7 @@ export class ResetRoster extends BotgartCommand {
         message.createReactionCollector(e => 
             this.emotes.includes(e.emoji.name) , {}).on("collect", (r) => {
                 const m = WvWMap.getMapByEmote(r.emoji.name);
-                r.users.cache.filter(u => u.id !== this.client.user.id).map(u => { // reactions coming from anyone but the bot
+                r.users.cache.filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
                     if(!m) {
                         // no map has been found -> X -> user wants to remove themselves from roster
                         roster.removeLead(undefined, Util.formatUserPing(u.id));
@@ -273,8 +277,8 @@ export class ResetRoster extends BotgartCommand {
         const currentWeek = Util.getNumberOfWeek();
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
         const rosterYear = !args.year ? new Date().getFullYear() : args.year;
-        this.getBotgartClient().rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(([dbRoster, dbChannel, dbMessage]) => {
-            if(dbRoster === undefined) {
+        this.getBotgartClient().rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(dbEntry => {
+            if(dbEntry === undefined) {
                 // no roster for this guild+week -> create one
                 const roster = new Roster(rosterWeek, rosterYear);
                 (<discord.TextChannel>args.channel).send(roster.toMessageEmbed())
@@ -291,6 +295,7 @@ export class ResetRoster extends BotgartCommand {
                     this.syncToTS3(roster);
                 }
             } else {
+                const [dbRoster, dbChannel, dbMessage] = dbEntry;
                 // there is already a roster-post for this guild+week -> do nothing, log warning
                 Util.log("warning", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
@@ -299,15 +304,20 @@ export class ResetRoster extends BotgartCommand {
     }
 
     serialiseArgs(args) {
-        let clone = Object.assign({}, args);
+        const clone = Object.assign({}, args);
         clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
         return JSON.stringify(clone);
     }
 
     deserialiseArgs(jsonargs) {
-        let args = JSON.parse(jsonargs);
-        let guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
-        args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
+        const args = JSON.parse(jsonargs);
+        const guild: discord.Guild | undefined = this.client.guilds.cache.find(g => g.id == args.channel.guild);
+        if(guild === undefined) {
+            Util.log("warning", `The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
+            args.channel = undefined;
+        } else {
+            args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);    
+        }
         return args;
     }
 }

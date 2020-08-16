@@ -22,8 +22,10 @@ export class IgnoringRolesListener extends Listener {
             let deletedLeads = 0;
             let revokedAchievements = 0;
             for(const achievement of client.getAchievements()) {
-                const role: discord.Role = newMember.guild.roles.cache.find(r => r.name === achievement.getRoleName());
-                if(role) {
+                const role: discord.Role | undefined = newMember.guild.roles.cache.find(r => r.name === achievement.getRoleName());
+                if(role === undefined) {
+                    U.log("warning", `Could not find a role ${achievement.getRoleName()} on server ${newMember.guild.name} to remove when user ${newMember.displayName} chose to ignore achievement roles.`);
+                } else {
                     newMember.roles.remove(role);
                 }
             }
