@@ -682,6 +682,21 @@ export class FromAshes extends NewMatchupAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: Matchup, newMatchup: Matchup}): boolean {
+        return context.lastMatchup !== undefined && context.lastMatchup.tier === 5 && context.newMatchup.tier === 4;
+    }
+}
+
+export class ThePresident extends NewMatchupAchievement {
+    public constructor(client: BotgartClient) {
+        super(client, "https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png", 
+                      "Der Präsident", 
+                      Achievement.MEDIUM_COLOUR, 
+                      true, // repeatable
+                      false // announce repeats
+        );
+    }
+
+    public checkCondition(discordUser: discord.GuildMember, context: {lastMatchup: Matchup, newMatchup: Matchup}): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
     }
 }

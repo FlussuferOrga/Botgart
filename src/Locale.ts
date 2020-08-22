@@ -157,19 +157,19 @@ EN = {
         "ACHIEVEMENT_UNLOCKED": "Achievement unlocked",
 
         "ACHIEVEMENT_NAME_GLIMMER": "Glimmer",
-        "ACHIEVEMENT_DESC_GLIMMER": "Tag up for an hour.",
+        "ACHIEVEMENT_DESC_GLIMMER": "Tag up for a total of one hour.",
         "ACHIEVEMENT_FLAV_GLIMMER": "Welcome to the bridge, commander!",
 
         "ACHIEVEMENT_NAME_SUNRAY": "Sunray",
-        "ACHIEVEMENT_DESC_SUNRAY": "Tag up for ten hours.",
+        "ACHIEVEMENT_DESC_SUNRAY": "Tag up for a total of ten hours.",
         "ACHIEVEMENT_FLAV_SUNRAY": "Welcome back, commander!",
 
         "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Blazing Light",
-        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Tag up for one hundred hours.",
+        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Tag up for a total of one hundred hours.",
         "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "The troops are counting on you.",
 
         "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
-        "ACHIEVEMENT_DESC_SUPERNOVA": "Tag up for one thousand hours.",
+        "ACHIEVEMENT_DESC_SUPERNOVA": "Tag up for a total of one thousand hours.",
         "ACHIEVEMENT_FLAV_SUPERNOVA": "Hosts abide your arrival.",
 
         "ACHIEVEMENT_NAME_TRAILBLAZER": "Trailblazer",
@@ -245,15 +245,19 @@ EN = {
         "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "That's unfair! They have suddenly doubled in numbers!",
 
         "ACHIEVEMENT_NAME_FROMASHES": "From the Ashes",
-        "ACHIEVEMENT_DESC_FROMASHES": "Aid in raising the server from tier 4.",
+        "ACHIEVEMENT_DESC_FROMASHES": "Aid in raising the server to tier 4.",
         "ACHIEVEMENT_FLAV_FROMASHES": "They have taken everything from us. Even fear itself.",
 
+        "ACHIEVEMENT_NAME_THEPRESIDENT": "The President",
+        "ACHIEVEMENT_DESC_THEPRESIDENT": "Aid in raising the server to tier 3.",
+        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I take number sthree.",
+
         "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "The Mountain is Calling",
-        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Aid in raising the server from tier 3.",
+        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Aid in raising the server to tier 2.",
         "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Rasta from Jamaica in Bavarian exile",
 
         "ACHIEVEMENT_NAME_THEPEAK": "The Peak",
-        "ACHIEVEMENT_DESC_THEPEAK": "Aid in raising the server from tier 2.",
+        "ACHIEVEMENT_DESC_THEPEAK": "Aid in raising the server to tier 1.",
         "ACHIEVEMENT_FLAV_THEPEAK": "The best view.",
 
         "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Tier Solidifier",
@@ -437,19 +441,19 @@ DE = {
         "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
 
         "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
-        "ACHIEVEMENT_DESC_GLIMMER": "Leite für eine Stunde.",
+        "ACHIEVEMENT_DESC_GLIMMER": "Leite für insgesamt eine Stunde.",
         "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!",
 
         "ACHIEVEMENT_NAME_SUNRAY": "Sonnenstrahl",
-        "ACHIEVEMENT_DESC_SUNRAY": "Leite für zehn Stunden.",
+        "ACHIEVEMENT_DESC_SUNRAY": "Leite für insgesamt zehn Stunden.",
         "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur!",
 
         "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
-        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leite für einhundert Stunden.",
+        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leite für insgesamt einhundert Stunden.",
         "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf Euch.",
 
         "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
-        "ACHIEVEMENT_DESC_SUPERNOVA": "Leite für eintausend Stunden.",
+        "ACHIEVEMENT_DESC_SUPERNOVA": "Leite für insgesamt eintausend Stunden.",
         "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren Eurer.",
 
         "ACHIEVEMENT_NAME_TRAILBLAZER": "Vorreiter",
@@ -525,19 +529,19 @@ DE = {
         "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "Das ist unfair! Die sind plötzlich doppelt so viele!",
 
         "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
-        "ACHIEVEMENT_DESC_FROMASHES": "Trage dazu bei, den Server aus dem T4 aufsteigen zu lassen.",
+        "ACHIEVEMENT_DESC_FROMASHES": "Trage dazu bei, den Server in das T4 aufsteigen zu lassen.",
         "ACHIEVEMENT_FLAV_FROMASHES": "Sie haben uns alles genommen. Auch unsere Furcht.",
 
         "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
-        "ACHIEVEMENT_DESC_THEPRESIDENT": "",
-        "ACHIEVEMENT_FLAV_THEPRESIDENT": "",
+        "ACHIEVEMENT_DESC_THEPRESIDENT": "Trage dazu bei, den Server in das T3 aufsteigen zu lassen.",
+        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I nimm de Nummer drey.",
 
         "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
-        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Trage dazu bei, den Server aus dem T3 aufsteigen zu lassen.",
+        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Trage dazu bei, den Server in das T2 aufsteigen zu lassen.",
         "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
 
         "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
-        "ACHIEVEMENT_DESC_THEPEAK": "Trage dazu bei, den Server aus dem T2 aufsteigen zu lassen.",
+        "ACHIEVEMENT_DESC_THEPEAK": "Trage dazu bei, den Server in das T1 aufsteigen zu lassen.",
         "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht.",
 
         "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Verfestiger",
