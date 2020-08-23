@@ -8,7 +8,7 @@ export class RosterRepository extends AbstractDbRepository {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
             .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
             .map(row => this.getRosterPost(guild, row.wn, row.year)))
-            .filter(([roster, channel, message]) => roster !== undefined && channel !== undefined && message != undefined);
+            .filter((roster) => roster !== undefined);
     }
 
     /**
