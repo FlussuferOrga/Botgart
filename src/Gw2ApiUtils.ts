@@ -74,6 +74,13 @@ export function getAccountName(apikey: string): Promise<string|boolean> {
     );
 }
 
+
+export function guildExists(guildname: string): Promise<boolean> {
+    // we need to verify by name after looking up the ID 
+    // because the lookup by ID is case insensitive.
+    return api.guild().search().name(guildname).then(async id => id !== undefined && (await api.guild().get(id)).name === guildname);
+}
+
 /*
 UNUSED:
 

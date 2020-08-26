@@ -1,6 +1,7 @@
 import * as Const from "../../Const";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
+import * as gw2u from "../../Gw2ApiUtils";
 import { BotgartCommand } from "../../BotgartCommand";
 
 /**
@@ -17,11 +18,7 @@ export class TsGuildAdd extends BotgartCommand {
     }
     
     *args(message) {
-        const guildName = yield { type: (m: discord.Message, p: string) => p.trim()
-                                                                            .split(" ")
-                                                                            .map(t => t.charAt(0).toUpperCase() + t.slice(1))
-                                                                            .join(" ") 
-                                };
+        const guildName = yield { type: (m: discord.Message, p: string) => p.trim() };
         const contacts  = yield { type: (m: discord.Message, p: string) => {
                                                                             const cs = p.split(",")
                                                                                         .map(s => s.trim().match(/^.+\.\d{4}$/))
@@ -63,18 +60,22 @@ export class TsGuildAdd extends BotgartCommand {
         return { guildName, contacts, guildTSGroup, confirm };
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
        if(args.confirm === false) {
            message.reply(L.get("MK_GUILD_CANCELED"));
        } else if(args.confirm === true) {
-           this.getBotgartClient().getTS3Connection().post("guild", 
-                                                           { 
-                                                             name: args.guildName, 
-                                                             tsgroup: args.guildTSGroup, 
-                                                             contacts: args.contacts
-                                                           })
-               .then(res => message.reply(L.get("HTTP_REQUEST_RETURNED", [JSON.stringify(res)])));
-           message.reply(L.get("MK_GUILD_COMPLETE"));
+          if(!(await gw2u.guildExists(args.guildName))) {
+            message.reply(L.get("MK_GUILD_UNKNOWN_GUILD", [args.guildName]));
+          } else {
+            this.getBotgartClient().getTS3Connection().post("guild", 
+                                                             { 
+                                                               name: args.guildName, 
+                                                               tsgroup: args.guildTSGroup, 
+                                                               contacts: args.contacts
+                                                             })
+                 .then(res => message.reply(L.get("HTTP_REQUEST_RETURNED", [JSON.stringify(res)])));
+             message.reply(L.get("MK_GUILD_COMPLETE"));
+          }
        } else {
            // happens mainly if the args parsing was canceled,
            // see [1]

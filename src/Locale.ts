@@ -126,11 +126,12 @@ EN = {
         "DESC_TS_GUILD_ADD": "Creates a new Guild on the TS server.",
         "DESC_TS_GUILD_DELETE": "Deletes a guild from the TS server.",
 
-        "MK_GUILD_CONFIRM": "**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\n\nIs this correct?",
-        "MK_GUILD_CONFIRM_NO_GROUP": "**Name:** {0}\n**Contact:** {1}\n\nIs this correct?",
+        "MK_GUILD_CONFIRM": "Your request:\n**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\nIs this correct?",
+        "MK_GUILD_CONFIRM_NO_GROUP": "Your request:\n**Name:** {0}\n**Contact:** {1}\nIs this correct?",
         "MK_GUILD_TIMEOUT": "The time for input ran out and guild creation was canceled. You can start over the event creation.",
         "MK_GUILD_CANCELED": "Guild creation has been canceled.",
         "MK_GUILD_COMPLETE": "Guild creation request has been sent to TS.",
+        "MK_GUILD_UNKNOWN_GUILD": "No guild named '{0}' exists in the game. Make sure you did not misspell the name and used proper capitalisation.",
 
         "RM_GUILD_COMPLETE": "Guild removal request has been sent to TS.",
 
@@ -410,11 +411,12 @@ DE = {
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem Teamspeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom Teamspeak-Server",
 
-        "MK_GUILD_CONFIRM": "**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\n\nIst das so in Ordnung?",
-        "MK_GUILD_CONFIRM_NO_GROUP": "**Name:** {0}\n**Kontakt:** {1}\n\nIst das so in Ordnung?",
+        "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
+        "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
         "MK_GUILD_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Gilden-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
         "MK_GUILD_CANCELED": "Gildenerstellung wurde abgebrochen.",
         "MK_GUILD_COMPLETE": "Anfrage zum Anlegen einer Gilde wurde an den Teamspeak-Server gesendet",
+        "MK_GUILD_UNKNOWN_GUILD": "Es gibt keine Gilde namens '{0}' im Spiel. Stell bitte sicher, dass du dich nicht verschrieben hast und achte auf korrekte Groß-/ Kleinschreibung.",
 
         "RM_GUILD_COMPLETE": "Anfrage zum Löschen einer Gilde wurde an den Teamspeak-Server gesendet.",
 
@@ -575,7 +577,7 @@ DE = {
 * @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders. 
 *          If no locale string could be found, the key is returned instead.
 */
-export function get(key: string, args?: string[], separator: string = "\n", flags = true, options: {[option: string]: boolean} = {}): string {
+export function get(key: string, args?: string[], separator: string = "\n\n", flags = true, options: {[option: string]: boolean} = {}): string {
     const flagIcons = [flags ? ":flag_de: " : "", flags ? ":flag_gb: " : ""];
     const strings = [key in DE ? DE[key].formatUnicorn(args) : key, key in EN ? EN[key].formatUnicorn(args) : key]
                     .map(s => {
