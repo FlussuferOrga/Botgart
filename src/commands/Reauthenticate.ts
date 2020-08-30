@@ -4,6 +4,7 @@ import { BotgartCommand } from "../BotgartCommand";
 import { validateWorld } from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import { assignServerRole, formatUserPing, log } from "../Util";
+import { Registration } from "../repositories/RegistrationRepository";
 
 /**
 Testcases:
@@ -31,19 +32,29 @@ export class Reauthenticate extends BotgartCommand {
     command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
         const cl: BotgartClient = this.getBotgartClient();
         cl.registrationRepository.revalidateKeys().then(
-            update => {                    
+            update => {
+                if(update === undefined) {
+                    log("error", "API validation yielded undefined for the entire result of revalidations. Critical error!");
+                    return;
+                }
                 let g: discord.Guild | null; // resolve() can result in null, not undefined... 
                 let currentRole: discord.Role | undefined;
                 let admittedRole: discord.Role | undefined;
                 // filter out users for which we encountered errors
-                update.filter(r => r !== undefined).forEach(async row => {
-                    let [p,admittedRoleName] = row;
+                update.filter(r => r !== undefined).forEach(async (row : [Registration, string | boolean]) => {
+                    const [p, admittedRoleName] = row;
                     let currentRoleName: string = p.registration_role;
 
                     if(!g || g.id != p.guild) {
                         // prunes come ordered by guild. This trick allows us to
                         // resolve each guild only once.
-                        g = cl.guilds.resolve(p.guild); //cl.guilds.cache.find(g => g.id == p.guild);
+                        try {
+                            g = await cl.guilds.fetch(p.guild);    
+                        } catch(ex) {
+                            log("error", "Could not fetch the guild with ID ${p.guild}. Have I been kicked?");
+                        }
+                        
+                        //g = cl.guilds.resolve(p.guild); //cl.guilds.cache.find(g => g.id == p.guild);
                     }
                     if(!g) {
                         log("error", `Could not find a guild ${p.guild}. Have I been kicked?`)
@@ -54,16 +65,20 @@ export class Reauthenticate extends BotgartCommand {
                             log("error", `Can not find a role ${admittedRoleName} to assign.`);
                         }
                         if(!currentRole) {
-                            log("error", `Can not find a role ${currentRoleName} that should be currently used.`);
+                            log("error", `Can not find a role ${currentRoleName} that should be currently used. This will cancel all reauths for users that should currently have this role!`);
                         }
                         if((admittedRole || admittedRoleName === false) && currentRole) { // admittedRoleName === false means: user must be unauthed
-                            const m: discord.GuildMember = await g.members.fetch(p.user); // cache.find(member => p.user == member.user.id);
+                            const m: discord.GuildMember | undefined = await g.members.fetch(p.user)
+                                                                                      .catch(ex => { 
+                                                                                                      log("error", `Could not restrieve user ${p.user}: ${ex.message}`); 
+                                                                                                      return undefined; 
+                                                                                                   });
                             if(!m) {
                                 log("info", `${p.user} is no longer part of the guild. Deleting their key.`);
                                 cl.discordLog(g, Reauthenticate.LOG_TYPE_UNAUTH, L.get("DLOG_UNAUTH", [formatUserPing(p.user), p.account_name, p.registration_role]));
                                 cl.registrationRepository.deleteKey(p.api_key);
                             } else {
-                                if(admittedRoleName === false || admittedRoleName === validateWorld.ERRORS.invalid_key) {
+                                if(admittedRoleName === false) {
                                     // user should be pruned: user has either transed (false) or deleted their key (invalid key)
                                     log("info", "Unauthing {0}.".formatUnicorn(m.user.username));
                                     m.roles.remove(currentRole);
@@ -72,6 +87,7 @@ export class Reauthenticate extends BotgartCommand {
                                     m.send(L.get("KEY_INVALIDATED"));
                                 } else {
                                     // user transed to another admitted server -> update role
+                                    log("info", `Changing role of user ${m.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
                                     assignServerRole(m, currentRole, admittedRole === undefined ? null : admittedRole);
                                 }
                             }

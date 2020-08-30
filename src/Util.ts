@@ -210,16 +210,16 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
     if(currentRole !== null) {
         // remove currentRole
         member.roles.remove(currentRole).then(
-            ()    => log("info", "Removed role {0} from user {1}".formatUnicorn(currentRole.name, member.displayName)),
-            (err) => log("error", "Error while removing role {0} from user {1}: {2}".formatUnicorn(currentRole.name, member.displayName, err.message))
+            ()    => log("info", `Removed role ${currentRole.name} from user ${member.displayName}`),
+            (err) => log("error", `Error while removing role ${currentRole.name} from user ${member.displayName}: ${err.message}.`)
         );
     }
 
     if(admittedRole !== null) {
         // assign admittedRole
         member.roles.add(admittedRole).then(
-            ()    => log("info", "Gave role {0} to user {1}".formatUnicorn(admittedRole.name, member.displayName)),
-            (err) => log("error", "Error while giving role {0} to user {1}: {2}".formatUnicorn(admittedRole.name, member.displayName, err.message))
+            ()    => log("info", `Gave role ${admittedRole.name} to user ${member.displayName}.`),
+            (err) => log("error", "Error while giving role ${admittedRole.name} to user ${member.displayName}: ${err.message}.")
         );
     }
     return admittedRole;

@@ -16,6 +16,10 @@ const args = CommandLineArgs.default([
     {name: "revert", type: Boolean}
 ]);
 
+process.on("unhandledRejection", (reason, p) => {
+  log("crit", `Unhandled Rejection at: Promise ${JSON.stringify(p)}, reason: ${JSON.stringify(reason)}`);
+});
+
 // this is an in-order list of all patches
 
 const database = Database.getInstance("./db/database.db");

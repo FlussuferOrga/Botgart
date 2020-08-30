@@ -219,9 +219,9 @@ export class BotgartClient extends akairo.AkairoClient {
             channels.forEach(cid => {
             const channel: discord.GuildChannel | undefined = guild.channels.cache.find(c => c.id === cid);
             if(!channel) {
-                log("error", "Channel for type '{0}' for guild '{1}' is set to channel '{2}' in the DB, but no longer present in the guild. Skipping.".formatUnicorn(type, guild.name, cid));
+                log("error", `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`);
             } else if(!(channel instanceof discord.TextChannel)) {
-                log("error", "Channel '{0}' in guild '{1}' to log type '{2}' was found, but appears to be a voice channel. Skipping.".formatUnicorn(cid, guild.name, type));
+                log("error", `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
             } else {
                 (<discord.TextChannel>channel).send(message);
             }

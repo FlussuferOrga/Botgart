@@ -6,8 +6,8 @@ import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-const REAUTH_DELAY: number = 10000;
-const REAUTH_MAX_PARALLEL_REQUESTS: number = 2;
+const REAUTH_DELAY: number = 8000;
+const REAUTH_MAX_PARALLEL_REQUESTS: number = 3;
 
 export class RegistrationRepository extends AbstractDbRepository {
     /**
@@ -131,21 +131,27 @@ export class RegistrationRepository extends AbstractDbRepository {
      * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db
      *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
      */
-    public async revalidateKeys(): Promise<any> {
+    public async revalidateKeys(): Promise<undefined | (undefined | [Registration, string|boolean])[]> {
         let semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
 
         const worldAssignments = getConfig().get().world_assignments;
-        return this.execute(db =>
-            Promise.all(
+        return this.execute((db): Promise<(undefined | [Registration, string|boolean])[]> =>
+            Promise.all<undefined | [Registration, string|boolean]>(
                 db.prepare(`SELECT api_key, guild, user, registration_role, account_name
                             FROM registrations
-                            ORDER BY guild`).all()
-                    .map(async r => {
+                            ORDER BY guild`)
+                    .all()
+                    .map(async (r) : Promise<undefined | [Registration, string|boolean]> => {
                         let release = await semaphore.acquire();
-
+                        Util.log("info", `Sending revalidation request for API key ${r.api_key}.`);
                         let res = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments).then(
-                            admittedRole => [r, admittedRole],
-                            error => {
+                            // this ternary hack is required to work around the typing of the Promise from validateWorld
+                            // which returns a number upon rejecting and string | boolean in case of success. 
+                            // So we can nevert end up with a number in success! But since we can not have distinct typing for both cases, 
+                            // the type is always number | string | boolean. The ternary casts all numbers (which never occur) to string 
+                            // so that the type is consistent from here on.
+                            (admittedRole): [Registration, string|boolean] => [r, typeof admittedRole === "boolean" ? admittedRole : "" + admittedRole],
+                            (error): undefined | [Registration, false] => {
                                 if (error === Gw2ApiUtils.validateWorld.ERRORS.invalid_key) {
                                     // while this was an actual error when initially registering (=> tell user their key is invalid),
                                     // in the context of revalidation this is actually a valid case: the user must have given a valid key
@@ -153,7 +159,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                                     // => remove the validation role from the user
                                     return [r, false];
                                 } else {
-                                    Util.log("error", "Error occured while revalidating key {0}. User will be excempt from this revalidation.".formatUnicorn(r.api_key));
+                                    Util.log("error", `Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
                                     return undefined;
                                 }
                             }
@@ -203,3 +209,13 @@ export interface DesignatedRole {
     readonly guild: string;
     readonly registration_role: string;
 }
+
+/*
+interface Registration {
+    readonly api_key: string;
+    readonly guild: string;
+    readonly user: string;
+    readonly registration_role: string;
+    readonly account_name: string;
+}
+*/
