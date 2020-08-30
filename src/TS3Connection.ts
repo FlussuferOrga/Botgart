@@ -447,7 +447,7 @@ export class TS3Listener extends events.EventEmitter {
     private async tagDown(g: discord.Guild, commander: Commander) {
         let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
-        if(registration) {
+        if(registration !== undefined) {
             // the commander is member of the current discord -> remove role
             // since removing roles has gone wrong a lot lately,
             // we're updating the cache manually
@@ -456,7 +456,7 @@ export class TS3Listener extends events.EventEmitter {
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if(crole && dmember) {
                 log("info", `Tagging down ${dmember.displayName} in ${g.name}.`);
-                dmember.roles.remove(crole.name).catch(e => { // FIXME: this always fails, so I will now try with just passing the name, I would prefer to pass the whole Roll object
+                dmember.roles.remove(crole).catch(e => {
                     log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
             }
