@@ -74,6 +74,9 @@ export function getAccountName(apikey: string): Promise<string|boolean> {
     );
 }
 
+export async function isValidWorld(id: number): Promise<boolean> {
+    return id in (await api.worlds());
+}
 
 export function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID 
