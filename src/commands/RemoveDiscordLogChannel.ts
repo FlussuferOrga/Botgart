@@ -19,9 +19,8 @@ export class RemoveDiscordLog extends BotgartCommand {
                     },
                     {
                         id: "channel",
-                        type: (message: discord.Message, phrase?: string) => 
-                            message.guild.channels.cache.find( channel => channel.name === phrase) ? phrase : 
-                                phrase = message.guild.channels.cache.get(message.channel.id).name
+                        type: (message: discord.Message | undefined, phrase?: string) => message?.guild?.channels.cache.find(channel => channel.name === phrase)?.name
+                                                                  ?? (message?.channel as discord.TextChannel).name
                     }
                     
                 ],
