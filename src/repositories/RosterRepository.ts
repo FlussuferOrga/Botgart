@@ -1,10 +1,10 @@
 import * as discord from "discord.js";
-import * as ResetLead from "../commands/resetlead/ResetRoster";
+import * as ResetRoster from "../commands/resetlead/ResetRoster";
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export class RosterRepository extends AbstractDbRepository {
-    public getActiveRosters(guild: discord.Guild): Promise<[ResetLead.Roster, discord.TextChannel, discord.Message]>[] {
+    public getActiveRosters(guild: discord.Guild): Promise<[ResetRoster.Roster, discord.TextChannel, discord.Message]>[] {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
             .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
             .map(row => this.getRosterPost(guild, row.wn, row.year)))
@@ -19,7 +19,7 @@ export class RosterRepository extends AbstractDbRepository {
      * roster: the roster to upsert. Uniqueness will be determined by week number and year of the roster.
      * message: the message that represents the roster post.
      */
-    public upsertRosterPost(guild: discord.Guild, roster: ResetLead.Roster, message: discord.Message): void {
+    public upsertRosterPost(guild: discord.Guild, roster: ResetRoster.Roster, message: discord.Message): void {
         return this.execute(db => {
             db.transaction((_) => {
                 const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
@@ -33,16 +33,16 @@ export class RosterRepository extends AbstractDbRepository {
                     // there is already a roster entry -> drop all leaders and insert the current state
                     db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
                 }
-                let stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map) VALUES(?,?,?)`);
-                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader, map.name));
+                let stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map, visible) VALUES(?,?,?,?)`);
+                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader.name, map.name, 0));
             })(null);
         });
     }
 
     async getRosterPost(guild: discord.Guild, weekNumber: number, year: number)
-        : Promise<undefined | [ResetLead.Roster, discord.TextChannel, discord.Message]> {
+        : Promise<undefined | [ResetRoster.Roster, discord.TextChannel, discord.Message]> {
         let postExists = false;
-        const roster = new ResetLead.Roster(weekNumber, year);
+        const roster = new ResetRoster.Roster(weekNumber, year);
         const entries = this.execute(db => db.prepare(`
             SELECT 
                 rr.reset_roster_id,
@@ -52,7 +52,8 @@ export class RosterRepository extends AbstractDbRepository {
                 rr.channel,
                 rr.message,
                 rl.player,
-                rl.map
+                rl.map,
+                rl.visible
             FROM 
                 reset_rosters AS rr 
                 LEFT JOIN reset_leaders AS rl 
@@ -62,7 +63,7 @@ export class RosterRepository extends AbstractDbRepository {
                 AND rr.week_number = ?
                 AND rr.year = ?`)
             .all(guild.id, weekNumber, year));
-        entries.forEach(r => roster.addLead(ResetLead.WvWMap.getMapByName(r.map), r.player));
+        entries.forEach(r => roster.addLead(ResetRoster.WvWMap.getMapByName(r.map), new ResetRoster.ResetLeader(r.player, r.visible == 1))); // '1' and '0' used in sqlite -> typefree compare
 
         let channel: discord.TextChannel | undefined = undefined;
         let message: discord.Message | undefined = undefined;
@@ -84,7 +85,7 @@ export class RosterRepository extends AbstractDbRepository {
             }
         }
 
-        return entries && postExists ? [<ResetLead.Roster>roster, <discord.TextChannel>channel, <discord.Message>message] : undefined;
+        return entries && postExists ? [<ResetRoster.Roster>roster, <discord.TextChannel>channel, <discord.Message>message] : undefined;
     }
 
 }

@@ -12,6 +12,31 @@ import moment = require('moment');
 Testcases:
 
 */
+const WITHDRAW = "❌"; // cross
+const VISIBLE = "📣"; // megaphone
+
+export class ResetLeader implements Util.Equalable<ResetLeader> {
+    public readonly name: string;
+    private visible: boolean;    
+
+    public isOpenlyVisible(): boolean {
+        return this.visible;
+    }
+
+    public setVisiblity(v : boolean): void {
+        this.visible = v;
+    }
+
+    public constructor(name: string, visible: boolean) {
+        this.name = name;
+        this.visible = visible;
+    }
+
+    public equals(other: ResetLeader): boolean {
+        return other.name === this.name;
+    }
+}
+
 export class WvWMap {
     static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS", ["RBL"]);
     static readonly BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS", ["BBL"]);
@@ -59,7 +84,7 @@ export class WvWMap {
 }
 
 export class Roster extends events.EventEmitter {
-    public readonly leads: {[key: string] : [WvWMap, Set<string>]};
+    public readonly leads: {[key: string] : [WvWMap, Util.GeneralSet<ResetLeader>]};
     public readonly weekNumber: number;
     public readonly year: number;
 
@@ -69,29 +94,56 @@ export class Roster extends events.EventEmitter {
         this.year = year;
         this.leads = {};
         for(const m of WvWMap.getMaps()) {
-            this.leads[m.name] = [m, new Set<string>()];
+            this.leads[m.name] = [m, new Util.GeneralSet<ResetLeader>()];
         }
     }
 
+    /**
+    * @returns the date for the reset this roster represents.
+    */
     public getResetDate() {
         return Util.getResetDay(this.weekNumber, this.year);
     }
 
+    /**
+    * @returns true iff the reset of this roster happens in the future.
+    */
     public isFuture() : boolean {
         const now: Date = new Date();
         return this.weekNumber <= Util.getNumberOfWeek(now) && this.year <= now.getFullYear();
     }
 
+    /**
+    * @returns true iff the reset of this roster is the next reset.
+    */
     public isUpcoming() : boolean {
         return Util.compareDatesWithoutTime(this.getResetDate(), Util.getNextResetDate());
     }
 
-    public getMapLeaders(map: WvWMap) : Set<string> {
+    /**
+    * @returns all leaders for a specific map.
+    */
+    public getMapLeaders(map: WvWMap) : Util.GeneralSet<ResetLeader> {
         return this.leads[map.name][1];
     }
 
-    public getLeaders(): [WvWMap, string][] {
-        const leaders: [WvWMap, string][] = [];
+    /**
+    * @returns all instances of a certain leader found by name.
+    */
+    public findLeader(name: string): ResetLeader[] {
+        const leaders: ResetLeader[] = [];
+        for(const m of WvWMap.getMaps()) {
+            const [wvwmap, leads] = this.leads[m.name];
+            leaders.push(...Array.from(leads).filter(l => l.name === name));
+        }
+        return leaders;
+    }
+
+    /**
+    * @returns all leaders for all maps.
+    */
+    public getLeaders(): [WvWMap, ResetLeader][] {
+        const leaders: [WvWMap, ResetLeader][] = [];
         for(const m of WvWMap.getMaps()) {
             const [wvwmap, leads] = this.leads[m.name];
             for(const l of leads) {
@@ -101,38 +153,70 @@ export class Roster extends events.EventEmitter {
         return leaders;
     }
 
-    public addLead(map: WvWMap, player: string): void {
-        if(map && map.name in this.leads) {
-            this.leads[map.name][1].add(player);
-            this.emit("addleader", this, map, player);
+    public toggleLeaderVisibility(formattedName: string): void {
+        const leaders: ResetLeader[] = this.findLeader(formattedName);
+        for(let l of leaders) {
+            l.setVisiblity(!l.isOpenlyVisible());
+        }
+        if(leaders.length > 0) {
+            this.emit("togglevisibility", this, leaders);
         }
     }
 
-    public removeLead(map: WvWMap | undefined, player: string): void {
+    /**
+    * Adds a leat to a particular map. 
+    * @param map the map to add the leader to. 
+    * @param leader the leader to add to the map.
+    */
+    public addLead(map: WvWMap, leader: ResetLeader): void {
+        if(map && map.name in this.leads) {
+            this.leads[map.name][1].add(leader);
+            this.emit("addleader", this, map, leader);
+        }
+    }
+
+    /**
+    * Removes a lead from one of all maps. 
+    * @param map to remove the leader from. 
+    *            If undefined is passed, the leader is removed from all maps.
+    * @param leader the leader to remove. 
+    */
+    public removeLead(map: WvWMap | undefined, leader: ResetLeader): void {
         if(map === undefined) {
             for(const m in this.leads) {
-                this.leads[m][1].delete(player);
-                this.emit("removeleader", this, m, player);
+                this.leads[m][1].delete(leader);
+                this.emit("removeleader", this, m, leader);
             }
         } else {
-            this.leads[map.name][1].delete(player)  
-            this.emit("removeleader", this, map, player);  
+            this.leads[map.name][1].delete(leader)  
+            this.emit("removeleader", this, map, leader);  
         }
-        
     }
 
+    /**
+    * @returns all maps for which no leader has been determined yet. 
+    */
     private emptyMaps(): WvWMap[] {
-        return Object.keys(this.leads).filter(k => this.leads[k][1].size === 0).map(k => this.leads[k][0]);
+        return Object.keys(this.leads).filter(k => this.leads[k][1].size() === 0).map(k => this.leads[k][0]);
     }
 
+    /**
+    * @returns the number of empty maps.
+    */
     private emptyMapCount(): number {
         return this.emptyMaps().length;
     }
 
+    /**
+    * @returns the hex string of the colour to use for the embed based on how many maps are empty. 
+    */
     private getEmbedColour(): string {
         return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
     }
 
+    /**
+    * @returns the message embed for the roster. 
+    */
     public toMessageEmbed(): discord.MessageEmbed {
         const re = new discord.MessageEmbed()
             .setColor(this.getEmbedColour())
@@ -142,7 +226,9 @@ export class Roster extends events.EventEmitter {
             .setDescription(L.get("RESETLEAD_HEADER"))
         for(const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
-            re.addField("{0} {1}".formatUnicorn(wvwmap.emote, wvwmap.getLocalisedName(" | ", false)), leads.size === 0 ? "-" : Array.from(leads).join(", "))
+            re.addField(`${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`, leads.size() === 0 ? "-" : Array.from(leads)
+                                                                                                                    .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
+                                                                                                                    .join(", "))
               .addField('\u200b', '\u200b'); // discord.js v12 version of addBlankField()
         }
         return re;
@@ -184,7 +270,8 @@ export class ResetRoster extends BotgartCommand {
         );
         this.messages = {};
         this.emotes = WvWMap.getMaps().map(m => m.emote);
-        this.emotes.push("❌"); // cross
+        this.emotes.push(WITHDRAW);
+        this.emotes.push(VISIBLE);
         this.syncScheduled = false;
     }
 
@@ -205,14 +292,15 @@ export class ResetRoster extends BotgartCommand {
 
     private syncToTS3(roster: Roster): void {       
         const cl = this.getBotgartClient();
-        // users are stored as <@123123123123>. Resolve if possible.
-        const resolveUser = sid => {
-            const idregxp = /<@(\d+)>/;
+        // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command. 
+        // Resolve if possible.
+        const resolveUser: (string) => string = sid => {
+            const idregxp = /<[@!](\d+)>/;
             const match = idregxp.exec(sid);
             let user = sid;
-            if(match != null) {
+            if(match !== null) {
                 const resolved: discord.GuildMember | undefined = Util.resolveDiscordUser(cl, match[1])
-                if(resolved != undefined) {
+                if(resolved !== undefined) {
                     user = resolved.displayName;
                 }
             }
@@ -220,10 +308,10 @@ export class ResetRoster extends BotgartCommand {
         } 
         cl.getTS3Connection().post("resetroster", {
             "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
-            "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(resolveUser),
-            "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(resolveUser),
-            "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(resolveUser),
-            "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(resolveUser)
+            "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(l => resolveUser(l.name)),
+            "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(l => resolveUser(l.name)),
+            "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(l => resolveUser(l.name)),
+            "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(l => resolveUser(l.name))
         });
     }
 
@@ -236,7 +324,7 @@ export class ResetRoster extends BotgartCommand {
         }
         const [_, message, __] = dbRoster;
         const refresh = (r: Roster, map: string, p: string) => {
-            setTimeout(function() { 
+            setTimeout(function() { // no arrow function, as we need to bind()!
                 // only updating post, DB, and TS3 in fixed intervals
                 // reduces strain if people are being funny by clicking around wildly
                 // and only updates once if someone who was tagged for multiple maps 
@@ -254,6 +342,7 @@ export class ResetRoster extends BotgartCommand {
         };
         roster.on("addleader", refresh);
         roster.on("removeleader", refresh);
+        roster.on("togglevisibility", refresh);
     }
 
     private watchMessage(message: discord.Message, roster: Roster): void {
@@ -262,11 +351,18 @@ export class ResetRoster extends BotgartCommand {
             this.emotes.includes(e.emoji.name) , {}).on("collect", (r) => {
                 const m = WvWMap.getMapByEmote(r.emoji.name);
                 r.users.cache.filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
+                    const formattedName = Util.formatUserPing(u.id);
                     if(!m) {
-                        // no map has been found -> X -> user wants to remove themselves from roster
-                        roster.removeLead(undefined, Util.formatUserPing(u.id));
+                        if(r.emoji.name === WITHDRAW) { // X -> user wants to remove themselves from roster
+                            roster.removeLead(undefined, new ResetLeader(formattedName, false)); // equality is defined by name, so wrapping the name in ResetLeader is sufficient to find all instances of that user
+                        } else if(r.emoji.name === VISIBLE) {
+                            roster.toggleLeaderVisibility(formattedName);
+                        }                      
                     } else {
-                        roster.addLead(m, Util.formatUserPing(u.id));
+                        // if the player is already registered on another map, take their visibility state
+                        const former = roster.findLeader(formattedName);
+                        const visible: boolean = former.length > 0 && former[0].isOpenlyVisible();
+                        roster.addLead(m, new ResetLeader(formattedName, visible));
                     }
                     r.users.remove(u);
                 });
@@ -326,3 +422,4 @@ module.exports = ResetRoster;
 exports.Roster = Roster;
 module.exports.Roster = Roster;
 module.exports.WvWMap = WvWMap;
+module.exports.ResetLeader = ResetLeader;

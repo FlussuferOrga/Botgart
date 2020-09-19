@@ -316,3 +316,52 @@ export function getNextResetDate(now = new Date()): Date {
     }
     return resetDay;
 }
+
+export interface Equalable<T> {
+    equals: (other: T) => boolean;
+}
+
+export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
+    private elements: T[];
+
+    constructor() {
+        this.elements = [];
+    }
+
+    public size(): number {
+        return this.elements.length;
+    }
+
+    public [Symbol.iterator](): Iterator<T> {
+        return this.elements.values();
+    }
+
+    public find(item: T): number {
+        let i: number = 0;
+        while(i < this.elements.length && !this.elements[i].equals(item)) {
+            i++;
+        }
+        return i < this.elements.length ? i : -1;
+    }
+
+    public has(item: T): boolean {
+        return this.find(item) > -1;
+    }
+
+    public add(item: T): boolean {
+        let added: boolean = false;
+        if(!this.has(item)) {
+            this.elements.push(item);
+            added = true;
+        }
+        return added;
+    }
+
+    public delete(item: T): boolean {
+        const index: number = this.find(item);
+        if(index > -1) {
+            this.elements.splice(index, 1);
+        }
+        return index > -1;
+    }
+}
