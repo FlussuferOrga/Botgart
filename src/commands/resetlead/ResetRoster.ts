@@ -209,6 +209,10 @@ export class Roster extends events.EventEmitter {
         }
     }
 
+    public removeLeadByName(map: WvWMap | undefined, leaderName: string): void {
+        this.removeLead(map, new ResetLeader(leaderName, false));
+    }
+
     /**
     * @returns all maps for which no leader has been determined yet. 
     */

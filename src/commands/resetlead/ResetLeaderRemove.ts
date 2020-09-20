@@ -1,6 +1,7 @@
 import * as Util from "../../Util";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
+import * as akairo from "discord-akairo";
 import { BotgartCommand } from "../../BotgartCommand";
 import { WvWMap } from "./ResetRoster";
 
@@ -16,7 +17,7 @@ export class RemoveResetLeader extends BotgartCommand {
             args: [
                 {
                     id: "player",
-                    type: "string"
+                    type: akairo.Argument.union("member", "string")
                 },
                 {
                     id: "weekNumber",
@@ -44,8 +45,9 @@ export class RemoveResetLeader extends BotgartCommand {
         const dbRoster = this.getBotgartClient().getRoster(guild, args.weekNumber, args.year);
         if(dbRoster !== undefined) {
             const [g,mes,roster] = dbRoster;
-            roster.removeLead(WvWMap.getMapByName(args.map), args.player);
-            this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [args.player, args.weekNumber, mes.url]));
+            const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
+            roster.removeLeadByName(WvWMap.getMapByName(args.map), name);
+            this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [name, args.weekNumber, mes.url]));
         }
     }
 }
