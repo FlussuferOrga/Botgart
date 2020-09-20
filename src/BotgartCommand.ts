@@ -4,6 +4,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import * as L from "./Locale";
+import * as U from "./Util";
 
 export enum PermissionTypes {
     user = "user",
@@ -173,6 +174,9 @@ export class BotgartCommand extends Command {
             const arg = args[this.cmdargs[i].id];
             argsPresent = arg !== undefined && arg !== "" && arg !== null;
             i++;
+        }
+        if(!argsPresent) {
+            U.log("debug", `Missing argument at position [${i-1}] for command '${this.constructor.name}'.`)
         }
         return argsPresent ? undefined : L.get(this.helptextKey());
     }
