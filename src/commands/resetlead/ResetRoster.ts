@@ -168,11 +168,27 @@ export class Roster extends events.EventEmitter {
     * @param map the map to add the leader to. 
     * @param leader the leader to add to the map.
     */
+    /*
     public addLead(map: WvWMap, leader: ResetLeader): void {
         if(map && map.name in this.leads) {
             this.leads[map.name][1].add(leader);
             this.emit("addleader", this, map, leader);
         }
+    }
+    */
+    public addLeadByName(map: WvWMap, leaderName: string): void {
+        // if the player is already registered on another map, take their visibility state
+        const former = this.findLeader(leaderName);
+        const visible: boolean = former.length > 0 && former[0].isOpenlyVisible();
+        const leader: ResetLeader = new ResetLeader(leaderName, visible);
+        this.addLead(map, leader);
+    }
+
+    public addLead(map: WvWMap, leader: ResetLeader): void {
+        if(map && map.name in this.leads) {
+            this.leads[map.name][1].add(leader);
+            this.emit("addleader", this, map, leader);
+        }   
     }
 
     /**
@@ -359,10 +375,7 @@ export class ResetRoster extends BotgartCommand {
                             roster.toggleLeaderVisibility(formattedName);
                         }                      
                     } else {
-                        // if the player is already registered on another map, take their visibility state
-                        const former = roster.findLeader(formattedName);
-                        const visible: boolean = former.length > 0 && former[0].isOpenlyVisible();
-                        roster.addLead(m, new ResetLeader(formattedName, visible));
+                        roster.addLeadByName(m, formattedName);
                     }
                     r.users.remove(u);
                 });

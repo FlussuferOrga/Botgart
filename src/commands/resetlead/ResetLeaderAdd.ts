@@ -1,6 +1,7 @@
 import * as Util from "../../Util";
 import * as L from "../../Locale";
 import * as discord from "discord.js";
+import * as akairo from "discord-akairo";
 import { BotgartCommand } from "../../BotgartCommand";
 import { WvWMap } from "./ResetRoster";
 
@@ -16,7 +17,7 @@ export class AddResetLeader extends BotgartCommand {
             args: [
                 {
                     id: "player",
-                    type: "string"
+                    type: akairo.Argument.union("member", "string")
                 },
                 {
                     id: "map",
@@ -38,6 +39,7 @@ export class AddResetLeader extends BotgartCommand {
     }
 
     checkArgs(args) {
+        console.log(args);
         return !args || !args.weekNumber || !args.year || !args.player || !args.map 
                 ? L.get(this.helptextKey(), [WvWMap.getAllMapNames().join(" | ")]) 
                 : undefined;
@@ -49,8 +51,9 @@ export class AddResetLeader extends BotgartCommand {
         }
         const dbRoster = this.getBotgartClient().getRoster(guild, args.weekNumber, args.year);
         if(dbRoster !== undefined) {
-            const [g,mes,roster] = dbRoster;
-            roster.addLead(WvWMap.getMapByName(args.map), args.player);
+            const [g, mes, roster] = dbRoster;
+            const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
+            roster.addLeadByName(WvWMap.getMapByName(args.map), name);
             this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));
         }
     }
