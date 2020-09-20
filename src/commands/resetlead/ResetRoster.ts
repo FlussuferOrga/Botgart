@@ -27,6 +27,10 @@ export class ResetLeader implements Util.Equalable<ResetLeader> {
         this.visible = v;
     }
 
+    public toggleVisibility(): void {
+        this.visible = !this.visible;
+    }
+
     public constructor(name: string, visible: boolean) {
         this.name = name;
         this.visible = visible;
@@ -156,7 +160,7 @@ export class Roster extends events.EventEmitter {
     public toggleLeaderVisibility(formattedName: string): void {
         const leaders: ResetLeader[] = this.findLeader(formattedName);
         for(let l of leaders) {
-            l.setVisiblity(!l.isOpenlyVisible());
+            l.toggleVisibility();
         }
         if(leaders.length > 0) {
             this.emit("togglevisibility", this, leaders);

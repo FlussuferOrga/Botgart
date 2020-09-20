@@ -9,19 +9,15 @@ import { WvWMap } from "./ResetRoster";
 Testcases:
 
 */
-export class AddResetLeader extends BotgartCommand {
+export class ToggleResetLeaderVisibility extends BotgartCommand {
      constructor() {
-        super("addresetlead", {
-            aliases: ["addresetlead"],
+        super("toggleresetleadervisibility", {
+            aliases: ["toggleresetleadervisibility"],
             quoted: true,
             args: [
                 {
                     id: "player",
                     type: akairo.Argument.union("member", "string")
-                },
-                {
-                    id: "map",
-                    type: (message: discord.Message, phrase: string) => WvWMap.getAllMapNames().includes(phrase) ? phrase : null
                 },
                 {
                     id: "weekNumber",
@@ -38,12 +34,6 @@ export class AddResetLeader extends BotgartCommand {
         );
     }
 
-    checkArgs(args) {
-        return !args || !args.weekNumber || !args.year || !args.player || !args.map 
-                ? L.get(this.helptextKey(), [WvWMap.getAllMapNames().join(" | ")]) 
-                : undefined;
-    }    
-
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(args.weekNumber < 0) {
             args.weekNumber = Util.getNumberOfWeek();
@@ -52,10 +42,10 @@ export class AddResetLeader extends BotgartCommand {
         if(dbRoster !== undefined) {
             const [g, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
-            roster.addLeadByName(WvWMap.getMapByName(args.map), name);
-            this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));
+            roster.toggleLeaderVisibility(name)
+            this.reply(message, responsible, L.get("ROSTER_LEAD_VISIBILITY_TOGGLED", [name, args.weekNumber, mes.url]));
         }
     }
 }
 
-module.exports = AddResetLeader;
+module.exports = ToggleResetLeaderVisibility;
