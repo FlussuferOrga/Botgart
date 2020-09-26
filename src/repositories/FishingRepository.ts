@@ -48,7 +48,7 @@ export class FishingRepository extends AbstractDbRepository{
         return this.execute(db => db.prepare(`
             SELECT 
                 user,
-                ROW_NUMBER() OVER (ORDER BY SUM(weight)) AS rank,
+                ROW_NUMBER() OVER (ORDER BY SUM(weight) DESC) AS rank,
                 SUM(weight) AS total_weight,
                 COUNT(*) AS number_of_fish
             FROM 
