@@ -62,7 +62,7 @@ export class TS3Connection {
             path: "/",
             headers: {
                 "Content-Type": "application/json",
-                "Content-Length": dataString.length
+                "Content-Length": Buffer.byteLength(dataString)
             }
         };
         const settings: HTTPRequestOptions = options === undefined ? defaults : Object.assign({}, defaults, options);
