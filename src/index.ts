@@ -38,12 +38,11 @@ if (args.patchall || args.patch) {
         } else {
             patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));    
         }
-        
     }
 } else {
     const config = getConfig();
 
-    log("info", "Starting Botgart...")
+    log("info", "Starting Botgart...");
 
     const client = new BotgartClient({ownerID: config.get("owner_ids")}, {}, database);
     const webServer = new WebServer();
@@ -52,7 +51,7 @@ if (args.patchall || args.patch) {
     process.on('SIGINT', function () {
         log("info", "Shutting down...");
 
-        webServer.close()
+        webServer.close();
         log("info", "Bye");
         process.exit(0);
     });
@@ -61,8 +60,8 @@ if (args.patchall || args.patch) {
     client.login(config.get().token).then(() => {
         log("info", "Started up...");
 
-        log("info", "Starting WebServer...")
-        webServer.start()
+        log("info", "Starting WebServer...");
+        webServer.start();
     }).catch(reason => {
         log("error", `Error starting up Bot: ${reason}`);
         process.exit(1);

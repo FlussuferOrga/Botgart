@@ -74,7 +74,7 @@ export class RosterRepository extends AbstractDbRepository {
                     message = await (<discord.TextChannel>channel).messages.fetch(entries[0].message);
                     postExists = true;
                 } catch(e) {
-                    Util.log("error", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`)
+                    Util.log("error", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`);
                     postExists = false;
                 }
             }

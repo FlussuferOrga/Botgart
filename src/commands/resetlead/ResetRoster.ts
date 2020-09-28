@@ -7,6 +7,7 @@ import * as L from "../../Locale";
 import * as Util from "../../Util";
 //import * as moment from 'moment';
 import moment = require('moment');
+import { RosterRepository } from "../../repositories/RosterRepository";
 
 /**
 Testcases:
@@ -312,6 +313,7 @@ export class ResetRoster extends BotgartCommand {
                        this.watchRoster(<discord.Guild>dbMessage.guild, dbRoster); // can not be initialised in direct messages anyway
                        this.watchMessage(dbMessage, dbRoster);
                     })));
+        this.initSyncToTS3();
     }    
 
     private syncToTS3(roster: Roster): void {       
@@ -343,7 +345,7 @@ export class ResetRoster extends BotgartCommand {
         const cl = this.getBotgartClient();
         const dbRoster = cl.getRoster(guild, roster.weekNumber, roster.year);
         if(dbRoster === undefined) {
-            Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`)
+            Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
             return;
         }
         const [_, message, __] = dbRoster;
@@ -436,6 +438,24 @@ export class ResetRoster extends BotgartCommand {
             args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);    
         }
         return args;
+    }
+
+    private initSyncToTS3(): void {
+        const rosterWeek = Util.getNumberOfWeek();
+        const rosterYear = new Date().getFullYear();
+        const guilds = this.client.guilds.cache;
+        const cl = this.getBotgartClient();
+
+        guilds.forEach(async(guild) => {
+            const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await cl.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear);
+            
+            if(roster === undefined) {
+                Util.log("error", `Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
+              } else {
+                const [r, chan, mes] = roster;
+                this.syncToTS3(r);
+              }
+        });
     }
 }
 

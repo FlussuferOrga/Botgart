@@ -104,7 +104,6 @@ export class TS3Connection {
         this.port = ts3port;
         this.name = name !== undefined ? name : `TS3Connection[${TS3Connection.CONNECTION_COUNTER++}]`;
         this.buffer = CircularBuffer<string>(TS3Connection.CIRCULAR_BUFFER_SIZE);
-        this.post("/resetroster", {}).then(r => log("debug", r)).catch(er => log("error", er));
     }
 }
 
