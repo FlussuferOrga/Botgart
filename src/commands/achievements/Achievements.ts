@@ -112,7 +112,9 @@ export abstract class Achievement<C> {
 
                     if(achievementChannel !== undefined) {
                         if(isNew || this.announceRepetitions) {
-                           (<discord.TextChannel>achievementChannel).send({reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
+                           // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
+                           (achievementChannel as discord.TextChannel).send("🏆", {reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
+                           
                         }                       
                     } else {
                         U.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
