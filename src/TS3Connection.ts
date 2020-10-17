@@ -11,7 +11,12 @@ import { log } from "./Util";
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
-const RECONNECT_TIMER_MS = 3000; 
+const RECONNECT_TIMER_MS = 3000;
+// after failing to reconnect to TS after losing connection once this many times,
+// all ongoing raids will be terminated to avoid commanders being credited for seemingly extremely
+// long raids after the TS bot has been unreachable for a prolonged time, althrough they have long 
+// since tagged down.
+const RECONNECT_PATIENCE = 10;
 
 export interface TagDown {
     readonly guild: discord.Guild;
@@ -239,6 +244,10 @@ export class CommanderStorage {
         this.commanders = [];
     }
 
+    public getAllCommanders(): Commander[] {
+        return this.commanders;
+    }
+
     public getActiveCommanders(): Commander[] {
         return this.commanders.filter(c => c.getState() === CommanderState.COMMANDER);
     }
@@ -298,6 +307,7 @@ export class TS3Listener extends events.EventEmitter {
     private channelDelay: number;
     private gracePeriod: number;
     private botgartClient: BotgartClient;
+    private patience: number;
 
     constructor(bgclient: BotgartClient) {
         super();
@@ -313,6 +323,7 @@ export class TS3Listener extends events.EventEmitter {
         this.channelDelay = config.ts_listener.channel_delay;
         this.gracePeriod = config.ts_listener.grace_period;
         this.channels = {};
+        this.patience = RECONNECT_PATIENCE;
         this.setMaxListeners(24);
 
         const that = this;
@@ -393,8 +404,19 @@ export class TS3Listener extends events.EventEmitter {
                     log("debug", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
                 });
             });
+            this.patience = RECONNECT_PATIENCE;
         } catch(ex) {
-            log("error", `Could not retrieve active commanders: ${ex}`)
+            log("error", `Could not retrieve active commanders: ${ex}`);
+            // by going as low -1 we do not get an underflow by going indefinitely low 
+            // but we do the reset only once (when reaching 0) instead of every time after reaching 0.
+            this.patience = Math.max(this.patience - 1, -1);
+            if(this.patience == 0) {
+                log("warning", `Could not reconnect to TS after ${RECONNECT_PATIENCE} tries. Tagging down all active commanders.`);
+                this.botgartClient.commanders.getAllCommanders()
+                    .filter(commander => commander.getDiscordMember() !== undefined)
+                    .map(commander => this.botgartClient.guilds.cache.map(g => this.tagDown(g, commander)));
+            }
+
         }
     }
 
