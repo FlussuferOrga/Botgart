@@ -24,6 +24,11 @@ export function momentToLocalSqliteTimestamp(mom: moment.Moment): string {
     return mom.local().format("YYYY-MM-DD HH:mm:ss");
 }
 
+// https://developer.mozilla.org/de/docs/Web/JavaScript/Guide/Regular_Expressions
+export function escapeRegExp(text: string) {
+    return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& is the entired matched string
+}
+
 /**
 * Capitalises the first letter of the passed string. 
 * Even if it contains multiple words.
