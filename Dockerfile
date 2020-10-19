@@ -39,7 +39,8 @@ VOLUME /app/log
 VOLUME /app/db
 #VOLUME /app/conf #need some work to move the config file into a seperate folder
 
-HEALTHCHECK --interval=2m --timeout=5s CMD curl -f http://localhost:${HTTP_PORT}/health || exit 1
+HEALTHCHECK --interval=5m --timeout=2m --start-period=45s \
+   CMD curl -f --retry 6 --max-time 5 --retry-delay 10 --retry-max-time 60 " http://localhost:${HTTP_PORT}/health" || bash -c 'kill -s 15 -1 && (sleep 10; kill -s 9 -1)'
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node","/app/built/index.js"]
