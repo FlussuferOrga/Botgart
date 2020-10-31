@@ -422,21 +422,24 @@ export class NeverSurrender extends TagUpAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagUp): boolean {
-        let holds: boolean = false;
-        const stats = this.client.matchupRepository.getStatsAround(context.commander.getRaidStart());
-        if(stats) {
-            const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
-            if(ourColour === undefined) {
-                const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";  
-                U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
-            } else {
-                const ourStats = stats.find(s => s.faction === ourColour);
-                holds = ourStats 
-                            ? ourStats.kills > 1000 && ourStats.deaths > 1000 // make sure achievement is not awarded right at reset (sample morning of day 2 of matchup: ~6k kills)
-                                   && ourStats.kills / ourStats.deaths <= 0.6 
-                            : false; 
+        let holds: boolean = context.commander.getRaidStart() !== null;
+        if(holds) {
+            const stats = this.client.matchupRepository.getStatsAround(context.commander.getRaidStart());
+            if(stats) {
+                const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
+                if(ourColour === undefined) {
+                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";  
+                    U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
+                } else {
+                    const ourStats = stats.find(s => s.faction === ourColour);
+                    holds = ourStats 
+                                ? ourStats.kills > 1000 && ourStats.deaths > 1000 // make sure achievement is not awarded right at reset (sample morning of day 2 of matchup: ~6k kills)
+                                       && ourStats.kills / ourStats.deaths <= 0.6 
+                                : false; 
+                }            
             }            
         }
+
         return holds;
     }
 }
@@ -495,7 +498,7 @@ export class AgileDefender extends TagDownAchievement {
     }
 
     public checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
-        let holds: boolean = context.commander.getRaidStart !== undefined 
+        let holds: boolean = context.commander.getRaidStart() !== undefined 
                                 && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "18:00:00", "21:00:00")
                               && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if(holds) {
