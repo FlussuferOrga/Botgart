@@ -94,7 +94,7 @@ class ActiveFisher {
     }
 
     public async bite(): Promise<void> {
-        await this.message.edit(this.createBittenEmbed());
+        await this.message.edit(await this.createBittenEmbed());
         await this.message.react(REEL_EMOTE);
         this.message.createReactionCollector((e,u) => u.id !== this.client.user?.id && e.emoji.name === REEL_EMOTE, {time: REEL_BASE_TIME * this.fish.reel_time_factor})
                     .on("collect", r => this.end(true))
