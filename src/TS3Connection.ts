@@ -480,17 +480,20 @@ export class TS3Listener extends events.EventEmitter {
                 dmember.roles.remove(crole).catch(e => {
                     log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
+                log("debug", "Done managing roles for former commander.");
             }
             // do not write leads of members which hide their roles
             const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
             if(writeToDB) {
+                log("debug", "Writing raid information to database.");
                 if(commander.getRaidStart() === undefined) {
                     log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
                 } else {
                     this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
                 }
-                
+                log("debug", "Done writing to database.");
             }
+            log("debug", "Done processing commander. Will now send out tagdown event.");
         }
         
         this.botgartClient.commanders.deleteCommander(commander);
