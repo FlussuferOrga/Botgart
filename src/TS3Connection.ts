@@ -336,8 +336,9 @@ export class TS3Listener extends events.EventEmitter {
         try {
             const res: string = await this.ts3connection.get("commanders");
             const data: {commanders: TS3Commander[]} = JSON.parse(res); // FIXME: error check
-            log("debug", "Commanders that are still active: {0}".formatUnicorn(JSON.stringify(data.commanders.map(c => c.ts_cluid))));
-            const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(data.commanders.map(c => c.ts_cluid))); 
+            const commanderTSUIDs: string[] = data.commanders.map(c => c.ts_cluid);
+            log("debug", `Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
+            const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(commanderTSUIDs)); 
             log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
             this.botgartClient.guilds.cache.forEach(g => {
                 data.commanders.forEach(c => {
