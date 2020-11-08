@@ -275,6 +275,7 @@ export class CommanderStorage {
     }
 
     public setMinus(stillUp: Set<string>): Commander[] {
+        log("debug", `Calling setMinus on current commanders ${this.commanders.map(c => c.getTS3ClientUID())}`);
         return this.commanders.filter(c => !stillUp.has(c.getTS3ClientUID()));
     }
 }
