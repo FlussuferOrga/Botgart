@@ -475,10 +475,10 @@ export class TS3Listener extends events.EventEmitter {
             // since removing roles has gone wrong a lot lately,
             // we're updating the cache manually
             // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
-            const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
+            const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
             if(crole && dmember) {
-                log("info", `Tagging down ${dmember.displayName} in ${g.name}.`);
+                log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
                 dmember.roles.remove(crole).catch(e => {
                     log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
