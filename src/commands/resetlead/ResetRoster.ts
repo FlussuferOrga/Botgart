@@ -371,25 +371,30 @@ export class ResetRoster extends BotgartCommand {
         roster.on("togglevisibility", refresh);
     }
 
+    private async processReacts(r: discord.MessageReaction, roster: Roster) {
+        const m = WvWMap.getMapByEmote(r.emoji.name);
+        (await r.users.fetch()).filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
+            const formattedName = Util.formatUserPing(u.id);
+            if(!m) {
+                if(r.emoji.name === WITHDRAW) { // X -> user wants to remove themselves from roster
+                    roster.removeLead(undefined, new ResetLeader(formattedName, false)); // equality is defined by name, so wrapping the name in ResetLeader is sufficient to find all instances of that user
+                } else if(r.emoji.name === VISIBLE) {
+                    roster.toggleLeaderVisibility(formattedName);
+                }                      
+            } else {
+                roster.addLeadByName(m, formattedName);
+            }
+            r.users.remove(u);
+        });
+    }
+
     private watchMessage(message: discord.Message, roster: Roster): void {
         Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
         message.createReactionCollector(e => 
-            this.emotes.includes(e.emoji.name) , {}).on("collect", async (r) => {
-                const m = WvWMap.getMapByEmote(r.emoji.name);
-                (await r.users.fetch()).filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
-                    const formattedName = Util.formatUserPing(u.id);
-                    if(!m) {
-                        if(r.emoji.name === WITHDRAW) { // X -> user wants to remove themselves from roster
-                            roster.removeLead(undefined, new ResetLeader(formattedName, false)); // equality is defined by name, so wrapping the name in ResetLeader is sufficient to find all instances of that user
-                        } else if(r.emoji.name === VISIBLE) {
-                            roster.toggleLeaderVisibility(formattedName);
-                        }                      
-                    } else {
-                        roster.addLeadByName(m, formattedName);
-                    }
-                    r.users.remove(u);
-                });
-            });
+            this.emotes.includes(e.emoji.name) , {}).on("collect", r => this.processReacts(r, roster));
+        for(let [_, e] of message.reactions.cache) {
+            this.processReacts(e, roster);
+        }
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
