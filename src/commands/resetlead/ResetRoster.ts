@@ -374,9 +374,9 @@ export class ResetRoster extends BotgartCommand {
     private watchMessage(message: discord.Message, roster: Roster): void {
         Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
         message.createReactionCollector(e => 
-            this.emotes.includes(e.emoji.name) , {}).on("collect", (r) => {
+            this.emotes.includes(e.emoji.name) , {}).on("collect", async (r) => {
                 const m = WvWMap.getMapByEmote(r.emoji.name);
-                r.users.cache.filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
+                (await r.users.fetch()).filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
                     const formattedName = Util.formatUserPing(u.id);
                     if(!m) {
                         if(r.emoji.name === WITHDRAW) { // X -> user wants to remove themselves from roster
