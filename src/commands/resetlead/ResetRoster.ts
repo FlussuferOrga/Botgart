@@ -316,16 +316,16 @@ export class ResetRoster extends BotgartCommand {
         this.initSyncToTS3();
     }    
 
-    private syncToTS3(roster: Roster): void {       
+    private async syncToTS3(roster: Roster): Promise<void> {       
         const cl = this.getBotgartClient();
         // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command. 
         // Resolve if possible.
-        const resolveUser: (string) => string = sid => {
+        const resolveUser: (string) => Promise<string> = async sid => {
             const idregxp = /<[@!](\d+)>/;
             const match = idregxp.exec(sid);
             let user = sid;
             if(match !== null) {
-                const resolved: discord.GuildMember | undefined = Util.resolveDiscordUser(cl, match[1])
+                const resolved: discord.GuildMember | undefined = await Util.resolveDiscordUser(cl, match[1])
                 if(resolved !== undefined) {
                     user = resolved.displayName;
                 }
@@ -334,10 +334,10 @@ export class ResetRoster extends BotgartCommand {
         } 
         cl.getTS3Connection().post("resetroster", {
             "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
-            "rbl": Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(l => resolveUser(l.name)),
-            "gbl": Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(l => resolveUser(l.name)),
-            "bbl": Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(l => resolveUser(l.name)),
-            "ebg": Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(l => resolveUser(l.name))
+            "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(l => resolveUser(l.name))),
+            "gbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(l => resolveUser(l.name))),
+            "bbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(l => resolveUser(l.name))),
+            "ebg": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.EternalBattlegrounds)).map(l => resolveUser(l.name)))
         });
     }
 

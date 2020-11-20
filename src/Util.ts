@@ -231,14 +231,14 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
 };
 
 
-export function resolveDiscordUser(client: discord.Client, uid: string): discord.GuildMember | undefined {
+export async function resolveDiscordUser(client: discord.Client, uid: string): Promise<discord.GuildMember | undefined> {
     let user: discord.GuildMember | undefined = undefined;
     let i = 0;
     const gs = client.guilds.cache.array();
     let l = gs.length; // discord.Collection actually provides a find(any -> boolean)-function, but I can't be arsed.
     
     while(!user && i < l) {
-        user = gs[i].members.cache.find(m => m.user.id === uid);
+        user = await gs[i].members.fetch(uid);
         i++;
     }
     return user;
