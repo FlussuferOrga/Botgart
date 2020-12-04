@@ -15,7 +15,7 @@ export class ReactionSnapshot extends BotgartCommand {
                 {
                     id: "message",
                     type: async (message: discord.Message, phrase: string) => { 
-                        const match = phrase.match(/^https:\/\/discordapp.com\/channels\/(\d+)\/(\d+)\/(\d+)$/)
+                        const match = phrase.match(/^https:\/\/discord.com\/channels\/(\d+)\/(\d+)\/(\d+)$/)
                         if(match !== null) {
                             const [_, guildId, channelId, messageId] = match;
                             const cl: BotgartClient = this.getBotgartClient();
