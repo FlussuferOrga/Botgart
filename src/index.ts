@@ -1,7 +1,7 @@
 import * as CommandLineArgs from "command-line-args";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import { Database } from "./DB";
+import { Database } from "./database/DB";
 import { DatabasePatcher } from "./patches/DatabasePatcher";
 import { DBPatch } from "./patches/DBPatch";
 import { allPatches, getPatch } from "./patches/PatchRegistry";

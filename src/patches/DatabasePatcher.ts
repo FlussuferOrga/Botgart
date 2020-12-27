@@ -1,4 +1,4 @@
-import { Database } from "../DB";
+import { Database } from "../database/DB";
 import { log } from "../Util";
 import { DBPatch } from "./DBPatch";
 

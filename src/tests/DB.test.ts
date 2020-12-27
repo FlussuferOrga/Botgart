@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import fs from "fs";
-import { Database } from "../DB";
+import { Database } from "../database/DB";
 import { DatabasePatcher } from "../patches/DatabasePatcher";
 import { allPatches } from "../patches/PatchRegistry";
 import { EnvironmentVariablesRepository } from "../repositories/EnvironmentVariablesRepository";

@@ -4,7 +4,7 @@ import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
 import { Roster } from "./commands/resetlead/ResetRoster"
 import { getConfig } from "./config/Config";
-import * as db from "./DB"
+import * as db from "./database/DB"
 import { APIEmitter } from "./emitters/APIEmitter"
 import { api } from "./Gw2ApiUtils";
 import { AchievementRepository } from "./repositories/AchievementRepository";
@@ -164,6 +164,24 @@ export class BotgartClient extends akairo.AkairoClient {
             const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
             this.registerAchievement(ach);
         });
+
+        db.executeAsync(`SELECT 
+    tl.gw2account,
+    COUNT(*) AS count
+FROM 
+    captured_objectives AS co 
+    JOIN ts_leads AS tl 
+      ON datetime(new_last_flipped, 'localtime') BETWEEN datetime(tl.start, 'localtime') AND datetime(tl.end, 'localtime')
+    JOIN matchup_factions AS mf
+      ON co.matchup_id = mf.matchup_id
+         AND co.new_owner = mf.colour
+WHERE 
+    old_tier = 3
+    AND mf.world_id = 2202
+GROUP BY
+    gw2account`, []).then(res => {
+        console.log("hello this is the result you have been waiting for: ", res);
+    });
     }
 
     public getAchievements(): achievements.Achievement<any>[] {

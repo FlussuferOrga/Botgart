@@ -1,4 +1,4 @@
-import { Database } from "../DB";
+import { Database } from "../database/DB";
 import { DBPatch } from "./DBPatch";
 
 /**

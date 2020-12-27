@@ -1,5 +1,5 @@
 import * as sqlite3 from "better-sqlite3";
-import { Database } from "../DB";
+import { Database } from "../database/DB";
 import { Patch } from "./Patch";
 
 export class DBPatch extends Patch {
