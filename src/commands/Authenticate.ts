@@ -1,6 +1,7 @@
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
+import { Registration } from "../repositories/RegistrationRepository";
 import { getConfig } from "../config/Config";
 import { getAccountGUID, getAccountName, validateWorld } from "../Gw2ApiUtils";
 import * as L from "../Locale";
@@ -84,9 +85,9 @@ export class Authenticate extends BotgartCommand {
                     } else {
                         getAccountGUID(args.key).then(async guid => {
                             await Util.asyncForEach(members, async (m: {guild: discord.Guild, member: discord.GuildMember}) => {
-                                let r: discord.Role | undefined = m.guild.roles.cache.find(r => r.name === role);
+                                const r: discord.Role | undefined = (await m.guild.roles.fetch()).cache.find(r => r.name === role);
                                 if(r === undefined) {
-                                    Util.log("error", "Role '{0}' not found on server '{1}'. Skipping.".formatUnicorn(role, m.guild.name));
+                                    Util.log("error", `Role '${role}' not found on server '${m.guild.name}'. Skipping.`);
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
                                     let accountName: string | boolean = await getAccountName(args.key);
@@ -96,14 +97,33 @@ export class Authenticate extends BotgartCommand {
                                         i--;
                                     }
                                     if(accountName === false) {
-                                        Util.log("warning", "After trying several times, I could not resolve the account name for discord user {0}. This may be a temporary problem with the API. Falling back to NULL to fix another day.".formatUnicorn(responsible.username));
+                                        Util.log("warning", `After trying several times, I could not resolve the account name for discord user '${responsible.username}'. This may be a temporary problem with the API. Falling back to NULL to fix another day.`);
                                         accountName = "";
+                                    }
+                                    let currentRole: discord.Role | null = null;
+                                    if(typeof accountName === "string" && accountName) {
+                                        // check if the user is registering after having registered before, eg after transferring to another server. 
+                                        // In that case, remove the role they are currently having.
+                                        const reg: Registration = cl.registrationRepository.getUserByAccountName(accountName);
+                                        if(reg) {
+                                            // assignServerRole() expects Role | null, but find() returns Role | undefined, so we do null-coalescing here
+                                            currentRole = (await m.guild.roles.fetch()).cache.find(r => r.name === reg.registration_role) || null;
+                                            Util.log("info", `User '${responsible.username}' was already registered with role '${currentRole}' which will be removed.`);
+                                        }
+                                        
                                     }
                                     let unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if(unique) {
                                         Util.log("info", "Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
-                                        // FIXME: check if member actually has NULL as current role, maybe he already has one and entered another API key
-                                        Util.assignServerRole(m.member, null, r);
+                                        // Beware! This is not 100% fail safe and users have figured out the weirdest ways and configurations which are just too wild to cover entirely:
+                                        // - players registering with multiple Discord accounts for the same GW2 account due to using multiple devices
+                                        // - players registering with a secondary account on the Discord account they were already using which is another server 
+                                        // - players transferring to another world and immediately sending a new key from that very account they have already been registered with from another world
+                                        // - etc.
+                                        // which makes it hard to figure out which Discord account should have which registration role.
+                                        // It could therefore happen that some users end up with access to channels they should not really have, but oh well...
+                                        // Maybe some day someone wants to take a really good look into this.
+                                        Util.assignServerRole(m.member, currentRole, r);
                                         // give earned achievement roles again
                                         for(const achievement of cl.achievementRepository.getPlayerAchievements(guid.toString()).map(an => cl.getAchievement(an.achievement_name)).filter(a => a !== undefined)) {
                                             achievement?.giveRole(m.member);

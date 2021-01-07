@@ -206,7 +206,6 @@ export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
 export function assignServerRole(member: discord.GuildMember, currentRole: discord.Role | null, admittedRole: discord.Role | null) : discord.Role | null {
     // FIXME: the asynchronous erroring could leave the user in an undefined state, where the system
     // assumes him to now have role A, but in fact assigning him role A has failed!
-
     if(currentRole !== null && admittedRole !== null && currentRole.name === admittedRole.name) {
         // member already has proper role
         return admittedRole;

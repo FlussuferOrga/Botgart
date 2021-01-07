@@ -17,7 +17,12 @@ const args = CommandLineArgs.default([
 ]);
 
 process.on("unhandledRejection", (reason, p) => {
-  log("crit", `Unhandled Rejection at: Promise ${JSON.stringify(p)}, reason: ${JSON.stringify(reason)}`);
+  log("crit", `Unhandled Rejection!`);
+  // JSON.stringify does not handle errors and especially not Promises:
+  // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
+  // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
+  console.error("Promise", p);
+  console.error("Reason", reason);
 });
 
 // this is an in-order list of all patches

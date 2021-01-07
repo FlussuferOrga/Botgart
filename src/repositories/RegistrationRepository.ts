@@ -209,13 +209,3 @@ export interface DesignatedRole {
     readonly guild: string;
     readonly registration_role: string;
 }
-
-/*
-interface Registration {
-    readonly api_key: string;
-    readonly guild: string;
-    readonly user: string;
-    readonly registration_role: string;
-    readonly account_name: string;
-}
-*/
