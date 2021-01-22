@@ -31,8 +31,7 @@ export class Poll extends BotgartCommand {
                     //type: "string"
                     type: (message: discord.Message, emotes: string) => emotes ? emotes.split(" ") : []
                 }
-            ],
-            userPermissions: ["ADMINISTRATOR"]
+            ]
         },
         {
             cronable: true
