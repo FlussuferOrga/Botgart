@@ -8,17 +8,20 @@ WORKDIR /app
 FROM base AS dependencies
 
 RUN apk add --no-cache make gcc g++ python
+
+ENV NO_UPDATE_NOTIFIER true
 # install node packages
 #RUN npm ins1tall -g npm
 RUN npm set progress=false && npm config set depth 0
 
 COPY package*.json ./
-RUN npm install -q
+RUN npm install
 
 # ---- Build ----
 FROM base AS build
 # copy production node_modules
 COPY --from=dependencies /app/node_modules /app/node_modules
+
 COPY . .
 RUN npm run build
 
