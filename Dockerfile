@@ -9,7 +9,7 @@ FROM base AS dependencies
 
 RUN apk add --no-cache make gcc g++ python
 # install node packages
-RUN npm install -g npm
+#RUN npm ins1tall -g npm
 RUN npm set progress=false && npm config set depth 0
 
 COPY package*.json ./
