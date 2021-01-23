@@ -4,26 +4,29 @@ FROM node:alpine AS base
 # set working directory
 WORKDIR /app
 
+
 # ---- Dependencies ----
 FROM base AS dependencies
+ENV NO_UPDATE_NOTIFIER=true
 
 RUN apk add --no-cache make gcc g++ python
 
-ENV NO_UPDATE_NOTIFIER true
 # install node packages
-#RUN npm ins1tall -g npm
 RUN npm set progress=false && npm config set depth 0
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --only=production
+
 
 # ---- Build ----
 FROM base AS build
+ENV NO_UPDATE_NOTIFIER=true
 # copy production node_modules
 COPY --from=dependencies /app/node_modules /app/node_modules
 
 COPY . .
 RUN npm run build
+
 
 # ---- final ----
 FROM base AS final
@@ -32,10 +35,11 @@ RUN apk add --no-cache curl
 COPY --from=dependencies /app/node_modules /app/node_modules
 COPY --from=build /app/built /app/built
 
+
 # --- Entrypoint ---
 COPY docker-entrypoint.sh /usr/local/bin/
 
-ENV HTTP_PORT 3000
+ENV HTTP_PORT=3000
 EXPOSE 3000
 
 VOLUME /app/log
