@@ -18,9 +18,9 @@ RUN npm install --only=production --loglevel info
 
 
 # ---- Build ----
-FROM base AS build
+FROM dependencies AS build
 # copy production node_modules
-COPY --from=dependencies /app/node_modules /app/node_modules
+RUN npm install --only=development --loglevel info
 
 COPY . .
 RUN npm run build
