@@ -12,7 +12,7 @@ ENV NO_UPDATE_NOTIFIER=true
 RUN apk add --no-cache make gcc g++ python
 
 # install node packages
-RUN npm set progress=false && npm config set depth 0
+RUN npm config set update-notifier false && npm set progress=true && npm config set depth 0
 
 COPY package*.json ./
 RUN npm install --only=production
