@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:alpine AS base
+FROM node:lts-alpine AS base
 
 # set working directory
 WORKDIR /app
