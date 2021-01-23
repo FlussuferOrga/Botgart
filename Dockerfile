@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:lts-alpine AS base
+FROM node:alpine AS base
 
 # set working directory
 WORKDIR /app
@@ -7,12 +7,11 @@ WORKDIR /app
 
 # ---- Dependencies ----
 FROM base AS dependencies
-ENV NO_UPDATE_NOTIFIER=true
 
 RUN apk add --no-cache make gcc g++ python
 
 # install node packages
-RUN npm config set update-notifier false && npm set progress=false && npm config set depth 0
+RUN npm set progress=false && npm config set depth 0
 
 COPY package*.json ./
 RUN npm install --only=production --loglevel info
@@ -20,7 +19,6 @@ RUN npm install --only=production --loglevel info
 
 # ---- Build ----
 FROM base AS build
-ENV NO_UPDATE_NOTIFIER=true
 # copy production node_modules
 COPY --from=dependencies /app/node_modules /app/node_modules
 
