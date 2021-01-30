@@ -140,6 +140,8 @@ export abstract class Achievement<C> {
     */
     public tryAward(discordUser: discord.GuildMember, context: C) {
         U.log("debug", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
+        U.log("debug", `ACHIEVEMENTS HAVE BEEN DISABLED FOR NOW. NO CHECKING IS DONE!`);
+        return;
         if(this.checkCondition(discordUser, context)) {
             U.log("debug", `Success! Awarding achievement to user.`);
             this.awardIn(discordUser.guild, discordUser);
