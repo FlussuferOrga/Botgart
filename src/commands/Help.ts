@@ -37,7 +37,7 @@ export class Help extends BotgartCommand {
                 .filter(m => m.isAllowed(user))
                 .sort((m1, m2) => m1.id < m2.id ? -1 : 1)
                 .map(m => m.desc
-                    ? `**${m.id}**\n(${m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}): ${m.desc()}\n_ _\n`
+                    ? `**${m.id}**\n(${m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}): ${m.desc()}\n_ _`
                     : m.id
                 ).join(separator));
 
