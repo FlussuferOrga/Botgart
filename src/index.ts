@@ -17,12 +17,12 @@ const args = CommandLineArgs.default([
 ]);
 
 process.on("unhandledRejection", (reason, p) => {
-  log("crit", `Unhandled Rejection!`);
-  // JSON.stringify does not handle errors and especially not Promises:
-  // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
-  // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
-  console.error("Promise", p);
-  console.error("Reason", reason);
+    log("crit", `Unhandled Rejection!`);
+    // JSON.stringify does not handle errors and especially not Promises:
+    // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
+    // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
+    console.error("Promise", p);
+    console.error("Reason", reason);
 });
 
 // this is an in-order list of all patches
@@ -38,10 +38,10 @@ if (args.patchall || args.patch) {
         // node built/index.js --patch=PatchX
         // node built/index.js --patch=PatchX --revert
         const p: typeof DBPatch | undefined = getPatch(args.patch); // those are classes, not instances, so that they are only instantiated with the DB if needed
-        if(p === undefined) {
+        if (p === undefined) {
             log("warning", `No patch ${args.patch} could be found to apply/revert.`);
         } else {
-            patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));    
+            patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));
         }
     }
 } else {
@@ -49,7 +49,10 @@ if (args.patchall || args.patch) {
 
     log("info", "Starting Botgart...");
 
-    const client = new BotgartClient({ownerID: config.get("owner_ids")}, {}, database);
+    const client = new BotgartClient(
+        {ownerID: config.get("owner_ids")},
+        {partials: ["CHANNEL", "USER", "GUILD_MEMBER", "MESSAGE", "REACTION"]},
+        database);
     const webServer = new WebServer();
 
     //shutdown listener

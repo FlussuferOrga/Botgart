@@ -1,6 +1,8 @@
-import { parentPort } from "worker_threads";        
 //import * as sqlite3 from "better-sqlite3";
-const db = require('better-sqlite3')('/tmp/foobar.db');
+import better_sqlite3 from "better-sqlite3";
+import { parentPort } from "worker_threads";
+
+const db = better_sqlite3('/tmp/foobar.db');
 
 
 

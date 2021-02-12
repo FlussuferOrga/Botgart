@@ -31,7 +31,7 @@ export class ListCrons extends BotgartCommand {
         let format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
         let header = format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") + "\n";
         let mes = header;
-        this.getBotgartClient().cronjobRepository.getCronjobs().forEach((cron) => {
+        this.getBotgartClient().cronjobRepository.getCronJobs().forEach((cron) => {
             let line = format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
             if(mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
                 // leave some space for the backticks and additional linebreaks

@@ -1,6 +1,6 @@
 import { assert, expect } from "chai";
+import moment from "moment";
 import * as U from "../Util";
-import moment = require("moment");
 
 describe("Util - Date", function() {
   // getResetDay(week : number, year : number = new Date().getFullYear(), resetWeekDay : number = 5) : Date {

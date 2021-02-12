@@ -1,12 +1,11 @@
 import * as dateFormat from "dateformat";
 import * as discord from "discord.js";
 import * as events from "events";
+import moment from "moment";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
 import * as Util from "../../Util";
-//import * as moment from 'moment';
-import moment = require('moment');
 
 /**
 Testcases:
@@ -17,7 +16,7 @@ const VISIBLE = "📣"; // megaphone
 
 export class ResetLeader implements Util.Equalable<ResetLeader> {
     public readonly name: string;
-    private visible: boolean;    
+    private visible: boolean;
 
     public isOpenlyVisible(): boolean {
         return this.visible;
@@ -168,8 +167,8 @@ export class Roster extends events.EventEmitter {
     }
 
     /**
-    * Adds a leat to a particular map. 
-    * @param map the map to add the leader to. 
+    * Adds a leat to a particular map.
+    * @param map the map to add the leader to.
     * @param leader the leader to add to the map.
     */
     /*
@@ -192,14 +191,14 @@ export class Roster extends events.EventEmitter {
         if(map && map.name in this.leads) {
             this.leads[map.name][1].add(leader);
             this.emit("addleader", this, map, leader);
-        }   
+        }
     }
 
     /**
-    * Removes a lead from one of all maps. 
-    * @param map to remove the leader from. 
+    * Removes a lead from one of all maps.
+    * @param map to remove the leader from.
     *            If undefined is passed, the leader is removed from all maps.
-    * @param leader the leader to remove. 
+    * @param leader the leader to remove.
     */
     public removeLead(map: WvWMap | undefined, leader: ResetLeader): void {
         if(map === undefined) {
@@ -208,8 +207,8 @@ export class Roster extends events.EventEmitter {
                 this.emit("removeleader", this, m, leader);
             }
         } else {
-            this.leads[map.name][1].delete(leader)  
-            this.emit("removeleader", this, map, leader);  
+            this.leads[map.name][1].delete(leader)
+            this.emit("removeleader", this, map, leader);
         }
     }
 
@@ -218,7 +217,7 @@ export class Roster extends events.EventEmitter {
     }
 
     /**
-    * @returns all maps for which no leader has been determined yet. 
+    * @returns all maps for which no leader has been determined yet.
     */
     private emptyMaps(): WvWMap[] {
         return Object.keys(this.leads).filter(k => this.leads[k][1].size() === 0).map(k => this.leads[k][0]);
@@ -232,14 +231,14 @@ export class Roster extends events.EventEmitter {
     }
 
     /**
-    * @returns the hex string of the colour to use for the embed based on how many maps are empty. 
+    * @returns the hex string of the colour to use for the embed based on how many maps are empty.
     */
     private getEmbedColour(): string {
         return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
     }
 
     /**
-    * @returns the message embed for the roster. 
+    * @returns the message embed for the roster.
     */
     public toMessageEmbed(): discord.MessageEmbed {
         const re = new discord.MessageEmbed()
@@ -273,7 +272,7 @@ export class ResetRoster extends BotgartCommand {
                 {
                     id: "channel",
                     type: "channel"
-                }, 
+                },
                 {
                     id: "weekNumber",
                     type: "integer",
@@ -313,9 +312,9 @@ export class ResetRoster extends BotgartCommand {
                        this.watchMessage(dbMessage, dbRoster);
                     })));
         this.initSyncToTS3();
-    }    
+    }
 
-    private async syncToTS3(roster: Roster): Promise<void> {       
+    private async syncToTS3(roster: Roster): Promise<void> {
         const cl = this.getBotgartClient();
         // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command. 
         // Resolve if possible.
@@ -330,7 +329,7 @@ export class ResetRoster extends BotgartCommand {
                 }
             }
             return user;
-        } 
+        }
         cl.getTS3Connection().post("resetroster", {
             "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
             "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(l => resolveUser(l.name))),
@@ -371,6 +370,9 @@ export class ResetRoster extends BotgartCommand {
     }
 
     private async processReacts(r: discord.MessageReaction, roster: Roster) {
+        if (r.partial){
+            r = await r.fetch()
+        }
         const m = WvWMap.getMapByEmote(r.emoji.name);
         (await r.users.fetch()).filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
             const formattedName = Util.formatUserPing(u.id);
@@ -379,7 +381,7 @@ export class ResetRoster extends BotgartCommand {
                     roster.removeLead(undefined, new ResetLeader(formattedName, false)); // equality is defined by name, so wrapping the name in ResetLeader is sufficient to find all instances of that user
                 } else if(r.emoji.name === VISIBLE) {
                     roster.toggleLeaderVisibility(formattedName);
-                }                      
+                }
             } else {
                 roster.addLeadByName(m, formattedName);
             }
@@ -389,7 +391,7 @@ export class ResetRoster extends BotgartCommand {
 
     private watchMessage(message: discord.Message, roster: Roster): void {
         Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
-        message.createReactionCollector(e => 
+        message.createReactionCollector(e =>
             this.emotes.includes(e.emoji.name) , {}).on("collect", r => this.processReacts(r, roster));
         for(let [_, e] of message.reactions.cache) {
             this.processReacts(e, roster);
@@ -439,7 +441,7 @@ export class ResetRoster extends BotgartCommand {
             Util.log("warning", `The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
             args.channel = undefined;
         } else {
-            args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);    
+            args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
         }
         return args;
     }
@@ -452,7 +454,7 @@ export class ResetRoster extends BotgartCommand {
 
         guilds.forEach(async(guild) => {
             const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await cl.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear);
-            
+
             if(roster === undefined) {
                 Util.log("error", `Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
               } else {
