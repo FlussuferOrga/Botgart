@@ -13,7 +13,7 @@ export class RepairRoles extends BotgartCommand {
     public constructor() {
         super("repairroles", {
                 aliases: ["rolerepair"],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             },
             {
                 availableAsDM: true,

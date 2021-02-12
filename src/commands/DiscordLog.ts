@@ -22,7 +22,7 @@ export class DiscordLog extends BotgartCommand {
                     }
                     
                 ],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             },
             {
                 cronable: true

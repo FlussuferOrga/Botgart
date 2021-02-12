@@ -23,7 +23,7 @@ export class RemovePermanentRole extends BotgartCommand {
                     type: "role"
                 }
             ],
-            userPermissions: ["ADMINISTRATOR"]
+            // userPermissions: ["ADMINISTRATOR"]
 
         }
         );

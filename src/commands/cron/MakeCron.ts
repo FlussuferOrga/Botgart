@@ -32,7 +32,7 @@ export class MakeCron extends BotgartCommand {
                         match: "rest"
                     }
                 ],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             }
         );
     }

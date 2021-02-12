@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
+import { TextChannel } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import { log } from "../Util";
-import { TextChannel } from "discord.js";
 
 /**
 Testcases:
@@ -24,7 +24,7 @@ export class RemoveDiscordLog extends BotgartCommand {
                     }
                     
                 ],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             },
             {
                 cronable: false,

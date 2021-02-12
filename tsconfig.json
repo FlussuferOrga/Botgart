@@ -4,6 +4,7 @@
         "allowJs": true,
         "target": "es6",
         "baseUrl": "./src",
+        "sourceMap": true,
         "paths": {
             "config.json": ["../config.json"]
         },

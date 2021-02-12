@@ -1,7 +1,6 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { log } from "../Util";
 import { TextChannel } from "discord.js";
+import { BotgartCommand } from "../BotgartCommand";
 
 /**
 Testcases:
@@ -20,7 +19,7 @@ export class ListDiscordLog extends BotgartCommand {
                     }
                     
                 ],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             },
             {
                 cronable: false,

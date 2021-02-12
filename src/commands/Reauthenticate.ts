@@ -1,10 +1,9 @@
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
-import { validateWorld } from "../Gw2ApiUtils";
 import * as L from "../Locale";
-import { assignServerRole, formatUserPing, log } from "../Util";
 import { Registration } from "../repositories/RegistrationRepository";
+import { assignServerRole, formatUserPing, log } from "../Util";
 
 /**
 Testcases:
@@ -20,7 +19,7 @@ export class Reauthenticate extends BotgartCommand {
     constructor() {
         super("reauthenticate", {
             aliases: ["reauthenticate","reauth"],
-            userPermissions: ['ADMINISTRATOR']
+            // userPermissions: ['ADMINISTRATOR']
         },
         {
             availableAsDM: true,
@@ -49,7 +48,7 @@ export class Reauthenticate extends BotgartCommand {
                         // prunes come ordered by guild. This trick allows us to
                         // resolve each guild only once.
                         try {
-                            g = await cl.guilds.fetch(p.guild);    
+                            g = await cl.guilds.fetch(p.guild);
                         } catch(ex) {
                             log("error", "Could not fetch the guild with ID ${p.guild}. Have I been kicked?");
                         }

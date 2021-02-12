@@ -7,7 +7,7 @@ export class FindDuplicates extends BotgartCommand {
     constructor() {
         super("findduplicates", {
             aliases: ["findduplicates", "finddupes"],
-            userPermissions: ['ADMINISTRATOR']
+            // userPermissions: ['ADMINISTRATOR']
         }
         );
     }
@@ -25,7 +25,6 @@ export class FindDuplicates extends BotgartCommand {
 
     postExecHook(message: discord.Message, args: any, result: any): void {
         message.util?.send(L.get("FIND_DUPLICATES_COMPLETE"));
-
     }
 }
 

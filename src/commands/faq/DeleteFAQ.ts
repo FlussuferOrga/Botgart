@@ -20,7 +20,7 @@ export class DeleteFaq extends BotgartCommand {
                     type: "string"
                 }
             ],
-            userPermissions: ["ADMINISTRATOR"]
+            // userPermissions: ["ADMINISTRATOR"]
         },
         {
             cronable: true

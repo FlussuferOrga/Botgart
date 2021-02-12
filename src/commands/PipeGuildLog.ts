@@ -1,6 +1,6 @@
-import * as L from "../Locale";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
+import * as L from "../Locale";
 
 /**
 Testcases:
@@ -29,7 +29,7 @@ export class PipeGuildLog extends BotgartCommand {
                         type: "textChannel"
                     },
                 ],
-            userPermissions: ["ADMINISTRATOR"]
+            // userPermissions: ["ADMINISTRATOR"]
         }
         );
     }

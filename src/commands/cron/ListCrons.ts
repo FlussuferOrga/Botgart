@@ -13,7 +13,7 @@ export class ListCrons extends BotgartCommand {
     constructor() {
         super("listcrons", {
                 aliases: ["listcrons","lscrons"],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             }, 
             {
                 availableAsDM: true

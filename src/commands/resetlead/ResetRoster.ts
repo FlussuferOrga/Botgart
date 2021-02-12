@@ -7,7 +7,6 @@ import * as L from "../../Locale";
 import * as Util from "../../Util";
 //import * as moment from 'moment';
 import moment = require('moment');
-import { RosterRepository } from "../../repositories/RosterRepository";
 
 /**
 Testcases:
@@ -286,7 +285,7 @@ export class ResetRoster extends BotgartCommand {
                     default: undefined
                 }
             ],
-            userPermissions: ["ADMINISTRATOR"]
+            // userPermissions: ["ADMINISTRATOR"]
 
         },
         {

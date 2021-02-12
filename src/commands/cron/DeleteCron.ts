@@ -21,7 +21,7 @@ export class DeleteCron extends BotgartCommand {
                         type: "integer",
                     }
                 ],
-                userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             }
         );
     }

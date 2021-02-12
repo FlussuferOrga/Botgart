@@ -23,7 +23,7 @@ export class AddPermanentRole extends BotgartCommand {
                     type: "role"
                 }
             ],
-            userPermissions: ["ADMINISTRATOR"]
+            // userPermissions: ["ADMINISTRATOR"]
 
         }
         );

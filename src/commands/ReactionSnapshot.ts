@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
 import { BotgartClient } from "../BotgartClient";
+import { BotgartCommand } from "../BotgartCommand";
 
 /**
 Testcases:
@@ -32,7 +32,7 @@ export class ReactionSnapshot extends BotgartCommand {
                     }
                 }
             ],
-            userPermissions: ["ADMINISTRATOR"]
+            // userPermissions: ["ADMINISTRATOR"]
         },
         {
             cronable: true
