@@ -64,7 +64,7 @@ export class MakeCron extends BotgartCommand {
             return message.util.send(L.get("NOT_CRONABLE"));
         }
 
-        return mod.parse(cmdargs, message).then(parsedArgs => {
+        return mod.parse(message,cmdargs).then(parsedArgs => {
             const checkError = mod.checkArgs(parsedArgs);
             if (checkError !== undefined) {
                 return message.util.send(checkError);
