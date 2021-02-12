@@ -265,11 +265,9 @@ export class CommanderStorage {
     }
 
     public deleteCommander(commander: Commander) {
-        let i = 0;
-        while(i < this.commanders.length) {
-            if(this.commanders[i].getTS3ClientUID() === commander.getTS3ClientUID()) {
-                this.commanders.splice(i,1);
-                i = this.commanders.length; // break
+        for (let i = 0; i < this.commanders.length; i++) {
+            if (this.commanders[i].getTS3ClientUID() === commander.getTS3ClientUID()) {
+                this.commanders.splice(i--, 1);
             }
         }
     }
