@@ -76,11 +76,11 @@ const configSchema = {
         arg: 'timeZone',
         env: 'TIME_ZONE',
         format: val => {
-            if (moment.tz.zone(val) != undefined) {
-                throw new Error(`'${val.first_name}' is not a valid time zone`);
+            if (moment.tz.zone(val) == undefined) {
+                throw new Error(`'${val}' is not a valid time zone`);
             }
         },
-        default: moment.tz.zone(moment.tz.guess())
+        default: moment.tz.guess()
     },
     ts_unregister_protection: {
         format: values => {

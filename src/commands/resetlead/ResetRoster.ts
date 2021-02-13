@@ -245,7 +245,7 @@ export class Roster extends events.EventEmitter {
     public toMessageEmbed(): discord.MessageEmbed {
         const timezone = getConfig().get().timeZone;
         const resetDateTime = this.getResetDate();
-        const displayedDateTime = moment(resetDateTime).tz(timezone.name).format("DD.MM.YYYY HH:mm z");
+        const displayedDateTime = moment(resetDateTime).tz(timezone).format("DD.MM.YYYY HH:mm z");
         const re = new discord.MessageEmbed()
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
