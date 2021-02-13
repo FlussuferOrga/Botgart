@@ -34,7 +34,8 @@ export interface TS3Commander {
     readonly account_name: string;
     readonly ts_cluid: string;
     readonly ts_display_name: string;
-    readonly ts_channel_name:string;
+    readonly ts_channel_name: string;
+    readonly ts_channel_path: string[];
 }
 
 interface HTTPRequestOptions {
@@ -80,26 +81,26 @@ export class TS3Connection {
             req.on("error", reject);
             req.write(dataString);
             req.end();
-        });      
+        });
     }
 
     public get(command: string, args: object = {}): Promise<string> {
         return this.request(args, {
-            path: command, 
+            path: command,
             method: "GET"
         });
     }
 
     public post(command: string, args: object = {}): Promise<string> {
         return this.request(args, {
-            path: command, 
+            path: command,
             method: "POST"
         });
     }
 
     public delete(command: string, args: object = {}): Promise<string> {
         return this.request(args, {
-            path: command, 
+            path: command,
             method: "DELETE"
         });
     }
@@ -156,6 +157,7 @@ export class Commander {
     private ts3DisplayName: string;
     private ts3clientUID: string;
     private ts3channel: string;
+    private ts3channelPath: string[];
     private raidStart?: moment.Moment;
     private lastUpdate: moment.Moment;
     private state: CommanderState;
@@ -183,6 +185,14 @@ export class Commander {
 
     public setTS3Channel(ts3channel: string) {
         this.ts3channel = ts3channel;
+    }
+
+    public getTs3channelPath(): string[] {
+        return this.ts3channelPath;
+    }
+
+    public setTs3channelPath(value: string[]) {
+        this.ts3channelPath = value;
     }
 
     public getRaidStart(): moment.Moment | undefined {
@@ -218,19 +228,20 @@ export class Commander {
     }
 
     /**
-    * returns: the time of the _ongoing_ raid in seconds. If no raid is going on, 0 is returned. 
-    *          That means: when this method is called, it assumes the raid is still going on!
-    */
+     * returns: the time of the _ongoing_ raid in seconds. If no raid is going on, 0 is returned.
+     *          That means: when this method is called, it assumes the raid is still going on!
+     */
     public getRaidTime(): number {
         // this cast is save, since we checked beforehand in the condition of the ternary...
-        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (<moment.Moment>this.getRaidStart()).valueOf())/1000 : 0;
+        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (<moment.Moment>this.getRaidStart()).valueOf()) / 1000 : 0;
     }
 
-    public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string) {
+    public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string, ts3channelPath: string[]) {
         this.accountName = accountName;
         this.ts3DisplayName = ts3DisplayName;
         this.ts3clientUID = ts3clientUID;
         this.ts3channel = ts3channel;
+        this.ts3channelPath = ts3channelPath;
         this.lastUpdate = moment.utc();
         this.raidStart = undefined;
         this.state = CommanderState.TAG_UP;
@@ -257,11 +268,11 @@ export class CommanderStorage {
     }
 
     public addCommander(commander: Commander) {
-        if(this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
-            this.commanders.push(commander);    
+        if (this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
+            this.commanders.push(commander);
         } else {
-            log("warning", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);           
-        } 
+            log("warning", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);
+        }
     }
 
     public deleteCommander(commander: Commander) {
@@ -279,29 +290,29 @@ export class CommanderStorage {
 }
 
 export interface TagUpEvent {
-   readonly guild: discord.Guild;
-   readonly commander: Commander;
-   readonly dbRegistration: Registration;
+    readonly guild: discord.Guild;
+    readonly commander: Commander;
+    readonly dbRegistration: Registration;
 }
 
 export interface TagDownEvent {
-   readonly guild: discord.Guild;
-   readonly commander: Commander;
-   readonly dbRegistration: Registration;
+    readonly guild: discord.Guild;
+    readonly commander: Commander;
+    readonly dbRegistration: Registration;
 }
 
 /**
-* This class listens for changes in the commander list.
-* That is, it reacts to when a commander tags up or down in Teamspeak. 
-* Doing so will throw two events "tagup" and "tagdown". 
-* The latter will be thrown _after_ the ended lead has been written to the DB.
-*/ 
+ * This class listens for changes in the commander list.
+ * That is, it reacts to when a commander tags up or down in Teamspeak.
+ * Doing so will throw two events "tagup" and "tagdown".
+ * The latter will be thrown _after_ the ended lead has been written to the DB.
+ */
 export class TS3Listener extends events.EventEmitter {
     private ts3connection: TS3Connection;
     private broadcastChannel: string;
     private pingRole: string;
     private commanderRole: string;
-    private channels: {[key:string]:moment.Moment};
+    private channels: { [key: string]: moment.Moment };
     private userDelay: number;
     private channelDelay: number;
     private gracePeriod: number;
@@ -326,7 +337,7 @@ export class TS3Listener extends events.EventEmitter {
         this.setMaxListeners(24);
 
         const that = this;
-        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);       
+        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);
     }
 
     private async checkCommanders(): Promise<void> {
@@ -334,54 +345,56 @@ export class TS3Listener extends events.EventEmitter {
         const now: moment.Moment = moment.utc();
         try {
             const res: string = await this.ts3connection.get("commanders");
-            const data: {commanders: TS3Commander[]} = JSON.parse(res); // FIXME: error check
+            const data: { commanders: TS3Commander[] } = JSON.parse(res); // FIXME: error check
             const commanderTSUIDs: string[] = data.commanders.map(c => c.ts_cluid);
             log("debug", `Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
-            const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(commanderTSUIDs)); 
+            const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(commanderTSUIDs));
             log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
             this.botgartClient.guilds.cache.forEach(g => {
                 data.commanders.forEach(c => {
-                    const account  = c.account_name; // for lookup
-                    const uid      = c.ts_cluid; // for this.users
+                    const account = c.account_name; // for lookup
+                    const uid = c.ts_cluid; // for this.users
                     const username = c.ts_display_name; // for broadcast
-                    const channel  = c.ts_channel_name; // for broadcast and this.channels
-                    
+                    const channel = c.ts_channel_name; // for broadcast and this.channels
+                    const channel_path = c.ts_channel_path; // for broadcast and this.channels
+
                     let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
-                    if(commander === undefined) {
+                    if (commander === undefined) {
                         // user was newly discovered as tagged up -> save user without cooldown
-                        commander = new Commander(account, username, uid, channel);
+                        commander = new Commander(account, username, uid, channel, channel_path);
                         commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
                         this.botgartClient.commanders.addCommander(commander);
                         log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
                     }
 
                     const elapsed = now.valueOf() - commander.getLastUpdate().valueOf();
-                    switch(commander.getState()) {
+                    switch (commander.getState()) {
                         case CommanderState.TAG_UP:
                             // user tagged up and is waiting to gain commander status
-                            if(elapsed > this.gracePeriod) {
+                            if (elapsed > this.gracePeriod) {
                                 commander.setLastUpdate(now);
                                 commander.setRaidStart(now);
                                 commander.setState(CommanderState.COMMANDER);
                                 commander.setTS3Channel(channel);
+                                commander.setTs3channelPath(channel_path);
                                 this.tagUp(g, commander);
                                 log("debug", `Moving ${username} from TAG_UP to COMMANDER state.`);
                             }
-                        break;
+                            break;
 
                         case CommanderState.COOLDOWN:
                             // user tagged up again too quickly -> wait out delay and then go into TAG_UP
-                            if(elapsed > this.userDelay) {
+                            if (elapsed > this.userDelay) {
                                 commander.setLastUpdate(now);
                                 commander.setState(CommanderState.TAG_UP);
                                 log("debug", `Moving ${username} from COOLDOWN to TAG_UP state.`);
                             }
-                        break;
+                            break;
 
                         case CommanderState.TAG_DOWN:
                             // user raided before, but tagged down in between
                             // -> if they waited long enough, go into TAG_UP, else sit out COOLDOWN
-                            if(elapsed > this.userDelay) {
+                            if (elapsed > this.userDelay) {
                                 commander.setLastUpdate(now);
                                 commander.setState(CommanderState.TAG_UP);
                                 log("debug", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
@@ -389,13 +402,13 @@ export class TS3Listener extends events.EventEmitter {
                                 commander.setState(CommanderState.COOLDOWN);
                                 log("debug", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
                             }
-                        break;
+                            break;
 
                         case CommanderState.COMMANDER:
                             // still raiding -> update timestamp
                             commander.setLastUpdate(now);
-                        break;
-                    } 
+                            break;
+                    }
                 });
                 taggedDown.forEach((commander: Commander) => {
                     commander.setLastUpdate(now);
@@ -405,12 +418,12 @@ export class TS3Listener extends events.EventEmitter {
                 });
             });
             this.patience = RECONNECT_PATIENCE;
-        } catch(ex) {
+        } catch (ex) {
             log("error", `Could not retrieve active commanders: ${ex}`);
             // by going as low -1 we do not get an underflow by going indefinitely low 
             // but we do the reset only once (when reaching 0) instead of every time after reaching 0.
             this.patience = Math.max(this.patience - 1, -1);
-            if(this.patience == 0) {
+            if (this.patience == 0) {
                 log("warning", `Could not reconnect to TS after ${RECONNECT_PATIENCE} tries. Tagging down all active commanders.`);
                 this.botgartClient.commanders.getAllCommanders()
                     .filter(commander => commander.getDiscordMember() !== undefined)
@@ -421,24 +434,24 @@ export class TS3Listener extends events.EventEmitter {
     }
 
     /**
-    * Makes a user tag up in a Discord-guild. That means:
-    * - the raid is being announced in the dedicated channel (if that channel exists)
-    * - if the user is not just in TS, but also in Discord, he will gain the commander status there
-    * - a mapping of the TS-UID to the Discord-username is created
-    */
+     * Makes a user tag up in a Discord-guild. That means:
+     * - the raid is being announced in the dedicated channel (if that channel exists)
+     * - if the user is not just in TS, but also in Discord, he will gain the commander status there
+     * - a mapping of the TS-UID to the Discord-username is created
+     */
     private async tagUp(g: discord.Guild, commander: Commander) {
         let displayname = commander.getTS3DisplayName();
         log("info", `Tagging up ${displayname} in ${g.name}.`);
         const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
-        if(registration) {
+        if (registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
             const duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
-            if(duser === undefined) {
+            if (duser === undefined) {
                 log("warning", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
             }
             commander.setDiscordMember(duser);
-            if(crole && commander.getDiscordMember()) {
+            if (crole && commander.getDiscordMember()) {
                 await commander.getDiscordMember()?.roles.add(crole);
             }
             displayname = `${displayname} (${registration.registration_role})`;
@@ -446,36 +459,38 @@ export class TS3Listener extends events.EventEmitter {
 
         // broadcast the message                    
         const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
-        if(!dchan) {
+        if (!dchan) {
             log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
-            const mes: string = L.get("COMMANDER_TAG_UP", [displayname, commander.getTS3Channel(), pingRole ? pingRole.toString() : ""]);
+            const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(">");
+
+            const mes: string = L.get("COMMANDER_TAG_UP", [displayname, channelPath, pingRole ? pingRole.toString() : ""]);
             dchan.send(mes);
         }
         this.emit("tagup", {
-                "guild": g, 
-                "commander": commander,
-                "dbRegistration": registration
-            });
+            "guild": g,
+            "commander": commander,
+            "dbRegistration": registration
+        });
     }
 
     /**
-    * Makes the user tag down in a Discord-guild. That is:
-    * - the role is removed from the user if he is present in the Discord
-    * - the user's TS-UID-Discordname is forgotten
-    */
+     * Makes the user tag down in a Discord-guild. That is:
+     * - the role is removed from the user if he is present in the Discord
+     * - the user's TS-UID-Discordname is forgotten
+     */
     private async tagDown(g: discord.Guild, commander: Commander) {
         let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
-        if(registration !== undefined) {
+        if (registration !== undefined) {
             // the commander is member of the current discord -> remove role
             // since removing roles has gone wrong a lot lately,
             // we're updating the cache manually
             // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
-            if(crole && dmember) {
+            if (crole && dmember) {
 
                 log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
                 await dmember.roles.remove(crole).catch(e => {
@@ -486,23 +501,23 @@ export class TS3Listener extends events.EventEmitter {
             }
             // do not write leads of members which hide their roles
             const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
-            if(writeToDB) {
+            if (writeToDB) {
                 log("debug", "Writing raid information to database.");
-                if(commander.getRaidStart() === undefined) {
+                if (commander.getRaidStart() === undefined) {
                     log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
                 } else {
-                    this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());    
+                    this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
                 }
                 log("debug", "Done writing to database.");
             }
             log("debug", "Done processing commander. Will now send out tagdown event.");
         }
-        
+
         this.botgartClient.commanders.deleteCommander(commander);
         this.emit("tagdown", {
-                "guild": g, 
-                "commander": commander, 
-                "dbRegistration": registration
-            });
-    } 
+            "guild": g,
+            "commander": commander,
+            "dbRegistration": registration
+        });
+    }
 }
