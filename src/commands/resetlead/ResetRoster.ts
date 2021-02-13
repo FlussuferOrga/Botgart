@@ -1,16 +1,17 @@
 import * as dateFormat from "dateformat";
 import * as discord from "discord.js";
 import * as events from "events";
-import moment from "moment";
+import moment from "moment-timezone";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
+import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
 import * as Util from "../../Util";
 
 /**
-Testcases:
+ Testcases:
 
-*/
+ */
 const WITHDRAW = "❌"; // cross
 const VISIBLE = "📣"; // megaphone
 
@@ -22,7 +23,7 @@ export class ResetLeader implements Util.Equalable<ResetLeader> {
         return this.visible;
     }
 
-    public setVisiblity(v : boolean): void {
+    public setVisiblity(v: boolean): void {
         this.visible = v;
     }
 
@@ -56,7 +57,7 @@ export class WvWMap {
 
     static getAllMapNames(): string[] {
         return WvWMap.getMaps().map(m => m.getAllNames())
-                               .reduce((acc,m) => acc.concat(m), []);
+            .reduce((acc, m) => acc.concat(m), []);
     }
 
     static getMapByEmote(emote: string): WvWMap {
@@ -87,7 +88,7 @@ export class WvWMap {
 }
 
 export class Roster extends events.EventEmitter {
-    public readonly leads: {[key: string] : [WvWMap, Util.GeneralSet<ResetLeader>]};
+    public readonly leads: { [key: string]: [WvWMap, Util.GeneralSet<ResetLeader>] };
     public readonly weekNumber: number;
     public readonly year: number;
 
@@ -96,46 +97,46 @@ export class Roster extends events.EventEmitter {
         this.weekNumber = weekNumber;
         this.year = year;
         this.leads = {};
-        for(const m of WvWMap.getMaps()) {
+        for (const m of WvWMap.getMaps()) {
             this.leads[m.name] = [m, new Util.GeneralSet<ResetLeader>()];
         }
     }
 
     /**
-    * @returns the date for the reset this roster represents.
-    */
+     * @returns the date for the reset this roster represents.
+     */
     public getResetDate() {
         return Util.getResetDay(this.weekNumber, this.year);
     }
 
     /**
-    * @returns true iff the reset of this roster happens in the future.
-    */
-    public isFuture() : boolean {
+     * @returns true iff the reset of this roster happens in the future.
+     */
+    public isFuture(): boolean {
         const now: Date = new Date();
         return this.weekNumber <= Util.getNumberOfWeek(now) && this.year <= now.getFullYear();
     }
 
     /**
-    * @returns true iff the reset of this roster is the next reset.
-    */
-    public isUpcoming() : boolean {
+     * @returns true iff the reset of this roster is the next reset.
+     */
+    public isUpcoming(): boolean {
         return Util.compareDatesWithoutTime(this.getResetDate(), Util.getNextResetDate());
     }
 
     /**
-    * @returns all leaders for a specific map.
-    */
-    public getMapLeaders(map: WvWMap) : Util.GeneralSet<ResetLeader> {
+     * @returns all leaders for a specific map.
+     */
+    public getMapLeaders(map: WvWMap): Util.GeneralSet<ResetLeader> {
         return this.leads[map.name][1];
     }
 
     /**
-    * @returns all instances of a certain leader found by name.
-    */
+     * @returns all instances of a certain leader found by name.
+     */
     public findLeader(name: string): ResetLeader[] {
         const leaders: ResetLeader[] = [];
-        for(const m of WvWMap.getMaps()) {
+        for (const m of WvWMap.getMaps()) {
             const [wvwmap, leads] = this.leads[m.name];
             leaders.push(...Array.from(leads).filter(l => l.name === name));
         }
@@ -143,13 +144,13 @@ export class Roster extends events.EventEmitter {
     }
 
     /**
-    * @returns all leaders for all maps.
-    */
+     * @returns all leaders for all maps.
+     */
     public getLeaders(): [WvWMap, ResetLeader][] {
         const leaders: [WvWMap, ResetLeader][] = [];
-        for(const m of WvWMap.getMaps()) {
+        for (const m of WvWMap.getMaps()) {
             const [wvwmap, leads] = this.leads[m.name];
-            for(const l of leads) {
+            for (const l of leads) {
                 leaders.push([m, l]);
             }
         }
@@ -158,19 +159,20 @@ export class Roster extends events.EventEmitter {
 
     public toggleLeaderVisibility(formattedName: string): void {
         const leaders: ResetLeader[] = this.findLeader(formattedName);
-        for(let l of leaders) {
+        for (let l of leaders) {
             l.toggleVisibility();
         }
-        if(leaders.length > 0) {
+        if (leaders.length > 0) {
             this.emit("togglevisibility", this, leaders);
         }
     }
 
     /**
-    * Adds a leat to a particular map.
-    * @param map the map to add the leader to.
-    * @param leader the leader to add to the map.
-    */
+     * Adds a leat to a particular map.
+     * @param map the map to add the leader to.
+     * @param leader the leader to add to the map.
+     */
+
     /*
     public addLead(map: WvWMap, leader: ResetLeader): void {
         if(map && map.name in this.leads) {
@@ -188,21 +190,21 @@ export class Roster extends events.EventEmitter {
     }
 
     public addLead(map: WvWMap, leader: ResetLeader): void {
-        if(map && map.name in this.leads) {
+        if (map && map.name in this.leads) {
             this.leads[map.name][1].add(leader);
             this.emit("addleader", this, map, leader);
         }
     }
 
     /**
-    * Removes a lead from one of all maps.
-    * @param map to remove the leader from.
-    *            If undefined is passed, the leader is removed from all maps.
-    * @param leader the leader to remove.
-    */
+     * Removes a lead from one of all maps.
+     * @param map to remove the leader from.
+     *            If undefined is passed, the leader is removed from all maps.
+     * @param leader the leader to remove.
+     */
     public removeLead(map: WvWMap | undefined, leader: ResetLeader): void {
-        if(map === undefined) {
-            for(const m in this.leads) {
+        if (map === undefined) {
+            for (const m in this.leads) {
                 this.leads[m][1].delete(leader);
                 this.emit("removeleader", this, m, leader);
             }
@@ -217,42 +219,45 @@ export class Roster extends events.EventEmitter {
     }
 
     /**
-    * @returns all maps for which no leader has been determined yet.
-    */
+     * @returns all maps for which no leader has been determined yet.
+     */
     private emptyMaps(): WvWMap[] {
         return Object.keys(this.leads).filter(k => this.leads[k][1].size() === 0).map(k => this.leads[k][0]);
     }
 
     /**
-    * @returns the number of empty maps.
-    */
+     * @returns the number of empty maps.
+     */
     private emptyMapCount(): number {
         return this.emptyMaps().length;
     }
 
     /**
-    * @returns the hex string of the colour to use for the embed based on how many maps are empty.
-    */
+     * @returns the hex string of the colour to use for the embed based on how many maps are empty.
+     */
     private getEmbedColour(): string {
         return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
     }
 
     /**
-    * @returns the message embed for the roster.
-    */
+     * @returns the message embed for the roster.
+     */
     public toMessageEmbed(): discord.MessageEmbed {
+        const timezone = getConfig().get().timeZone;
+        const resetDateTime = this.getResetDate();
+        const displayedDateTime = moment(resetDateTime).tz(timezone.name).format("DD.MM.YYYY HH:mm z");
         const re = new discord.MessageEmbed()
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
-            .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${moment(this.getResetDate()).format("DD.MM.YYYY")})`)
+            .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${displayedDateTime})`)
             //.setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"))
-        for(const mname in this.leads) {
+        for (const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
             re.addField(`${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`, leads.size() === 0 ? "-" : Array.from(leads)
-                                                                                                                    .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
-                                                                                                                    .join(", "))
-              .addField('\u200b', '\u200b'); // discord.js v12 version of addBlankField()
+                .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
+                .join(", "))
+                .addField('\u200b', '\u200b'); // discord.js v12 version of addBlankField()
         }
         return re;
     }
@@ -261,35 +266,35 @@ export class Roster extends events.EventEmitter {
 export class ResetRoster extends BotgartCommand {
     private static readonly UPDATE_DELAY = 1000;
 
-    private messages: {[key: string]: Roster};
+    private messages: { [key: string]: Roster };
     private emotes: string[];
     private syncScheduled: boolean;
 
     constructor() {
         super("resetroster", {
-            aliases: ["resetroster"],
-            args: [
-                {
-                    id: "channel",
-                    type: "channel"
-                },
-                {
-                    id: "weekNumber",
-                    type: "integer",
-                    default: undefined
-                },
-                {
-                    id: "year",
-                    type: "integer",
-                    default: undefined
-                }
-            ],
-            // userPermissions: ["ADMINISTRATOR"]
+                aliases: ["resetroster"],
+                args: [
+                    {
+                        id: "channel",
+                        type: "channel"
+                    },
+                    {
+                        id: "weekNumber",
+                        type: "integer",
+                        default: undefined
+                    },
+                    {
+                        id: "year",
+                        type: "integer",
+                        default: undefined
+                    }
+                ],
+                // userPermissions: ["ADMINISTRATOR"]
 
-        },
-        {
-            cronable: true
-        }
+            },
+            {
+                cronable: true
+            }
         );
         this.messages = {};
         this.emotes = WvWMap.getMaps().map(m => m.emote);
@@ -306,10 +311,10 @@ export class ResetRoster extends BotgartCommand {
         client.guilds.cache.forEach(
             g => Promise.all(client.rosterRepository.getActiveRosters(g))
                 .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
-                   .forEach(([dbRoster, dbChannel, dbMessage]) => {
-                       client.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
-                       this.watchRoster(<discord.Guild>dbMessage.guild, dbRoster); // can not be initialised in direct messages anyway
-                       this.watchMessage(dbMessage, dbRoster);
+                    .forEach(([dbRoster, dbChannel, dbMessage]) => {
+                        client.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
+                        this.watchRoster(<discord.Guild>dbMessage.guild, dbRoster); // can not be initialised in direct messages anyway
+                        this.watchMessage(dbMessage, dbRoster);
                     })));
         this.initSyncToTS3();
     }
@@ -322,16 +327,18 @@ export class ResetRoster extends BotgartCommand {
             const idregxp = /<[@!](\d+)>/;
             const match = idregxp.exec(sid);
             let user = sid;
-            if(match !== null) {
+            if (match !== null) {
                 const resolved: discord.GuildMember | undefined = await Util.resolveDiscordUser(cl, match[1])
-                if(resolved !== undefined) {
+                if (resolved !== undefined) {
                     user = resolved.displayName;
                 }
             }
             return user;
         }
+        const resetDateTime = Util.getResetDay(roster.weekNumber, roster.year);
         cl.getTS3Connection().post("resetroster", {
-            "date": dateFormat.default(Util.getResetDay(roster.weekNumber, roster.year), "dd.mm.yy"),
+            "date": dateFormat.default(resetDateTime, "dd.mm.yy"), //TODO: remove
+            "datetime": resetDateTime.toISOString(),
             "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(l => resolveUser(l.name))),
             "gbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(l => resolveUser(l.name))),
             "bbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(l => resolveUser(l.name))),
@@ -342,23 +349,23 @@ export class ResetRoster extends BotgartCommand {
     private watchRoster(guild: discord.Guild, roster: Roster): void {
         const cl = this.getBotgartClient();
         const dbRoster = cl.getRoster(guild, roster.weekNumber, roster.year);
-        if(dbRoster === undefined) {
+        if (dbRoster === undefined) {
             Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
             return;
         }
         const [_, message, __] = dbRoster;
         const refresh = (r: Roster, map: string, p: string) => {
-            setTimeout(function() { // no arrow function, as we need to bind()!
+            setTimeout(function () { // no arrow function, as we need to bind()!
                 // only updating post, DB, and TS3 in fixed intervals
                 // reduces strain if people are being funny by clicking around wildly
                 // and only updates once if someone who was tagged for multiple maps 
                 // pulls back, instead for once for every map.
-                if(this.syncScheduled) return;
+                if (this.syncScheduled) return;
                 this.syncScheduled = true;
                 cl.rosterRepository.upsertRosterPost(guild, r, message);
                 message.edit(r.toMessageEmbed());
 
-                if(roster.isUpcoming()) {
+                if (roster.isUpcoming()) {
                     this.syncToTS3(roster);
                 }
                 this.syncScheduled = false;
@@ -370,16 +377,16 @@ export class ResetRoster extends BotgartCommand {
     }
 
     private async processReacts(r: discord.MessageReaction, roster: Roster) {
-        if (r.partial){
+        if (r.partial) {
             r = await r.fetch()
         }
         const m = WvWMap.getMapByEmote(r.emoji.name);
         (await r.users.fetch()).filter(u => u.id !== this?.client?.user?.id).map(u => { // reactions coming from anyone but the bot
             const formattedName = Util.formatUserPing(u.id);
-            if(!m) {
-                if(r.emoji.name === WITHDRAW) { // X -> user wants to remove themselves from roster
+            if (!m) {
+                if (r.emoji.name === WITHDRAW) { // X -> user wants to remove themselves from roster
                     roster.removeLead(undefined, new ResetLeader(formattedName, false)); // equality is defined by name, so wrapping the name in ResetLeader is sufficient to find all instances of that user
-                } else if(r.emoji.name === VISIBLE) {
+                } else if (r.emoji.name === VISIBLE) {
                     roster.toggleLeaderVisibility(formattedName);
                 }
             } else {
@@ -392,8 +399,8 @@ export class ResetRoster extends BotgartCommand {
     private watchMessage(message: discord.Message, roster: Roster): void {
         Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
         message.createReactionCollector(e =>
-            this.emotes.includes(e.emoji.name) , {}).on("collect", r => this.processReacts(r, roster));
-        for(let [_, e] of message.reactions.cache) {
+            this.emotes.includes(e.emoji.name), {}).on("collect", r => this.processReacts(r, roster));
+        for (let [_, e] of message.reactions.cache) {
             this.processReacts(e, roster);
         }
     }
@@ -403,20 +410,20 @@ export class ResetRoster extends BotgartCommand {
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
         const rosterYear = !args.year ? new Date().getFullYear() : args.year;
         this.getBotgartClient().rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(dbEntry => {
-            if(dbEntry === undefined) {
+            if (dbEntry === undefined) {
                 // no roster for this guild+week -> create one
                 const roster = new Roster(rosterWeek, rosterYear);
                 (<discord.TextChannel>args.channel).send(roster.toMessageEmbed())
-                .then(async (mes: discord.Message) => {
-                    for(const e of this.emotes) {
-                        await mes.react(e);
-                    }
-                    this.getBotgartClient().setRoster(roster.weekNumber, roster.year, guild, mes, roster);
-                    this.getBotgartClient().rosterRepository.upsertRosterPost(guild, roster, mes); // initial save
-                    this.watchMessage(mes, roster);
-                    this.watchRoster(guild, roster);
-                });
-                if(roster.isUpcoming()) {
+                    .then(async (mes: discord.Message) => {
+                        for (const e of this.emotes) {
+                            await mes.react(e);
+                        }
+                        this.getBotgartClient().setRoster(roster.weekNumber, roster.year, guild, mes, roster);
+                        this.getBotgartClient().rosterRepository.upsertRosterPost(guild, roster, mes); // initial save
+                        this.watchMessage(mes, roster);
+                        this.watchRoster(guild, roster);
+                    });
+                if (roster.isUpcoming()) {
                     this.syncToTS3(roster);
                 }
             } else {
@@ -437,7 +444,7 @@ export class ResetRoster extends BotgartCommand {
     deserialiseArgs(jsonargs) {
         const args = JSON.parse(jsonargs);
         const guild: discord.Guild | undefined = this.client.guilds.cache.find(g => g.id == args.channel.guild);
-        if(guild === undefined) {
+        if (guild === undefined) {
             Util.log("warning", `The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
             args.channel = undefined;
         } else {
@@ -452,15 +459,15 @@ export class ResetRoster extends BotgartCommand {
         const guilds = this.client.guilds.cache;
         const cl = this.getBotgartClient();
 
-        guilds.forEach(async(guild) => {
+        guilds.forEach(async (guild) => {
             const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await cl.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear);
 
-            if(roster === undefined) {
+            if (roster === undefined) {
                 Util.log("error", `Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
-              } else {
+            } else {
                 const [r, chan, mes] = roster;
                 this.syncToTS3(r);
-              }
+            }
         });
     }
 }

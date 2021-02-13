@@ -138,14 +138,39 @@ export function getStandardDay(d: Date) {
     return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
 }
 
+export enum WvwRegion {
+    EU = "EU",
+    NA = "NA"
+}
+
+function getWvwRegionProperties(wvwRegion: WvwRegion) {
+    let resetWeekDay: number;
+    let resetTimeUTC: number;
+    switch (wvwRegion) {
+        case WvwRegion.EU:
+            resetWeekDay = 5;
+            resetTimeUTC = 18;
+            break
+        case WvwRegion.NA:
+            resetWeekDay = 6
+            resetTimeUTC = 2
+            break
+        default:
+            throw Error("Unmapped WvW Region")
+    }
+    return {resetWeekDay, resetTimeUTC};
+}
+
 /**
  * Determines the reset day for a certain week.
  * week: the week to calculate the reset day for
  * year: the year the week lied in. Per default it is the current year, but take care around New Year!
- * resetWeekDay: day of week the reset takes place: SUN 0, MON 1, TUE 2, WED 3, THU 4, FRI 5, SAT 6; per default it is Friday
+ * resetTimeUTC: at what time reset is planned. Default is 18 UTC ( EU Server )
  * returns: the Date on which the reset of the specified week takes place.
  */
-export function getResetDay(week: number, year: number = new Date().getFullYear(), resetWeekDay: number = 5): Date {
+export function getResetDay(week: number, year: number = new Date().getFullYear(), wvwRegion: WvwRegion = WvwRegion.EU): Date {
+    let {resetWeekDay, resetTimeUTC} = getWvwRegionProperties(wvwRegion);
+
     // look for the first reset day of the year
     let resetDay: Date = new Date(Date.UTC(year, 0, 1));
     while (resetDay.getDay() != resetWeekDay) {
@@ -153,6 +178,7 @@ export function getResetDay(week: number, year: number = new Date().getFullYear(
     }
     const firstResetWeekNumber: number = getNumberOfWeek(resetDay); // if the first day of the year is either SAT or SUN, the first Friday of the year is in week 2! So check that.
     resetDay.setDate(resetDay.getDate() + (7 * (week - firstResetWeekNumber)));
+    resetDay.setUTCHours(resetTimeUTC)
     return resetDay;
 }
 
@@ -227,7 +253,7 @@ export function assignServerRole(member: discord.GuildMember, currentRole: disco
         );
     }
     return admittedRole;
-};
+}
 
 
 export async function resolveDiscordUser(client: discord.Client, uid: string): Promise<discord.GuildMember | undefined> {
@@ -312,8 +338,8 @@ String.prototype.formatUnicorn = function (...fnargs: any[]): string {
     return str;
 };
 
-export function getNextResetDate(now = new Date()): Date {
-    const resetDay = getResetDay(getNumberOfWeek(now), now.getFullYear());
+export function getNextResetDate(now = new Date(), wvwRegion: WvwRegion = WvwRegion.EU): Date {
+    const resetDay = getResetDay(getNumberOfWeek(now), now.getFullYear(), wvwRegion);
     const nowWeekDay = (now.getDay() + 6) % 7; // makes SUN 6
     const resetWeekDay = (RESET_WEEKDAY + 6) % 7;
     if (nowWeekDay > resetWeekDay) {
