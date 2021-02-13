@@ -72,6 +72,7 @@ if (args.patchall || args.patch) {
         webServer.start();
     }).catch(reason => {
         log("error", `Error starting up Bot: ${reason}`);
+        database.close();
         process.exit(1);
     });
 }
