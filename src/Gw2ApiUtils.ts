@@ -84,7 +84,7 @@ export function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.
     return api.authenticate(false).guild().search().name(guildname)
-        .then(async id => id !== undefined && (await api.autenticate(false).guild().get(id)).name === guildname);
+        .then(async id => id !== undefined && (await api.authenticate(false).guild().get(id)).name === guildname);
 }
 
 /*
