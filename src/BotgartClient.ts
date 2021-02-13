@@ -6,7 +6,6 @@ import { Roster } from "./commands/resetlead/ResetRoster"
 import { getConfig } from "./config/Config";
 import * as db from "./database/DB"
 import { APIEmitter } from "./emitters/APIEmitter"
-import { api } from "./Gw2ApiUtils";
 import { AchievementRepository } from "./repositories/AchievementRepository";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
 import { CronjobRepository } from "./repositories/CronjobRepository";

@@ -1,9 +1,9 @@
-import gw2 from "gw2api-client";
+import gw2client from "gw2api-client";
 import { log } from "./Util";
 
 
 export function createApiInstance() {
-    const api = gw2();
+    const api = gw2client();
     api.schema('2019-03-26T00:00:00Z');
     api.language('en');
 
@@ -13,7 +13,7 @@ export function createApiInstance() {
     return api;
 }
 
-export const api = createApiInstance();
+const api = createApiInstance();
 
 /**
  * Tries to validate the passed API key.
@@ -77,13 +77,13 @@ export function getAccountName(apikey: string): Promise<string | boolean> {
 }
 
 export async function isValidWorld(id: number): Promise<boolean> {
-    return id in (await api.autenticate(false).worlds());
+    return id in (await api.authenticate(false).worlds());
 }
 
 export function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.
-    return api.autenticate(false).guild().search().name(guildname)
+    return api.authenticate(false).guild().search().name(guildname)
         .then(async id => id !== undefined && (await api.autenticate(false).guild().get(id)).name === guildname);
 }
 
