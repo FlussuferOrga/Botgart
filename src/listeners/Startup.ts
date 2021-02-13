@@ -1,6 +1,5 @@
 import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
-import { MakeCron } from "../commands/cron/MakeCron";
 import { log } from "../Util";
 
 export class Startup extends Listener {
@@ -13,11 +12,13 @@ export class Startup extends Listener {
 
     exec() {
         log("info", "Bot started!");
-        const cl: BotgartClient = <BotgartClient>this.client;
+        const client: BotgartClient = <BotgartClient>this.client;
+
         log("info", "Rescheduling cronjobs from database.");
-        (<MakeCron>cl.commandHandler.modules.get("makecron")).rescheduleCronJobs();
-        const help = cl.commandHandler.modules.get("help")?.id;
-        cl.user?.setActivity("{0}{1} für Hilfe".formatUnicorn(cl.commandHandler.prefix, help));       
+        client.cronJobService.rescheduleCronJobs();
+
+        const help = client.commandHandler.modules.get("help")?.id;
+        client.user?.setActivity("{0}{1} für Hilfe".formatUnicorn(client.commandHandler.prefix, help));
     }
 }
 

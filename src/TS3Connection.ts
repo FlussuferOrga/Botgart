@@ -439,8 +439,7 @@ export class TS3Listener extends events.EventEmitter {
             }
             commander.setDiscordMember(duser);
             if(crole && commander.getDiscordMember()) {
-                // Experimentally removed, see [1]
-                //commander.getDiscordMember()?.roles.add(crole);
+                await commander.getDiscordMember()?.roles.add(crole);
             }
             displayname = `${displayname} (${registration.registration_role})`;
         }
@@ -477,14 +476,12 @@ export class TS3Listener extends events.EventEmitter {
             dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
             if(crole && dmember) {
-                /*
-                // [1]
-                // Experimentally removed on 27.12.20, as this is the last thing that can be found in the logs before the bot becomes unresponsive
+
                 log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
-                dmember.roles.remove(crole).catch(e => {
+                await dmember.roles.remove(crole).catch(e => {
                     log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
                 });
-                */
+
                 log("debug", "Done managing roles for former commander.");
             }
             // do not write leads of members which hide their roles

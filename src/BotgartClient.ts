@@ -19,6 +19,7 @@ import { PermanentRoleRepository } from "./repositories/PermanentRoleRepository"
 import { RegistrationRepository } from "./repositories/RegistrationRepository";
 import { RosterRepository } from "./repositories/RosterRepository";
 import { TsLeadRepository } from "./repositories/TsLeadRepository";
+import { CronJobService } from "./services/CronJobService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
 import { log } from "./Util";
@@ -31,13 +32,14 @@ export class BotgartClient extends akairo.AkairoClient {
     public tsLeadRepository: TsLeadRepository;
     public matchupRepository: MatchupRepository;
     public rosterRepository: RosterRepository;
-    public cronjobRepository: CronJobRepository;
+    public cronJobRepository: CronJobRepository;
     public faqRepository: FaqRepository;
     public permanentRoleRepository: PermanentRoleRepository;
     public commandPermissionRepository: CommandPermissionRepository;
     public logChannelRepository: LogChannelRepository;
 
-    public cronjobs: Map<number, Job>;
+    public cronJobService: CronJobService;
+
     private ts3connection: TS3Connection;
     private rosters: { [key: string]: [discord.Guild, discord.Message, Roster] };
     public readonly gw2apiemitter: APIEmitter;
@@ -61,13 +63,14 @@ export class BotgartClient extends akairo.AkairoClient {
         this.tsLeadRepository = new TsLeadRepository(db)
         this.matchupRepository = new MatchupRepository(db)
         this.rosterRepository = new RosterRepository(db)
-        this.cronjobRepository = new CronJobRepository(db)
+        this.cronJobRepository = new CronJobRepository(db)
         this.faqRepository = new FaqRepository(db)
         this.permanentRoleRepository = new PermanentRoleRepository(db)
         this.commandPermissionRepository = new CommandPermissionRepository(db)
         this.logChannelRepository = new LogChannelRepository(db)
 
-        this.cronjobs = new Map<number, Job>()
+        this.cronJobService = new CronJobService(this.cronJobRepository, this)
+
         this.rosters = {};
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
