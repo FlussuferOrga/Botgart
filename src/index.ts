@@ -49,16 +49,13 @@ if (args.patchall || args.patch) {
 
     log("info", "Starting Botgart...");
 
-    const client = new BotgartClient(
-        {ownerID: config.get("owner_ids")},
-        {partials: ["CHANNEL", "USER", "GUILD_MEMBER", "MESSAGE", "REACTION"]},
-        database);
+    const client = new BotgartClient({ownerID: config.get("owner_ids")}, {}, database);
     const webServer = new WebServer();
 
     //shutdown listener
     process.on('SIGINT', function () {
         log("info", "Shutting down...");
-
+        client.destroy()
         webServer.close();
         log("info", "Bye");
         process.exit(0);
