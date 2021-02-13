@@ -53,13 +53,15 @@ if (args.patchall || args.patch) {
     const webServer = new WebServer();
 
     //shutdown listener
-    process.on('SIGINT', function () {
-        log("info", "Shutting down...");
-        client.destroy()
-        webServer.close();
-        log("info", "Bye");
-        process.exit(0);
-    });
+    ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal: NodeJS.Signals) =>
+        process.on(signal, () => {
+            log("info", "Shutting down...");
+            client.destroy()
+            webServer.close();
+            log("info", "Bye");
+            process.exit(0);
+        })
+    );
 
     log("info", "Starting up...");
     client.login(config.get().token).then(() => {
