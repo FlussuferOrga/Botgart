@@ -463,7 +463,7 @@ export class TS3Listener extends events.EventEmitter {
             log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
-            const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(">");
+            const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
 
             const mes: string = L.get("COMMANDER_TAG_UP", [displayname, channelPath, pingRole ? pingRole.toString() : ""]);
             dchan.send(mes);
