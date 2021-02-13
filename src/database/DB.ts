@@ -14,7 +14,6 @@ interface WorkerJob {
 export class Database {
     public static getInstance(databaseFilePath) {
         const database = new Database(databaseFilePath);
-        database.init();
         database.initSchema();
         log("info", "Database initialised.");
         return database;
@@ -26,58 +25,6 @@ export class Database {
     constructor(file: string) {
         this.file = file;
         this.queue = [];
-    }
-
-    public init() {
-        //os.cpus().forEach(this.spawnWorker.bind(this));
-    }
-
-    private spawnWorker() {
-        const that: Database = this;
-        const worker = new Worker('./built/database/worker.js', {workerData: this.file});
-
-        let job: WorkerJob | undefined = undefined; // Current item from the queue
-        let error: Error | null = null; // Error that caused the worker to crash
-        let timer: NodeJS.Immediate | undefined = undefined; // Timer used for polling
-
-        function poll() {
-            if (that.queue.length > 0) {
-                // If there's a job in the queue, send it to the worker
-                job = that.queue.shift();
-                if (job !== undefined) {
-                    worker.postMessage(job.message);
-                }
-            } else {
-                // Otherwise, check again later
-                timer = setImmediate(poll);
-            }
-        }
-
-        worker
-            .on("online", poll)
-            .on("message", (result) => {
-                if (job !== undefined) {
-                    job.resolve(result);
-                    job = undefined;
-                }
-                poll(); // Check if there's more work to do
-            })
-            .on("error", (err) => {
-                console.error(err);
-                error = err;
-            })
-            .on("exit", (code) => {
-                if (timer !== undefined) {
-                    clearImmediate(timer);
-                }
-                if (job) {
-                    job.reject(error || new Error('worker died'));
-                }
-                if (code !== 0) {
-                    console.error(`worker exited with code ${code}`);
-                    that.spawnWorker(); // Worker died, so spawn a new one
-                }
-            });
     }
 
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
@@ -164,8 +111,8 @@ export class Database {
         return res;
     }
 
-    // worker.js
-    public executeAsync<T>(sql: string, parameters: any[]): Promise<T | undefined> {
-        return new Promise((resolve, reject) => this.queue.push({resolve, reject, message: {sql, parameters}}))
+    public close(){
+        this.getDB().close()
     }
+
 }
