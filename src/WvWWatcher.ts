@@ -1,6 +1,7 @@
 import { EventEmitter } from "events";
 import * as moment from "moment";
 import { getConfig } from "./config/Config";
+import { createApiInstance } from "./Gw2ApiUtils";
 import { Matchup, MatchupRepository } from "./repositories/MatchupRepository";
 import * as Util from "./Util";
 
@@ -8,9 +9,9 @@ export class WvWWatcher extends EventEmitter {
     private api;
     private matchupRepository: MatchupRepository;
 
-    public constructor(matchupRepository: MatchupRepository, api) {
+    public constructor(matchupRepository: MatchupRepository) {
         super();
-        this.api = api;
+        this.api = createApiInstance();
         this.matchupRepository = matchupRepository;
     }
 

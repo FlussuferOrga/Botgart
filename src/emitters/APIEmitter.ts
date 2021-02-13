@@ -1,6 +1,6 @@
 import * as events from "events"
 import { getConfig } from "../config/Config";
-import { api } from "../Gw2ApiUtils";
+import { createApiInstance } from "../Gw2ApiUtils";
 
 
 enum WvWMapNames {
@@ -53,6 +53,7 @@ export class APIEmitter extends events.EventEmitter {
 
     public constructor() {
         super();
+
         //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
         //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
         let homeId = getConfig().get().home_id;
@@ -69,6 +70,7 @@ export class APIEmitter extends events.EventEmitter {
 
     public schedule(name: string, endpoint: (gw2) => any, interval: number): void {
         //endpoint(api).then(r => console.log(name, r));
-        setInterval(() => this.emit(name, endpoint(api)), interval);
+        const gw = createApiInstance();
+        setInterval(() => this.emit(name, endpoint(gw)), interval);
     }
 }

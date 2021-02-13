@@ -1,9 +1,8 @@
 import gw2 from "gw2api-client";
 import { log } from "./Util";
 
-export const api = initApi();
 
-function initApi() {
+export function createApiInstance() {
     const api = gw2();
     api.schema('2019-03-26T00:00:00Z');
     api.language('en');
@@ -13,6 +12,8 @@ function initApi() {
     api.fetch.retryWait(tries => tries * 3000)
     return api;
 }
+
+export const api = createApiInstance();
 
 /**
  * Tries to validate the passed API key.
@@ -26,7 +27,7 @@ function initApi() {
  *                   (b) a network error occured
  *                   (c) the key is structurally valid, but not known to the API (invalid key)
  */
-export function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string|boolean|number> {
+export function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string | boolean | number> {
     api.authenticate(apikey);
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
@@ -44,7 +45,7 @@ export function validateWorld(apikey: string, worldAssignments: { world_id: numb
         }),
         err => new Promise((resolve, reject) => {
             log("error", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
-            if(err.content.text === "invalid key") {
+            if (err.content.text === "invalid key") {
                 return reject(exports.validateWorld.ERRORS.invalid_key);
             } else {
                 return reject(exports.validateWorld.ERRORS.network_error);
@@ -52,13 +53,14 @@ export function validateWorld(apikey: string, worldAssignments: { world_id: numb
         })
     );
 }
+
 validateWorld.ERRORS = {
     "config_world_duplicate": 1,
     "network_error": 2,
     "invalid_key": 3
 };
 
-export function getAccountGUID(apikey: string): Promise<number|boolean> {
+export function getAccountGUID(apikey: string): Promise<number | boolean> {
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.id)),
@@ -66,7 +68,7 @@ export function getAccountGUID(apikey: string): Promise<number|boolean> {
     );
 }
 
-export function getAccountName(apikey: string): Promise<string|boolean> {
+export function getAccountName(apikey: string): Promise<string | boolean> {
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.name)),
@@ -75,13 +77,14 @@ export function getAccountName(apikey: string): Promise<string|boolean> {
 }
 
 export async function isValidWorld(id: number): Promise<boolean> {
-    return id in (await api.worlds());
+    return id in (await api.autenticate(false).worlds());
 }
 
 export function guildExists(guildname: string): Promise<boolean> {
-    // we need to verify by name after looking up the ID 
+    // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.
-    return api.guild().search().name(guildname).then(async id => id !== undefined && (await api.guild().get(id)).name === guildname);
+    return api.autenticate(false).guild().search().name(guildname)
+        .then(async id => id !== undefined && (await api.autenticate(false).guild().get(id)).name === guildname);
 }
 
 /*

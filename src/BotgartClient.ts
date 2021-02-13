@@ -71,7 +71,7 @@ export class BotgartClient extends akairo.AkairoClient {
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
-        this.wvwWatcher = new WvWWatcher(this.matchupRepository, api);
+        this.wvwWatcher = new WvWWatcher(this.matchupRepository);
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
         this.commandHandler = new akairo.CommandHandler(this, {
@@ -87,7 +87,7 @@ export class BotgartClient extends akairo.AkairoClient {
                 const mes: string = command.cooldownMessage(message, remaining);
                 if(mes) {
                     message.reply(mes);
-                }    
+                }
             }
         });
 
@@ -122,16 +122,16 @@ export class BotgartClient extends akairo.AkairoClient {
                     for await(const mapData of stats.maps) {
                         for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
                             this.matchupRepository.addMatchupStats(
-                                        match.matchup_id, 
-                                        snapshotId, 
-                                        mapData.type, // map 
+                                        match.matchup_id,
+                                        snapshotId,
+                                        mapData.type, // map
                                         Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
-                                        mapData.deaths[faction], 
+                                        mapData.deaths[faction],
                                         mapData.kills[faction],
                                         mapData.scores[faction])
                         }
-                        
-                    }                    
+
+                    }
                 }
                 Util.log("debug", "Done writing WvWStats.");
             });
@@ -201,15 +201,15 @@ export class BotgartClient extends akairo.AkairoClient {
     * can be set. Types are arbitrary strings, making this feature far more
     * flexible than just log levels. In fact, it enables us to have each command
     * define an own "type" and have administrators define channels to which messages
-    * of that type are being written to. 
+    * of that type are being written to.
     * E.g. a ClockCommand could call
     *   discordLog(_, "clock", now())
     * every minute and define a connection between the "clock"-type and the channel #time in a guild.
     * That would cause now() to be written to #time every minute.
     * @param guild - guild for which the connection should be defined
     * @param type - arbitrary type
-    * @param message - the message to log 
-    * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback. 
+    * @param message - the message to log
+    * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback.
     */
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
@@ -225,7 +225,7 @@ export class BotgartClient extends akairo.AkairoClient {
             } else {
                 (<discord.TextChannel>channel).send(message);
             }
-        });    
+        });
         }
     }
 }
