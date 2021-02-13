@@ -7,7 +7,6 @@ import { Roster } from "./commands/resetlead/ResetRoster"
 import { getConfig } from "./config/Config";
 import * as db from "./database/DB"
 import { APIEmitter } from "./emitters/APIEmitter"
-import { api } from "./Gw2ApiUtils";
 import { AchievementRepository } from "./repositories/AchievementRepository";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
 import { CronJobRepository } from "./repositories/CronJobRepository";
@@ -76,7 +75,7 @@ export class BotgartClient extends akairo.AkairoClient {
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
-        this.wvwWatcher = new WvWWatcher(this.matchupRepository, api);
+        this.wvwWatcher = new WvWWatcher(this.matchupRepository);
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
         this.commandHandler = new akairo.CommandHandler(this, {
