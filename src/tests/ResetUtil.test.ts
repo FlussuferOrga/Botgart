@@ -21,7 +21,7 @@ assert["exactMoment"] = function (actual: any, expected: any) {
     this.equal(actual.format(), expected.format()) //this also checks the stored timezone to be equal
 }
 
-describe("Util - WvW", function () {
+describe("ResetUtil", function () {
 
 
     it("upcoming reset before Friday (EU)", () => {
@@ -76,17 +76,17 @@ describe("Util - WvW", function () {
 
     it("upcoming reset after reset on friday Friday (Summertime Input)", () => {
         assert.sameMoment(
-            Utils.getNextResetDateMoment(moment.tz("2019-08-16 20:01", "Europe/Berlin")),
+            Utils.getNextResetDateMoment(moment.tz("2019-08-16 20:01:00", "Europe/Berlin")),
             moment.tz("2019-08-23 20:00", "Europe/Berlin"));
     });
 
     it("upcoming reset between years", () =>
         assert.exactMoment(Utils.getNextResetDateMoment(moment.tz("2019-12-31", "UTC")),
-            moment.tz("2020-1-3 18:00:00", "UTC"))
+            moment.tz("2020-01-03 18:00:00", "UTC"))
     );
 
     it("Get Reset by week and year returns first reset in year", () =>
-        assert.exactMoment(Utils.getResetForWeek(1, 2021), moment.tz("2020-1-3 18:00:00", "UTC"))
+        assert.exactMoment(Utils.getResetForWeek(1, 2021), moment.tz("2020-01-03 18:00:00", "UTC"))
     );
 
     it("No duplicate reset dates", () => {
