@@ -25,10 +25,10 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+#           restore-keys: |
+#             ${{ runner.os }}-build-${{ env.cache-name }}-
+#             ${{ runner.os }}-build-
+#             ${{ runner.os }}-
       - run: npm install
       - run: npm run build
       - run: npm test
