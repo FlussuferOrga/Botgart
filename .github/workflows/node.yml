@@ -21,7 +21,7 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v2.1.4
         env:
-          cache-name: cache-node-modules
+          cache-name: cache-${{ matrix.node-version }}-node-modules
         with:
           path: ./node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
