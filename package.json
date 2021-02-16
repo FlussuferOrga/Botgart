@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/better-sqlite3": "^5.4.1",
-    "@types/convict": "^5.2.0",
+    "@types/convict": "^5.2.2",
     "@types/dateformat": "^3.0.1",
     "@types/express": "^4.17.9",
     "assert": "^1.5.0",
