@@ -2,7 +2,7 @@ import callsites from "callsites";
 import * as discord from "discord.js";
 
 import glob from "glob" // dynamic module loading
-import moment from "moment";
+import moment from "moment-timezone";
 import path from "path" // ^
 import * as winston from "winston";
 
@@ -161,41 +161,6 @@ function getWvwRegionProperties(wvwRegion: WvwRegion) {
     return {resetWeekDay, resetTimeUTC};
 }
 
-/**
- * Determines the reset day for a certain week.
- * week: the week to calculate the reset day for
- * year: the year the week lied in. Per default it is the current year, but take care around New Year!
- * resetTimeUTC: at what time reset is planned. Default is 18 UTC ( EU Server )
- * returns: the Date on which the reset of the specified week takes place.
- */
-export function getResetDay(week: number, year: number = new Date().getFullYear(), wvwRegion: WvwRegion = WvwRegion.EU): Date {
-    let {resetWeekDay, resetTimeUTC} = getWvwRegionProperties(wvwRegion);
-
-    // look for the first reset day of the year
-    let resetDay: Date = new Date(Date.UTC(year, 0, 1));
-    while (resetDay.getDay() != resetWeekDay) {
-        resetDay.setDate(resetDay.getDate() + 1);
-    }
-    const firstResetWeekNumber: number = getNumberOfWeek(resetDay); // if the first day of the year is either SAT or SUN, the first Friday of the year is in week 2! So check that.
-    resetDay.setDate(resetDay.getDate() + (7 * (week - firstResetWeekNumber)));
-    resetDay.setUTCHours(resetTimeUTC)
-    return resetDay;
-}
-
-// blatantly stolen from https://gist.github.com/IamSilviu/5899269#gistcomment-2918013
-export function getNumberOfWeek(today: Date = new Date()) {
-    today = getStandardDay(today);
-    if (today.getDay() === 0) {
-        // since JS weeks start on Sundays, we calculate the week for Saturday
-        // if we would calculate the week for a Sunday.
-        today.setDate(today.getDate() - 1);
-    }
-    const firstDayOfYear = new Date(Date.UTC(today.getFullYear(), 0, 1));
-    const pastDaysOfYear = (today.getTime() - firstDayOfYear.getTime()) / 86400000;
-    const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
-}
-
 export function formatUserPing(uid: string) {
     return "<@{0}>".formatUnicorn(uid);
 }
@@ -337,16 +302,6 @@ String.prototype.formatUnicorn = function (...fnargs: any[]): string {
     }
     return str;
 };
-
-export function getNextResetDate(now = new Date(), wvwRegion: WvwRegion = WvwRegion.EU): Date {
-    const resetDay = getResetDay(getNumberOfWeek(now), now.getFullYear(), wvwRegion);
-    const nowWeekDay = (now.getDay() + 6) % 7; // makes SUN 6
-    const resetWeekDay = (RESET_WEEKDAY + 6) % 7;
-    if (nowWeekDay > resetWeekDay) {
-        resetDay.setDate(resetDay.getDate() + 7);
-    }
-    return resetDay;
-}
 
 export interface Equalable<T> {
     equals: (other: T) => boolean;

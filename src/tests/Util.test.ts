@@ -2,46 +2,14 @@ import chai, { assert, expect } from "chai";
 import chaiDateTime from "chai-datetime";
 import moment from "moment";
 import * as U from "../Util";
-import { WvwRegion } from "../Util";
 
 chai.use(chaiDateTime);
 
 
 describe("Util - Date", function () {
-    // getResetDay(week : number, year : number = new Date().getFullYear(), resetWeekDay : number = 5) : Date {
-    // both months start at zero, so 2019-1-4 becomes 2019,0,4
-    it("number of week on Monday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 11)))).equal(46));
-    it("number of week on Tuesday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 12)))).equal(46));
-    it("number of week on Wednesday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 13)))).equal(46));
-    it("number of week on Thursday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 14)))).equal(46));
-    it("number of week on Friday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 15)))).equal(46));
-    it("number of week on Saturday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 16)))).equal(46));
-    it("number of week on Sunday", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 17)))).equal(46));
-    it("number of week on Saturday middle of day", () => expect(U.getNumberOfWeek(new Date(Date.UTC(2019, 10, 16, 13, 53)))).equal(46));
-
     it("compare dates without time", () =>
         assert.isTrue(U.compareDatesWithoutTime(new Date(Date.UTC(2019, 1, 1, 23, 59, 59)),
             new Date(Date.UTC(2019, 1, 1)))));
-
-    it("reset date 2019-1-4", () =>
-        assert.isTrue(U.compareDatesWithoutTime(U.getResetDay(1, 2019, WvwRegion.EU),
-            new Date(Date.UTC(2019, 0, 4)))));
-
-    it("reset date 2019-1-4 NA", () =>
-        assert.isTrue(U.compareDatesWithoutTime(U.getResetDay(1, 2019, WvwRegion.NA),
-            new Date(Date.UTC(2019, 0, 5)))));
-
-    it("reset date 2019-11-15", () =>
-        assert.isTrue(U.compareDatesWithoutTime(U.getResetDay(45, 2019, WvwRegion.EU),
-            new Date(Date.UTC(2019, 10, 8)))));
-
-    it("reset date 2019-11-16", () =>
-        assert.isTrue(U.compareDatesWithoutTime(U.getResetDay(46, 2019, WvwRegion.EU),
-            new Date(Date.UTC(2019, 10, 15)))));
-
-    it("reset date 2019-11-16", () =>
-        assert.isTrue(U.compareDatesWithoutTime(U.getResetDay(47, 2019, WvwRegion.EU),
-            new Date(Date.UTC(2019, 10, 22)))));
 
     it("convert twice", () => {
         const orig: string = "2019-12-12 00:00:00";
@@ -61,26 +29,6 @@ describe("Util - Date", function () {
 });
 
 describe("Util - WvW", function () {
-    it("upcoming reset before Friday (EU)", () =>
-        assert.equalTime(U.getNextResetDate(new Date(Date.UTC(2019, 10, 12))),
-            new Date(Date.UTC(2019, 10, 15, 18))));
-
-    it("upcoming reset before Friday (NA)", () =>
-        assert.equalTime(U.getNextResetDate(new Date(Date.UTC(2019, 10, 12)), WvwRegion.NA),
-            new Date(Date.UTC(2019, 10, 16, 2))));
-
-    it("upcoming reset after Friday", () =>
-        assert.equalTime(U.getNextResetDate(new Date(Date.UTC(2019, 10, 16))),
-            new Date(Date.UTC(2019, 10, 22, 18))));
-
-    it("upcoming reset after Friday (Summertime)", () =>
-        assert.equalTime(U.getNextResetDate(new Date(Date.UTC(2019, 8, 16))),
-            new Date(Date.UTC(2019, 8, 19, 18))));
-
-    it("upcoming reset between years", () =>
-        assert.equalTime(U.getNextResetDate(new Date(Date.UTC(2019, 11, 31))),
-            new Date(Date.UTC(2020, 0, 3, 18))));
-
     it("determine tier", () => {
         for (let i = 0; i < 100; i++) {
             const tier = U.determineTier(i);
@@ -95,11 +43,6 @@ describe("Util - WvW", function () {
             }
         }
     });
-
-    //it("upcoming reset on Saturday", () =>
-    //  assert(U.compareDatesWithoutTime(R.Roster.getNextResetDate(new Date(Date.UTC(2019,10,16)))
-    //                                   new Date(Date.UTC(2019,10,))
-
 });
 
 describe("Util - Is Between", function () {

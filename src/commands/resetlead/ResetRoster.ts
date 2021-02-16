@@ -1,12 +1,12 @@
-import * as dateFormat from "dateformat";
 import * as discord from "discord.js";
 import * as events from "events";
-import moment from "moment-timezone";
+import moment, { Moment } from "moment-timezone";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
 import * as Util from "../../Util";
+import * as ResetUtil from "./ResetUtil";
 
 /**
  Testcases:
@@ -105,23 +105,15 @@ export class Roster extends events.EventEmitter {
     /**
      * @returns the date for the reset this roster represents.
      */
-    public getResetDate() {
-        return Util.getResetDay(this.weekNumber, this.year);
-    }
-
-    /**
-     * @returns true iff the reset of this roster happens in the future.
-     */
-    public isFuture(): boolean {
-        const now: Date = new Date();
-        return this.weekNumber <= Util.getNumberOfWeek(now) && this.year <= now.getFullYear();
+    public getResetDate(): Moment {
+        return ResetUtil.getResetForWeek(this.weekNumber, this.year);
     }
 
     /**
      * @returns true iff the reset of this roster is the next reset.
      */
     public isUpcoming(): boolean {
-        return Util.compareDatesWithoutTime(this.getResetDate(), Util.getNextResetDate());
+        return this.getResetDate().isSameOrAfter(moment())
     }
 
     /**
@@ -245,7 +237,7 @@ export class Roster extends events.EventEmitter {
     public toMessageEmbed(): discord.MessageEmbed {
         const timezone = getConfig().get().timeZone;
         const resetDateTime = this.getResetDate();
-        const displayedDateTime = moment(resetDateTime).tz(timezone).format("DD.MM.YYYY HH:mm z");
+        const displayedDateTime = resetDateTime.tz(timezone).format("DD.MM.YYYY HH:mm z");
         const re = new discord.MessageEmbed()
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
@@ -335,10 +327,10 @@ export class ResetRoster extends BotgartCommand {
             }
             return user;
         }
-        const resetDateTime = Util.getResetDay(roster.weekNumber, roster.year);
+        const resetDateTime = roster.getResetDate().tz(getConfig().get().timeZone)
         cl.getTS3Connection().post("resetroster", {
-            "date": dateFormat.default(resetDateTime, "dd.mm.yy"), //TODO: remove
-            "datetime": resetDateTime.toISOString(),
+            "date": resetDateTime.format("dd.mm.yy"), //TODO: remove
+            "datetime": resetDateTime.format(),
             "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.RedBorderlands)).map(l => resolveUser(l.name))),
             "gbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.GreenBorderlands)).map(l => resolveUser(l.name))),
             "bbl": await Promise.all(Array.from(roster.getMapLeaders(WvWMap.BlueBorderlands)).map(l => resolveUser(l.name))),
@@ -406,7 +398,7 @@ export class ResetRoster extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        const currentWeek = Util.getNumberOfWeek();
+        const currentWeek = ResetUtil.currentWeek()
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
         const rosterYear = !args.year ? new Date().getFullYear() : args.year;
         this.getBotgartClient().rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(dbEntry => {
@@ -454,8 +446,8 @@ export class ResetRoster extends BotgartCommand {
     }
 
     private initSyncToTS3(): void {
-        const rosterWeek = Util.getNumberOfWeek();
-        const rosterYear = new Date().getFullYear();
+        const rosterWeek = ResetUtil.currentWeek()
+        const rosterYear = moment().utc().year()
         const guilds = this.client.guilds.cache;
         const cl = this.getBotgartClient();
 

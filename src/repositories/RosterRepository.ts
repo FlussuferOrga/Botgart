@@ -1,12 +1,14 @@
 import * as discord from "discord.js";
+import moment from "moment-timezone";
 import * as ResetRoster from "../commands/resetlead/ResetRoster";
+import * as ResetUtil from "../commands/resetlead/ResetUtil";
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export class RosterRepository extends AbstractDbRepository {
     public getActiveRosters(guild: discord.Guild): Promise<[ResetRoster.Roster, discord.TextChannel, discord.Message]>[] {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
-            .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
+            .all( ResetUtil.currentWeek(), moment().utc().year(), guild.id)
             .map(row => this.getRosterPost(guild, row.wn, row.year)))
             .filter((roster) => roster !== undefined);
     }
