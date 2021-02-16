@@ -22,7 +22,7 @@
     "await-timeout": "^0.6.0",
     "better-sqlite3": "^5.4.3",
     "callsites": "^3.1.0",
-    "cheerio": "^1.0.0-rc.3",
+    "cheerio": "^1.0.0-rc.5",
     "circular-buffer": "^1.0.3",
     "command-line-args": "^5.1.1",
     "convict": "^5.2.0",
