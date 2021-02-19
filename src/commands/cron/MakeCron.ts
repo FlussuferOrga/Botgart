@@ -36,9 +36,6 @@ export class MakeCron extends BotgartCommand {
     }
 
     command(message, responsible, guild, args) {
-        if (message == null) {
-            throw Error("makecron is not cronable")
-        }
         if (message.member == null || !message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
