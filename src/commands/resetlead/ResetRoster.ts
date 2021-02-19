@@ -364,7 +364,7 @@ export class ResetRoster extends BotgartCommand {
                 if (this.syncScheduled) return;
                 this.syncScheduled = true;
                 cl.rosterRepository.upsertRosterPost(guild, r, message);
-                message.edit(r.toMessageEmbed());
+                message.edit(r.toMessage(), r.toMessageEmbed());
 
                 if (roster.isUpcoming()) {
                     this.syncToTS3(roster);
