@@ -253,6 +253,15 @@ export class Roster extends events.EventEmitter {
         }
         return re;
     }
+
+    public toMessage() {
+        let result: ResetLeader[] = []
+        for (const mname in this.leads) {
+            const [, leads] = this.leads[mname];
+            result.push(...leads)
+        }
+        return result.map(value => value.name).join(",")
+    }
 }
 
 export class ResetRoster extends BotgartCommand {
@@ -405,7 +414,7 @@ export class ResetRoster extends BotgartCommand {
             if (dbEntry === undefined) {
                 // no roster for this guild+week -> create one
                 const roster = new Roster(rosterWeek, rosterYear);
-                (<discord.TextChannel>args.channel).send(roster.toMessageEmbed())
+                (<discord.TextChannel>args.channel).send(roster.toMessage(), roster.toMessageEmbed())
                     .then(async (mes: discord.Message) => {
                         for (const e of this.emotes) {
                             await mes.react(e);
