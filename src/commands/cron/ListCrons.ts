@@ -43,7 +43,7 @@ export class ListCrons extends BotgartCommand {
                 mes = header + line;
             }
         });
-        responsible.send("```\n" + mes + "\n```").catch(reason => log("error","Could "));
+        responsible.send("```\n" + mes + "\n```")
     }
 }
 
