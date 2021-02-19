@@ -3,7 +3,8 @@ import * as discord from "discord.js"
 import { Job } from "node-schedule";
 import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
-import { Roster } from "./commands/resetlead/ResetRoster"
+import { Roster } from "./commands/resetlead/Roster";
+import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
 import * as db from "./database/DB"
 import { APIEmitter } from "./emitters/APIEmitter"
@@ -38,9 +39,9 @@ export class BotgartClient extends akairo.AkairoClient {
     public logChannelRepository: LogChannelRepository;
 
     public cronJobService: CronJobService;
+    public rosterService: RosterService;
 
     private ts3connection: TS3Connection;
-    private rosters: { [key: string]: [discord.Guild, discord.Message, Roster] };
     public readonly gw2apiemitter: APIEmitter;
     public readonly ts3listener: TS3Listener;
     public readonly wvwWatcher: WvWWatcher;
@@ -69,8 +70,8 @@ export class BotgartClient extends akairo.AkairoClient {
         this.logChannelRepository = new LogChannelRepository(db)
 
         this.cronJobService = new CronJobService(this.cronJobRepository, this)
+        this.rosterService = new RosterService(this.rosterRepository, this)
 
-        this.rosters = {};
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
@@ -78,9 +79,10 @@ export class BotgartClient extends akairo.AkairoClient {
         this.wvwWatcher = new WvWWatcher(this.matchupRepository);
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
+        const prefix = getConfig().get().prefix;
         this.commandHandler = new akairo.CommandHandler(this, {
             directory: './built/commands/',
-            prefix: getConfig().get().prefix,
+            prefix: prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
         });
@@ -183,21 +185,9 @@ export class BotgartClient extends akairo.AkairoClient {
         this.achievements[achievement.name.toLowerCase()] = achievement;
     }
 
-    private toRosterKey(guild: discord.Guild, weekNumber: number, year: number): string {
-        return `${guild.id}|${year}|${weekNumber}`;
-    }
 
     public getTS3Connection(): TS3Connection {
         return this.ts3connection;
-    }
-
-    public getRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | undefined {
-        const k = this.toRosterKey(guild, weekNumber, year);
-        return k in this.rosters ? this.rosters[k] : undefined;
-    }
-
-    public setRoster(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
-        this.rosters[this.toRosterKey(guild, weekNumber, year)] = [guild, message, roster];
     }
 
     /**

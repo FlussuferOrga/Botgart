@@ -1,34 +1,12 @@
 import moment, { Moment } from "moment-timezone";
-
-export enum WvwRegion {
-    EU = "EU",
-    NA = "NA"
-}
-
-function getWvwRegionProperties(wvwRegion: WvwRegion) {
-    let resetWeekDay: number;
-    let resetTimeUTC: number;
-    switch (wvwRegion) {
-        case WvwRegion.EU:
-            resetWeekDay = 5;
-            resetTimeUTC = 18;
-            break
-        case WvwRegion.NA:
-            resetWeekDay = 6
-            resetTimeUTC = 2
-            break
-        default:
-            throw Error("Unmapped WvW Region")
-    }
-    return {resetWeekDay, resetTimeUTC};
-}
+import { WvwRegion } from "./WvwRegion";
 
 export function currentWeek(): number {
     return moment().utc().isoWeek()
 }
 
 export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
-    let {resetWeekDay, resetTimeUTC} = getWvwRegionProperties(wvwRegion)
+    let {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion)
     return moment().tz("UTC")
         .year(year)
         .isoWeek(isoWeek)
@@ -39,7 +17,7 @@ export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().ye
 
 export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
     let _startingPoint = startingPoint.clone().tz("UTC")
-    let {resetWeekDay, resetTimeUTC} = getWvwRegionProperties(wvwRegion)
+    let {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion)
 
     let nextResetMoment;
     if (_startingPoint.isoWeekday() < resetWeekDay) {

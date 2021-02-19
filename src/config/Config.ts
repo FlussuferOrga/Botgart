@@ -15,7 +15,7 @@ const configSchema = {
         },
         default: ',',
         arg: 'prefix',
-        env: 'prefix'
+        env: 'command_prefix'
     },
     home_id: {
         doc: 'HomeWorld ID',

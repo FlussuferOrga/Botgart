@@ -1,28 +1,24 @@
 import * as akairo from "discord-akairo";
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import * as Util from "../../Util";
-import { WvWMap } from "./ResetRoster";
-import * as ResetUtil from "./ResetUtil";
+import { BotgartCommand } from "../../../BotgartCommand";
+import * as L from "../../../Locale";
+import * as Util from "../../../Util";
+import * as ResetUtil from "../ResetUtil";
+import { WvwMap } from "../WvwMap";
 
 /**
  Testcases:
 
  */
-export class AddResetLeader extends BotgartCommand {
+export class RemoveResetLeader extends BotgartCommand {
     constructor() {
-        super("addresetlead", {
-                aliases: ["addresetlead"],
+        super("removeresetlead", {
+                aliases: ["removeresetlead", "rmresetlead"],
                 quoted: true,
                 args: [
                     {
                         id: "player",
                         type: akairo.Argument.union("member", "string")
-                    },
-                    {
-                        id: "map",
-                        type: (message: discord.Message, phrase: string) => WvWMap.getAllMapNames().includes(phrase) ? phrase : null
                     },
                     {
                         id: "weekNumber",
@@ -40,23 +36,21 @@ export class AddResetLeader extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.year || !args.player || !args.map
-            ? L.get(this.helptextKey(), [WvWMap.getAllMapNames().join(" | ")])
-            : undefined;
+        return !args || !args.weekNumber || !args.player ? L.get(this.helptextKey(), [WvwMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        if (args.weekNumber <= 0) {
+        if (args.weekNumber < 0) {
             args.weekNumber = ResetUtil.currentWeek()
         }
-        const dbRoster = this.getBotgartClient().getRoster(guild, args.weekNumber, args.year);
+        const dbRoster = this.getBotgartClient().rosterService.getRoster(guild, args.weekNumber, args.year);
         if (dbRoster !== undefined) {
             const [g, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
-            roster.addLeadByName(WvWMap.getMapByName(args.map), name);
-            this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));
+            roster.removeLeadByName(WvwMap.getMapByName(args.map), name);
+            this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [name, args.weekNumber, mes.url]));
         }
     }
 }
 
-module.exports = AddResetLeader;
+module.exports = RemoveResetLeader;

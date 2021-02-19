@@ -1,0 +1,92 @@
+import * as discord from "discord.js";
+import { BotgartClient } from "../../../BotgartClient";
+import { BotgartCommand } from "../../../BotgartCommand";
+import * as L from "../../../Locale";
+import * as Util from "../../../Util";
+import * as ResetUtil from "../ResetUtil";
+
+/**
+ Testcases:
+
+ */
+
+
+export class ResetRoster extends BotgartCommand {
+
+    constructor() {
+        super("resetroster", {
+                aliases: ["resetroster"],
+                args: [
+                    {
+                        id: "channel",
+                        type: "channel"
+                    },
+                    {
+                        id: "weekNumber",
+                        type: "integer",
+                        default: undefined
+                    },
+                    {
+                        id: "year",
+                        type: "integer",
+                        default: undefined
+                    }
+                ],
+                // userPermissions: ["ADMINISTRATOR"]
+            },
+            {
+                cronable: true
+            }
+        );
+    }
+
+    checkArgs(args) {
+        return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get(this.helptextKey()) : undefined;
+    }
+
+    public init(client: BotgartClient): void {
+
+    }
+
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+        const currentWeek = ResetUtil.currentWeek()
+        const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
+        const rosterYear = !args.year ? new Date().getFullYear() : args.year;
+
+        const client = this.getBotgartClient();
+
+        client.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(dbEntry => {
+            if (dbEntry === undefined) {
+                // no roster for this guild+week -> create one
+                client.rosterService.createRoster(rosterWeek, rosterYear, args, guild);
+            } else {
+                const [dbRoster, dbChannel, dbMessage] = dbEntry;
+                // there is already a roster-post for this guild+week -> do nothing, log warning
+                Util.log("warning", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
+                this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
+            }
+        });
+
+    }
+
+    serialiseArgs(args) {
+        const clone = Object.assign({}, args);
+        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
+        return JSON.stringify(clone);
+    }
+
+    deserialiseArgs(jsonargs) {
+        const args = JSON.parse(jsonargs);
+        const guild: discord.Guild | undefined = this.client.guilds.cache.find(g => g.id == args.channel.guild);
+        if (guild === undefined) {
+            Util.log("warning", `The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
+            args.channel = undefined;
+        } else {
+            args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
+        }
+        return args;
+    }
+
+}
+
+module.exports = ResetRoster;
