@@ -5,6 +5,10 @@ export function currentWeek(): number {
     return moment().utc().isoWeek()
 }
 
+export function currentYear(): number {
+    return moment().utc().year()
+}
+
 export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
     let {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion)
     return moment().tz("UTC")

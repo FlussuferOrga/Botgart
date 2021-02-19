@@ -32,7 +32,7 @@ export class AddResetLeader extends BotgartCommand {
                     {
                         id: "year",
                         type: "integer",
-                        default: new Date().getFullYear()
+                        default: -1
                     }
                 ]
             }
@@ -48,6 +48,9 @@ export class AddResetLeader extends BotgartCommand {
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek()
+        }
+        if (args.year <= 0) {
+            args.year = ResetUtil.currentYear()
         }
         const dbRoster = this.getBotgartClient().rosterService.getCachedRoster(guild, args.weekNumber, args.year);
         if (dbRoster !== undefined) {

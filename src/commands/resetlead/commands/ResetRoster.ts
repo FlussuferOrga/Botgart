@@ -51,7 +51,7 @@ export class ResetRoster extends BotgartCommand {
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         const currentWeek = ResetUtil.currentWeek()
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
-        const rosterYear = !args.year ? new Date().getFullYear() : args.year;
+        const rosterYear = !args.year ? ResetUtil.currentYear() : args.year;
 
         const client = this.getBotgartClient();
 
