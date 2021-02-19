@@ -86,7 +86,11 @@ describe("ResetUtil", function () {
     );
 
     it("Get Reset by week and year returns first reset in year", () =>
-        assert.exactMoment(Utils.getResetForWeek(1, 2021), moment.tz("2020-01-03 18:00:00", "UTC"))
+        assert.exactMoment(Utils.getResetForWeek(7, 2021), moment.tz("2021-02-19 18:00:00", "UTC"))
+    );
+
+    it("Get Reset by week and year returns first reset in yea 2r", () =>
+        assert.exactMoment(Utils.getResetForWeek(8, 2021), moment.tz("2021-02-26 18:00:00", "UTC"))
     );
 
     it("No duplicate reset dates", () => {

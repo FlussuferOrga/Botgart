@@ -29,7 +29,11 @@ export function currentWeek(): number {
 
 export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
     let {resetWeekDay, resetTimeUTC} = getWvwRegionProperties(wvwRegion)
-    return moment().tz("UTC").startOf("year").year(year).isoWeek(isoWeek).startOf("week").weekday(resetWeekDay).hour(resetTimeUTC)
+    return moment().tz("UTC")
+        .year(year)
+        .isoWeek(isoWeek)
+        .isoWeekday(resetWeekDay)
+        .hour(resetTimeUTC)
         .startOf("hour")
 }
 
@@ -54,6 +58,6 @@ export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwR
         }
     }
     // reset time
-    nextResetMoment = nextResetMoment.startOf('day').hour(resetTimeUTC)
+    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf('hour')
     return nextResetMoment;
 }
