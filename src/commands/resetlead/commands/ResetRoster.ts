@@ -58,7 +58,7 @@ export class ResetRoster extends BotgartCommand {
         client.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(dbEntry => {
             if (dbEntry === undefined) {
                 // no roster for this guild+week -> create one
-                client.rosterService.createRoster(rosterWeek, rosterYear, args, guild);
+                client.rosterService.createRoster(guild, args.channel, rosterYear, rosterWeek);
             } else {
                 const [dbRoster, dbChannel, dbMessage] = dbEntry;
                 // there is already a roster-post for this guild+week -> do nothing, log warning

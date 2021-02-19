@@ -49,7 +49,7 @@ export class AddResetLeader extends BotgartCommand {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek()
         }
-        const dbRoster = this.getBotgartClient().rosterService.getRoster(guild, args.weekNumber, args.year);
+        const dbRoster = this.getBotgartClient().rosterService.getCachedRoster(guild, args.weekNumber, args.year);
         if (dbRoster !== undefined) {
             const [g, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;

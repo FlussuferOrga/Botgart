@@ -37,12 +37,12 @@ export class RosterService {
         this.syncScheduled = false;
     }
 
-    public getRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | undefined {
+    public getCachedRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | undefined {
         const k = RosterService.toRosterKey(guild, weekNumber, year);
         return k in this.rosters ? this.rosters[k] : undefined;
     }
 
-    public setRoster(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
+    public storeInRosterCache(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
         this.rosters[RosterService.toRosterKey(guild, weekNumber, year)] = [guild, message, roster];
     }
 
@@ -50,13 +50,13 @@ export class RosterService {
         return `${guild.id}|${year}|${weekNumber}`;
     }
 
-    public watchRoster(guild: discord.Guild, message: discord.Message, roster: Roster): void {
-        const rosterService = this.client.rosterService;
-        // const dbRoster = this.getRoster(guild, roster.weekNumber, roster.year);
-        // if (dbRoster === undefined) {
-        //     Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
-        //     return;
-        // }
+    public prepareRefresh(guild: discord.Guild, message: discord.Message, roster: Roster): void {
+        const dbRoster = this.getCachedRoster(guild, roster.weekNumber, roster.year);
+        if (dbRoster === undefined) {
+            Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
+            return;
+        }
+        const rosterService = this
         const refreshDelayedFn = (eventRoster: Roster, map: string, p: string) => {
             const onDelayReached = function (service: RosterService, roster: Roster) { // no arrow function, as we need to bind()!
                 service.refreshGuarded(guild, roster, message);
@@ -89,7 +89,7 @@ export class RosterService {
         }
     }
 
-    public watchMessage(message: discord.Message, roster: Roster): void {
+    public watchRosterMessageReactions(message: discord.Message, roster: Roster): void {
         Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
         message.createReactionCollector(e =>
             RosterService.EMOTES.includes(e.emoji.name), {}).on("collect", r => this.processReacts(r, roster));
@@ -122,34 +122,40 @@ export class RosterService {
             });
     }
 
-    public createRoster(rosterWeek, rosterYear, args: any, guild: discord.Guild) {
+    public createRoster(guild: discord.Guild, channel: discord.TextChannel, rosterYear, rosterWeek) {
         const roster = new Roster(rosterWeek, rosterYear);
-        (<discord.TextChannel>args.channel).send(roster.toMessage(), roster.toMessageEmbed())
+        channel.send(roster.toMessage(), roster.toMessageEmbed())
             .then(async (mes: discord.Message) => {
                 for (const e of RosterService.EMOTES) {
                     await mes.react(e);
                 }
-                this.setRoster(roster.weekNumber, roster.year, guild, mes, roster);
+                this.storeInRosterCache(roster.weekNumber, roster.year, guild, mes, roster);
                 this.repository.upsertRosterPost(guild, roster, mes); // initial save
-                this.watchMessage(mes, roster);
-                this.watchRoster(guild, mes, roster);
+                this.watchRosterMessageReactions(mes, roster);
+                this.prepareRefresh(guild, mes, roster);
             });
         if (roster.isUpcoming()) {
-            this.syncToTS3(args.channel.guild, roster);
+            this.syncToTS3(guild, roster);
         }
     }
 
     public onStartup() {
-        this.client.guilds.cache.forEach(
-            g => Promise.all(this.repository.getActiveRosters(g))
-                .then(ars => ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
+        this.client.guilds.cache.forEach(g => {
+            Promise.all(this.repository.getActiveRosters(g)).then(ars => {
+                ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
                     .forEach(([dbRoster, dbChannel, dbMessage]) => {
-                        this.setRoster(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
-                        this.watchRoster(dbChannel.guild, dbMessage, dbRoster); // can not be initialised in direct messages anyway
-                        this.watchMessage(dbMessage, dbRoster);
-                    })));
+                        this.startup(dbRoster, dbChannel, dbMessage);
+                    });
+            });
+        });
 
         this.initSyncToTS3();
+    }
+
+    private startup(dbRoster: Roster, dbChannel: discord.TextChannel, dbMessage: discord.Message) {
+        this.storeInRosterCache(dbRoster.weekNumber, dbRoster.year, dbChannel.guild, dbMessage, dbRoster);
+        this.prepareRefresh(dbChannel.guild, dbMessage, dbRoster); // can not be initialised in direct messages anyway
+        this.watchRosterMessageReactions(dbMessage, dbRoster);
     }
 
     private initSyncToTS3(): void {
