@@ -42,13 +42,13 @@ export class ResetLeader implements Util.Equalable<ResetLeader> {
 }
 
 export class WvWMap {
+    static readonly EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS", ["EBG"]);
     static readonly RedBorderlands = new WvWMap("📕", "RED_BORDERLANDS", ["RBL"]);
     static readonly BlueBorderlands = new WvWMap("📘", "BLUE_BORDERLANDS", ["BBL"]);
     static readonly GreenBorderlands = new WvWMap("📗", "GREEN_BORDERLANDS", ["GBL"]);
-    static readonly EternalBattlegrounds = new WvWMap("📙", "ETERNAL_BATTLEGROUNDS", ["EBG"]);
 
     static getMaps(): WvWMap[] {
-        return [WvWMap.RedBorderlands, WvWMap.BlueBorderlands, WvWMap.GreenBorderlands, WvWMap.EternalBattlegrounds];
+        return [WvWMap.EternalBattlegrounds, WvWMap.RedBorderlands, WvWMap.BlueBorderlands, WvWMap.GreenBorderlands];
     }
 
     static getMapNames(): string[] {
@@ -260,7 +260,8 @@ export class Roster extends events.EventEmitter {
             const [, leads] = this.leads[mname];
             result.push(...leads)
         }
-        return result.map(value => value.name).join(",")
+        const uniqueResult = [...new Set(result.map(value => value.name))];
+        return uniqueResult.join(",")
     }
 }
 
@@ -320,7 +321,7 @@ export class ResetRoster extends BotgartCommand {
         this.initSyncToTS3();
     }
 
-    private async syncToTS3(roster: Roster): Promise<void> {
+    private async syncToTS3(guild: discord.Guild, roster: Roster): Promise<void> {
         const cl = this.getBotgartClient();
         // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command. 
         // Resolve if possible.
@@ -329,7 +330,7 @@ export class ResetRoster extends BotgartCommand {
             const match = idregxp.exec(sid);
             let user = sid;
             if (match !== null) {
-                const resolved: discord.GuildMember | undefined = await Util.resolveDiscordUser(cl, match[1])
+                const resolved: discord.GuildMember | undefined = await guild.members.fetch(match[1])
                 if (resolved !== undefined) {
                     user = resolved.displayName;
                 }
@@ -354,7 +355,7 @@ export class ResetRoster extends BotgartCommand {
             Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
             return;
         }
-        const [_, message, __] = dbRoster;
+        const [rosterGuild, message, __] = dbRoster;
         const refresh = (r: Roster, map: string, p: string) => {
             setTimeout(function () { // no arrow function, as we need to bind()!
                 // only updating post, DB, and TS3 in fixed intervals
@@ -367,7 +368,7 @@ export class ResetRoster extends BotgartCommand {
                 message.edit(r.toMessage(), r.toMessageEmbed());
 
                 if (roster.isUpcoming()) {
-                    this.syncToTS3(roster);
+                    this.syncToTS3(rosterGuild, roster);
                 }
                 this.syncScheduled = false;
             }.bind(this), ResetRoster.UPDATE_DELAY);
@@ -425,7 +426,7 @@ export class ResetRoster extends BotgartCommand {
                         this.watchRoster(guild, roster);
                     });
                 if (roster.isUpcoming()) {
-                    this.syncToTS3(roster);
+                    this.syncToTS3(args.channel.guild, roster);
                 }
             } else {
                 const [dbRoster, dbChannel, dbMessage] = dbEntry;
@@ -467,7 +468,7 @@ export class ResetRoster extends BotgartCommand {
                 Util.log("error", `Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
             } else {
                 const [r, chan, mes] = roster;
-                this.syncToTS3(r);
+                this.syncToTS3(chan.guild, r);
             }
         });
     }
