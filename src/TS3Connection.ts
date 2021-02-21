@@ -433,6 +433,8 @@ export class TS3Listener extends events.EventEmitter {
         }
     }
 
+    private readonly ZERO_WIDTH_SPACE = "\u200B";
+
     /**
      * Makes a user tag up in a Discord-guild. That means:
      * - the raid is being announced in the dedicated channel (if that channel exists)
@@ -443,10 +445,12 @@ export class TS3Listener extends events.EventEmitter {
         let displayname = commander.getTS3DisplayName();
         log("info", `Tagging up ${displayname} in ${g.name}.`);
         const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
+
+        let duser: discord.GuildMember | undefined;
         if (registration) {
             // the commander is member of the current discord -> give role
             const crole = g.roles.cache.find(r => r.name === this.commanderRole);
-            const duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
+            duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser === undefined) {
                 log("warning", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
             }
@@ -454,7 +458,7 @@ export class TS3Listener extends events.EventEmitter {
             if (crole && commander.getDiscordMember()) {
                 await commander.getDiscordMember()?.roles.add(crole);
             }
-            displayname = `${displayname} (${registration.registration_role})`;
+            displayname = `${displayname}`;
         }
 
         // broadcast the message                    
@@ -465,8 +469,17 @@ export class TS3Listener extends events.EventEmitter {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
             const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
 
-            const mes: string = L.get("COMMANDER_TAG_UP", [displayname, channelPath, pingRole ? pingRole.toString() : ""]);
-            dchan.send(mes);
+            const mes: string = L.get("COMMANDER_TAG_UP", [displayname, registration.registration_role, pingRole ? pingRole.toString() : ""], "\n");
+            dchan.send(this.ZERO_WIDTH_SPACE + "\n" + mes + "\n" + "🔊" + channelPath)
+                .then(value => {
+                    if (duser?.user !== undefined) {
+                        // replace message with version that links the user. Editing does not trigger a notification
+
+                        const mesPing: string = L.get("COMMANDER_TAG_UP_PINGED", [displayname, registration.registration_role, pingRole ? pingRole.toString() : "", duser?.user?.toString()], "\n");
+                        value.edit(this.ZERO_WIDTH_SPACE + "\n" + mesPing + "\n" + "🔊" + channelPath)
+                    }
+                })
+
         }
         this.emit("tagup", {
             "guild": g,
