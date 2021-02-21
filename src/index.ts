@@ -56,11 +56,14 @@ if (args.patchall || args.patch) {
     ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal: NodeJS.Signals) =>
         process.on(signal, () => {
             log("info", "Shutting down...");
-            client.destroy();
-            webServer.close();
-            database.close();
-            log("info", "Bye");
-            process.exit(0);
+            client.prepareShutdown()
+                .then(() => {
+                    client.destroy();
+                    webServer.close();
+                    database.close();
+                    log("info", "Bye");
+                    process.exit(0);
+                })
         })
     );
 

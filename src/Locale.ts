@@ -144,7 +144,6 @@ EN = {
         "COOLDOWN_GO_FISH": "You are still totally relaxed from your last fishing trip. Wait another {0} second(s). :relieved:",
 
         "COMMANDER_TAG_UP": "Commander **{0}** ({1}) tagged up in Teamspeak! {2}",
-        "COMMANDER_TAG_UP_PINGED": "Commander {3} *{0}* ({1}) tagged up in Teamspeak! {2}",
 
         "RED_BORDERLANDS": "Red Borderlands",
         "BLUE_BORDERLANDS": "Blue Borderlands",
@@ -437,7 +436,6 @@ DE = {
         "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
 
         "COMMANDER_TAG_UP": "Kommandeur **{0}** ({1}) hat im Teamspeak einen Raid gestartet! {2}",
-        "COMMANDER_TAG_UP_PINGED": "Kommandeur {3} *{0}* ({1}) hat im Teamspeak einen Raid gestartet! {2}",
 
         "RED_BORDERLANDS": "Rote Grenzlande",
         "BLUE_BORDERLANDS": "Blaue Grenzlande",

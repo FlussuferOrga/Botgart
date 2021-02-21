@@ -104,7 +104,7 @@ export class Authenticate extends BotgartCommand {
                                     if(typeof accountName === "string" && accountName) {
                                         // check if the user is registering after having registered before, eg after transferring to another server. 
                                         // In that case, remove the role they are currently having.
-                                        const reg: Registration = cl.registrationRepository.getUserByAccountName(accountName);
+                                        const reg: Registration | undefined = cl.registrationRepository.getUserByAccountName(accountName);
                                         if(reg) {
                                             // assignServerRole() expects Role | null, but find() returns Role | undefined, so we do null-coalescing here
                                             currentRole = (await m.guild.roles.fetch()).cache.find(r => r.name === reg.registration_role) || null;

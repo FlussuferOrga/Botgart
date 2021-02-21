@@ -17,7 +17,7 @@ export class RegistrationRepository extends AbstractDbRepository {
      * accountName: GW2 account name.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public getUserByAccountName(accountName: string): Registration {
+    public getUserByAccountName(accountName: string): Registration | undefined{
         return this.execute(db => db.prepare(`
             SELECT id,
                    user,

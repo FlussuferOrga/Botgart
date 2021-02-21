@@ -1,5 +1,6 @@
 import CircularBuffer from "circular-buffer";
 import * as discord from "discord.js";
+import { MessageEmbed } from "discord.js";
 import * as events from "events";
 import * as http from "http";
 import * as moment from "moment";
@@ -162,6 +163,7 @@ export class Commander {
     private lastUpdate: moment.Moment;
     private state: CommanderState;
     private discordMember: discord.GuildMember;
+    private broadcastMessage: discord.Message | undefined;
 
     public getAccountName(): string {
         return this.accountName;
@@ -226,6 +228,15 @@ export class Commander {
     public setDiscordMember(dmember: discord.GuildMember) {
         this.discordMember = dmember;
     }
+
+    public getBroadcastMessage(): discord.Message | undefined {
+        return this.broadcastMessage;
+    }
+
+    public setBroadcastMessage(msg: discord.Message | undefined) {
+        this.broadcastMessage = msg;
+    }
+
 
     /**
      * returns: the time of the _ongoing_ raid in seconds. If no raid is going on, 0 is returned.
@@ -447,21 +458,38 @@ export class TS3Listener extends events.EventEmitter {
         const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
 
         let duser: discord.GuildMember | undefined;
-        if (registration) {
+        if (registration !== undefined) {
             // the commander is member of the current discord -> give role
-            const crole = g.roles.cache.find(r => r.name === this.commanderRole);
             duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser === undefined) {
                 log("warning", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
             }
             commander.setDiscordMember(duser);
-            if (crole && commander.getDiscordMember()) {
-                await commander.getDiscordMember()?.roles.add(crole);
-            }
+
+            await this.tagUpAssignRole(g, commander);
             displayname = `${displayname}`;
         }
 
-        // broadcast the message                    
+        await this.sendTagUpBroadcast(g, commander, displayname, duser, registration)
+            .then(message => {
+                commander.setBroadcastMessage(message)
+            })
+        this.emit("tagup", {
+            "guild": g,
+            "commander": commander,
+            "dbRegistration": registration
+        });
+    }
+
+    private async tagUpAssignRole(g: discord.Guild, commander: Commander) {
+        const crole = g.roles.cache.find(r => r.name === this.commanderRole);
+        if (crole && commander.getDiscordMember()) {
+            await commander.getDiscordMember()?.roles.add(crole);
+        }
+    }
+
+    private async sendTagUpBroadcast(g: discord.Guild, commander: Commander, displayname: string, duser: discord.GuildMember | undefined, registration: undefined | Registration) {
+        // broadcast the message
         const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
         if (!dchan) {
             log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
@@ -469,23 +497,21 @@ export class TS3Listener extends events.EventEmitter {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
             const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
 
-            const mes: string = L.get("COMMANDER_TAG_UP", [displayname, registration.registration_role, pingRole ? pingRole.toString() : ""], "\n");
-            dchan.send(this.ZERO_WIDTH_SPACE + "\n" + mes + "\n\n" + "🔊" + channelPath)
+            const embed = new MessageEmbed();
+            embed.addField("TS 🔊", channelPath + " ❯ " + displayname)
+            embed.setColor("GREEN")
+
+            const mes: string = L.get("COMMANDER_TAG_UP", [duser?.displayName || displayname, registration?.registration_role || "?", pingRole ? pingRole.toString() : ""], "\n");
+            return dchan.send(this.ZERO_WIDTH_SPACE + "\n" + mes, embed)
                 .then(value => {
                     if (duser?.user !== undefined) {
                         // replace message with version that links the user. Editing does not trigger a notification
-
-                        const mesPing: string = L.get("COMMANDER_TAG_UP_PINGED", [displayname, registration.registration_role, pingRole ? pingRole.toString() : "", duser?.user?.toString()], "\n");
-                        value.edit(this.ZERO_WIDTH_SPACE + "\n" + mesPing + "\n\n" + "🔊" + channelPath)
+                        const mesPing: string = L.get("COMMANDER_TAG_UP", [duser?.user?.toString(), registration?.registration_role || "?", pingRole ? pingRole.toString() : ""], "\n");
+                        return value.edit(this.ZERO_WIDTH_SPACE + "\n" + mesPing, embed)
                     }
+                    return value
                 })
-
         }
-        this.emit("tagup", {
-            "guild": g,
-            "commander": commander,
-            "dbRegistration": registration
-        });
     }
 
     /**
@@ -496,7 +522,11 @@ export class TS3Listener extends events.EventEmitter {
     private async tagDown(g: discord.Guild, commander: Commander) {
         let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
+
+        this.tagDownBroadcast(commander);
+
         if (registration !== undefined) {
+
             // the commander is member of the current discord -> remove role
             // since removing roles has gone wrong a lot lately,
             // we're updating the cache manually
@@ -532,5 +562,17 @@ export class TS3Listener extends events.EventEmitter {
             "commander": commander,
             "dbRegistration": registration
         });
+    }
+
+
+    private async tagDownBroadcast(commander: Commander) {
+        const message = await commander.getBroadcastMessage()?.fetch();
+        if (message !== undefined) {
+            const embed = message.embeds[0];
+            if (embed) {
+                embed.setColor("RED")
+                await message.edit(embed)
+            }
+        }
     }
 }

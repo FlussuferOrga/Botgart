@@ -1,9 +1,7 @@
 import * as akairo from "discord-akairo"
 import * as discord from "discord.js"
-import { Job } from "node-schedule";
 import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
-import { Roster } from "./commands/resetlead/Roster";
 import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
 import * as db from "./database/DB"
@@ -220,6 +218,25 @@ export class BotgartClient extends akairo.AkairoClient {
                     (<discord.TextChannel>channel).send(message);
                 }
             });
+        }
+    }
+
+    public async prepareShutdown() {
+        log("info", `Preparing Shutdown`);
+        await this.tagDownBroadcasts();
+    }
+
+    private async tagDownBroadcasts() {
+        for (const commander of this.commanders.getActiveCommanders()) {
+            await commander.getBroadcastMessage()?.fetch()
+                .then(async value => {
+                    log("debug", `Setting Broadcast message status to unknown state due to shutdown: ${value.id}`);
+                    const embed = value.embeds[0];
+                    if (embed) {
+                        embed.setColor("RED")
+                        await value.edit(embed)
+                    }
+                })
         }
     }
 }
