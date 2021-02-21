@@ -8,7 +8,7 @@ import { log } from "../Util";
 
 export class TagBroadcastService {
     private readonly ZERO_WIDTH_SPACE = "\u200B";
-    private readonly COLOR_ACTIVE = Util.resolveColor("GREY");
+    private readonly COLOR_ACTIVE = Util.resolveColor("GREEN");
     private readonly COLOR_INACTIVE = Util.resolveColor("RED");
     private readonly COLOR_UNKNOWN = Util.resolveColor("GREY");
 
@@ -38,7 +38,7 @@ export class TagBroadcastService {
             const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
 
             const embed = new MessageEmbed();
-            embed.addField("TS 🔊", channelPath + " ❯ " + commander.getTS3DisplayName())
+            embed.addField("TS3 🔊", channelPath + " ❯ " + commander.getTS3DisplayName())
             embed.setColor(this.COLOR_ACTIVE)
 
             const name = discordUser?.displayName || commander.getTS3DisplayName();
