@@ -470,13 +470,13 @@ export class TS3Listener extends events.EventEmitter {
             const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
 
             const mes: string = L.get("COMMANDER_TAG_UP", [displayname, registration.registration_role, pingRole ? pingRole.toString() : ""], "\n");
-            dchan.send(this.ZERO_WIDTH_SPACE + "\n" + mes + "\n" + "🔊" + channelPath)
+            dchan.send(this.ZERO_WIDTH_SPACE + "\n" + mes + "\n\n" + "🔊" + channelPath)
                 .then(value => {
                     if (duser?.user !== undefined) {
                         // replace message with version that links the user. Editing does not trigger a notification
 
                         const mesPing: string = L.get("COMMANDER_TAG_UP_PINGED", [displayname, registration.registration_role, pingRole ? pingRole.toString() : "", duser?.user?.toString()], "\n");
-                        value.edit(this.ZERO_WIDTH_SPACE + "\n" + mesPing + "\n" + "🔊" + channelPath)
+                        value.edit(this.ZERO_WIDTH_SPACE + "\n" + mesPing + "\n\n" + "🔊" + channelPath)
                     }
                 })
 
