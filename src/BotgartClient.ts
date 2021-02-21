@@ -1,14 +1,16 @@
 import * as akairo from "discord-akairo"
 import * as discord from "discord.js"
+import { Job } from "node-schedule";
 import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
-import { Roster } from "./commands/resetlead/ResetRoster"
+import { Roster } from "./commands/resetlead/Roster";
+import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
 import * as db from "./database/DB"
 import { APIEmitter } from "./emitters/APIEmitter"
 import { AchievementRepository } from "./repositories/AchievementRepository";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
-import { CronjobRepository } from "./repositories/CronjobRepository";
+import { CronJobRepository } from "./repositories/CronJobRepository";
 import { FaqRepository } from "./repositories/FaqRepository";
 import { FishingRepository } from "./repositories/FishingRepository";
 import { LogChannelRepository } from "./repositories/LogChannelRepository";
@@ -17,6 +19,7 @@ import { PermanentRoleRepository } from "./repositories/PermanentRoleRepository"
 import { RegistrationRepository } from "./repositories/RegistrationRepository";
 import { RosterRepository } from "./repositories/RosterRepository";
 import { TsLeadRepository } from "./repositories/TsLeadRepository";
+import { CronJobService } from "./services/CronJobService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
 import { log } from "./Util";
@@ -29,23 +32,25 @@ export class BotgartClient extends akairo.AkairoClient {
     public tsLeadRepository: TsLeadRepository;
     public matchupRepository: MatchupRepository;
     public rosterRepository: RosterRepository;
-    public cronjobRepository: CronjobRepository;
+    public cronJobRepository: CronJobRepository;
     public faqRepository: FaqRepository;
     public permanentRoleRepository: PermanentRoleRepository;
     public commandPermissionRepository: CommandPermissionRepository;
     public logChannelRepository: LogChannelRepository;
 
-    public cronjobs: Object;
-    private ts3connection : TS3Connection;
-    private rosters: {[key: string] : [discord.Guild, discord.Message, Roster]};
+    public cronJobService: CronJobService;
+    public rosterService: RosterService;
+
+    private ts3connection: TS3Connection;
     public readonly gw2apiemitter: APIEmitter;
     public readonly ts3listener: TS3Listener;
     public readonly wvwWatcher: WvWWatcher;
     public readonly commanders: CommanderStorage;
-    private achievements: {[key:string] : achievements.Achievement<any>};
+    private achievements: { [key: string]: achievements.Achievement<any> };
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
+
     //public readonly options;
 
     constructor(options, clientoptions, db: db.Database) {
@@ -58,14 +63,15 @@ export class BotgartClient extends akairo.AkairoClient {
         this.tsLeadRepository = new TsLeadRepository(db)
         this.matchupRepository = new MatchupRepository(db)
         this.rosterRepository = new RosterRepository(db)
-        this.cronjobRepository = new CronjobRepository(db)
+        this.cronJobRepository = new CronJobRepository(db)
         this.faqRepository = new FaqRepository(db)
         this.permanentRoleRepository = new PermanentRoleRepository(db)
         this.commandPermissionRepository = new CommandPermissionRepository(db)
         this.logChannelRepository = new LogChannelRepository(db)
 
-        this.cronjobs = {};
-        this.rosters = {};
+        this.cronJobService = new CronJobService(this.cronJobRepository, this)
+        this.rosterService = new RosterService(this.rosterRepository, this)
+
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
@@ -73,18 +79,19 @@ export class BotgartClient extends akairo.AkairoClient {
         this.wvwWatcher = new WvWWatcher(this.matchupRepository);
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
+        const prefix = getConfig().get().prefix;
         this.commandHandler = new akairo.CommandHandler(this, {
             directory: './built/commands/',
-            prefix: getConfig().get().prefix,
+            prefix: prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
         });
         this.commandHandler.loadAll();
 
         this.commandHandler.on("cooldown", (message: discord.Message, command: akairo.Command, remaining: number) => {
-            if(command instanceof BotgartCommand) {
+            if (command instanceof BotgartCommand) {
                 const mes: string = command.cooldownMessage(message, remaining);
-                if(mes) {
+                if (mes) {
                     message.reply(mes);
                 }
             }
@@ -102,7 +109,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.on("ready", () =>
             this.commandHandler.modules.forEach(m => {
-                if(m instanceof BotgartCommand) {
+                if (m instanceof BotgartCommand) {
                     (<BotgartCommand>m).init(this);
                 }
             }));
@@ -111,23 +118,23 @@ export class BotgartClient extends akairo.AkairoClient {
         // as it contains the info on the stats as well as on the objectives!
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
-                if(stats === undefined) return;
+                if (stats === undefined) return;
                 Util.log("debug", "Starting to write WvWStats.");
                 const match = await this.wvwWatcher.getCurrentMatch();
-                if(match === undefined) {
+                if (match === undefined) {
                     Util.log("error", "Could not produce a proper matchup. API might be down.");
                 } else {
                     const snapshotId = this.matchupRepository.addStatsSnapshot();
                     for await(const mapData of stats.maps) {
-                        for(const faction in mapData.scores) { // keys of the dict, aka red, blue, green
+                        for (const faction in mapData.scores) { // keys of the dict, aka red, blue, green
                             this.matchupRepository.addMatchupStats(
-                                        match.matchup_id,
-                                        snapshotId,
-                                        mapData.type, // map
-                                        Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
-                                        mapData.deaths[faction],
-                                        mapData.kills[faction],
-                                        mapData.scores[faction])
+                                match.matchup_id,
+                                snapshotId,
+                                mapData.type, // map
+                                Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
+                                mapData.deaths[faction],
+                                mapData.kills[faction],
+                                mapData.scores[faction])
                         }
 
                     }
@@ -138,10 +145,10 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
-                if(match === undefined) return;
+                if (match === undefined) return;
                 Util.log("debug", "Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
-                if(matchInfo === undefined) {
+                if (matchInfo === undefined) {
                     Util.log("error", "Current match should be available at this point, but getCurrentMatch created an empty result. Will not add objectives either.")
                 } else {
                     const snapshotId = this.matchupRepository.addObjectivesSnapshot();
@@ -155,7 +162,7 @@ export class BotgartClient extends akairo.AkairoClient {
             });
         });
 
-        const achievementsList = Util.loadModuleClasses(__dirname+"/commands/achievements/Achievements.js", [this], ["Achievement"])
+        const achievementsList = Util.loadModuleClasses(__dirname + "/commands/achievements/Achievements.js", [this], ["Achievement"])
             .filter(value => Util.isa(value, achievements.Achievement))
             .map(value => <achievements.Achievement<any>>value);
         Util.log("info", `Registering achievements: [${achievementsList.map(value => value.name).join(", ")}].`);
@@ -178,53 +185,41 @@ export class BotgartClient extends akairo.AkairoClient {
         this.achievements[achievement.name.toLowerCase()] = achievement;
     }
 
-    private toRosterKey(guild: discord.Guild, weekNumber: number, year: number): string {
-        return `${guild.id}|${year}|${weekNumber}`;
-    }
 
-    public getTS3Connection() : TS3Connection {
+    public getTS3Connection(): TS3Connection {
         return this.ts3connection;
     }
 
-    public getRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | undefined {
-        const k = this.toRosterKey(guild, weekNumber, year);
-        return k in this.rosters ? this.rosters[k] : undefined;
-    }
-
-    public setRoster(weekNumber: number, year: number, guild: discord.Guild, message: discord.Message, roster: Roster): void {
-        this.rosters[this.toRosterKey(guild, weekNumber, year)] = [guild, message, roster];
-    }
-
     /**
-    * Logs a string to a Discord-text-channel. For each type, one or more channels
-    * can be set. Types are arbitrary strings, making this feature far more
-    * flexible than just log levels. In fact, it enables us to have each command
-    * define an own "type" and have administrators define channels to which messages
-    * of that type are being written to.
-    * E.g. a ClockCommand could call
-    *   discordLog(_, "clock", now())
-    * every minute and define a connection between the "clock"-type and the channel #time in a guild.
-    * That would cause now() to be written to #time every minute.
-    * @param guild - guild for which the connection should be defined
-    * @param type - arbitrary type
-    * @param message - the message to log
-    * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback.
-    */
+     * Logs a string to a Discord-text-channel. For each type, one or more channels
+     * can be set. Types are arbitrary strings, making this feature far more
+     * flexible than just log levels. In fact, it enables us to have each command
+     * define an own "type" and have administrators define channels to which messages
+     * of that type are being written to.
+     * E.g. a ClockCommand could call
+     *   discordLog(_, "clock", now())
+     * every minute and define a connection between the "clock"-type and the channel #time in a guild.
+     * That would cause now() to be written to #time every minute.
+     * @param guild - guild for which the connection should be defined
+     * @param type - arbitrary type
+     * @param message - the message to log
+     * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback.
+     */
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
-        if(channels.length === 0 && disposable === false) {
+        if (channels.length === 0 && disposable === false) {
             log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
-            const channel: discord.GuildChannel | undefined = guild.channels.cache.find(c => c.id === cid);
-            if(!channel) {
-                log("error", `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`);
-            } else if(!(channel instanceof discord.TextChannel)) {
-                log("error", `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
-            } else {
-                (<discord.TextChannel>channel).send(message);
-            }
-        });
+                const channel: discord.GuildChannel | undefined = guild.channels.cache.find(c => c.id === cid);
+                if (!channel) {
+                    log("error", `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`);
+                } else if (!(channel instanceof discord.TextChannel)) {
+                    log("error", `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
+                } else {
+                    (<discord.TextChannel>channel).send(message);
+                }
+            });
         }
     }
 }

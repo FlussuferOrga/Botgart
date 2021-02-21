@@ -1,8 +1,9 @@
 import convict from "convict";
 import fs from 'fs';
+import { Memoizer } from "memoizer-ts";
+import moment from "moment-timezone";
 import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
-import {Memoizer} from "memoizer-ts";
 
 const configSchema = {
     prefix: {
@@ -14,12 +15,12 @@ const configSchema = {
         },
         default: ',',
         arg: 'prefix',
-        env: 'prefix'
+        env: 'command_prefix'
     },
     home_id: {
         doc: 'HomeWorld ID',
         format: val => {
-            if (!isValidWorldId(val)){
+            if (!isValidWorldId(val)) {
                 throw new Error(`World id '${val}' is not a valid world id`);
             }
         },
@@ -71,6 +72,16 @@ const configSchema = {
         arg: 'token',
         env: 'TOKEN'
     },
+    timeZone: {
+        arg: 'timeZone',
+        env: 'TIME_ZONE',
+        format: val => {
+            if (moment.tz.zone(val) == undefined) {
+                throw new Error(`'${val}' is not a valid time zone`);
+            }
+        },
+        default: moment.tz.guess()
+    },
     ts_unregister_protection: {
         format: values => {
             if (!Array.isArray(values)) {
@@ -90,7 +101,7 @@ const configSchema = {
         format: 'nat',
         default: 300000,
         arg: 'ts-commander-check-interval',
-        env: 'TS_COMMANDER_CHECK_INTERVAL'  
+        env: 'TS_COMMANDER_CHECK_INTERVAL'
     },
     ts_listener: {
         ip: {
@@ -210,6 +221,7 @@ const configSchema = {
 
 
 const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
+
 export function getConfig() {
     return getConfigInternal();
 }

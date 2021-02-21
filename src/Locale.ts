@@ -1,4 +1,4 @@
-//import { WvWMap } from "./commands/resetlead/ResetLead";
+//import { WvwMap } from "./commands/resetlead/ResetLead";
 
 export let EN : Object = {
     "HELPTEXT_PREFIX": "Please use the command with the following parameters:\n"

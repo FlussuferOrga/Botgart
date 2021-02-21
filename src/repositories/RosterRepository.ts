@@ -1,12 +1,16 @@
 import * as discord from "discord.js";
-import * as ResetRoster from "../commands/resetlead/ResetRoster";
+import moment from "moment-timezone";
+import { ResetLeader } from "../commands/resetlead/ResetLeader";
+import * as ResetUtil from "../commands/resetlead/ResetUtil";
+import { Roster } from "../commands/resetlead/Roster";
+import { WvwMap } from "../commands/resetlead/WvwMap";
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export class RosterRepository extends AbstractDbRepository {
-    public getActiveRosters(guild: discord.Guild): Promise<[ResetRoster.Roster, discord.TextChannel, discord.Message]>[] {
+    public getActiveRosters(guild: discord.Guild): Promise<[Roster, discord.TextChannel, discord.Message]>[] {
         return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
-            .all(Util.getNumberOfWeek(), new Date().getFullYear(), guild.id)
+            .all( ResetUtil.currentWeek(), moment().utc().year(), guild.id)
             .map(row => this.getRosterPost(guild, row.wn, row.year)))
             .filter((roster) => roster !== undefined);
     }
@@ -19,7 +23,7 @@ export class RosterRepository extends AbstractDbRepository {
      * roster: the roster to upsert. Uniqueness will be determined by week number and year of the roster.
      * message: the message that represents the roster post.
      */
-    public upsertRosterPost(guild: discord.Guild, roster: ResetRoster.Roster, message: discord.Message): void {
+    public upsertRosterPost(guild: discord.Guild, roster: Roster, message: discord.Message): void {
         return this.execute(db => {
             db.transaction((_) => {
                 const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
@@ -40,9 +44,9 @@ export class RosterRepository extends AbstractDbRepository {
     }
 
     async getRosterPost(guild: discord.Guild, weekNumber: number, year: number)
-        : Promise<undefined | [ResetRoster.Roster, discord.TextChannel, discord.Message]> {
+        : Promise<undefined | [Roster, discord.TextChannel, discord.Message]> {
         let postExists = false;
-        const roster = new ResetRoster.Roster(weekNumber, year);
+        const roster = new Roster(weekNumber, year);
         const entries = this.execute(db => db.prepare(`
             SELECT 
                 rr.reset_roster_id,
@@ -63,7 +67,7 @@ export class RosterRepository extends AbstractDbRepository {
                 AND rr.week_number = ?
                 AND rr.year = ?`)
             .all(guild.id, weekNumber, year));
-        entries.forEach(r => roster.addLead(ResetRoster.WvWMap.getMapByName(r.map), new ResetRoster.ResetLeader(r.player, r.visible == 1))); // '1' and '0' used in sqlite -> typefree compare
+        entries.forEach(r => roster.addLead(WvwMap.getMapByName(r.map), new ResetLeader(r.player, r.visible == 1))); // '1' and '0' used in sqlite -> typefree compare
 
         let channel: discord.TextChannel | undefined = undefined;
         let message: discord.Message | undefined = undefined;
@@ -85,7 +89,7 @@ export class RosterRepository extends AbstractDbRepository {
             }
         }
 
-        return entries && postExists ? [<ResetRoster.Roster>roster, <discord.TextChannel>channel, <discord.Message>message] : undefined;
+        return entries && postExists ? [<Roster>roster, <discord.TextChannel>channel, <discord.Message>message] : undefined;
     }
 
 }
