@@ -1,12 +1,10 @@
 import CircularBuffer from "circular-buffer";
 import * as discord from "discord.js";
-import { MessageEmbed } from "discord.js";
 import * as events from "events";
 import * as http from "http";
 import * as moment from "moment";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import * as L from "./Locale";
 import { Registration } from "./repositories/RegistrationRepository";
 import { log } from "./Util";
 
@@ -320,8 +318,6 @@ export interface TagDownEvent {
  */
 export class TS3Listener extends events.EventEmitter {
     private ts3connection: TS3Connection;
-    private broadcastChannel: string;
-    private pingRole: string;
     private commanderRole: string;
     private channels: { [key: string]: moment.Moment };
     private userDelay: number;
@@ -337,8 +333,6 @@ export class TS3Listener extends events.EventEmitter {
 
         this.botgartClient = bgclient;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
-        this.broadcastChannel = config.ts_listener.broadcast_channel;
-        this.pingRole = config.ts_listener.ping_role;
         this.commanderRole = config.ts_listener.commander_role;
         this.userDelay = config.ts_listener.user_delay;
         this.channelDelay = config.ts_listener.channel_delay;
@@ -444,8 +438,6 @@ export class TS3Listener extends events.EventEmitter {
         }
     }
 
-    private readonly ZERO_WIDTH_SPACE = "\u200B";
-
     /**
      * Makes a user tag up in a Discord-guild. That means:
      * - the raid is being announced in the dedicated channel (if that channel exists)
@@ -453,8 +445,7 @@ export class TS3Listener extends events.EventEmitter {
      * - a mapping of the TS-UID to the Discord-username is created
      */
     private async tagUp(g: discord.Guild, commander: Commander) {
-        let displayname = commander.getTS3DisplayName();
-        log("info", `Tagging up ${displayname} in ${g.name}.`);
+        log("info", `Tagging up ${(commander.getTS3DisplayName())} in ${g.name}.`);
         const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
 
         let duser: discord.GuildMember | undefined;
@@ -467,10 +458,9 @@ export class TS3Listener extends events.EventEmitter {
             commander.setDiscordMember(duser);
 
             await this.tagUpAssignRole(g, commander);
-            displayname = `${displayname}`;
         }
 
-        await this.sendTagUpBroadcast(g, commander, displayname, duser, registration)
+        await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration)
             .then(message => {
                 commander.setBroadcastMessage(message)
             })
@@ -479,39 +469,6 @@ export class TS3Listener extends events.EventEmitter {
             "commander": commander,
             "dbRegistration": registration
         });
-    }
-
-    private async tagUpAssignRole(g: discord.Guild, commander: Commander) {
-        const crole = g.roles.cache.find(r => r.name === this.commanderRole);
-        if (crole && commander.getDiscordMember()) {
-            await commander.getDiscordMember()?.roles.add(crole);
-        }
-    }
-
-    private async sendTagUpBroadcast(g: discord.Guild, commander: Commander, displayname: string, duser: discord.GuildMember | undefined, registration: undefined | Registration) {
-        // broadcast the message
-        const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c instanceof discord.TextChannel);
-        if (!dchan) {
-            log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
-        } else {
-            const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
-            const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
-
-            const embed = new MessageEmbed();
-            embed.addField("TS 🔊", channelPath + " ❯ " + displayname)
-            embed.setColor("GREEN")
-
-            const mes: string = L.get("COMMANDER_TAG_UP", [duser?.displayName || displayname, registration?.registration_role || "?", pingRole ? pingRole.toString() : ""], "\n");
-            return dchan.send(this.ZERO_WIDTH_SPACE + "\n" + mes, embed)
-                .then(value => {
-                    if (duser?.user !== undefined) {
-                        // replace message with version that links the user. Editing does not trigger a notification
-                        const mesPing: string = L.get("COMMANDER_TAG_UP", [duser?.user?.toString(), registration?.registration_role || "?", pingRole ? pingRole.toString() : ""], "\n");
-                        return value.edit(this.ZERO_WIDTH_SPACE + "\n" + mesPing, embed)
-                    }
-                    return value
-                })
-        }
     }
 
     /**
@@ -523,36 +480,14 @@ export class TS3Listener extends events.EventEmitter {
         let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
 
-        this.tagDownBroadcast(commander);
+        await this.botgartClient.tagBroadcastService.tagDownBroadcast(commander);
 
         if (registration !== undefined) {
+            dmember = await g.members.fetch(registration.user);
 
-            // the commander is member of the current discord -> remove role
-            // since removing roles has gone wrong a lot lately,
-            // we're updating the cache manually
-            // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
-            dmember = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
-            const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
-            if (crole && dmember) {
+            await this.tagDownRemoveRole(g, dmember);
 
-                log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
-                await dmember.roles.remove(crole).catch(e => {
-                    log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
-                });
-
-                log("debug", "Done managing roles for former commander.");
-            }
-            // do not write leads of members which hide their roles
-            const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
-            if (writeToDB) {
-                log("debug", "Writing raid information to database.");
-                if (commander.getRaidStart() === undefined) {
-                    log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
-                } else {
-                    this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
-                }
-                log("debug", "Done writing to database.");
-            }
+            this.tagDownWriteToDb(dmember, commander, registration);
             log("debug", "Done processing commander. Will now send out tagdown event.");
         }
 
@@ -564,15 +499,41 @@ export class TS3Listener extends events.EventEmitter {
         });
     }
 
-
-    private async tagDownBroadcast(commander: Commander) {
-        const message = await commander.getBroadcastMessage()?.fetch();
-        if (message !== undefined) {
-            const embed = message.embeds[0];
-            if (embed) {
-                embed.setColor("RED")
-                await message.edit(embed)
+    private tagDownWriteToDb(dmember: discord.GuildMember, commander: Commander, registration: Registration) {
+        // do not write leads of members which hide their roles
+        const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
+        if (writeToDB) {
+            log("debug", "Writing raid information to database.");
+            if (commander.getRaidStart() === undefined) {
+                log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
+            } else {
+                this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
             }
+            log("debug", "Done writing to database.");
+        }
+    }
+
+    private async tagUpAssignRole(g: discord.Guild, commander: Commander) {
+        const crole = g.roles.cache.find(r => r.name === this.commanderRole);
+        if (crole && commander.getDiscordMember()) {
+            await commander.getDiscordMember()?.roles.add(crole);
+        }
+    }
+
+    private async tagDownRemoveRole(g: discord.Guild, dmember: discord.GuildMember | undefined) {
+        // the commander is member of the current discord -> remove role
+        // since removing roles has gone wrong a lot lately,
+        // we're updating the cache manually
+        // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
+        const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
+        if (crole && dmember) {
+
+            log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
+            await dmember.roles.remove(crole).catch(e => {
+                log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
+            });
+
+            log("debug", "Done managing roles for former commander.");
         }
     }
 }

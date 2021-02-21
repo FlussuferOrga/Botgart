@@ -18,6 +18,7 @@ import { RegistrationRepository } from "./repositories/RegistrationRepository";
 import { RosterRepository } from "./repositories/RosterRepository";
 import { TsLeadRepository } from "./repositories/TsLeadRepository";
 import { CronJobService } from "./services/CronJobService";
+import { TagBroadcastService } from "./services/TagBroadcastService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
 import { log } from "./Util";
@@ -38,6 +39,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
     public cronJobService: CronJobService;
     public rosterService: RosterService;
+    public tagBroadcastService: TagBroadcastService;
 
     private ts3connection: TS3Connection;
     public readonly gw2apiemitter: APIEmitter;
@@ -69,6 +71,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.cronJobService = new CronJobService(this.cronJobRepository, this)
         this.rosterService = new RosterService(this.rosterRepository, this)
+        this.tagBroadcastService = new TagBroadcastService(this)
 
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
@@ -223,20 +226,6 @@ export class BotgartClient extends akairo.AkairoClient {
 
     public async prepareShutdown() {
         log("info", `Preparing Shutdown`);
-        await this.tagDownBroadcasts();
-    }
-
-    private async tagDownBroadcasts() {
-        for (const commander of this.commanders.getActiveCommanders()) {
-            await commander.getBroadcastMessage()?.fetch()
-                .then(async value => {
-                    log("debug", `Setting Broadcast message status to unknown state due to shutdown: ${value.id}`);
-                    const embed = value.embeds[0];
-                    if (embed) {
-                        embed.setColor("RED")
-                        await value.edit(embed)
-                    }
-                })
-        }
+        await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
     }
 }
