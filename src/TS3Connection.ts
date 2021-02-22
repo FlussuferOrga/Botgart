@@ -35,6 +35,7 @@ export interface TS3Commander {
     readonly ts_display_name: string;
     readonly ts_channel_name: string;
     readonly ts_channel_path: string[];
+    readonly ts_join_url: string;
 }
 
 interface HTTPRequestOptions {
@@ -157,6 +158,7 @@ export class Commander {
     private ts3clientUID: string;
     private ts3channel: string;
     private ts3channelPath: string[];
+    private ts3joinUrl: string;
     private raidStart?: moment.Moment;
     private lastUpdate: moment.Moment;
     private state: CommanderState;
@@ -193,6 +195,14 @@ export class Commander {
 
     public setTs3channelPath(value: string[]) {
         this.ts3channelPath = value;
+    }
+
+    public getTs3joinUrl(): string {
+        return this.ts3joinUrl;
+    }
+
+    public setTs3joinUrl(value: string) {
+        this.ts3joinUrl = value;
     }
 
     public getRaidStart(): moment.Moment | undefined {
@@ -245,12 +255,13 @@ export class Commander {
         return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (<moment.Moment>this.getRaidStart()).valueOf()) / 1000 : 0;
     }
 
-    public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string, ts3channelPath: string[]) {
+    public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string, ts3channelPath: string[], ts3joinUrl: string) {
         this.accountName = accountName;
         this.ts3DisplayName = ts3DisplayName;
         this.ts3clientUID = ts3clientUID;
         this.ts3channel = ts3channel;
         this.ts3channelPath = ts3channelPath;
+        this.ts3joinUrl = ts3joinUrl;
         this.lastUpdate = moment.utc();
         this.raidStart = undefined;
         this.state = CommanderState.TAG_UP;
@@ -362,11 +373,12 @@ export class TS3Listener extends events.EventEmitter {
                     const username = c.ts_display_name; // for broadcast
                     const channel = c.ts_channel_name; // for broadcast and this.channels
                     const channel_path = c.ts_channel_path; // for broadcast and this.channels
+                    const ts_join_url = c.ts_join_url; // for broadcast and this.channels
 
                     let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
                     if (commander === undefined) {
                         // user was newly discovered as tagged up -> save user without cooldown
-                        commander = new Commander(account, username, uid, channel, channel_path);
+                        commander = new Commander(account, username, uid, channel, channel_path, ts_join_url);
                         commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
                         this.botgartClient.commanders.addCommander(commander);
                         log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
