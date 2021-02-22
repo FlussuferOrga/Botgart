@@ -78,11 +78,11 @@ export class TagBroadcastService {
 
     async tagDownAllBroadcastsForShutdown() {
         for (const commander of this.client.commanders.getAllCommanders()) {
-            await commander.getBroadcastMessage()?.fetch() // better refetch...
-                .then(async message => {
-                    log("info", `Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
-                    await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_UNKNOWN)
-                })
+            const message = await commander.getBroadcastMessage()?.fetch(); // better refetch...
+            if (message !== undefined) {
+                log("info", `Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
+                await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_UNKNOWN)
+            }
         }
     }
 

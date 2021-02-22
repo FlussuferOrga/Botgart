@@ -472,10 +472,9 @@ export class TS3Listener extends events.EventEmitter {
             await this.tagUpAssignRole(g, commander);
         }
 
-        await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration)
-            .then(message => {
-                commander.setBroadcastMessage(message)
-            })
+        const message = await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration);
+        commander.setBroadcastMessage(message)
+
         this.emit("tagup", {
             "guild": g,
             "commander": commander,
