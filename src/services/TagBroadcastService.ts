@@ -58,8 +58,11 @@ export class TagBroadcastService {
     private createEmbed(channelPath: string, commander: Commander, includeLink = true, color = this.COLOR_ACTIVE) {
         const embed = new MessageEmbed();
         let text = channelPath + " ❯ " + commander.getTS3DisplayName();
-        if (commander.getTs3joinUrl())
-            text += `\n\n [🔗 Join on TeamSpeak](${commander.getTs3joinUrl()} 'If you have TeamSpeak 3 installed, you can join by clicking here')`
+        if (includeLink && commander.getTs3joinUrl()) {
+            let linkText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT", [], " | ", false);
+            let linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], " | ", false);
+            text += `\n\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`
+        }
         embed.addField("🔊 TeamSpeak 3", text, false)
         embed.setColor(color)
         return embed;
