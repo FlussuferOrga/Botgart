@@ -143,7 +143,9 @@ EN = {
 
         "COOLDOWN_GO_FISH": "You are still totally relaxed from your last fishing trip. Wait another {0} second(s). :relieved:",
 
-        "COMMANDER_TAG_UP": "{0} tagged up in Teamspeak-channel '{1}'! {2}",
+        "COMMANDER_TAG_UP": "Commander **{0}** ({1}) tagged up in TeamSpeak! {2}",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Join on TeamSpeak",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "If you have TeamSpeak 3 installed, you can join by clicking this link.",
 
         "RED_BORDERLANDS": "Red Borderlands",
         "BLUE_BORDERLANDS": "Blue Borderlands",
@@ -393,7 +395,7 @@ DE = {
         "DESC_REAUTHENTICATE": "Authentifiziert alle vorhandenen GW2-API-Keys erneut.",
         "DESC_SAY": "Spricht den übergebenen Text im übergebenen Channel.",
         "DESC_HELP": "Dieser Befehl. Listet alle verfügbaren Befehle mit einer kurzen Beschreibung auf.",
-        "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem Teamspeak3-Server (_NICHT AKTIV_).",
+        "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem TeamSpeak3-Server (_NICHT AKTIV_).",
         "DESC_MAKE_FAQ": "Fügt den FAQ einen Eintrag hinzu.",
         "DESC_DELETE_FAQ": "Entfernt einen Eintrag von den FAQ.",
         "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
@@ -421,21 +423,23 @@ DE = {
         "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
         "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fische.",
         "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
-        "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem Teamspeak-Server.",
-        "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom Teamspeak-Server",
+        "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
+        "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
         "MK_GUILD_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Gilden-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
         "MK_GUILD_CANCELED": "Gildenerstellung wurde abgebrochen.",
-        "MK_GUILD_COMPLETE": "Anfrage zum Anlegen einer Gilde wurde an den Teamspeak-Server gesendet",
+        "MK_GUILD_COMPLETE": "Anfrage zum Anlegen einer Gilde wurde an den TeamSpeak-Server gesendet",
         "MK_GUILD_UNKNOWN_GUILD": "Es gibt keine Gilde namens '{0}' im Spiel. Stell bitte sicher, dass du dich nicht verschrieben hast und achte auf korrekte Groß-/ Kleinschreibung.",
 
-        "RM_GUILD_COMPLETE": "Anfrage zum Löschen einer Gilde wurde an den Teamspeak-Server gesendet.",
+        "RM_GUILD_COMPLETE": "Anfrage zum Löschen einer Gilde wurde an den TeamSpeak-Server gesendet.",
 
         "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
 
-        "COMMANDER_TAG_UP": "{0} hat im Teamspeak-Channel '{1}' einen Raid gestartet! {2}",
+        "COMMANDER_TAG_UP": "Kommandeur **{0}** ({1}) hat im TeamSpeak einen Raid gestartet! {2}",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Auf dem TeamSpeak beitreten",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn du TeamSpeak 3 installiert hast, kannst du über diesen Link dem Kommandeur beitreten.",
 
         "RED_BORDERLANDS": "Rote Grenzlande",
         "BLUE_BORDERLANDS": "Blaue Grenzlande",

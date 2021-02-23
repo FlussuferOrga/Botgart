@@ -1,9 +1,7 @@
 import * as akairo from "discord-akairo"
 import * as discord from "discord.js"
-import { Job } from "node-schedule";
 import { BotgartCommand } from "./BotgartCommand"
 import * as achievements from "./commands/achievements/Achievements";
-import { Roster } from "./commands/resetlead/Roster";
 import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
 import * as db from "./database/DB"
@@ -20,6 +18,7 @@ import { RegistrationRepository } from "./repositories/RegistrationRepository";
 import { RosterRepository } from "./repositories/RosterRepository";
 import { TsLeadRepository } from "./repositories/TsLeadRepository";
 import { CronJobService } from "./services/CronJobService";
+import { TagBroadcastService } from "./services/TagBroadcastService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
 import { log } from "./Util";
@@ -40,6 +39,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
     public cronJobService: CronJobService;
     public rosterService: RosterService;
+    public tagBroadcastService: TagBroadcastService;
 
     private ts3connection: TS3Connection;
     public readonly gw2apiemitter: APIEmitter;
@@ -71,6 +71,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.cronJobService = new CronJobService(this.cronJobRepository, this)
         this.rosterService = new RosterService(this.rosterRepository, this)
+        this.tagBroadcastService = new TagBroadcastService(this)
 
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
@@ -221,5 +222,10 @@ export class BotgartClient extends akairo.AkairoClient {
                 }
             });
         }
+    }
+
+    public async prepareShutdown() {
+        log("info", `Preparing Shutdown`);
+        await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
     }
 }
