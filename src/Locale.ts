@@ -145,7 +145,7 @@ EN = {
 
         "COMMANDER_TAG_UP": "Commander **{0}** ({1}) tagged up in TeamSpeak! {2}",
         "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Join on TeamSpeak",
-        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "If you have TeamSpeak 3 installed, you can join by clicking here.",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "If you have TeamSpeak 3 installed, you can join by clicking this link.",
 
         "RED_BORDERLANDS": "Red Borderlands",
         "BLUE_BORDERLANDS": "Blue Borderlands",

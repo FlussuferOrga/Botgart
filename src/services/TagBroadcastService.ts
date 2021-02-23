@@ -60,7 +60,7 @@ export class TagBroadcastService {
         let text = channelPath + " ❯ " + commander.getTS3DisplayName();
         if (includeLink && commander.getTs3joinUrl()) {
             let linkText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT", [], " | ", false);
-            let linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], " | ", false);
+            let linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], "\n\n", false);
             text += `\n\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`
         }
         embed.addField("🔊 TeamSpeak 3", text, false)
@@ -102,7 +102,8 @@ export class TagBroadcastService {
                 const textLines = field.value.split('\n');
                 if (textLines.length > 1) {
                     toUpdate = true
-                    const newField = {name: field.name, value: textLines[0], inline: field.inline};
+                    const newName = field.name.replace("🔊", "🔈"); // nobody will probably ever notice that :D
+                    const newField = {name: newName, value: textLines[0], inline: field.inline};
                     embed.spliceFields(0, 1, newField);
                 }
             }
