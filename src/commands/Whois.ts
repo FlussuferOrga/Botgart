@@ -35,7 +35,6 @@ export class Whois extends BotgartCommand {
         } else {
             await this.reply(message, responsible, L.get("WHOIS_RESULTS"));
 
-
             let chunk = "\u200B";
             // output result
             for (let queryResult of res) {
