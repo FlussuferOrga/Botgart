@@ -1,10 +1,10 @@
-import { Semaphore } from "await-semaphore";
+import {Semaphore} from "await-semaphore";
 import Timeout from "await-timeout";
 import discord from "discord.js";
-import { getConfig } from "../config/Config";
+import {getConfig} from "../config/Config";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as Util from "../Util";
-import { AbstractDbRepository } from "./AbstractDbRepository";
+import {AbstractDbRepository} from "./AbstractDbRepository";
 
 const REAUTH_DELAY: number = 8000;
 const REAUTH_MAX_PARALLEL_REQUESTS: number = 3;
@@ -17,7 +17,7 @@ export class RegistrationRepository extends AbstractDbRepository {
      * accountName: GW2 account name.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public getUserByAccountName(accountName: string): Registration | undefined{
+    public getUserByAccountName(accountName: string): Registration | undefined {
         return this.execute(db => db.prepare(`
             SELECT id,
                    user,
@@ -131,17 +131,17 @@ export class RegistrationRepository extends AbstractDbRepository {
      * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db
      *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
      */
-    public async revalidateKeys(): Promise<undefined | (undefined | [Registration, string|boolean])[]> {
+    public async revalidateKeys(): Promise<undefined | (undefined | [Registration, string | boolean])[]> {
         let semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
 
         const worldAssignments = getConfig().get().world_assignments;
-        return this.execute((db): Promise<(undefined | [Registration, string|boolean])[]> =>
-            Promise.all<undefined | [Registration, string|boolean]>(
+        return this.execute((db): Promise<(undefined | [Registration, string | boolean])[]> =>
+            Promise.all<undefined | [Registration, string | boolean]>(
                 db.prepare(`SELECT api_key, guild, user, registration_role, account_name
                             FROM registrations
                             ORDER BY guild`)
                     .all()
-                    .map(async (r) : Promise<undefined | [Registration, string|boolean]> => {
+                    .map(async (r): Promise<undefined | [Registration, string | boolean]> => {
                         let release = await semaphore.acquire();
                         Util.log("info", `Sending revalidation request for API key ${r.api_key}.`);
                         let res = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments).then(
@@ -150,7 +150,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                             // So we can nevert end up with a number in success! But since we can not have distinct typing for both cases, 
                             // the type is always number | string | boolean. The ternary casts all numbers (which never occur) to string 
                             // so that the type is consistent from here on.
-                            (admittedRole): [Registration, string|boolean] => [r, typeof admittedRole === "boolean" ? admittedRole : "" + admittedRole],
+                            (admittedRole): [Registration, string | boolean] => [r, typeof admittedRole === "boolean" ? admittedRole : "" + admittedRole],
                             (error): undefined | [Registration, false] => {
                                 if (error === Gw2ApiUtils.validateWorld.ERRORS.invalid_key) {
                                     // while this was an actual error when initially registering (=> tell user their key is invalid),
