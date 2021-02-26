@@ -31,9 +31,14 @@ export class Whois extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
         const name = args.name.toLowerCase(); // JS string#search allows RegExps, so we need to escape the popular "[]" for guild tags and so on
         const namedEscaped = U.escapeRegExp(name);
-        let members = (<discord.Guild>message.guild).members.cache
-            .filter(m => m.displayName.toLowerCase().search(namedEscaped) > -1 || m.user.tag.toLowerCase().search(namedEscaped) > -1);
-        const res = (<BotgartClient>this.client).registrationRepository.whois(name, members.map(m => m.user));
+
+        let userIds = await guild.members.fetch() // fetch all, this circumvents the cache :S
+            .then(value => value
+                .filter(m => m.displayName.toLowerCase().search(namedEscaped) > -1 || m.user.tag.toLowerCase().search(namedEscaped) > -1)
+                .map(value1 => value1.user.id)
+            )
+
+        const res = (<BotgartClient>this.client).registrationRepository.whois(name, userIds);
         if (res.length === 0) {
             await this.reply(message, responsible, L.get("WHOIS_EMPTY_RESULT"));
         } else {

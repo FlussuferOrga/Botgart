@@ -77,12 +77,12 @@ export class RegistrationRepository extends AbstractDbRepository {
         `).get(discordUser.id));
     }
 
-    public whois(searchString: string, discordCandidates: discord.User[]): { "discord_user": string, "account_name": string }[] {
+    public whois(searchString: string, discordCandidateIds: string[]): { discord_user: string; account_name: string }[] {
         return this.execute(db => {
             db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
             const stmt = db.prepare(`INSERT INTO whois(discord_id)
                                      VALUES (?)`);
-            discordCandidates.forEach(dc => stmt.run(dc.id));
+            discordCandidateIds.forEach(dc => stmt.run(dc));
             return db.prepare(`
                 SELECT user         AS discord_user,
                        account_name AS account_name
