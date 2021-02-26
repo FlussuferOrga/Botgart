@@ -1,4 +1,5 @@
 import * as CommandLineArgs from "command-line-args";
+import { Intents } from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import { Database } from "./database/DB";
@@ -49,7 +50,13 @@ if (args.patchall || args.patch) {
 
     log("info", "Starting Botgart...");
 
-    const client = new BotgartClient({ownerID: config.get("owner_ids")}, {}, database);
+    const intents = new Intents(Intents.NON_PRIVILEGED); // default intents
+    intents.add("GUILD_MEMBERS"); // privileged intents, require checkbox in discord bot settings
+
+    const client = new BotgartClient(
+        {ownerID: config.get("owner_ids")},
+        {ws: {intents: intents}},
+        database);
     const webServer = new WebServer();
 
     //shutdown listener
