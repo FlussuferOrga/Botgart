@@ -32,7 +32,7 @@ export class Whois extends BotgartCommand {
 
         let res: { account_name: string; member: any; discord_id: string }[];
 
-        if (args?.name?.constructor?.name == "GuildMember") {
+        if (args?.name instanceof GuildMember) {
             res = await this.queryUser(args.name);
         } else {
             const name = args.name.toLowerCase(); // JS string#search allows RegExps, so we need to escape the popular "[]" for guild tags and so on
