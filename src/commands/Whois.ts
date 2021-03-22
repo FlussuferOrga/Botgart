@@ -1,4 +1,6 @@
+import { Argument } from "discord-akairo";
 import * as discord from "discord.js";
+import { GuildMember } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
 import * as U from "../Util";
@@ -15,7 +17,7 @@ export class Whois extends BotgartCommand {
                 args: [
                     {
                         id: "name",
-                        type: "string"
+                        type: Argument.union("member", "string")
                     }
                 ],
             }
@@ -27,9 +29,18 @@ export class Whois extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
-        const name = args.name.toLowerCase(); // JS string#search allows RegExps, so we need to escape the popular "[]" for guild tags and so on
-        const namedEscaped = U.escapeRegExp(name);
-        const res = await this.query(guild, namedEscaped, name);
+
+        let res: { account_name: string; member: any; discord_id: string }[];
+
+        if (args?.name?.constructor?.name == "GuildMember") {
+            res = await this.queryUser(args.name);
+        } else {
+            const name = args.name.toLowerCase(); // JS string#search allows RegExps, so we need to escape the popular "[]" for guild tags and so on
+            const namedEscaped = U.escapeRegExp(name);
+            res = await this.query(guild, namedEscaped, name);
+        }
+
+
         if (res.length === 0) {
             await this.reply(message, responsible, L.get("WHOIS_EMPTY_RESULT"));
         } else {
@@ -66,7 +77,8 @@ export class Whois extends BotgartCommand {
         const members = await guild.members.fetch()
         const matchingDiscordMembers = members
             .filter(m => {
-                return m.displayName.toLowerCase().search(namedEscaped) > -1
+                return (m.nickname ? m.nickname?.toLowerCase() : "").search(namedEscaped) > 1
+                    || m.user.username.toLowerCase().search(namedEscaped) > -1
                     || m.user.tag.toLowerCase().search(namedEscaped) > -1
                     || m.id.search(namedEscaped) > -1;
             })
@@ -79,6 +91,10 @@ export class Whois extends BotgartCommand {
             ...value, member: await guild.members.cache.get(value.discord_id)
         })));
 
+        return this.sort(enhancedResult);
+    }
+
+    private sort(enhancedResult: { account_name: string; member: any; discord_id: string }[]) {
         // sort and return
         return enhancedResult.sort((a, b) => {
             return Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
@@ -93,6 +109,15 @@ export class Whois extends BotgartCommand {
 
     private static backticksIfNotEmpty(value: string | undefined | null) {
         return value ? `\`${value}\`` : "*None*";
+    }
+
+    private async queryUser(member: discord.GuildMember) {
+        const user = this.getBotgartClient().registrationRepository.getUserByDiscordId(member.user);
+        return [{
+            discord_id: member.id,
+            member: member,
+            account_name: user?.account_name
+        }];
     }
 }
 
