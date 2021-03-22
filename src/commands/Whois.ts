@@ -33,16 +33,20 @@ export class Whois extends BotgartCommand {
         if (res.length === 0) {
             await this.reply(message, responsible, L.get("WHOIS_EMPTY_RESULT"));
         } else {
-            await this.reply(message, responsible, L.get("WHOIS_RESULTS"));
+            await this.reply(message, responsible, L.get("WHOIS_RESULTS", [], "\n")
+                + "\n\n" + "@Mention | (D) Id | (D) Tag | (D) Nickname | (GW) Account");
 
             let chunk = "\u200B";
-            // output result
             for (let queryResult of res) {
-                const response = "{0} | {1} | {2}".formatUnicorn(
-                    queryResult.member?.toString(),
-                    Whois.backticksIfNotEmpty(queryResult.member?.user.tag),
-                    Whois.backticksIfNotEmpty(queryResult?.account_name)
-                );
+                // output result
+                const response = "{0} | {1} | {2} | {3} | {4}"
+                    .formatUnicorn(
+                        queryResult.member?.toString(),
+                        Whois.backticksIfNotEmpty(queryResult.member?.id),
+                        Whois.backticksIfNotEmpty(queryResult.member?.user?.tag),
+                        Whois.backticksIfNotEmpty(queryResult.member?.nickname),
+                        Whois.backticksIfNotEmpty(queryResult?.account_name)
+                    );
 
                 let nextChunk = chunk + "\n" + response
                 if (nextChunk.length >= 2000) {
@@ -61,7 +65,11 @@ export class Whois extends BotgartCommand {
     private async query(guild: discord.Guild, namedEscaped: string, name: string) {
         const members = await guild.members.fetch()
         const matchingDiscordMembers = members
-            .filter(m => m.displayName.toLowerCase().search(namedEscaped) > -1 || m.user.tag.toLowerCase().search(namedEscaped) > -1)
+            .filter(m => {
+                return m.displayName.toLowerCase().search(namedEscaped) > -1
+                    || m.user.tag.toLowerCase().search(namedEscaped) > -1
+                    || m.id.search(namedEscaped) > -1;
+            })
             .map(value => value.user.id)
 
         const res = this.getBotgartClient().registrationRepository.whois(name, matchingDiscordMembers);
@@ -83,7 +91,7 @@ export class Whois extends BotgartCommand {
         return (a || b) ? (!a ? -1 : !b ? 1 : a.localeCompare(b)) : 0;
     }
 
-    private static backticksIfNotEmpty(value: string | undefined) {
+    private static backticksIfNotEmpty(value: string | undefined | null) {
         return value ? `\`${value}\`` : "*None*";
     }
 }
