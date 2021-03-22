@@ -53,8 +53,10 @@ export class BotgartClient extends akairo.AkairoClient {
 
     //public readonly options;
 
-    constructor(options, clientoptions, db: db.Database) {
-        super(options, clientoptions);
+    constructor(options: (akairo.AkairoOptions & discord.ClientOptions) | undefined,
+                clientOptions: discord.ClientOptions | undefined,
+                db: db.Database) {
+        super(options, clientOptions);
 
         //Repositories
         this.fishingRepository = new FishingRepository(db);
@@ -225,7 +227,9 @@ export class BotgartClient extends akairo.AkairoClient {
     }
 
     public async prepareShutdown() {
-        log("info", `Preparing Shutdown`);
-        await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
+        if (this.token != null) { //is logged in
+            log("info", `Preparing Shutdown`);
+            await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
+        }
     }
 }

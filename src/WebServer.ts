@@ -23,11 +23,13 @@ export class WebServer {
     public start() {
         let httpConfig = getConfig().get().http;
         this.server = this.app.listen(parseInt(httpConfig.port), httpConfig.host, function () {
-            log("info",`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
+            log("info", `Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
         });
     }
 
     public close() {
-        this.server.close();
+        if (this.server != undefined) {
+            this.server.close();
+        }
     }
 }

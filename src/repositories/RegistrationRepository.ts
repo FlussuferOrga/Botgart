@@ -1,10 +1,10 @@
-import {Semaphore} from "await-semaphore";
+import { Semaphore } from "await-semaphore";
 import Timeout from "await-timeout";
 import discord from "discord.js";
-import {getConfig} from "../config/Config";
+import { getConfig } from "../config/Config";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as Util from "../Util";
-import {AbstractDbRepository} from "./AbstractDbRepository";
+import { AbstractDbRepository } from "./AbstractDbRepository";
 
 const REAUTH_DELAY: number = 8000;
 const REAUTH_MAX_PARALLEL_REQUESTS: number = 3;
@@ -77,20 +77,21 @@ export class RegistrationRepository extends AbstractDbRepository {
         `).get(discordUser.id));
     }
 
-    public whois(searchString: string, discordCandidates: discord.User[]): { "discord_user": string, "account_name": string }[] {
+    public whois(searchString: string, discordUserIds: string[]): { discord_id: string; account_name: string }[] {
         return this.execute(db => {
             db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
             const stmt = db.prepare(`INSERT INTO whois(discord_id)
                                      VALUES (?)`);
-            discordCandidates.forEach(dc => stmt.run(dc.id));
+            discordUserIds.forEach(id => stmt.run(id));
+
             return db.prepare(`
-                SELECT user         AS discord_user,
-                       account_name AS account_name
-                FROM registrations AS r
-                         JOIN whois AS w
-                              ON w.discord_id = r.user
+                SELECT whois.discord_id AS discord_id,
+                       reg.account_name AS account_name
+                FROM whois AS whois
+                         LEFT JOIN registrations AS reg
+                                   ON whois.discord_id = reg.user
                 UNION
-                SELECT user         AS discord_user,
+                SELECT user         AS discord_id,
                        account_name AS account_name
                 FROM registrations
                 WHERE LOWER(account_name) LIKE ('%' || ? || '%')
