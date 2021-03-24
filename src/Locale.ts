@@ -587,6 +587,299 @@ DE = {
     }
 };
 
+export let DE_SWG : Object = {
+    "HELPTEXT_PREFIX": "Des benutzsch so:\n"
+};
+
+DE_SWG = {
+    ...DE_SWG,
+    ...{
+        "INTERNAL_ERROR": "Mir hend en interne Fehler. Sagsch em Admin bscheid.",
+
+        "HTTP_REQUEST_RETURNED": "Die Antwort auf dei Frog isch: {0}",
+
+        "NOT_PERMITTED": "Des derfsch net.",
+        "PERMISSION_SET_TO": "Berechtigung für `{0}` auf de Befehl `{1}` isch jetzt **{2}**.",
+        "WELCOME": "Grüß Gott aufm Flussufer-Discord! :)\nEs moischt hier kannsch als Gascht net sehe. Bitte authentifiziere dich mit erem API-Key:\n\n1. Bsuch dazu https://account.arena.net/applications\n2. Dann drücksch auf \"Neuer Schlüssel\"\n3. Na schreibsch `,auth ` gefolgt von deim neue Schlüssel per Direktnachricht (dieses Fenster) an mi.\n\nZ.B: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
+        "NO_SUCH_COMMAND": "'{0}' kenn i net.",
+        "NOT_AVAILABLE_AS_DM": "Des kannsch net innere Privatnachricht mache. Probiersch nochamol aufm Server.",
+        "NOT_CRONABLE": "Des kannsch net als Cronjob mache.",
+        "NO_DEL_PERM": "Nachrichten derf i net lösche. Machsch dein letzte Nachricht bitte selbscht weg.",
+        "KEY_INVALID_FORMAT": "Gibsch mer bitte en gültige API-Key. Den kriegsch auf https://account.arena.net/.",
+        "KEY_ACCEPTED": "Servus, Flussufler! Liesch dir bitte die Informationen im INFOCENTER durch, damit des hier gescheid nutze kannsch. :)",
+        "KEY_DECLINED": "Des isch koin Account auf Flussufer oder nedemol en gültiger API-Key.",
+        "KEY_NOT_UNIQUE": "Den API-Key hemmer scho. Machsch bitte en neue.\nWennd net weisch, wie mir an den Key komme sind, löscht den grad selbscht auf https://account.arena.net/.",
+        "KEY_INVALIDATED": "Hallo!\nDein API-Key isch nimmer auf Flussufer.\nMir schmeißed dich deswege naus. Kannsch aber wiederkomme, wennd willsch.",
+        "CHECKING_KEY": "Ich guggemol...",
+        "REG_ROLE_NOT_FOUND": "Die Rolle henn mer ned. Sagsch bitte em Admin bscheid.",
+        "PRUNING_COMPLETE": "Ich gugg mir jetzt die API-Keys an. Des kann sau lang daure.",
+        "FIND_DUPLICATES_COMPLETE": "Duplikatsuche ferdich.",
+        "GUILD_LOG_COMPLETE": "Gilden-Logbuch erfolgreich abgerufen.",
+        "PERMANENT_ROLE_ADD_SUCC": "Han ich permanent drangeklebt.",
+        "PERMANENT_ROLE_ADD_FAIL": "Konnt ich net permanent drankleben. Vielleicht het er die scho.",
+        "PERMANENT_ROLE_RM_SUCC": "Han ich erfolgreich weggemacht.",
+        "PERMANENT_ROLE_RM_FAIL": "Konnt ich net wegmachen.",
+        "WHOIS_EMPTY_RESULT": "Han nix gfunde.",
+        "WHOIS_RESULTS": "Des han ich gfunde:",
+        "DLOG_AUTH": "Benutzer {0} mit dem Ingame-Account `{1}` han ich mit der Rolle {2} autorisiert.",
+        "DLOG_UNAUTH": "Benutzer {0} mit dem Ingame-Account `{1}` han ich ent-autorisiert und er het die Rolle {2} verloren.",
+        "AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME": "Errungenschaft wurde erfolgreich zum ersten mal gewährt.",
+        "AWARD_ACHIEVEMENT_SUCCESS_AGAIN": "Errungenschaft wurde erfolgreich erneut gewährt.",
+        "AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED": "Des kann ich dem net gebe. Heter vielleicht scho.",
+        "AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Dafür han ich keinen GW2-Account gefunden, um ihm des zu gebe.",
+        "AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN": "Der Grasdackel versteckt seine Erfolge.",
+        "NO_SUCH_ACHIEVEMENT": "Des gibts net.",
+        "REVOKE_ACHIEVEMENT_SUCCESS": "{0} Errungenschaft(en) entzogen.",
+        "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Dafür han ich keinen GW2-Account gefunden, um ihm des wegzunehmen.",
+
+        "CRONJOB_STORED": "Deinen Cronjob han ich mir gemerkt mit der ID {0}. Snächscht mal: {1}.",
+        "CRONJOB_NOT_STORED": "Den Cronjob konnt ich net erstellen. Befehl für Cronjobs nicht möglich oder du hasch die Zeitangabe verkackt. Schausch mal auf https://crontab.guru/ .",
+        "CRONJOB_DELETED": "Cronjob hats verrisse.",
+        "CRONJOB_NOT_DELETED": "Den Cronjob kann i net lösche.",
+        
+        "FAQ_STORED": "Den FAQ-Eintrag han ich erstellt.",
+        "FAQ_NOT_STORED": "Den FAQ-Eintrag konntmer net erstellen.",
+        "FAQ_DELETED": "Den FAQ-Eintrag für '{0}' han ich glöscht.",
+        "FAQ_NOT_DELETED": "Den FAQ-Eintrag für '{0}' konntmer net löschen.",
+        "FAQ_NOT_FOUND": "Mir hennd kein FAQ-Eintrag zu '{0}'.",
+        "CIRCULAR_CRON": "Cronjobs kenned koin annern Cronjob mache, du Seggel.",
+        "TS_UNREGISTER_SENT": "Die Anfrag han ich grad weitergleitet.",
+
+        "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
+
+        "HELPTEXT_AUTHENTICATE": DE["HELPTEXT_PREFIX"] + "GW2 API-Key mit den Berechtigungen 'account' und 'characters', den du unter https://account.arena.net/applications erhalten kannst.",
+        "HELPTEXT_PERMIT": DE["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
+        "HELPTEXT_SAY": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
+        "HELPTEXT_MAKE_CRON": DE["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
+        "HELPTEXT_DELETE_CRON": DE["HELPTEXT_PREFIX"] + "`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
+        "HELPTEXT_POLL": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
+        "HELPTEXT_MAKE_FAQ": DE["HELPTEXT_PREFIX"] + "`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",
+        "HELPTEXT_GET_FAQ": DE["HELPTEXT_PREFIX"] + "`<Schüsselwort>`",
+        "HELPTEXT_DELETE_FAQ": DE["HELPTEXT_PREFIX"] + "`<Schüsselwort>`",
+        "HELPTEXT_PIPE_GUILD_LOG": DE["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
+        "HELPTEXT_ADD_PERMANENT_ROLE": DE["HELPTEXT_PREFIX"] + "`<@user>` `<@role>`",
+        "HELPTEXT_REMOVE_PERMANENT_ROLE": DE["HELPTEXT_PREFIX"] + "`<@user>` `<@role>`",
+        "HELPTEXT_WHOIS": DE["HELPTEXT_PREFIX"] + "`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
+        "HELPTEXT_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, in dem Nachrichten dieses Typs geleitet werden sollen>`",
+        "HELPTEXT_REMOVE_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, aus dem Nachrichten dieses Typs entfernt werden sollen (optional)>`",
+        "HELPTEXT_LIST_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Textkanal, aus dem vorhandene Meldungstypen angezeigt werden sollen (optional)>`",
+        "HELPTEXT_PRUNE": DE["HELPTEXT_PREFIX"] + "`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
+        "HELPTEXT_RESET_ROSTER": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Post erstellt werden soll>` (`Kalenderwoche für den Reset, Standard: aktuelle Woche`) (`Jahr für den Reset, Standard: aktuelles Jahr`)",
+        "HELPTEXT_ADD_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>` `<Jahr (optional)>`",
+        "HELPTEXT_TOGGLE_RESET_LEADER_VISIBILITY": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)` `<Jahr (optional)>`",
+        "HELPTEXT_REMOVE_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
+        "HELPTEXT_SET_TS3_RESET_ROSTER": "",
+        "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
+        "HELPTEXT_REVOKE_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
+        "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
+        "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_REACTION_SNAPSHOT": DE["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
+        "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
+        "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
+
+        "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
+        "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
+        "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
+        "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt.",
+        "DESC_AUTHENTICATE": "Authentifiziert einen Benutzer mittels eines GW2-API-Keys.",
+        "DESC_POLL": "Erstellt einen Poll mit vorgegebenen Emotes als Abstimmoptionen.",
+        "DESC_REAUTHENTICATE": "Authentifiziert alle vorhandenen GW2-API-Keys erneut.",
+        "DESC_SAY": "Spricht den übergebenen Text im übergebenen Channel.",
+        "DESC_HELP": "Dieser Befehl. Listet alle verfügbaren Befehle mit einer kurzen Beschreibung auf.",
+        "DESC_TS_SYNC": "Synchronisiert die Rollen mit dem TeamSpeak3-Server (_NICHT AKTIV_).",
+        "DESC_MAKE_FAQ": "Fügt den FAQ einen Eintrag hinzu.",
+        "DESC_DELETE_FAQ": "Entfernt einen Eintrag von den FAQ.",
+        "DESC_GET_FAQ": "Gibt die Antwort zu einem Stichwort der FAQ wieder.",
+        "DESC_LIST_FAQS": "Listet alle vorhandenen FAQs auf.",
+        "DESC_FIND_DUPLICATES": "Findet alle Discord-Benutzer, die sich einen GW2-Account teilen.",
+        "DESC_PIPE_GUILD_LOG": "Schreibt den Guildlog einer Gilde in einen Discord-Channel.",
+        "DESC_REPAIR_ROLES": "Gibt allen Benutzern die Rolle, die in der Datenbank für sie hinterlegt ist.",
+        "DESC_ADD_PERMANENT_ROLE": "Fügt einem Benutzer permanent eine Rolle hinzu, die ihm beim erneuten Betreten des Servers automatisch wieder zugewiesen wird.",
+        "DESC_REMOVE_PERMANENT_ROLE": "Löst eine permanente Rolle von einem Benutzer, sodass diese ihm beim Betreten des Servers nicht automatisch erneut zugewiesen wird.",
+        "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
+        "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
+        "DESC_RERMOVE_DISCORD_LOG": "Entfernt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
+        "DESC_LIST_DISCORD_LOG": "Listet die im Discord-Text-Kanal vorhandenen Eventtypen auf.",
+        "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
+        "DESC_RESET_ROSTER": "Erstellt einen Post, mithilfe dessen Kommandeure rostern können.",
+        "DESC_ADD_RESET_LEADER": "Fügt manuell einen Spieler als Reset-Kommandeur hinzu.",
+        "DESC_REMOVE_RESET_LEADER": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
+        "DESC_TOGGLE_RESET_LEADER_VISIBILITY": "Ändert manuell die Sichtbarkeit eines Reset-Kommandeurs.",
+        "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
+        "DESC_ADD_EVENT": "Erstellt ein neues Event",
+        "DESC_AWARD_ACHIEVEMENT": "Vergibt eine Errungenschaft an einen Spieler.",
+        "DESC_REVOKE_ACHIEVEMENT": "Entfernt alle Instanzen einer Errungenschaft von einem Spieler oder entfernt einenbestimmten Errungenschaften-Eintrag aus der Datenbank.",
+        "DESC_LIST_ACHIEVEMENTS": "Listet alle verfügbaren Errungenschaften auf.",
+        "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
+        "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
+        "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fische.",
+        "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
+        "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
+        "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
+
+        "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
+        "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
+        "MK_GUILD_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Gilden-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
+        "MK_GUILD_CANCELED": "Gildenerstellung wurde abgebrochen.",
+        "MK_GUILD_COMPLETE": "Anfrage zum Anlegen einer Gilde wurde an den TeamSpeak-Server gesendet",
+        "MK_GUILD_UNKNOWN_GUILD": "Es gibt keine Gilde namens '{0}' im Spiel. Stell bitte sicher, dass du dich nicht verschrieben hast und achte auf korrekte Groß-/ Kleinschreibung.",
+
+        "RM_GUILD_COMPLETE": "Anfrage zum Löschen einer Gilde wurde an den TeamSpeak-Server gesendet.",
+
+        "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
+
+        "COMMANDER_TAG_UP": "Kommandeur **{0}** ({1}) hat im TeamSpeak einen Raid gestartet! {2}",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Auf dem TeamSpeak beitreten",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn du TeamSpeak 3 installiert hast, kannst du über diesen Link dem Kommandeur beitreten.",
+
+        "RED_BORDERLANDS": "Rote Grenzlande",
+        "BLUE_BORDERLANDS": "Blaue Grenzlande",
+        "GREEN_BORDERLANDS": "Grüne Grenzlande",
+        "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
+        "RESETLEAD_HEADER": "Drücksch auf des passende Emote, damitd en Kommandeur für de Reset wirsch. Um dich auszumtrage drücksch grad aufs ❌. Wennd willsch, dass mer unsre Gegner bscheid sage, wod nagehsch, drücksch aufs 📣.",
+        "ROSTER_EXISTS": "Da hemmer scho en Roster: {0}",
+        "WEEK_NUMBER": "Kalenderwoche",
+        "ROSTER_LEAD_ADDED": "I han de `{0}` erfolgreich als Kommandeur fürd Kadde `{1}` in Woche {2} neigsetzt. Siehe {3}",
+        "ROSTER_LEAD_REMOVED": "`{0}` wurde erfolgreich als Kommandeur in Woche {1} entfernt. Siehe {2}",
+        "ROSTER_LEAD_VISIBILITY_TOGGLED": "`{0}`s Sichtbarkeit in Woche {1} han ich geändert. Siehe {2}",
+
+        "MK_EVENT_DATE": "Gib als nächstes ein gültiges Datum mit Uhrzeit an. Z.B. `15.02.2022 16:33`",
+        "MK_EVENT_TITLE": "Gib jetzt einen Titel für das Event an.",
+        "MK_EVENT_DESC": "Gib nun eine kurze Beschreibung für das Event an.",
+        "MK_EVENT_REMINDER": "Falls automatisch eine Erinnerung gepostet werden soll, gib jetzt an, wie viele Minuten vor dem Event das geschehen soll. Gib eine negative Zahl an, falls du keine Erinnerung möchtest.",
+        "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
+
+        "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
+
+        "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
+        "ACHIEVEMENT_DESC_GLIMMER": "Leitsch für e Stund.",
+        "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!",
+
+        "ACHIEVEMENT_NAME_SUNRAY": "Sonnenstrahl",
+        "ACHIEVEMENT_DESC_SUNRAY": "Leitsch für zehn Stund.",
+        "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur!",
+
+        "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
+        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leitsch für hunnert Stund.",
+        "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf Euch.",
+
+        "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
+        "ACHIEVEMENT_DESC_SUPERNOVA": "Leitsch für tausend Stund.",
+        "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren Eurer.",
+
+        "ACHIEVEMENT_NAME_TRAILBLAZER": "Vorreiter",
+        "ACHIEVEMENT_DESC_TRAILBLAZER": "Leitsch beim Reset. Musch halt dei Lamp scho vorem Reset anschalte und dann für zwei Stunde mache.",
+        "ACHIEVEMENT_FLAV_TRAILBLAZER": "Du bist die Ruhe vor dem Sturm.",
+
+        "ACHIEVEMENT_NAME_OWL": "Eule",
+        "ACHIEVEMENT_DESC_OWL": "Leitsch e Spätschicht. Dann musch aber dei Lamp zwische 23:00 Uhr und 6:00 Uhr anschalte und e ganze Stund mache.",
+        "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
+
+        "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
+        "ACHIEVEMENT_DESC_EARLYBIRD": "Leitsch e Frühschicht. Dann musch aber dei Lamp zwische 6:00 Uhr und 10:00 Uhr anschalte und e ganze Stund mache.",
+        "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! ",
+        
+        "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
+        "ACHIEVEMENT_DESC_ANNIHILATOR": "Du führsch de Server zu erre KDR von 2.",
+        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
+
+        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Net Aufgebe!",
+        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Fängsch amol mit deim Raid an, wenn der Server höchschtens e KDR von 0,6 hat.",
+        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
+
+        "ACHIEVEMENT_NAME_CONQUEROR": "Eroberer",
+        "ACHIEVEMENT_DESC_CONQUEROR": "Mit dir hebemer en Tick von 250.",
+        "ACHIEVEMENT_FLAV_CONQUEROR": "Färbe die Karte mit unseren Farben.",
+
+        "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
+        "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Schloss Stoinebel gebe mer net her. Muschs aber für mindeschtens e Stund halte.",
+        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, der König zu sein.",
+
+        "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agiler Verteidiger",
+        "ACHIEVEMENT_DESC_AGILEDEFENDER": "Mir hend kei Stufe 3 Ziel hergebe. Aber nur zur Primetime (zwischen 18:00 und 21:00) wennd mindeschtens e Stund gleitet hasch und mir drei oder mehr Stufe 3 Ziele hend.",
+        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Wenn ihr uns ruft, dann werden wir kommen.",
+
+        "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Gründlicher Feldherr",
+        "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "Mir hend elle Befestigungen einer beliebigen Karte. Des umfasst nur Lager, Türme, Festungen und Schloss Stoinebel ein.",
+        "ACHIEVEMENT_FLAV_THOROUGHCOMMANDER": "Das ist unser Königreich. Alles, was das Licht berührt.",
+
+        "ACHIEVEMENT_NAME_BOLDBESIEGER": "Dreister Belagerer",
+        "ACHIEVEMENT_DESC_BOLDBESIEGER": "Nimmsch während deiner Raids zehn Bfestigunge der Stufe 3 ei.",
+        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Wardemal, des war doch unsers?!",
+
+        "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Beharrlicher Belagerer",
+        "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Nimmsch während deiner Raids hunnert Bfestigunge der Stufe 3 ei.",
+        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt.",
+
+        "ACHIEVEMENT_NAME_PRINCESS": "Prinzessin",
+        "ACHIEVEMENT_DESC_PRINCESS": "Nimmsch während deirer Raids de Fischadler-Palascht ei",
+        "ACHIEVEMENT_FLAV_PRINCESS": "\"Ich bin eine Prinzessin!\" -- Unbekannt ",
+
+        "ACHIEVEMENT_NAME_CASTLING": "Rochade",
+        "ACHIEVEMENT_DESC_CASTLING": "Nimmsch e höherwertige Befeschtigung deirer Gegner ei, der gleichzeitig eine unsrer Befeschtigungen ei'nimmt.",
+        "ACHIEVEMENT_FLAV_CASTLING": "Ein fairer Tausch.",
+
+        "ACHIEVEMENT_NAME_ETTIN": "Ettin",
+        "ACHIEVEMENT_DESC_ETTIN": "Leitsch zsamme mit em annere Kommandeur. Szählt aber nur, wenner beide für a Stund oder länger schaffet.",
+        "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
+
+        "ACHIEVEMENT_NAME_HYDRA": "Hydra",
+        "ACHIEVEMENT_DESC_HYDRA": "Leitsch zsamme mit zwoi annere Kommandeure. Szählt aber nur, wenner elle für a Stund oder länger schaffet.",
+        "ACHIEVEMENT_FLAV_HYDRA": "Schlagt einen Kopf ab, und zwei weitere werden ihren Platz einnehmen.",
+
+        "ACHIEVEMENT_NAME_SHIFTCHANGE": "Schichtwechsel",
+        "ACHIEVEMENT_DESC_SHIFTCHANGE": "Übernimmsch d'Leitung vom Schlachtzug vonm annerem Kommandeur. Dazu fängsch dein Schlachtzug im selbe Kanal wie der annere Kommandeur an solange der noch leitet. Oder höchschtens fünf Minute später. Dann machsch aber mindeschtens e Stund!",
+        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "Bin ich froh, dass du da bist.",
+
+        "ACHIEVEMENT_NAME_BULLETPROOF": "Kugelsicher",
+        "ACHIEVEMENT_DESC_BULLETPROOF": "Fängsch mitem Raid für mindeschtens e Stund an, wenns Matchup eh schon im Arsch isch. Des Achievement kriegsch nur dann, wenn unsere Platzierung nimmer ändern kann.",
+        "ACHIEVEMENT_FLAV_BULLETPROOF": "Hinter diesem Kommandeursabzeichen ist nicht nur ein Spieler, hinter diesem Kommandeursabzeichen steckt eine Idee... und Ideen sind unzerstörbar.",
+
+        "ACHIEVEMENT_NAME_BOOZECOMMANDER": "Promillekommandeur",
+        "ACHIEVEMENT_DESC_BOOZECOMMANDER": "Machsch e Sauftour.",
+        "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "Das ist unfair! Die sind plötzlich doppelt so viele!",
+
+        "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
+        "ACHIEVEMENT_DESC_FROMASHES": "Hilfsch, dass de Server ins T4 hochkommt.",
+        "ACHIEVEMENT_FLAV_FROMASHES": "Sie haben uns alles genommen. Auch unsere Furcht.",
+
+        "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
+        "ACHIEVEMENT_DESC_THEPRESIDENT": "Hilfsch, dass de Server ins T3 hochkommt.",
+        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I nimm de Nummer drey.",
+
+        "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
+        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Hilfsch, dass de Server ins T2 hochkommt.",
+        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
+
+        "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
+        "ACHIEVEMENT_DESC_THEPEAK": "Hilfsch, dass de Server ins T1 hochkommt.",
+        "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht.",
+
+        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Verfestiger",
+        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Hilfsch, dass de Server net absteigt.",
+        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!",
+
+        "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Ausdauernder Kommandeur",
+        "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Machsch für fünf Stunde.",
+        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Ist wahrscheinlich nur auf dem Keyboard eingeschlafen.",
+
+        "ACHIEVEMENT_NAME_INFINITESTAMINA": "Unerschöpfliche Ausdauer",
+        "ACHIEVEMENT_DESC_INFINITESTAMINA": "Machsch für zehn Stunde.",
+        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "Gar nicht so schwierig. Einfach mal den Kaffee mit Red Bull aufgießen.",
+
+        "FISHING_IDLE_TITLE": "Angeln",
+        "FISHING_IDLE_DESCRIPTION": "Jetzt machsch ma halblang. Aber pass auf dei Angel auf! Wenn :fishing_pole_and_fish: kommt musch da zügig draufklicke!",
+
+        "FISHING_ESCAPED_TITLE": "Entwischt",
+        "FISHING_ESCAPED_DESCRIPTION": "Net so viel entspanne, du Grasdackel! Jetz ischer halt fort!",
+
+        "FISHING_CAUGHT_TITLE": "Gefangen",
+        "FISHING_CAUGHT_DESCRIPTION": "Du hasch ebs gfange!"
+    }
+};
+
 /**
 * Tries to resolve the passed key into a locale string. 
 * 
