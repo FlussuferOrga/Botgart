@@ -39,7 +39,7 @@ export class RepairRoles extends BotgartCommand {
                 log("error", `Could not look up a guild with ID ${d.guild}. Have I been kicked?`);
             } else {
                 r = g.roles.cache.find(role => role.name === d.registration_role);
-                m = await guild.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
+                m = await g.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
                 if(r === undefined) {
                     log("error", `Was supposed to assign role '${d.registration_role}' to user, but could not find it.`);
                 } else {
