@@ -17,7 +17,7 @@ export class Whois extends BotgartCommand {
                 args: [
                     {
                         id: "name",
-                        type: Argument.union("member", "string")
+                        type: Argument.union("memberMention", "string")
                     }
                 ],
             }
