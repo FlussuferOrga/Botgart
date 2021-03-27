@@ -73,15 +73,34 @@ export class Whois extends BotgartCommand {
         }
     }
 
+    private static matches(m: GuildMember, needle: string): boolean {
+        function nicknameMatches() {
+            return (m.nickname ? m.nickname?.toLowerCase() : "").search(needle) > -1;
+        }
+
+        function usernameMatches() {
+            return m.user.username.toLowerCase().search(needle) > -1;
+        }
+
+        function tagMatches() {
+            return m.user.tag.toLowerCase().search(needle) > -1;
+        }
+
+        function idMatches() {
+            return m.id.search(needle) > -1;
+        }
+
+        return nicknameMatches()
+            || usernameMatches()
+            || tagMatches()
+            || idMatches();
+    }
+
     private async query(guild: discord.Guild, namedEscaped: string, name: string) {
         const members = await guild.members.fetch()
+
         const matchingDiscordMembers = members
-            .filter(m => {
-                return (m.nickname ? m.nickname?.toLowerCase() : "").search(namedEscaped) > -1
-                    || m.user.username.toLowerCase().search(namedEscaped) > -1
-                    || m.user.tag.toLowerCase().search(namedEscaped) > -1
-                    || m.id.search(namedEscaped) > -1;
-            })
+            .filter(member => Whois.matches(member, namedEscaped))
             .map(value => value.user.id)
 
         const res = this.getBotgartClient().registrationRepository.whois(name, matchingDiscordMembers);
