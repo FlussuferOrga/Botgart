@@ -77,7 +77,7 @@ export class Whois extends BotgartCommand {
         const members = await guild.members.fetch()
         const matchingDiscordMembers = members
             .filter(m => {
-                return (m.nickname ? m.nickname?.toLowerCase() : "").search(namedEscaped) > 1
+                return (m.nickname ? m.nickname?.toLowerCase() : "").search(namedEscaped) > -1
                     || m.user.username.toLowerCase().search(namedEscaped) > -1
                     || m.user.tag.toLowerCase().search(namedEscaped) > -1
                     || m.id.search(namedEscaped) > -1;
