@@ -753,15 +753,15 @@ DE_SWG = {
 
         "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
 
-        "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
+        "ACHIEVEMENT_NAME_GLIMMER": "Lichtle",
         "ACHIEVEMENT_DESC_GLIMMER": "Leitsch für e Stund.",
         "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!",
 
-        "ACHIEVEMENT_NAME_SUNRAY": "Sonnenstrahl",
+        "ACHIEVEMENT_NAME_SUNRAY": "d'Sunn",
         "ACHIEVEMENT_DESC_SUNRAY": "Leitsch für zehn Stund.",
         "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur!",
 
-        "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
+        "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Funzel",
         "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leitsch für hunnert Stund.",
         "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf Euch.",
 
@@ -773,11 +773,11 @@ DE_SWG = {
         "ACHIEVEMENT_DESC_TRAILBLAZER": "Leitsch beim Reset. Musch halt dei Lamp scho vorem Reset anschalte und dann für zwei Stunde mache.",
         "ACHIEVEMENT_FLAV_TRAILBLAZER": "Du bist die Ruhe vor dem Sturm.",
 
-        "ACHIEVEMENT_NAME_OWL": "Eule",
+        "ACHIEVEMENT_NAME_OWL": "Eul",
         "ACHIEVEMENT_DESC_OWL": "Leitsch e Spätschicht. Dann musch aber dei Lamp zwische 23:00 Uhr und 6:00 Uhr anschalte und e ganze Stund mache.",
         "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
 
-        "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
+        "ACHIEVEMENT_NAME_EARLYBIRD": "Schaffe, Schaffe, Früh Uffstande",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Leitsch e Frühschicht. Dann musch aber dei Lamp zwische 6:00 Uhr und 10:00 Uhr anschalte und e ganze Stund mache.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! ",
         
@@ -785,7 +785,7 @@ DE_SWG = {
         "ACHIEVEMENT_DESC_ANNIHILATOR": "Du führsch de Server zu erre KDR von 2.",
         "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
 
-        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Net Aufgebe!",
+        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Net Aufgebbe!",
         "ACHIEVEMENT_DESC_NEVERSURRENDER": "Fängsch amol mit deim Raid an, wenn der Server höchschtens e KDR von 0,6 hat.",
         "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
 
@@ -827,11 +827,11 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_HYDRA": "Hydra",
         "ACHIEVEMENT_DESC_HYDRA": "Leitsch zsamme mit zwoi annere Kommandeure. Szählt aber nur, wenner elle für a Stund oder länger schaffet.",
-        "ACHIEVEMENT_FLAV_HYDRA": "Schlagt einen Kopf ab, und zwei weitere werden ihren Platz einnehmen.",
+        "ACHIEVEMENT_FLAV_HYDRA": "Kannsch scho mache, bringt halt nix.",
 
         "ACHIEVEMENT_NAME_SHIFTCHANGE": "Schichtwechsel",
         "ACHIEVEMENT_DESC_SHIFTCHANGE": "Übernimmsch d'Leitung vom Schlachtzug vonm annerem Kommandeur. Dazu fängsch dein Schlachtzug im selbe Kanal wie der annere Kommandeur an solange der noch leitet. Oder höchschtens fünf Minute später. Dann machsch aber mindeschtens e Stund!",
-        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "Bin ich froh, dass du da bist.",
+        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "Feierabend!",
 
         "ACHIEVEMENT_NAME_BULLETPROOF": "Kugelsicher",
         "ACHIEVEMENT_DESC_BULLETPROOF": "Fängsch mitem Raid für mindeschtens e Stund an, wenns Matchup eh schon im Arsch isch. Des Achievement kriegsch nur dann, wenn unsere Platzierung nimmer ändern kann.",
@@ -843,7 +843,7 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
         "ACHIEVEMENT_DESC_FROMASHES": "Hilfsch, dass de Server ins T4 hochkommt.",
-        "ACHIEVEMENT_FLAV_FROMASHES": "Sie haben uns alles genommen. Auch unsere Furcht.",
+        "ACHIEVEMENT_FLAV_FROMASHES": "Etzetle pass uff.",
 
         "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
         "ACHIEVEMENT_DESC_THEPRESIDENT": "Hilfsch, dass de Server ins T3 hochkommt.",
@@ -889,8 +889,8 @@ DE_SWG = {
 *          If no locale string could be found, the key is returned instead.
 */
 export function get(key: string, args?: string[], separator: string = "\n\n", flags = true, options: {[option: string]: boolean} = {}): string {
-    const flagIcons = [flags ? ":flag_de: " : "", flags ? ":flag_gb: " : ""];
-    const strings = [key in DE ? DE[key].formatUnicorn(args) : key, key in EN ? EN[key].formatUnicorn(args) : key]
+    const flagIcons = [flags ? ":flag_de: " : "", flags ? ":flag_gb: " : "", flags ? ":black_large_square::yellow_square:" : ""];
+    const strings = [key in DE ? DE[key].formatUnicorn(args) : key, key in EN ? EN[key].formatUnicorn(args) : key, key in DE_SWG ? DE_SWG[key].formatUnicorn(args) : key]
                     .map(s => {
                         if("italic" in options && options["italic"] === true) {
                             s = `_${s}_`;
@@ -901,7 +901,7 @@ export function get(key: string, args?: string[], separator: string = "\n\n", fl
                         return s;
                     });  
 
-    return [0,1].map(i => `${flagIcons[i]}${strings[i]}`)
+    return [0,1,2].map(i => `${flagIcons[i]}${strings[i]}`)
                 .join(separator);
     //return `${flagde}${sde}${separator}${flagen}${sen}`;
     //return ":flag_de: {0}{1}:flag_gb: {2}".formatUnicorn(sde, separator, sen);
