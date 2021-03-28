@@ -18,7 +18,9 @@ import { RegistrationRepository } from "./repositories/RegistrationRepository";
 import { RosterRepository } from "./repositories/RosterRepository";
 import { TsLeadRepository } from "./repositories/TsLeadRepository";
 import { CronJobService } from "./services/CronJobService";
+import { RevalidationService } from "./services/RevalidationService";
 import { TagBroadcastService } from "./services/TagBroadcastService";
+import { ValidationService } from "./services/ValidationService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
 import { log } from "./Util";
@@ -40,6 +42,8 @@ export class BotgartClient extends akairo.AkairoClient {
     public cronJobService: CronJobService;
     public rosterService: RosterService;
     public tagBroadcastService: TagBroadcastService;
+    public validationService: ValidationService;
+    public revalidationService: RevalidationService;
 
     private ts3connection: TS3Connection;
     public readonly gw2apiemitter: APIEmitter;
@@ -74,6 +78,8 @@ export class BotgartClient extends akairo.AkairoClient {
         this.cronJobService = new CronJobService(this.cronJobRepository, this)
         this.rosterService = new RosterService(this.rosterRepository, this)
         this.tagBroadcastService = new TagBroadcastService(this)
+        this.validationService = new ValidationService(this)
+        this.revalidationService = new RevalidationService(this)
 
         this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
@@ -210,7 +216,7 @@ export class BotgartClient extends akairo.AkairoClient {
      */
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
-        if (channels.length === 0 && disposable === false) {
+        if (channels.length === 0 && !disposable) {
             log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {

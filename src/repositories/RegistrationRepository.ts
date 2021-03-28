@@ -1,13 +1,7 @@
-import { Semaphore } from "await-semaphore";
-import Timeout from "await-timeout";
 import discord from "discord.js";
-import { getConfig } from "../config/Config";
-import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as Util from "../Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-const REAUTH_DELAY: number = 8000;
-const REAUTH_MAX_PARALLEL_REQUESTS: number = 3;
 
 export class RegistrationRepository extends AbstractDbRepository {
     /**
@@ -126,51 +120,29 @@ export class RegistrationRepository extends AbstractDbRepository {
         });
     }
 
-    /**
-     * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
-     * politeness mechanisms and will take quite some time!
-     * @returns {[ undefined | ( {api_key, guild, user, registration_role}, admittedRole|null ) ]} - a list of tuples, where each tuple holds a user row from the db
-     *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
-     */
-    public async revalidateKeys(): Promise<undefined | (undefined | [Registration, string | boolean])[]> {
-        let semaphore = new Semaphore(REAUTH_MAX_PARALLEL_REQUESTS);
+    public loadRegistrationsFromDb(): Registration[] {
+        Util.log("info", `Loading all registrations from DB.`);
+        const execute = this.execute(db => {
+            return db.prepare(`SELECT id, api_key, guild, user, registration_role, account_name
+                               FROM registrations
+                               ORDER BY guild`).all()
+        });
+        Util.log("info", `Loaded ${execute.length} from DB.`)
 
-        const worldAssignments = getConfig().get().world_assignments;
-        return this.execute((db): Promise<(undefined | [Registration, string | boolean])[]> =>
-            Promise.all<undefined | [Registration, string | boolean]>(
-                db.prepare(`SELECT api_key, guild, user, registration_role, account_name
-                            FROM registrations
-                            ORDER BY guild`)
-                    .all()
-                    .map(async (r): Promise<undefined | [Registration, string | boolean]> => {
-                        let release = await semaphore.acquire();
-                        Util.log("info", `Sending revalidation request for API key ${r.api_key}.`);
-                        let res = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments).then(
-                            // this ternary hack is required to work around the typing of the Promise from validateWorld
-                            // which returns a number upon rejecting and string | boolean in case of success. 
-                            // So we can nevert end up with a number in success! But since we can not have distinct typing for both cases, 
-                            // the type is always number | string | boolean. The ternary casts all numbers (which never occur) to string 
-                            // so that the type is consistent from here on.
-                            (admittedRole): [Registration, string | boolean] => [r, typeof admittedRole === "boolean" ? admittedRole : "" + admittedRole],
-                            (error): undefined | [Registration, false] => {
-                                if (error === Gw2ApiUtils.validateWorld.ERRORS.invalid_key) {
-                                    // while this was an actual error when initially registering (=> tell user their key is invalid),
-                                    // in the context of revalidation this is actually a valid case: the user must have given a valid key
-                                    // upon registration (or else it would not have ended up in the DB) and has now deleted the key
-                                    // => remove the validation role from the user
-                                    return [r, false];
-                                } else {
-                                    Util.log("error", `Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
-                                    return undefined;
-                                }
-                            }
-                        );
-                        await Timeout.set(REAUTH_DELAY);
-                        release();
-                        return res;
-                    })
-            )
-        );
+        return execute;
+    }
+
+    public loadUserIds(guildId: string): string[] {
+        Util.log("info", `Loading all user ids for guild ${guildId}`);
+        const execute = this.execute(db => {
+            return db.prepare(`SELECT user
+                               FROM registrations
+                               WHERE guild = ?
+                               ORDER BY user`).all(guildId)
+        });
+        Util.log("info", `Loaded ${execute.length} user ids from DB.`)
+
+        return execute.map(value => value.user);
     }
 
     public deleteKey(key: string): boolean | undefined {
@@ -191,6 +163,15 @@ export class RegistrationRepository extends AbstractDbRepository {
                                               FROM registrations
                                               GROUP BY gw2account
                                               HAVING count > 1`).all());
+    }
+
+    public setRegistrationRoleById(id: string, roleName: string) {
+        this.execute(db => {
+            db.prepare(`UPDATE registrations
+                        SET registration_role = ?
+                        WHERE id = ?`)
+                .run(roleName, id)
+        })
     }
 }
 
