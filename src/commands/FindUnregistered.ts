@@ -26,8 +26,10 @@ export class FindUnregistered extends BotgartCommand {
                 .filter(member => member.roles.cache.array().find(role => worldRoleNames.includes(role.name)) !== undefined)
                 .sort();
 
-            const result = notRegisteredMembersWithServerRole.map(value1 => value1.toString()).join("\n");
-            await this.reply(message, responsible, result)
+            const result = `Found ${notRegisteredMembersWithServerRole.size}:
+            ` + notRegisteredMembersWithServerRole.map(value1 => value1.toString()).join("\n");
+
+            await message.channel.send(result, {split: true})
         })
     }
 }
