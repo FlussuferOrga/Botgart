@@ -28,6 +28,7 @@ const api = createApiInstance();
  *                   (c) the key is structurally valid, but not known to the API (invalid key)
  */
 export function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string | boolean | number> {
+    let api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
@@ -61,6 +62,7 @@ validateWorld.ERRORS = {
 };
 
 export function getAccountGUID(apikey: string): Promise<number | boolean> {
+    let api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.id)),
@@ -69,6 +71,7 @@ export function getAccountGUID(apikey: string): Promise<number | boolean> {
 }
 
 export function getAccountName(apikey: string): Promise<string | boolean> {
+    let api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.name)),

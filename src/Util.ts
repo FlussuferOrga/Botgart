@@ -1,4 +1,5 @@
 import callsites from "callsites";
+import { Guild, Role } from "discord.js";
 import * as discord from "discord.js";
 
 import glob from "glob" // dynamic module loading
@@ -179,47 +180,6 @@ export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
-
-
-/**
- * Assigns a role to user if needed. This method can be used for either assigning
- * roles to new users or assigning them new, mutual exclusive ones:
- * assignServerRole(u, A, null): u currently has role A, but should have no role (left server)
- * assignServerRole(u, null, A): u currently has no role, but should have role A (new user)
- * assignServerRole(u, A, B): u currently has role A, but should have role B (changed server to another admitted server)
- * assignServerRole(u, A, A): u already has the role they should have. This is just proper revalidation and will do nothing.
- *
- * @param {GuildMember} member - the member to assign a server role to.
- * @param {Role|null} currentRole - the role the member was assigned last.
- * @param {Role|null} admittedRole - the role the member should actually have.
- * @returns {Role|null} - the role the member is now assigned.
- */
-export function assignServerRole(member: discord.GuildMember, currentRole: discord.Role | null, admittedRole: discord.Role | null): discord.Role | null {
-    // FIXME: the asynchronous erroring could leave the user in an undefined state, where the system
-    // assumes him to now have role A, but in fact assigning him role A has failed!
-    if (currentRole !== null && admittedRole !== null && currentRole.name === admittedRole.name) {
-        // member already has proper role
-        return admittedRole;
-    }
-
-    if (currentRole !== null) {
-        // remove currentRole
-        member.roles.remove(currentRole).then(
-            () => log("info", `Removed role ${currentRole.name} from user ${member.displayName}`),
-            (err) => log("error", `Error while removing role ${currentRole.name} from user ${member.displayName}: ${err.message}.`)
-        );
-    }
-
-    if (admittedRole !== null) {
-        // assign admittedRole
-        member.roles.add(admittedRole).then(
-            () => log("info", `Gave role ${admittedRole.name} to user ${member.displayName}.`),
-            (err) => log("error", "Error while giving role ${admittedRole.name} to user ${member.displayName}: ${err.message}.")
-        );
-    }
-    return admittedRole;
-}
-
 export function assertType(obj: any, t: string): void {
     let p = obj;
     while (p && p.constructor.name !== t) {
@@ -336,4 +296,8 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
         }
         return index > -1;
     }
+}
+
+export function findRole(guild: Guild, roleName: string): Role | undefined {
+    return guild.roles.cache.find(r => r.name === roleName);
 }
