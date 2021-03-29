@@ -291,8 +291,9 @@ EN = {
         "FISHING_ESCAPED_DESCRIPTION": "You were too relaxed and the fish got away. But you had a nice, relaxing fishing trip anyway and the fish gets to swim home to its family.",
 
         "FISHING_CAUGHT_TITLE": "Caught",
-        "FISHING_CAUGHT_DESCRIPTION": "You caught something! What a masterful angler you are!"
+        "FISHING_CAUGHT_DESCRIPTION": "You caught something! What a masterful angler you are!",
 
+        "TS_REGISTRATIONS_DELETED": "`{0}` Registrations have been deleted.",
     }
 };
 
@@ -305,7 +306,7 @@ DE = {
     ...{
         "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
 
-        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen mit: {0}",
+        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen. Es wurden **{0}",
 
         "NOT_PERMITTED": "Du hast nicht die nötigen Berechtigungen um diesen Befehl auszuführen.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf Befehl `{1}` ist jetzt **{2}**.",
@@ -586,7 +587,9 @@ DE = {
         "FISHING_ESCAPED_DESCRIPTION": "Du warst zu entspannt und der Fisch ist entkommen. Aber du hattest trotzdem einen schönen Angelausflug und der Fisch darf sich darauf freuen, seine Familie wiederzusehen.",
 
         "FISHING_CAUGHT_TITLE": "Gefangen",
-        "FISHING_CAUGHT_DESCRIPTION": "Du hast etwas gefangen! Was für ein meisterlicher Angler du bist!"
+        "FISHING_CAUGHT_DESCRIPTION": "Du hast etwas gefangen! Was für ein meisterlicher Angler du bist!",
+
+        "TS_REGISTRATIONS_DELETED": "Es wurden `{0}` Registrierungen gelöscht.",
     }
 };
 
