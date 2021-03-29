@@ -18,19 +18,16 @@ export class FindUnregistered extends BotgartCommand {
 
         const worldRoleNames = getConfig().get().world_assignments.map(val => val.role);
 
-
-        guild.members.fetch().then(async members => {
-            const notRegisteredMembersWithServerRole = members
+        guild.members.fetch()
+            .then(async members => members
                 .filter(member => !member.user.bot)
                 .filter(member => !registrations.includes(member.user.id))
                 .filter(member => member.roles.cache.array().find(role => worldRoleNames.includes(role.name)) !== undefined)
-                .sort();
-
-            const result = `Found ${notRegisteredMembersWithServerRole.size}:
-            ` + notRegisteredMembersWithServerRole.map(value1 => value1.toString()).join("\n");
-
-            await message.channel.send(result, {split: true})
-        })
+                .sort())
+            .then(async value => {
+                const result = `Found ${value.size}:\n` + value.map(value1 => value1.toString()).join("\n");
+                await message.channel.send(result, {split: true})
+            })
     }
 }
 
