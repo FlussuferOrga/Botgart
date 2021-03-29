@@ -131,6 +131,8 @@ EN = {
         "DESC_REACTION_SNAPSHOT": "Lists the current reactions on a given posts.",
         "DESC_TS_GUILD_ADD": "Creates a new Guild on the TS server.",
         "DESC_TS_GUILD_DELETE": "Deletes a guild from the TS server.",
+        "DESC_FIND_UNREGISTERED ": "Find users, that are assigned a server role, but are not found in the database.",
+
 
         "MK_GUILD_CONFIRM": "Your request:\n**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\nIs this correct?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Your request:\n**Name:** {0}\n**Contact:** {1}\nIs this correct?",
@@ -407,7 +409,7 @@ DE = {
         "DESC_REMOVE_PERMANENT_ROLE": "Löst eine permanente Rolle von einem Benutzer, sodass diese ihm beim Betreten des Servers nicht automatisch erneut zugewiesen wird.",
         "DESC_WHOIS": "Ermittelt ein Tupel aus Discord-Name and Ingame-Name.",
         "DESC_DISCORD_LOG": "Erstellt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
-        "DESC_RERMOVE_DISCORD_LOG": "Entfernt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
+        "DESC_REMOVE_DISCORD_LOG": "Entfernt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
         "DESC_LIST_DISCORD_LOG": "Listet die im Discord-Text-Kanal vorhandenen Eventtypen auf.",
         "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
         "DESC_RESET_ROSTER": "Erstellt einen Post, mithilfe dessen Kommandeure rostern können.",
@@ -425,6 +427,7 @@ DE = {
         "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
+        "DESC_FIND_UNREGISTERED ": "Finde Nutzer, die eine Serverrtolle haben, aber nicht in der Datenbank zu finden sind.",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
