@@ -131,7 +131,7 @@ EN = {
         "DESC_REACTION_SNAPSHOT": "Lists the current reactions on a given posts.",
         "DESC_TS_GUILD_ADD": "Creates a new Guild on the TS server.",
         "DESC_TS_GUILD_DELETE": "Deletes a guild from the TS server.",
-        "DESC_FIND_UNREGISTERED ": "Find users, that are assigned a server role, but are not found in the database.",
+        "DESC_FIND_UNREGISTERED": "Find users, that are assigned a server role, but are not found in the database.",
 
 
         "MK_GUILD_CONFIRM": "Your request:\n**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\nIs this correct?",
@@ -427,7 +427,7 @@ DE = {
         "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
-        "DESC_FIND_UNREGISTERED ": "Finde Nutzer, die eine Serverrtolle haben, aber nicht in der Datenbank zu finden sind.",
+        "DESC_FIND_UNREGISTERED": "Finde Nutzer, die eine Serverrtolle haben, aber nicht in der Datenbank zu finden sind.",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
