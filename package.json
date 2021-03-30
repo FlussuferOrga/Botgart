@@ -58,7 +58,7 @@
     "@types/nodemon": "^1.19.0",
     "@types/source-map-support": "^0.5.3",
     "@types/string-similarity": "^4.0.0",
-    "chai": "^4.3.0",
+    "chai": "^4.3.4",
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
     "mocha": "^8.3.2",
