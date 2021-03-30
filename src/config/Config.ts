@@ -229,7 +229,6 @@ export function getConfig() {
 function loadConfiguration() {
     try {
         const config = convict(configSchema);
-
         if (fs.existsSync("./config.json")) {
             config.loadFile("./config.json");
         }
@@ -244,11 +243,11 @@ function loadConfiguration() {
     }
 }
 
-function logConfig(config: convict.Config<any>) {
+function logConfig(config) {
     let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
 
     //probably we shouldn't log a token.
-    configJsonString = configJsonString.replace(config.get("token"), "***REDACTED***")
+    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***")
     Util.log("debug", `Resolved Configuration:\n${configJsonString}`);
 }
 
