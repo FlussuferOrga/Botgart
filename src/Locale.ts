@@ -917,7 +917,7 @@ class Language {
 
 export const german = new Language("DE", ":flag_de:", DE);
 export const english = new Language("EN", ":flag_gb:", EN);
-export const swabian = new Language("DE_SWG", "<:flag_de_swg:826914314866262036>", DE_SWG); // ":black_large_square::yellow_square:"
+export const swabian = new Language("DE_SWG", "<:flag_de_swg:826915488658751519>", DE_SWG); // ":black_large_square::yellow_square:"
 
 export const availableLanguages = [german, english, swabian];
 const currentLanguages: Language[] = [];
