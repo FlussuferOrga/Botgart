@@ -1,7 +1,6 @@
-//import { WvwMap } from "./commands/resetlead/ResetLead";
-export const LANGUAGES = ["DE", "EN", "DE_SWG"];
+import * as U from "./Util";
 
-export let EN : Object = {
+let EN : {[key:string]: string} = {
     "HELPTEXT_PREFIX": "Please use the command with the following parameters:\n"
 };
 
@@ -298,7 +297,7 @@ EN = {
     }
 };
 
-export let DE : Object = {
+let DE : {[key:string]: string} = {
     "HELPTEXT_PREFIX": "Bitte benutze den Befehle mit folgenden Parametern:\n"
 };
 
@@ -594,7 +593,7 @@ DE = {
     }
 };
 
-export let DE_SWG : Object = {
+let DE_SWG : {[key:string]: string} = {
     "HELPTEXT_PREFIX": "Des benutzsch so:\n"
 };
 
@@ -858,7 +857,7 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
         "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Hilfsch, dass de Server ins T2 hochkommt.",
-        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
+        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Hörschs Bergle?",
 
         "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
         "ACHIEVEMENT_DESC_THEPEAK": "Hilfsch, dass de Server ins T1 hochkommt.",
@@ -887,6 +886,59 @@ DE_SWG = {
     }
 };
 
+class Language {
+    public readonly abbreviation: string;
+    public readonly flag: string;
+    public readonly strings: {[key: string]: string};
+
+    public constructor(abbreviation: string, flag: string, strings: {[key: string]: string}) {
+        this.abbreviation = abbreviation;
+        this.flag = flag;
+        this.strings = strings
+    }
+
+    public get(key: string, options: {[option: string]: boolean} = {}): string {
+        let str: string = key in this.strings ? this.strings[key] : key;
+        if("italic" in options && options["italic"] === true) {
+            str = `_${str}_`;
+        }
+        if("bold" in options && options["bold"] === true) {
+            str = `**${str}**`;
+        }
+        // checking flags must be the final addition!
+        if("flags" in options && options["flags"] === true) {
+            str = `${this.flag} ${str}`;
+        }
+        return str;
+    }
+}
+
+export const german = new Language("DE", ":flag_de:", DE);
+export const english = new Language("EN", ":flag_gb:", EN);
+export const swabian = new Language("DE_SWG", ":black_large_square::yellow_square:", DE_SWG);
+
+export const availableLanguages = [german, english, swabian];
+const currentLanguages: Language[] = [];
+
+/**
+* Sets the used locale to the passed languages. Unknown languages will be skipped. 
+* 
+* @param abbreviations - a list of abbreviations for the languages to use. E.g. ["DE", "EN"] uses German and English (in that order). 
+*                        Available abbreviations can be retrieved from the exported constant availableLanguages.
+*/
+export function setLanguages(abbreviations: string[]) {
+    currentLanguages.length = 0; // wouldn't you know it, this is actually the way to empty an array in JS...
+    for(const abbreviation of abbreviations) {
+        const language = availableLanguages.find(l => l.abbreviation === abbreviation);
+        if(language === undefined) {
+            U.logger.warn(`Skipping unknown language ${language}`);
+        } else {
+            currentLanguages.push(language);
+        }
+    }
+    U.logger.info(`Locales are now set to ${currentLanguages.map(l => l.abbreviation)}.`);
+}
+
 /**
 * Tries to resolve the passed key into a locale string. 
 * 
@@ -896,21 +948,7 @@ DE_SWG = {
 *          If no locale string could be found, the key is returned instead.
 */
 export function get(key: string, args?: string[], separator: string = "\n\n", flags = true, options: {[option: string]: boolean} = {}): string {
-    const flagIcons = [flags ? ":flag_de: " : "", flags ? ":flag_gb: " : "", flags ? ":black_large_square::yellow_square:" : ""];
-    const strings = [key in DE ? DE[key].formatUnicorn(args) : key, key in EN ? EN[key].formatUnicorn(args) : key, key in DE_SWG ? DE_SWG[key].formatUnicorn(args) : key]
-                    .map(s => {
-                        if("italic" in options && options["italic"] === true) {
-                            s = `_${s}_`;
-                        }
-                        if("bold" in options && options["bold"] === true) {
-                            s = `**${s}**`;
-                        }
-                        return s;
-                    });  
-
-    return [0,1,2].map(i => `${flagIcons[i]}${strings[i]}`)
-                .join(separator);
-    //return `${flagde}${sde}${separator}${flagen}${sen}`;
-    //return ":flag_de: {0}{1}:flag_gb: {2}".formatUnicorn(sde, separator, sen);
-    //return key in DE ? DE[key].formatUnicorn(args) : key;
+    options.flags = flags; // flags was a separate parameter for historical reasons. Monkey-patching this into a proper option-dictionary now~
+    return currentLanguages.map(l => l.get(key, options)).join(separator);
 };
+

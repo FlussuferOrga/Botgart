@@ -35,9 +35,10 @@ const configSchema = {
             if (!Array.isArray(val)) {
                 throw new Error(`Languages should be an array`);
             }
+            const availableLanguages = Locale.availableLanguages.map(language => language.abbreviation)
             for(const language of val) {
-                if (!Locale.LANGUAGES.includes(language)) {
-                    throw new Error(`"${language}" is not an available language in ${Locale.LANGUAGES}`)
+                if (!availableLanguages.includes(language)) {
+                    throw new Error(`"${language}" is not an available language in ${availableLanguages}`)
                 }    
             }           
         },
