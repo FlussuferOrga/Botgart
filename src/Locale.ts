@@ -594,7 +594,7 @@ DE = {
 };
 
 let DE_SWG : {[key:string]: string} = {
-    "HELPTEXT_PREFIX": "Des benutzsch so:\n"
+    "HELPTEXT_PREFIX": "Des machsch so:\n"
 };
 
 DE_SWG = {
@@ -610,7 +610,7 @@ DE_SWG = {
         "NO_SUCH_COMMAND": "'{0}' kenn i net.",
         "NOT_AVAILABLE_AS_DM": "Des kannsch net innere Privatnachricht mache. Probiersch nochamol aufm Server.",
         "NOT_CRONABLE": "Des kannsch net als Cronjob mache.",
-        "NO_DEL_PERM": "Nachrichten derf i net lösche. Machsch dein letzte Nachricht bitte selbscht weg.",
+        "NO_DEL_PERM": "Nachrichten derf i net lösche. Machsch dein letscht Nachricht bitte selbscht weg.",
         "KEY_INVALID_FORMAT": "Gibsch mer bitte en gültige API-Key. Den kriegsch auf https://account.arena.net/.",
         "KEY_ACCEPTED": "Servus, Flussufler! Liesch dir bitte die Informationen im INFOCENTER durch, damit des hier gescheid nutze kannsch. :)",
         "KEY_DECLINED": "Des isch koin Account auf Flussufer oder nedemol en gültiger API-Key.",
@@ -653,37 +653,37 @@ DE_SWG = {
 
         "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 
-        "HELPTEXT_AUTHENTICATE": DE["HELPTEXT_PREFIX"] + "GW2 API-Key mit den Berechtigungen 'account' und 'characters', den du unter https://account.arena.net/applications erhalten kannst.",
-        "HELPTEXT_PERMIT": DE["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
-        "HELPTEXT_SAY": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
-        "HELPTEXT_MAKE_CRON": DE["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
-        "HELPTEXT_DELETE_CRON": DE["HELPTEXT_PREFIX"] + "`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
-        "HELPTEXT_POLL": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
-        "HELPTEXT_MAKE_FAQ": DE["HELPTEXT_PREFIX"] + "`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",
-        "HELPTEXT_GET_FAQ": DE["HELPTEXT_PREFIX"] + "`<Schüsselwort>`",
-        "HELPTEXT_DELETE_FAQ": DE["HELPTEXT_PREFIX"] + "`<Schüsselwort>`",
-        "HELPTEXT_PIPE_GUILD_LOG": DE["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
-        "HELPTEXT_ADD_PERMANENT_ROLE": DE["HELPTEXT_PREFIX"] + "`<@user>` `<@role>`",
-        "HELPTEXT_REMOVE_PERMANENT_ROLE": DE["HELPTEXT_PREFIX"] + "`<@user>` `<@role>`",
-        "HELPTEXT_WHOIS": DE["HELPTEXT_PREFIX"] + "`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
-        "HELPTEXT_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, in dem Nachrichten dieses Typs geleitet werden sollen>`",
-        "HELPTEXT_REMOVE_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, aus dem Nachrichten dieses Typs entfernt werden sollen (optional)>`",
-        "HELPTEXT_LIST_DISCORD_LOG": DE["HELPTEXT_PREFIX"] + "`<Textkanal, aus dem vorhandene Meldungstypen angezeigt werden sollen (optional)>`",
-        "HELPTEXT_PRUNE": DE["HELPTEXT_PREFIX"] + "`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
-        "HELPTEXT_RESET_ROSTER": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Post erstellt werden soll>` (`Kalenderwoche für den Reset, Standard: aktuelle Woche`) (`Jahr für den Reset, Standard: aktuelles Jahr`)",
-        "HELPTEXT_ADD_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>` `<Jahr (optional)>`",
-        "HELPTEXT_TOGGLE_RESET_LEADER_VISIBILITY": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)` `<Jahr (optional)>`",
-        "HELPTEXT_REMOVE_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
+        "HELPTEXT_AUTHENTICATE": DE_SWG["HELPTEXT_PREFIX"] + "'en GW2 API-Key mit 'account' und 'characters', den kriegsch auf https://account.arena.net/applications",
+        "HELPTEXT_PERMIT": DE_SWG["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
+        "HELPTEXT_SAY": DE_SWG["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
+        "HELPTEXT_MAKE_CRON": DE_SWG["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
+        "HELPTEXT_DELETE_CRON": DE_SWG["HELPTEXT_PREFIX"] + "`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
+        "HELPTEXT_POLL": DE_SWG["HELPTEXT_PREFIX"] + "`<Channel, in dem der Poll erstellt werden soll> \"<Frage, um die es im Poll geht>\" \"<Emotes, die zur Reaktion zur Verfügung stehen sollen>\"`.",
+        "HELPTEXT_MAKE_FAQ": DE_SWG["HELPTEXT_PREFIX"] + "`\"<Schüsselwörter, die mit der Antwort verknüpft werden sollen. Werden am Semikolon (;) getrennt>` `\"<Text, der angezeigt werden sollen>\"`.",
+        "HELPTEXT_GET_FAQ": DE_SWG["HELPTEXT_PREFIX"] + "`<Schüsselwort>`",
+        "HELPTEXT_DELETE_FAQ": DE_SWG["HELPTEXT_PREFIX"] + "`<Schüsselwort>`",
+        "HELPTEXT_PIPE_GUILD_LOG": DE_SWG["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" `<API Key des Anführers>` `<Channel, in dem der Log geschrieben werden soll>`",
+        "HELPTEXT_ADD_PERMANENT_ROLE": DE_SWG["HELPTEXT_PREFIX"] + "`<@user>` `<@role>`",
+        "HELPTEXT_REMOVE_PERMANENT_ROLE": DE_SWG["HELPTEXT_PREFIX"] + "`<@user>` `<@role>`",
+        "HELPTEXT_WHOIS": DE_SWG["HELPTEXT_PREFIX"] + "`<Teilname des Accounts oder Discord-Namens (mindestens drei Buchstaben!)>`",
+        "HELPTEXT_DISCORD_LOG": DE_SWG["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, in dem Nachrichten dieses Typs geleitet werden sollen>`",
+        "HELPTEXT_REMOVE_DISCORD_LOG": DE_SWG["HELPTEXT_PREFIX"] + "`<Eventtyp (beliebig)>` `<Textkanal, aus dem Nachrichten dieses Typs entfernt werden sollen (optional)>`",
+        "HELPTEXT_LIST_DISCORD_LOG": DE_SWG["HELPTEXT_PREFIX"] + "`<Textkanal, aus dem vorhandene Meldungstypen angezeigt werden sollen (optional)>`",
+        "HELPTEXT_PRUNE": DE_SWG["HELPTEXT_PREFIX"] + "`<Anzahl Offline-Tage bis ein Benutzer als inaktiv angesehen wird (1 <= n <= 30)>` `<Text, den entfernte Benutzer als Privatnachricht erhalten>`",
+        "HELPTEXT_RESET_ROSTER": DE_SWG["HELPTEXT_PREFIX"] + "`<Channel, in dem der Post erstellt werden soll>` (`Kalenderwoche für den Reset, Standard: aktuelle Woche`) (`Jahr für den Reset, Standard: aktuelles Jahr`)",
+        "HELPTEXT_ADD_RESET_LEADER": DE_SWG["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<{0}>` `<Kalenderwoche (optional)>` `<Jahr (optional)>`",
+        "HELPTEXT_TOGGLE_RESET_LEADER_VISIBILITY": DE_SWG["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)` `<Jahr (optional)>`",
+        "HELPTEXT_REMOVE_RESET_LEADER": DE_SWG["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
-        "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
-        "HELPTEXT_REVOKE_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
-        "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
-        "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
-        "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
-        "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
-        "HELPTEXT_REACTION_SNAPSHOT": DE["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
-        "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
-        "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
+        "HELPTEXT_AWARD_ACHIEVEMENT": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
+        "HELPTEXT_REVOKE_ACHIEVEMENT": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
+        "HELPTEXT_LIST_ACHIEVEMENTS": DE_SWG["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_DELETE_TS_REGISTRATION": DE_SWG["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
+        "HELPTEXT_GO_FISH": DE_SWG["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_FISHING_LADDER": DE_SWG["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_REACTION_SNAPSHOT": DE_SWG["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
+        "HELPTEXT_TS_GUILD_ADD": DE_SWG["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
+        "HELPTEXT_TS_GUILD_DELETE": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -725,25 +725,25 @@ DE_SWG = {
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
 
-        "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
-        "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
-        "MK_GUILD_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Gilden-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
-        "MK_GUILD_CANCELED": "Gildenerstellung wurde abgebrochen.",
-        "MK_GUILD_COMPLETE": "Anfrage zum Anlegen einer Gilde wurde an den TeamSpeak-Server gesendet",
+        "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nBasst des so?",
+        "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nBasst des so?",
+        "MK_GUILD_TIMEOUT": "Des hat mer zlang gedauert. Probiersch halt no amol.",
+        "MK_GUILD_CANCELED": "Okay, lassmers halt.",
+        "MK_GUILD_COMPLETE": "I han des jetzt amol an de TS gschickt.",
         "MK_GUILD_UNKNOWN_GUILD": "Es gibt keine Gilde namens '{0}' im Spiel. Stell bitte sicher, dass du dich nicht verschrieben hast und achte auf korrekte Groß-/ Kleinschreibung.",
 
-        "RM_GUILD_COMPLETE": "Anfrage zum Löschen einer Gilde wurde an den TeamSpeak-Server gesendet.",
+        "RM_GUILD_COMPLETE": "I frag amol de TS.",
 
-        "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
+        "COOLDOWN_GO_FISH": "Du bisch noch viel zum entspannt. Jetzt wartsch halt emol noch {0} Sekunde(n). :relieved:",
 
-        "COMMANDER_TAG_UP": "Kommandeur **{0}** ({1}) hat im TeamSpeak einen Raid gestartet! {2}",
-        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Auf dem TeamSpeak beitreten",
-        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn du TeamSpeak 3 installiert hast, kannst du über diesen Link dem Kommandeur beitreten.",
+        "COMMANDER_TAG_UP": "Kommandör **{0}** ({1}) fangt grad en Raid im TeamSpeak an! {2}",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Uffen TeamSpeak gange",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn'd TeamSpeak 3 installiert hesch, kannsch über selle Link em Kommandör beitrete.",
 
-        "RED_BORDERLANDS": "Rote Grenzlande",
-        "BLUE_BORDERLANDS": "Blaue Grenzlande",
-        "GREEN_BORDERLANDS": "Grüne Grenzlande",
-        "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
+        "RED_BORDERLANDS": "Rote Grenz",
+        "BLUE_BORDERLANDS": "Blaue Grenz",
+        "GREEN_BORDERLANDS": "Grüne Grenz",
+        "ETERNAL_BATTLEGROUNDS": "Ewige",
         "RESETLEAD_HEADER": "Drücksch auf des passende Emote, damitd en Kommandeur für de Reset wirsch. Um dich auszumtrage drücksch grad aufs ❌. Wennd willsch, dass mer unsre Gegner bscheid sage, wod nagehsch, drücksch aufs 📣.",
         "ROSTER_EXISTS": "Da hemmer scho en Roster: {0}",
         "WEEK_NUMBER": "Kalenderwoche",
@@ -757,7 +757,7 @@ DE_SWG = {
         "MK_EVENT_REMINDER": "Falls automatisch eine Erinnerung gepostet werden soll, gib jetzt an, wie viele Minuten vor dem Event das geschehen soll. Gib eine negative Zahl an, falls du keine Erinnerung möchtest.",
         "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
 
-        "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
+        "ACHIEVEMENT_UNLOCKED": "Erfolg freigschaltet",
 
         "ACHIEVEMENT_NAME_GLIMMER": "Lichtle",
         "ACHIEVEMENT_DESC_GLIMMER": "Leitsch für e Stund.",
@@ -781,19 +781,19 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_OWL": "Eul",
         "ACHIEVEMENT_DESC_OWL": "Leitsch e Spätschicht. Dann musch aber dei Lamp zwische 23:00 Uhr und 6:00 Uhr anschalte und e ganze Stund mache.",
-        "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
+        "ACHIEVEMENT_FLAV_OWL": "Wennd net bald schlafe gehsch, verpennsch morge wieder de halbe Tag.",
 
-        "ACHIEVEMENT_NAME_EARLYBIRD": "Schaffe, Schaffe, Früh Uffstande",
+        "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Leitsch e Frühschicht. Dann musch aber dei Lamp zwische 6:00 Uhr und 10:00 Uhr anschalte und e ganze Stund mache.",
-        "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! ",
+        "ACHIEVEMENT_FLAV_EARLYBIRD": "Schaffe, Schaffe, Früh Uffstande",
         
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
         "ACHIEVEMENT_DESC_ANNIHILATOR": "Du führsch de Server zu erre KDR von 2.",
-        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
+        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit dem Blut der Badenser..",
 
         "ACHIEVEMENT_NAME_NEVERSURRENDER": "Net Aufgebbe!",
         "ACHIEVEMENT_DESC_NEVERSURRENDER": "Fängsch amol mit deim Raid an, wenn der Server höchschtens e KDR von 0,6 hat.",
-        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
+        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie möget uns es Leben nemme, aber niemals nemmet se uns unsere Mauldasche!",
 
         "ACHIEVEMENT_NAME_CONQUEROR": "Eroberer",
         "ACHIEVEMENT_DESC_CONQUEROR": "Mit dir hebemer en Tick von 250.",
@@ -801,11 +801,11 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
         "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Schloss Stoinebel gebe mer net her. Muschs aber für mindeschtens e Stund halte.",
-        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, der König zu sein.",
+        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, en Schwob zum sein.",
 
         "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agiler Verteidiger",
         "ACHIEVEMENT_DESC_AGILEDEFENDER": "Mir hend kei Stufe 3 Ziel hergebe. Aber nur zur Primetime (zwischen 18:00 und 21:00) wennd mindeschtens e Stund gleitet hasch und mir drei oder mehr Stufe 3 Ziele hend.",
-        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Wenn ihr uns ruft, dann werden wir kommen.",
+        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Sagsch bscheid, dann kommet mer.",
 
         "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Gründlicher Feldherr",
         "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "Mir hend elle Befestigungen einer beliebigen Karte. Des umfasst nur Lager, Türme, Festungen und Schloss Stoinebel ein.",
@@ -817,11 +817,11 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Beharrlicher Belagerer",
         "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Nimmsch während deiner Raids hunnert Bfestigunge der Stufe 3 ei.",
-        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt.",
+        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "Mir hend die Brücke und die zwoite Hall gnomme. Die hend des Tor versperrt, könnet es aber net lang halte. Die Erde bebt.",
 
         "ACHIEVEMENT_NAME_PRINCESS": "Prinzessin",
         "ACHIEVEMENT_DESC_PRINCESS": "Nimmsch während deirer Raids de Fischadler-Palascht ei",
-        "ACHIEVEMENT_FLAV_PRINCESS": "\"Ich bin eine Prinzessin!\" -- Unbekannt ",
+        "ACHIEVEMENT_FLAV_PRINCESS": "\"Ich bin eine Prinzessin!\" -- Domi",
 
         "ACHIEVEMENT_NAME_CASTLING": "Rochade",
         "ACHIEVEMENT_DESC_CASTLING": "Nimmsch e höherwertige Befeschtigung deirer Gegner ei, der gleichzeitig eine unsrer Befeschtigungen ei'nimmt.",
@@ -869,7 +869,7 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Ausdauernder Kommandeur",
         "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Machsch für fünf Stunde.",
-        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Ist wahrscheinlich nur auf dem Keyboard eingeschlafen.",
+        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Isch eh aufem Keyboard eingschlofe.",
 
         "ACHIEVEMENT_NAME_INFINITESTAMINA": "Unerschöpfliche Ausdauer",
         "ACHIEVEMENT_DESC_INFINITESTAMINA": "Machsch für zehn Stunde.",
@@ -897,8 +897,8 @@ class Language {
         this.strings = strings
     }
 
-    public get(key: string, options: {[option: string]: boolean} = {}): string {
-        let str: string = key in this.strings ? this.strings[key] : key;
+    public get(key: string, args: string[] = [], options: {[option: string]: boolean} = {}): string {
+        let str: string = key in this.strings ? this.strings[key].formatUnicorn(args) : key;
         if("italic" in options && options["italic"] === true) {
             str = `_${str}_`;
         }
@@ -949,6 +949,6 @@ export function setLanguages(abbreviations: string[]) {
 */
 export function get(key: string, args?: string[], separator: string = "\n\n", flags = true, options: {[option: string]: boolean} = {}): string {
     options.flags = flags; // flags was a separate parameter for historical reasons. Monkey-patching this into a proper option-dictionary now~
-    return currentLanguages.map(l => l.get(key, options)).join(separator);
+    return currentLanguages.map(l => l.get(key, args, options)).join(separator);
 };
 
