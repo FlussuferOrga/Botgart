@@ -1,4 +1,5 @@
 //import { WvwMap } from "./commands/resetlead/ResetLead";
+export const LANGUAGES = ["DE", "EN", "DE_SWG"];
 
 export let EN : Object = {
     "HELPTEXT_PREFIX": "Please use the command with the following parameters:\n"
@@ -761,7 +762,7 @@ DE_SWG = {
 
         "ACHIEVEMENT_NAME_GLIMMER": "Lichtle",
         "ACHIEVEMENT_DESC_GLIMMER": "Leitsch für e Stund.",
-        "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!",
+        "ACHIEVEMENT_FLAV_GLIMMER": "Fangsch amol gloi oa!",
 
         "ACHIEVEMENT_NAME_SUNRAY": "d'Sunn",
         "ACHIEVEMENT_DESC_SUNRAY": "Leitsch für zehn Stund.",
