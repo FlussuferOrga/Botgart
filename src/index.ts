@@ -8,6 +8,7 @@ import { DBPatch } from "./patches/DBPatch";
 import { allPatches, getPatch } from "./patches/PatchRegistry";
 import { log } from "./Util";
 import { WebServer } from "./WebServer";
+import * as L from "./Locale";
 
 // bit weird but works only this way...
 const args = CommandLineArgs.default([
@@ -53,6 +54,7 @@ if (args.patchall || args.patch) {
     const intents = new Intents(Intents.NON_PRIVILEGED); // default intents
     intents.add("GUILD_MEMBERS"); // privileged intents, require checkbox in discord bot settings
 
+    L.setLanguages(config.get("locales"));
     const client = new BotgartClient(
         {ownerID: config.get("owner_ids")},
         {ws: {intents: intents}},

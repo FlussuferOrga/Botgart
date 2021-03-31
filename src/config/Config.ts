@@ -4,6 +4,7 @@ import { Memoizer } from "memoizer-ts";
 import moment from "moment-timezone";
 import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
+import * as Locale from "../Locale";
 
 const configSchema = {
     prefix: {
@@ -27,6 +28,23 @@ const configSchema = {
         default: 2202, //Riverside FTW
         arg: 'home-id',
         env: 'HOME_ID'
+    },
+    locales: {
+        doc: 'Language',
+        format: val => {
+            if (!Array.isArray(val)) {
+                throw new Error(`Languages should be an array`);
+            }
+            const availableLanguages = Locale.availableLanguages.map(language => language.abbreviation)
+            for(const language of val) {
+                if (!availableLanguages.includes(language)) {
+                    throw new Error(`"${language}" is not an available language in ${availableLanguages}`)
+                }    
+            }           
+        },
+        default: ["DE", "EN"],
+        arg: "locales",
+        env: "LOCALES"
     },
     world_assignments: {
         doc: 'World Role Mapping',
