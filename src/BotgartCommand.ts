@@ -136,7 +136,7 @@ export class BotgartCommand extends Command {
      * @returns - description of this command.
      */
     public desc() {
-        return L.get(this.descriptionKey(), [], " ");
+        return L.get(this.descriptionKey(), [], "\n");
     }
 
     /**
@@ -291,10 +291,10 @@ export class BotgartCommand extends Command {
     * @returns {Promise} - the promise for whichever method was executed.
     */
     public reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
-        if(message) {
+        if (message) {
             return message.channel.send(response);
         } else {
             return responsible.send(response);
         }
-    } 
+    }
 }
