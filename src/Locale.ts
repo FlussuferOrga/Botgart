@@ -428,7 +428,7 @@ DE = {
         "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
-        "DESC_FIND_UNREGISTERED": "Finde Nutzer, die eine Serverrtolle haben, aber nicht in der Datenbank zu finden sind.",
+        "DESC_FIND_UNREGISTERED": "Finde Nutzer, die eine Serverrolle haben, aber nicht in der Datenbank zu finden sind.",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
@@ -724,6 +724,7 @@ DE_SWG = {
         "DESC_REACTION_SNAPSHOT": "Listet die momentanen Reaktionen eines bestimmten Posts auf.",
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
+        "DESC_FIND_UNREGISTERED": "Findet en Spieler, der e Serverrolle het, aber net in der Datebank zu finde isch.",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nBasst des so?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nBasst des so?",
