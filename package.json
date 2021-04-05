@@ -27,7 +27,7 @@
     "dateformat": "^3.0.3",
     "discord": "^0.8.2",
     "discord-akairo": "^8.1.0",
-    "discord.js": "^12.5.2",
+    "discord.js": "^12.5.3",
     "express": "^4.17.1",
     "gw2api-client": "^7.4.2",
     "lodash": "^4.17.21",
