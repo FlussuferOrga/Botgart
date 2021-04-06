@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
-import { log } from "../Util";
 import { BotgartCommand } from "../BotgartCommand";
+import { log } from "../Util";
 
 /**
 Testcases:

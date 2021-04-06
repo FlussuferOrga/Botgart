@@ -1,4 +1,4 @@
-import { Database } from "../database/DB";
+import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
@@ -9,7 +9,7 @@ export class Patch7 extends DBPatch {
         super(db);
     }
 
-    protected async satisfied(): Promise<boolean> { 
+    protected async satisfied(): Promise<boolean> {
         return this.columnExists("reset_rosters", "year");
     }
 

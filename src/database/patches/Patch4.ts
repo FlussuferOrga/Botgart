@@ -1,4 +1,4 @@
-import { Database } from "../database/DB";
+import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
@@ -9,7 +9,7 @@ export class Patch4 extends DBPatch {
         super(db);
     }
 
-    protected async satisfied(): Promise<boolean> { 
+    protected async satisfied(): Promise<boolean> {
         return this.tableExists("command_permissions") && this.viewExists("command_permissions_agg");
     }
 

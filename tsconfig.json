@@ -5,6 +5,7 @@
         "target": "es6",
         "baseUrl": "./src",
         "sourceMap": true,
+        "experimentalDecorators": true,
         "paths": {
             "config.json": ["../config.json"]
         },

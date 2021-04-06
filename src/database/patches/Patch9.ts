@@ -1,4 +1,4 @@
-import { Database } from "../database/DB";
+import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
@@ -9,8 +9,8 @@ export class Patch9 extends DBPatch {
         super(db);
     }
 
-    protected async satisfied(): Promise<boolean> { 
-        return this.tableExists("fish") 
+    protected async satisfied(): Promise<boolean> {
+        return this.tableExists("fish")
             && this.tableExists("caught_fish")
             && this.viewExists("fishing_leaderboard")
     }

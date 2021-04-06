@@ -1,7 +1,7 @@
 import { Semaphore } from "await-semaphore";
-import { Database } from "../database/DB";
-import { getAccountName } from "../Gw2ApiUtils";
-import { log } from "../Util";
+import { Database } from "../Database";
+import { getAccountName } from "../../Gw2ApiUtils";
+import { log } from "../../Util";
 import { DBPatch } from "./DBPatch";
 
 /**
@@ -14,7 +14,7 @@ export class Patch3 extends DBPatch {
         super(db);
     }
 
-    protected async satisfied(): Promise<boolean> { 
+    protected async satisfied(): Promise<boolean> {
         return this.columnExists("registrations", "account_name");
     }
 

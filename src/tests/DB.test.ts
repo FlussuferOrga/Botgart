@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import fs from "fs";
-import { Database } from "../database/DB";
-import { DatabasePatcher } from "../patches/DatabasePatcher";
-import { allPatches } from "../patches/PatchRegistry";
+import { Database } from "../database/Database";
+import { DatabasePatcher } from "../database/patches/DatabasePatcher";
+import { allPatches } from "../database/patches/PatchRegistry";
 import { EnvironmentVariablesRepository } from "../repositories/EnvironmentVariablesRepository";
 
 describe("DB", function () {

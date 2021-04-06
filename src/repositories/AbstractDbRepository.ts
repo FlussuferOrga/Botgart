@@ -1,4 +1,4 @@
-import { Database } from "../database/DB";
+import { Database } from "../database/Database";
 
 export abstract class AbstractDbRepository {
     private db: Database;

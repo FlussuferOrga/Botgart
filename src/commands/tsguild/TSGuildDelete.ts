@@ -1,6 +1,6 @@
-import * as L from "../../Locale";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
+import * as L from "../../Locale";
 
 /**
 Testcases:

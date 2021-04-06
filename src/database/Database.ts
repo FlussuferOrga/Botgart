@@ -1,15 +1,6 @@
-import * as sqlite3 from "better-sqlite3";
-
-import { Worker } from "worker_threads";
-
+import betterSqlite3 from "better-sqlite3";
 
 import { log } from "../Util";
-
-interface WorkerJob {
-    resolve: any,
-    reject: any,
-    message: { sql: string, parameters: any[] }
-}
 
 export class Database {
     public static getInstance(databaseFilePath) {
@@ -20,11 +11,9 @@ export class Database {
     }
 
     readonly file: string;
-    private queue: WorkerJob[];
 
-    constructor(file: string) {
+    private constructor(file: string) {
         this.file = file;
-        this.queue = [];
     }
 
     // NOTE: https://github.com/orlandov/node-sqlite/issues/17
@@ -85,9 +74,10 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    private getDB(): sqlite3.Database {
-        const db = sqlite3.default(this.file, undefined);
+    private openConnection(): betterSqlite3.Database {
+        const db = betterSqlite3(this.file, {});
         db.pragma("foreign_keys = ON");
+        db.pragma("journal_mode = WAL");
         return db;
     }
 
@@ -97,7 +87,7 @@ export class Database {
      * returns: the result of the lambda.
      */
     public execute<T>(f: (sqlite3) => T): T | undefined {
-        const db = this.getDB();
+        const db = this.openConnection();
 
         let res: T | undefined;
         try {
@@ -109,10 +99,6 @@ export class Database {
 
         db.close();
         return res;
-    }
-
-    public close(){
-        this.getDB().close()
     }
 
 }

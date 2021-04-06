@@ -1,10 +1,10 @@
 import * as akairo from "discord-akairo"
 import * as discord from "discord.js"
+import { AchievementRegistry } from "./achievements/AchievementRegistry";
 import { BotgartCommand } from "./BotgartCommand"
-import * as achievements from "./commands/achievements/Achievements";
 import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
-import * as db from "./database/DB"
+import { Database } from "./database/Database";
 import { APIEmitter } from "./emitters/APIEmitter"
 import { AchievementRepository } from "./repositories/AchievementRepository";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
@@ -45,12 +45,13 @@ export class BotgartClient extends akairo.AkairoClient {
     public validationService: ValidationService;
     public revalidationService: RevalidationService;
 
-    private ts3connection: TS3Connection;
+    private readonly ts3connection: TS3Connection;
     public readonly gw2apiemitter: APIEmitter;
     public readonly ts3listener: TS3Listener;
     public readonly wvwWatcher: WvWWatcher;
     public readonly commanders: CommanderStorage;
-    private achievements: { [key: string]: achievements.Achievement<any> };
+    public readonly achievementRegistry: AchievementRegistry;
+
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
@@ -59,7 +60,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
     constructor(options: (akairo.AkairoOptions & discord.ClientOptions) | undefined,
                 clientOptions: discord.ClientOptions | undefined,
-                db: db.Database) {
+                db: Database) {
         super(options, clientOptions);
 
         //Repositories
@@ -81,7 +82,6 @@ export class BotgartClient extends akairo.AkairoClient {
         this.validationService = new ValidationService(this)
         this.revalidationService = new RevalidationService(this)
 
-        this.achievements = {};
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
@@ -90,7 +90,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         const prefix = getConfig().get().prefix;
         this.commandHandler = new akairo.CommandHandler(this, {
-            directory: './built/commands/',
+            directory: __dirname + '/commands/',
             prefix: prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
@@ -107,12 +107,12 @@ export class BotgartClient extends akairo.AkairoClient {
         });
 
         this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: './built/listeners/'
+            directory: __dirname + '/listeners/'
         });
         this.listenerHandler.loadAll();
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: './built/inhibitors/'
+            directory: __dirname + '/inhibitors/'
         });
         this.inhibitorHandler.loadAll();
 
@@ -171,29 +171,8 @@ export class BotgartClient extends akairo.AkairoClient {
             });
         });
 
-        const achievementsList = Util.loadModuleClasses(__dirname + "/commands/achievements/Achievements.js", [this], ["Achievement"])
-            .filter(value => Util.isa(value, achievements.Achievement))
-            .map(value => <achievements.Achievement<any>>value);
-        Util.log("info", `Registering achievements: [${achievementsList.map(value => value.name).join(", ")}].`);
-        achievementsList.forEach(achievement => {
-            const ach: achievements.Achievement<any> = <achievements.Achievement<any>>achievement;
-            this.registerAchievement(ach);
-        });
+        this.achievementRegistry = AchievementRegistry.create(this);
     }
-
-    public getAchievements(): achievements.Achievement<any>[] {
-        return Object.values(this.achievements);
-    }
-
-    public getAchievement(name: string): achievements.Achievement<any> | undefined {
-        name = name.toLowerCase();
-        return name in this.achievements ? this.achievements[name] : undefined;
-    }
-
-    public registerAchievement(achievement: achievements.Achievement<any>) {
-        this.achievements[achievement.name.toLowerCase()] = achievement;
-    }
-
 
     public getTS3Connection(): TS3Connection {
         return this.ts3connection;

@@ -7,7 +7,6 @@ import * as U from "../Util";
 
 /**
  Testcases:
-
  */
 
 export class Whois extends BotgartCommand {
@@ -50,9 +49,10 @@ export class Whois extends BotgartCommand {
             let chunk = "\u200B";
             for (let queryResult of res) {
                 // output result
-                const response = "{0} | {1} | {2} | {3} | {4}"
+                const response = "{0}{1} | {2} | {3} | {4} | {5}"
                     .formatUnicorn(
                         queryResult.member?.toString(),
+                        queryResult.member?.user?.bot ? " :robot:" : "",
                         Whois.backticksIfNotEmpty(queryResult.member?.id),
                         Whois.backticksIfNotEmpty(queryResult.member?.user?.tag),
                         Whois.backticksIfNotEmpty(queryResult.member?.nickname),

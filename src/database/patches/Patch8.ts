@@ -1,4 +1,4 @@
-import { Database } from "../database/DB";
+import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
@@ -10,8 +10,8 @@ export class Patch8 extends DBPatch {
         super(db);
     }
 
-    protected async satisfied(): Promise<boolean> { 
-        return this.tableExists("ts_leads") 
+    protected async satisfied(): Promise<boolean> {
+        return this.tableExists("ts_leads")
             && this.tableExists("player_achievements")
             && this.tableExists("player_achievement_posts")
             && this.tableExists("matchups")
@@ -23,7 +23,7 @@ export class Patch8 extends DBPatch {
             && this.tableExists("environment_variables")
             && this.tableExists("player_activities")
             && this.tableExists("wvw_factions")
-            && this.tableExists("wvw_maps")            
+            && this.tableExists("wvw_maps")
             && this.viewExists("captured_objectives")
             && this.viewExists("map_ticks")
             && this.viewExists("total_ticks")
@@ -310,7 +310,7 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievement_posts`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS ts_leads`).run();      
+        this.connection.prepare(`DROP TABLE IF EXISTS ts_leads`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS matchup_stats`).run();
@@ -323,7 +323,7 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS player_activities`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS wvw_factions`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS wvw_maps`).run();        
+        this.connection.prepare(`DROP TABLE IF EXISTS wvw_maps`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS environment_variables`).run();
         this.dbcommit()
