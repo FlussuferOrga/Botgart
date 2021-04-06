@@ -77,7 +77,6 @@ export class Database {
     private openConnection(): betterSqlite3.Database {
         const db = betterSqlite3(this.file, {});
         db.pragma("foreign_keys = ON");
-        db.pragma("journal_mode = WAL");
         return db;
     }
 
