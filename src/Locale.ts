@@ -1,4 +1,3 @@
-import { GuildEmoji } from "discord.js";
 import * as U from "./Util";
 
 let EN : {[key:string]: string} = {

@@ -1,8 +1,8 @@
-import * as Const from "../../Const";
-import * as L from "../../Locale";
 import * as discord from "discord.js";
-import * as gw2u from "../../Gw2ApiUtils";
 import { BotgartCommand } from "../../BotgartCommand";
+import * as Const from "../../Const";
+import * as gw2u from "../../Gw2ApiUtils";
+import * as L from "../../Locale";
 
 /**
 Testcases:

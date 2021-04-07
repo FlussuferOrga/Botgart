@@ -1,8 +1,6 @@
 import callsites from "callsites";
 import { Guild, Role } from "discord.js";
-import * as discord from "discord.js";
 
-import glob from "glob" // dynamic module loading
 import moment from "moment-timezone";
 import path from "path" // ^
 import * as winston from "winston";
@@ -49,49 +47,6 @@ export function determineTier(yaksDelivered: number) {
 }
 
 /**
- * Cheating instanceof(x,c)
- * When loading classes with loadDirectoryModuleClasses,
- * the instanceof fails since upgrading Node.
- * So this low-effort but also kinda dangerous method
- * (only checks for name, no namespace checking or anything!)
- * serves as a replacement, especially when loading the Achievements.
- * @param x: the object to check the class of.
- * @param c: the class of which x should be an instance of (subclasses are allowed).
- * @returns true, if c is somewhere in the inheritance chain of x.
- */
-export function isa(x: any, c: any) {
-    let is = false;
-    let cls = Object.getPrototypeOf(x);
-    do {
-        is = cls.constructor.name == c.name;
-        cls = Object.getPrototypeOf(cls);
-    } while (!is && cls != null);
-    return is;
-}
-
-export function loadDirectoryModuleClasses(directory: string, args: any[] = [], blacklist: string[] = []): object[] {
-    // careful! Skips variables, but WILL instantiate non-class-functions! 
-    return glob.sync(directory).map(file => loadModuleClasses(file, args, blacklist)).reduce((acc, cls) => acc.concat(cls), []);
-}
-
-export function loadModuleClasses(file: string, args: any[] = [], blacklist: string[] = []): object[] {
-    const loadedClasses: object[] = [];
-    const module = require(path.resolve(file));
-    for (const exportName in module) {
-        if (!blacklist.includes(exportName)) {
-            try {
-                loadedClasses.push(new module[exportName](...args));
-            } catch (e) {
-                if (!(e instanceof TypeError)) {
-                    throw e; // discard failed instantiations of functions and variables, throw everything else
-                }
-            }
-        }
-    }
-    return loadedClasses;
-}
-
-/**
  * Tries to parse a date from a string that can be used for the node-schedule library.
  * That is: either a valid date (format can be specified by the second parameter) or a cron-like string (https://crontab.guru/).
  * input: the input to parse
@@ -127,41 +82,6 @@ export function compareDatesWithoutTime(d1: Date, d2: Date) {
         && d1.getUTCFullYear() == d2.getUTCFullYear()
 }
 
-/**
- * Creates a standard UTC day without the time components.
- * This can be relevant when adding to a day during computations
- * can lead to confusing results when it's the middle of the day.
- * -> 2019-12-24 13:00 -> 2019-12-24 00:00
- * d: the Date to normalise
- * returns: the passed day with the time components set to 0
- */
-export function getStandardDay(d: Date) {
-    return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
-}
-
-export enum WvwRegion {
-    EU = "EU",
-    NA = "NA"
-}
-
-function getWvwRegionProperties(wvwRegion: WvwRegion) {
-    let resetWeekDay: number;
-    let resetTimeUTC: number;
-    switch (wvwRegion) {
-        case WvwRegion.EU:
-            resetWeekDay = 5;
-            resetTimeUTC = 18;
-            break
-        case WvwRegion.NA:
-            resetWeekDay = 6
-            resetTimeUTC = 2
-            break
-        default:
-            throw Error("Unmapped WvW Region")
-    }
-    return {resetWeekDay, resetTimeUTC};
-}
-
 export function formatUserPing(uid: string) {
     return "<@{0}>".formatUnicorn(uid);
 }
@@ -180,6 +100,7 @@ export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
+
 export function assertType(obj: any, t: string): void {
     let p = obj;
     while (p && p.constructor.name !== t) {

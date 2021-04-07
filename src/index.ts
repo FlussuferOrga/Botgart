@@ -2,13 +2,13 @@ import * as CommandLineArgs from "command-line-args";
 import { Intents } from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import { Database } from "./database/DB";
-import { DatabasePatcher } from "./patches/DatabasePatcher";
-import { DBPatch } from "./patches/DBPatch";
-import { allPatches, getPatch } from "./patches/PatchRegistry";
+import { Database } from "./database/Database";
+import * as L from "./Locale";
+import { DatabasePatcher } from "./database/patches/DatabasePatcher";
+import { DBPatch } from "./database/patches/DBPatch";
+import { allPatches, getPatch } from "./database/patches/PatchRegistry";
 import { log } from "./Util";
 import { WebServer } from "./WebServer";
-import * as L from "./Locale";
 
 // bit weird but works only this way...
 const args = CommandLineArgs.default([
@@ -69,7 +69,6 @@ if (args.patchall || args.patch) {
                 .then(() => {
                     client.destroy();
                     webServer.close();
-                    database.close();
                     log("info", "Bye");
                     process.exit(0);
                 })
@@ -84,7 +83,6 @@ if (args.patchall || args.patch) {
         webServer.start();
     }).catch(reason => {
         log("error", `Error starting up Bot: ${reason}`);
-        database.close();
         process.exit(1);
     });
 }

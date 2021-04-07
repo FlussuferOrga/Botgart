@@ -124,8 +124,12 @@ export class Authenticate extends BotgartCommand {
                                         // It could therefore happen that some users end up with access to channels they should not really have, but oh well...
                                         // Maybe some day someone wants to take a really good look into this.
                                         await this.getBotgartClient().validationService.setMemberRolesByString(m.member, [r.name], "Authentication")
+
                                         // give earned achievement roles again
-                                        for (const achievement of cl.achievementRepository.getPlayerAchievements(guid.toString()).map(an => cl.getAchievement(an.achievement_name)).filter(a => a !== undefined)) {
+                                        const achievements = cl.achievementRepository.getPlayerAchievements(guid.toString())
+                                            .map(an => cl.achievementRegistry.getAchievement(an.achievement_name))
+                                            .filter(a => a !== undefined);
+                                        for (const achievement of achievements) {
                                             achievement?.giveRole(m.member);
                                         }
                                         cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);

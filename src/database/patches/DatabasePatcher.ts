@@ -1,5 +1,5 @@
-import { Database } from "../database/DB";
-import { log } from "../Util";
+import { Database } from "../Database";
+import { log } from "../../Util";
 import { DBPatch } from "./DBPatch";
 
 export class DatabasePatcher {

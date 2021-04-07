@@ -1,4 +1,4 @@
-import { Database } from "../database/DB";
+import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
@@ -10,7 +10,7 @@ export class Patch1 extends DBPatch {
         super(db);
     }
 
-    protected async satisfied(): Promise<boolean> { 
+    protected async satisfied(): Promise<boolean> {
         return this.columnExists("registrations", "registration_role");
     }
 

@@ -2,9 +2,9 @@ import convict from "convict";
 import fs from 'fs';
 import { Memoizer } from "memoizer-ts";
 import moment from "moment-timezone";
+import * as Locale from "../Locale";
 import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
-import * as Locale from "../Locale";
 
 const configSchema = {
     prefix: {
@@ -36,11 +36,11 @@ const configSchema = {
                 throw new Error(`Languages should be an array`);
             }
             const availableLanguages = Locale.availableLanguages.map(language => language.abbreviation)
-            for(const language of val) {
+            for (const language of val) {
                 if (!availableLanguages.includes(language)) {
                     throw new Error(`"${language}" is not an available language in ${availableLanguages}`)
-                }    
-            }           
+                }
+            }
         },
         default: ["DE", "EN"],
         arg: "locales",
@@ -186,6 +186,12 @@ const configSchema = {
         },
     },
     achievements: {
+        enabled: {
+            format: Boolean,
+            default: true,
+            arg: 'achievements-enabled',
+            env: 'ACHIEVEMENTS_ENABLED'
+        },
         channel: {
             format: String,
             default: 'achievements',
