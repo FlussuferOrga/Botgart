@@ -13,13 +13,13 @@ import {
     TagDownAchievement,
     TagUpAchievement
 } from "./Achievement";
-import { registerAchievement } from "./AchievementRegistry";
+import { registrableAchievement } from "./AchievementRegistry";
 
 
 //------------------------------------------------------------------------------
 // ACHIEVEMENTS
 //------------------------------------------------------------------------------
-@registerAchievement()
+@registrableAchievement
 export class Glimmer extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/a/a9/Solar_Beam.png",
@@ -36,7 +36,7 @@ export class Glimmer extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Sunray extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/37/Cosmic_Ray.png",
@@ -53,7 +53,7 @@ export class Sunray extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class BlazingLight extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e6/Lunar_Impact.png",
@@ -70,7 +70,7 @@ export class BlazingLight extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Supernova extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/ff/Astral_Wisp.png",
@@ -87,7 +87,7 @@ export class Supernova extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Trailblazer extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e1/Banner_of_Strength.png",
@@ -107,7 +107,7 @@ export class Trailblazer extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Owl extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e3/Swoop_%28bird%29.png",
@@ -125,7 +125,7 @@ export class Owl extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Earlybird extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/3c/Hunter%27s_Call.png",
@@ -143,7 +143,7 @@ export class Earlybird extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Annihilator extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/e/e4/Rampage.png",
@@ -168,7 +168,7 @@ export class Annihilator extends ObjectiveAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class NeverSurrender extends TagUpAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/6c/Vengeance_%28skill%29.png",
@@ -202,7 +202,7 @@ export class NeverSurrender extends TagUpAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Conqueror extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/8d/Mind_Wrack.png",
@@ -231,7 +231,7 @@ export class Conqueror extends ObjectiveAchievement {
 }
 
 
-@registerAchievement()// fixme
+@registrableAchievement// fix
 export class UnchallengedSovereign extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/5/5f/Champion%27s_Crown.png",
@@ -247,7 +247,7 @@ export class UnchallengedSovereign extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class AgileDefender extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/33/Iron_Guards.png",
@@ -278,7 +278,7 @@ export class AgileDefender extends TagDownAchievement {
 }
 
 
-@registerAchievement()// fixme
+@registrableAchievement// fix
 export class ThoroughCommander extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/8/85/Watchtower.png",
@@ -294,7 +294,7 @@ export class ThoroughCommander extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class BoldBesieger extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/32/Trebuchet_Blueprints.png",
@@ -311,7 +311,7 @@ export class BoldBesieger extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class TenaciousBesieger extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/63/Superior_Trebuchet_Blueprints.png",
@@ -328,7 +328,7 @@ export class TenaciousBesieger extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Princess extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/f2/Princess.png",
@@ -349,7 +349,7 @@ export class Princess extends ObjectiveAchievement {
 }
 
 
-@registerAchievement()// fixme
+@registrableAchievement// fix
 export class Castling extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/f/fd/Arcane_Thievery.png",
@@ -365,7 +365,7 @@ export class Castling extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Ettin extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mirror_Images.png",
@@ -381,7 +381,7 @@ export class Ettin extends ObjectiveAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Hydra extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/46/Mass_Invisibility.png",
@@ -398,7 +398,7 @@ export class Hydra extends ObjectiveAchievement {
 }
 
 
-@registerAchievement()// fixme
+@registrableAchievement// fix
 export class Shiftchange extends TagUpAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/6/60/Phase_Retreat.png",
@@ -414,7 +414,7 @@ export class Shiftchange extends TagUpAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Bulletproof extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/2/24/Endure_Pain.png",
@@ -430,7 +430,7 @@ export class Bulletproof extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class Boozecommander extends Achievement<any> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png",
@@ -446,7 +446,7 @@ export class Boozecommander extends Achievement<any> {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class FromAshes extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/c/c1/Phoenix.png",
@@ -462,7 +462,7 @@ export class FromAshes extends NewMatchupAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class ThePresident extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://simpsonspedia.net/images/b/b8/Arnold_Schwarzenegger.png",
@@ -478,7 +478,7 @@ export class ThePresident extends NewMatchupAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class MountainIsCalling extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/a/a1/Inspiring_Reinforcement.png",
@@ -494,7 +494,7 @@ export class MountainIsCalling extends NewMatchupAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class ThePeak extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/c/c7/Fortify.png",
@@ -510,7 +510,7 @@ export class ThePeak extends NewMatchupAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class TierSolidifier extends NewMatchupAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/3/31/%22Stand_Your_Ground%21%22.png",
@@ -526,7 +526,7 @@ export class TierSolidifier extends NewMatchupAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class StaminaCommander extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/9/92/Savage_Leap.png",
@@ -542,7 +542,7 @@ export class StaminaCommander extends TagDownAchievement {
     }
 }
 
-@registerAchievement()
+@registrableAchievement
 export class InfiniteStamina extends TagDownAchievement {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/4/42/Rush.png",

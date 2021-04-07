@@ -123,11 +123,11 @@ export abstract class Achievement<C> {
                         U.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
-                    const role: discord.Role | undefined = guild.roles.cache.find(r => r.name === this.getRoleName());
+                    const role = this.getRole(guild)
                     if (role !== undefined) {
                         discordUser.roles.add(role);
                     } else {
-                        guild.roles.create({data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"})
+                        this.createRole(guild)
                             .then(r => discordUser.roles.add(r))
                             .catch(e => U.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
                     }
@@ -135,6 +135,10 @@ export abstract class Achievement<C> {
             }
         }
         return result;
+    }
+
+    private createRole(guild: discord.Guild) {
+        return guild.roles.create({data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"});
     }
 
     /**
@@ -175,7 +179,7 @@ export abstract class Achievement<C> {
      */
     giveRole(discordUser: discord.GuildMember): boolean {
         let given = false;
-        const role = discordUser.guild.roles.cache.find(r => r.name === this.getRoleName());
+        const role = this.getRole(discordUser.guild)
         if (role) {
             discordUser.roles.add(role);
             given = true;
@@ -191,12 +195,16 @@ export abstract class Achievement<C> {
      */
     removeRole(discordUser: discord.GuildMember): boolean {
         let removed = false;
-        const role = discordUser.guild.roles.cache.find(r => r.name === this.getRoleName());
+        const role = this.getRole(discordUser.guild);
         if (role) {
             discordUser.roles.remove(role);
             removed = true;
         }
         return removed;
+    }
+
+    private getRole(guild: discord.Guild) {
+        return guild.roles.cache.find(r => r.name === this.getRoleName());
     }
 
     abstract checkCondition(discordUser: discord.GuildMember, context: C): boolean;

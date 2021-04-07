@@ -7,14 +7,12 @@ type AchievementType = new (client: BotgartClient) => Achievement<any>
 
 const achievementCreators: AchievementType[] = [];
 
-export function registerAchievement() {
-    return (target: AchievementType) => {
-        achievementCreators.push(target);
-    };
+export function registrableAchievement(target: AchievementType) {
+    achievementCreators.push(target);
 }
 
 //this triggers loading the achievements, which are then collected by the decorator.
-export * as allAchievements from './Achievements'
+export * as allAchievements from "./Achievements"
 
 // ---- AchievementRegistry ----
 export class AchievementRegistry {
