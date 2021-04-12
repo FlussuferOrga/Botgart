@@ -37,7 +37,7 @@
     "node-schedule": "^2.0.0",
     "node-teamspeak-api": "^1.0.0",
     "nodemon": "^2.0.7",
-    "singly-linked-list": "^1.4.0",
+    "singly-linked-list": "^1.4.1",
     "sqlite": "^4.0.21",
     "string-similarity": "^4.0.4",
     "validate.js": "^0.13.01",
