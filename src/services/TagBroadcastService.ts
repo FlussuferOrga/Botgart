@@ -1,4 +1,4 @@
-import discord, { MessageEmbed, Util } from "discord.js";
+import discord, { Message, MessageEmbed, Util } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
@@ -73,15 +73,24 @@ export class TagBroadcastService {
     }
 
     async tagDownBroadcast(commander: Commander) {
-        const message = await commander.getBroadcastMessage()?.fetch(); // better refetch...
+        let message = await TagBroadcastService.fetchMessageOrNull(commander);
         if (message !== undefined) {
             await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_INACTIVE);
         }
     }
 
+    private static async fetchMessageOrNull(commander: Commander): Promise<undefined | Message> {
+        try {
+            return await commander.getBroadcastMessage()?.fetch();
+        } catch (e) {
+            log("warn", `Cannot tag down, message not found. ${e}`);
+        }
+        return undefined;
+    }
+
     async tagDownAllBroadcastsForShutdown() {
         for (const commander of this.client.commanders.getAllCommanders()) {
-            const message = await commander.getBroadcastMessage()?.fetch(); // better refetch...
+            const message = await TagBroadcastService.fetchMessageOrNull(commander); // better refetch...
             if (message !== undefined) {
                 log("info", `Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
                 await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_UNKNOWN)
@@ -89,7 +98,7 @@ export class TagBroadcastService {
         }
     }
 
-    private static async updateEmbedTagdown(message: any, color: number) {
+    private static async updateEmbedTagdown(message: Message, color: number) {
         const embed = message.embeds[0];
         if (embed) {
             let toUpdate = false
