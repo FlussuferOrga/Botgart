@@ -4,9 +4,9 @@ import { BotgartCommand } from "../BotgartCommand";
 import { getConfig } from "../config/Config";
 import { getAccountGUID, getAccountName, validateWorld } from "../Gw2ApiUtils";
 import * as L from "../Locale";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { Registration } from "../repositories/RegistrationRepository";
-import * as Util from "../Util";
+import * as Util from "../util/Util";
 
 const LOG = logger();
 

@@ -6,7 +6,7 @@ import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
 import { Database } from "./database/Database";
 import { APIEmitter } from "./emitters/APIEmitter"
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
 import { AchievementRepository } from "./repositories/AchievementRepository";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
 import { CronJobRepository } from "./repositories/CronJobRepository";
@@ -23,7 +23,7 @@ import { RevalidationService } from "./services/RevalidationService";
 import { TagBroadcastService } from "./services/TagBroadcastService";
 import { ValidationService } from "./services/ValidationService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
-import * as Util from "./Util";
+import * as Util from "./util/Util";
 import { WvWWatcher } from "./WvWWatcher";
 
 const LOG = logger();

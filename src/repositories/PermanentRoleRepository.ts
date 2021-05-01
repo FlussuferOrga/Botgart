@@ -1,4 +1,4 @@
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 const LOG = logger();

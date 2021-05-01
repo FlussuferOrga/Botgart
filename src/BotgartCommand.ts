@@ -4,7 +4,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import * as L from "./Locale";
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
 
 export enum PermissionTypes {
     user = "user",

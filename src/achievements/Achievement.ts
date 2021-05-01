@@ -4,10 +4,10 @@ import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as gw2api from "../emitters/APIEmitter";
 import * as L from "../Locale";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
-import * as U from "../Util";
+import * as U from "../util/Util";
 
 export enum AchievementAwardResult {
     AWARDED_FIRST_TIME,

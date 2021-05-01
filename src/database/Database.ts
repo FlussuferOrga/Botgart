@@ -1,5 +1,5 @@
 import betterSqlite3 from "better-sqlite3";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 
 const LOG = logger();
 

@@ -1,4 +1,5 @@
 import * as CommandLineArgs from "command-line-args";
+
 import { Intents } from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
@@ -7,7 +8,8 @@ import { DatabasePatcher } from "./database/patches/DatabasePatcher";
 import { DBPatch } from "./database/patches/DBPatch";
 import { allPatches, getPatch } from "./database/patches/PatchRegistry";
 import * as L from "./Locale";
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
+import "./util/string.extensions"
 import { WebServer } from "./WebServer";
 
 // bit weird but works only this way...

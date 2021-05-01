@@ -1,5 +1,5 @@
 import discord from "discord.js";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 

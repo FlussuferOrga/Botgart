@@ -5,7 +5,7 @@ import * as http from "http";
 import * as moment from "moment";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
 import { Registration } from "./repositories/RegistrationRepository";
 
 const LOG = logger()

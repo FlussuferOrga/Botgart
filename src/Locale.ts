@@ -1,4 +1,4 @@
-import { logger as logger1 } from "./Logging";
+import { logger as logger1 } from "./util/Logging";
 
 const logger = logger1();
 

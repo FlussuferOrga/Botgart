@@ -4,7 +4,7 @@ import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import { logger } from "../../Logging";
+import { logger } from "../../util/Logging";
 import { Fish } from "../../repositories/FishingRepository";
 
 /**

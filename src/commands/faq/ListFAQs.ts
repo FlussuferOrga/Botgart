@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
-import * as Const from "../../Const";
-import { logger } from "../../Logging";
+import * as Const from "../../util/Const";
+import { logger } from "../../util/Logging";
 
 const TEASER_LENGTH = 30;
 const LOG = logger();

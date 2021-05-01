@@ -4,7 +4,7 @@ import { ResetLeader } from "../commands/resetlead/ResetLeader";
 import * as ResetUtil from "../commands/resetlead/ResetUtil";
 import { Roster } from "../commands/resetlead/Roster";
 import { WvwMap } from "../commands/resetlead/WvwMap";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 const LOG = logger();

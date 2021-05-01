@@ -3,7 +3,7 @@ import events from "events";
 import moment, { Moment } from "moment-timezone";
 import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
-import * as Util from "../../Util";
+import * as Util from "../../util/Util";
 import { ResetLeader } from "./ResetLeader";
 import * as ResetUtil from "./ResetUtil";
 import { WvwMap } from "./WvwMap";

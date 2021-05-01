@@ -1,6 +1,6 @@
 import { Semaphore } from "await-semaphore";
 import { getAccountName } from "../../Gw2ApiUtils";
-import { logger } from "../../Logging";
+import { logger } from "../../util/Logging";
 import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 

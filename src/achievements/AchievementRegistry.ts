@@ -1,5 +1,5 @@
 import { BotgartClient } from "../BotgartClient";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { Achievement } from "./Achievement";
 
 //basically the type of the constructor function

@@ -1,4 +1,4 @@
-import * as Util from "../../Util";
+import * as Util from "../../util/Util";
 
 export class ResetLeader implements Util.Equalable<ResetLeader> {
     public readonly name: string;

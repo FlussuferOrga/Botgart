@@ -9,7 +9,7 @@
  * and is only a very weak safety not -- circular dependencies and other fancy stuff is not
  * detected!
  */
-import { logger } from "../../Logging";
+import { logger } from "../../util/Logging";
 
 const LOG = logger();
 

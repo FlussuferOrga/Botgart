@@ -3,7 +3,7 @@ import * as schedule from "node-schedule";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import { logger } from "../../Logging";
+import { logger } from "../../util/Logging";
 
 const LOG = logger();
 

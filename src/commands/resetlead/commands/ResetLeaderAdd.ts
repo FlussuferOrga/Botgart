@@ -2,7 +2,7 @@ import * as akairo from "discord-akairo";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../../BotgartCommand";
 import * as L from "../../../Locale";
-import * as Util from "../../../Util";
+import * as Util from "../../../util/Util";
 import * as ResetUtil from "../ResetUtil";
 import { WvwMap } from "../WvwMap";
 

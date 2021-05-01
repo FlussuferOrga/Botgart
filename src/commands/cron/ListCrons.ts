@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
-import * as Const from "../../Const";
-import { logger } from "../../Logging";
-import { assertType} from "../../Util";
+import * as Const from "../../util/Const";
+import { logger } from "../../util/Logging";
+import { assertType} from "../../util/Util";
 
 const LOG = logger();
 

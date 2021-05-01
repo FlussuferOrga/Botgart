@@ -1,7 +1,7 @@
 import express, { Express } from "express";
 import * as http from "http";
 import { getConfig } from "./config/Config";
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
 
 // Create a new express app instance
 

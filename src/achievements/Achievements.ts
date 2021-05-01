@@ -3,10 +3,10 @@ import * as moment from "moment";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as gw2api from "../emitters/APIEmitter";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { FactionColour, Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
-import * as U from "../Util";
+import * as U from "../util/Util";
 import {
     Achievement,
     NewMatchupAchievement,

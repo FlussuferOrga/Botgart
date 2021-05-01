@@ -3,7 +3,7 @@ import * as discord from "discord.js";
 import { GuildMember } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
-import * as U from "../Util";
+import * as U from "../util/Util";
 
 /**
  Testcases:

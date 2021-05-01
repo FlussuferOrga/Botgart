@@ -9,7 +9,7 @@
         "paths": {
             "config.json": ["../config.json"]
         },
-	"module": "commonjs",
+        "module": "commonjs",
     "lib": ["es6", "es2017"],
 	"resolveJsonModule": true,
     "esModuleInterop": true,

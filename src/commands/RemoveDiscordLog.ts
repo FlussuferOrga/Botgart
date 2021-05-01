@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
 import { TextChannel } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 
 const LOG = logger();
 

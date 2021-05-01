@@ -1,5 +1,5 @@
 import gw2client from "gw2api-client";
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
 
 
 export function createApiInstance() {

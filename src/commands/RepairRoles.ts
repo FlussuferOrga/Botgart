@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { DesignatedRole } from "../repositories/RegistrationRepository";
 
 const LOG = logger();

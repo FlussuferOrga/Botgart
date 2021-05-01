@@ -1,7 +1,7 @@
 import chai, { assert, expect } from "chai";
 import chaiDateTime from "chai-datetime";
 import moment from "moment";
-import * as U from "../Util";
+import * as U from "../util/Util";
 
 chai.use(chaiDateTime);
 

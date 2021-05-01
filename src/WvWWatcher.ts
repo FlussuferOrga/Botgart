@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import * as moment from "moment";
 import { getConfig } from "./config/Config";
 import { createApiInstance } from "./Gw2ApiUtils";
-import { logger } from "./Logging";
+import { logger } from "./util/Logging";
 import { Matchup, MatchupRepository } from "./repositories/MatchupRepository";
 
 const LOG = logger();

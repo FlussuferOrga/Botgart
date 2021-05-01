@@ -6,9 +6,9 @@ import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as L from "../Locale";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { Registration } from "../repositories/RegistrationRepository";
-import { formatUserPing} from "../Util";
+import { formatUserPing} from "../util/Util";
 
 
 const LOG = logger();

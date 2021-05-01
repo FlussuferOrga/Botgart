@@ -2,7 +2,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../../../BotgartClient";
 import { BotgartCommand } from "../../../BotgartCommand";
 import * as L from "../../../Locale";
-import { logger } from "../../../Logging";
+import { logger } from "../../../util/Logging";
 import * as ResetUtil from "../ResetUtil";
 
 const LOG = logger();

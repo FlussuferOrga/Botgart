@@ -4,6 +4,7 @@ import { Database } from "../database/Database";
 import { DatabasePatcher } from "../database/patches/DatabasePatcher";
 import { allPatches } from "../database/patches/PatchRegistry";
 import { EnvironmentVariablesRepository } from "../repositories/EnvironmentVariablesRepository";
+import "../util/string.extensions"
 
 describe("DB", function () {
     const testGuild = "00000";

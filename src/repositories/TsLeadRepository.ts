@@ -1,5 +1,5 @@
 import * as moment from "moment";
-import * as Util from "../Util";
+import * as Util from "../util/Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 import { Registration } from "./RegistrationRepository";
 

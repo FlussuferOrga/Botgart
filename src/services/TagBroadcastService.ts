@@ -2,7 +2,7 @@ import discord, { Message, MessageEmbed, Util } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 import { Registration } from "../repositories/RegistrationRepository";
 import { Commander } from "../TS3Connection";
 

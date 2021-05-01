@@ -2,7 +2,7 @@ import * as discord from "discord.js";
 import { Achievement } from "../../achievements/Achievement";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import { logger } from "../../Logging";
+import { logger } from "../../util/Logging";
 
 const LOG = logger();
 

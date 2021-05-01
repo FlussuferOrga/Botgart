@@ -1,5 +1,4 @@
 import { Guild, Role } from "discord.js";
-
 import moment from "moment-timezone";
 
 export const RESET_WEEKDAY: number = 5; // FRIDAY
@@ -107,28 +106,6 @@ export function assertType(obj: any, t: string): void {
     // -> p being null implies that obj IS NOT a t.
     //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
 }
-
-declare global {
-    interface String {
-        formatUnicorn(...fnargs: any[]): string;
-    }
-}
-
-// taken from https://stackoverflow.com/a/18234317
-String.prototype.formatUnicorn = function (...fnargs: any[]): string {
-    var str = this.toString();
-    if (fnargs.length) {
-        var t = typeof fnargs[0];
-        var key;
-        var args = ("string" === t || "number" === t) ?
-            Array.prototype.slice.call(fnargs)
-            : fnargs[0];
-        for (key in args) {
-            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-        }
-    }
-    return str;
-};
 
 export interface Equalable<T> {
     equals: (other: T) => boolean;

@@ -2,8 +2,8 @@ import { GuildMember, Role } from "discord.js";
 import _ from "lodash";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
-import { logger } from "../Logging";
-import { findRole} from "../Util";
+import { logger } from "../util/Logging";
+import { findRole} from "../util/Util";
 
 const LOG = logger();
 

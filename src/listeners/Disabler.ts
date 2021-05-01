@@ -1,7 +1,7 @@
 import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
-import { logger } from "../Logging";
+import { logger } from "../util/Logging";
 
 const LOG = logger();
 
