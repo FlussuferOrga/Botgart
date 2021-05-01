@@ -1,5 +1,6 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
+import { getConfig } from "../../config/Config";
 
 /**
  Testcases:
@@ -13,7 +14,8 @@ export class ListAchievements extends BotgartCommand {
                 args: []
             },
             {
-                availableAsDM: true
+                availableAsDM: true,
+                enabled: getConfig().get().achievements.enabled,
             }
         );
     }

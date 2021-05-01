@@ -26,7 +26,6 @@ export class AchievementRegistry {
             this.achievements[achievement.name.toLowerCase()] = achievement;
         }
     }
-
     public getAchievements(): Achievement<any>[] {
         return Object.values(this.achievements);
     }

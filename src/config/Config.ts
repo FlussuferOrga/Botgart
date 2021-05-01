@@ -4,7 +4,6 @@ import { Memoizer } from "memoizer-ts";
 import moment from "moment-timezone";
 import * as Locale from "../Locale";
 import { logger } from "../util/Logging";
-import * as Util from "../util/Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 
 const LOG = logger();

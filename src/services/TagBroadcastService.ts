@@ -120,7 +120,6 @@ export class TagBroadcastService {
                 }
             }
             if (toUpdate) {
-                embed.setTimestamp(new Date())
                 await message.edit(embed)
             }
         }

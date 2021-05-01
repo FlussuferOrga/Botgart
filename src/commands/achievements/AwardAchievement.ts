@@ -2,6 +2,7 @@ import * as discord from "discord.js";
 import * as moment from "moment";
 import { Achievement, AchievementAwardResult } from "../../achievements/Achievement";
 import { BotgartCommand } from "../../BotgartCommand";
+import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
 
 /**
@@ -29,6 +30,9 @@ export class AwardAchievement extends BotgartCommand {
                         default: moment.utc()
                     }
                 ]
+            },
+            {
+                enabled: getConfig().get().achievements.enabled,
             }
         );
     }

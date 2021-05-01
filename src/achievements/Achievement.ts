@@ -60,6 +60,10 @@ export abstract class Achievement<C> {
         this.roleColour = roleColour;
         this.repeatable = repeatable;
         this.announceRepetitions = announceRepetitions;
+
+        if (getConfig().get().achievements.enabled) {
+            this.registerListeners();
+        }
     }
 
     /**
@@ -149,20 +153,19 @@ export abstract class Achievement<C> {
      * If so, they will be awarded, if not, nothing happens.
      */
     async tryAward(discordUser: discord.GuildMember, context: C) {
-        if (getConfig().get().achievements.enabled) {
-            LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
-            const profiler = LOG.startTimer();
-            try {
-                if (this.checkCondition(discordUser, context)) {
-                    LOG.debug(`Success! Awarding achievement to user.`)
-                    this.awardIn(discordUser.guild, discordUser);
-                } else {
-                    LOG.debug(`User did not pass condition.`)
-                }
-            } finally {
-                profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`})
+        LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
+        const profiler = LOG.startTimer();
+        try {
+            if (this.checkCondition(discordUser, context)) {
+                LOG.debug(`Success! Awarding achievement to user.`)
+                this.awardIn(discordUser.guild, discordUser);
+            } else {
+                LOG.debug(`User did not pass condition.`)
             }
+        } finally {
+            profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`})
         }
+
     }
 
     createEmbed(discordUser: discord.GuildMember, dbId: number) {
@@ -216,13 +219,18 @@ export abstract class Achievement<C> {
     }
 
     abstract checkCondition(discordUser: discord.GuildMember, context: C): boolean;
+
+    protected registerListeners() {
+    }
 }
 
 export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
 
-        client.ts3listener.on("tagup", async (x: ts3.TagUpEvent) => {
+    protected registerListeners() {
+        this.client.ts3listener.on("tagup", async (x: ts3.TagUpEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
                 await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
@@ -235,8 +243,10 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
 export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
 
-        client.ts3listener.on("tagdown", async (x: ts3.TagDownEvent) => {
+    protected registerListeners() {
+        this.client.ts3listener.on("tagdown", async (x: ts3.TagDownEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
                 await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
@@ -249,8 +259,10 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
 export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander, "objectives": gw2api.WvWMatches }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
 
-        client.gw2apiemitter.on("wvw-matches",
+    protected registerListeners() {
+        this.client.gw2apiemitter.on("wvw-matches",
             async (prom) => {
                 const objs = await prom;
                 await Promise.all(this.client
@@ -266,11 +278,15 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
 export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup, newMatchup: Matchup }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
+
+    protected registerListeners() {
+        const client = this.client;
         client.wvwWatcher.on("new-matchup",
             mu => {
                 if (mu.lastMatchup === undefined) return; // ignore for very first matchup that is stored
                 Promise.all(
-                    this.client.tsLeadRepository
+                    client.tsLeadRepository
                         .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                         .map(async r => {

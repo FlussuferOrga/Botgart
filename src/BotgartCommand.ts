@@ -15,13 +15,15 @@ export enum PermissionTypes {
 interface BotgartCommandOptionsNullable {
     availableAsDM?: boolean,
     cronable?: boolean,
-    everyonePermission?: number
+    everyonePermission?: number,
+    enabled?: boolean
 }
 
 interface BotgartCommandOptions {
     availableAsDM: boolean,
     cronable: boolean,
     everyonePermission: number
+    enabled: boolean
 }
 
 const LOG = logger();
@@ -30,6 +32,7 @@ export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
+    protected enabled: boolean;
     protected cmdargs: akairo.ArgumentOptions[] | akairo.ArgumentGenerator;
 
     /**
@@ -43,12 +46,18 @@ export class BotgartCommand extends Command {
      */
     constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
-        const defaults: BotgartCommandOptions = {availableAsDM: false, cronable: false, everyonePermission: 0};
+        const defaults: BotgartCommandOptions = {
+            availableAsDM: false,
+            cronable: false,
+            everyonePermission: 0,
+            enabled: true
+        };
         const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : Object.assign({}, defaults, botgartOptions);
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
         this.cmdargs = options.args === undefined ? [] : options.args;
+        this.enabled = settings.enabled;
     }
 
     /**
@@ -116,7 +125,7 @@ export class BotgartCommand extends Command {
         const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
         //console.log(allowed, perm);
         //console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
-        return this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0;
+        return this.isEnabled() && (this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0);
     }
 
     /**
@@ -298,5 +307,9 @@ export class BotgartCommand extends Command {
         } else {
             return responsible.send(response);
         }
+    }
+
+    public isEnabled() {
+        return this.enabled;
     }
 }

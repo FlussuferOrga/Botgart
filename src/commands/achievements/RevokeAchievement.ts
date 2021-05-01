@@ -1,6 +1,7 @@
 import * as discord from "discord.js";
 import { Achievement } from "../../achievements/Achievement";
 import { BotgartCommand } from "../../BotgartCommand";
+import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
 import { logger } from "../../util/Logging";
 
@@ -32,6 +33,9 @@ export class RevokeAchievement extends BotgartCommand {
                     },
 
                 ]
+            },
+            {
+                enabled: getConfig().get().achievements.enabled,
             }
         );
     }
