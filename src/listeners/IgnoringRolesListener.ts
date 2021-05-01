@@ -26,7 +26,7 @@ export class IgnoringRolesListener extends Listener {
             for(const achievement of client.achievementRegistry.getAchievements()) {
                 const role: discord.Role | undefined = newMember.guild.roles.cache.find(r => r.name === achievement.getRoleName());
                 if(role === undefined) {
-                    LOG.log("warning", `Could not find a role ${achievement.getRoleName()} on server ${newMember.guild.name} to remove when user ${newMember.displayName} chose to ignore achievement roles.`)
+                    LOG.warn(`Could not find a role ${achievement.getRoleName()} on server ${newMember.guild.name} to remove when user ${newMember.displayName} chose to ignore achievement roles.`)
                 } else {
                     newMember.roles.remove(role);
                 }
@@ -34,7 +34,7 @@ export class IgnoringRolesListener extends Listener {
             if(userdata) {
                 [deletedLeads, revokedAchievements] = client.achievementRepository.deleteAchievementInformation(userdata.gw2account);
             }
-            LOG.log("info", `Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`)
+            LOG.info(`Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`)
         }
     }
 }

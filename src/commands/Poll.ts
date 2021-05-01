@@ -79,7 +79,7 @@ export class Poll extends BotgartCommand {
             });
         },
         _ => {});
-        LOG.log("info", "Created poll '{0}'.".formatUnicorn(args.question))
+        LOG.info("Created poll '{0}'.".formatUnicorn(args.question))
     }
 }
 

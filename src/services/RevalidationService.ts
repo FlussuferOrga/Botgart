@@ -40,14 +40,14 @@ export class RevalidationService {
         await PromisePool.withConcurrency(1)
             .for(allRegistrations)
             .handleError(async (error, user) => {
-                LOG.log("error", `Error during validation of ${user.account_name}: ${error}`)
+                LOG.error(`Error during validation of ${user.account_name}: ${error}`)
             })
             .process(async reg => {
                 const result = await this.checkRegistration(this.worldAssignments, reg);
                 if (result !== undefined) {
                     await this.handle(reg, result)
                 } else {
-                    LOG.log("error", "API validation yielded undefined for the entire result of revalidations. Critical error!")
+                    LOG.error("API validation yielded undefined for the entire result of revalidations. Critical error!")
                     return;
                 }
             })
@@ -57,7 +57,7 @@ export class RevalidationService {
     private async checkRegistration(worldAssignments: { world_id: number; role: string }[],
                                     r: Registration): Promise<undefined | { roleName?: string, valid: boolean }> {
         let release = await RevalidationService.SEM.acquire();
-        LOG.log("info", `Sending revalidation request for API key ${r.api_key}.`)
+        LOG.info(`Sending revalidation request for API key ${r.api_key}.`)
         let res: (string | boolean) | undefined = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments)
             .then(
                 // this ternary hack is required to work around the typing of the Promise from validateWorld
@@ -74,7 +74,7 @@ export class RevalidationService {
                         // => remove the validation role from the user
                         return false;
                     } else {
-                        LOG.log("error", `Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`)
+                        LOG.error(`Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`)
                         return undefined;
                     }
                 }
@@ -99,23 +99,23 @@ export class RevalidationService {
 
         // filter out users for which we encountered errors
         if (!guild) {
-            LOG.log("error", `Could not find a guild ${registration.guild}. Have I been kicked?`)
+            LOG.error(`Could not find a guild ${registration.guild}. Have I been kicked?`)
         } else {
             const member: discord.GuildMember | undefined = await guild.members.fetch(registration.user)
                 .catch(ex => {
-                    LOG.log("error", `Could not restrieve user ${registration.user}: ${ex.message}`)
+                    LOG.error(`Could not restrieve user ${registration.user}: ${ex.message}`)
                     return undefined;
                 });
             const registeredWithRole = registration.registration_role;
             if (!member) {
-                LOG.log("info", `${registration.user} is no longer part of the discord guild. Deleting their key.`)
+                LOG.info(`${registration.user} is no longer part of the discord guild. Deleting their key.`)
                 this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 return;
             }
             if (!authResult.valid) {
                 // user should be pruned: user has either transed (false) or deleted their key (invalid key)
-                LOG.log("info", "Unauthing {0}.".formatUnicorn(member.user.username))
+                LOG.info("Unauthing {0}.".formatUnicorn(member.user.username))
                 await this.client.validationService.setMemberRolesByString(member, [], "Api Key invalid or not authorized Server")
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
@@ -130,7 +130,7 @@ export class RevalidationService {
                 const admittedRoleName = authResult.roleName;
                 let admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === admittedRoleName);
                 if (!admittedRole) { // false -> no role should be assigned assigned at all
-                    LOG.log("error", `Can not find the role "${admittedRoleName}" that should be currently used.`)
+                    LOG.error(`Can not find the role "${admittedRoleName}" that should be currently used.`)
                     throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`)
 
                 } else {

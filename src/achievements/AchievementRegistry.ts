@@ -21,7 +21,7 @@ export class AchievementRegistry {
     private readonly achievements: { [key: string]: Achievement<any> } = {};
 
     constructor(achievements: Achievement<any>[]) {
-        LOG.log("info", `Registering achievements: [${achievements.map(value => value.name).join(", ")}].`)
+        LOG.info(`Registering achievements: [${achievements.map(value => value.name).join(", ")}].`)
         for (let achievement of achievements) {
             this.achievements[achievement.name.toLowerCase()] = achievement;
         }

@@ -41,11 +41,11 @@ export class Prune extends BotgartCommand {
         return guild.members.prune({days: args.days, dry: false, reason: args.message})
             .then(pruned => {
                 let mes: string = "{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days);
-                LOG.log("info", "{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days))
+                LOG.info("{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days))
                 return mes;
             })
             .catch(e => {
-                LOG.log("error", e.message)
+                LOG.error(e.message)
                 return "An error occurred while pruning: {0}".formatUnicorn(e.message);
             });
     }

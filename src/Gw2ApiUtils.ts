@@ -47,7 +47,7 @@ export function validateWorld(apikey: string, worldAssignments: { world_id: numb
             }
         }),
         err => new Promise((resolve, reject) => {
-            LOG.log("error", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)))
+            LOG.error("Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)))
             if (err.content.text === "invalid key") {
                 return reject(exports.validateWorld.ERRORS.invalid_key);
             } else {

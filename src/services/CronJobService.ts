@@ -30,16 +30,16 @@ export class CronJobService {
             let args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             let guild = this.client.guilds.cache.find(g => g.id == cron.guild);
             if (!guild) {
-                LOG.log("error", "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id))
+                LOG.error("I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id))
             } else {
                 const responsible: discord.GuildMember = await guild.members.fetch(cron.created_by); // cache.find(m => m.user.id == cron.created_by);
 
                 if (!responsible) {
-                    LOG.log("warn", "Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(cron.created_by, cron.id, guild.name))
+                    LOG.warn("Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(cron.created_by, cron.id, guild.name))
                 } else {
                     let job = this.scheduleCronJob(cron.schedule, responsible.user, guild, mod, args);
                     if (!job) {
-                        LOG.log("error", "Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id))
+                        LOG.error("Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id))
                     } else {
                         if (cron.id in this.scheduledJobs && this.scheduledJobs[cron.id]) {
                             // just to be safe, cancel any remaining jobs before rescheduling them
@@ -47,12 +47,12 @@ export class CronJobService {
                         }
                         this.scheduledJobs[cron.id] = job;
                         cronCount++;
-                        LOG.log("info", "Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command))
+                        LOG.info("Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command))
                     }
                 }
             }
         });
-        LOG.log("info", "Done rescheduling {0} cronjobs.".formatUnicorn(cronCount))
+        LOG.info("Done rescheduling {0} cronjobs.".formatUnicorn(cronCount))
         return cronCount;
     }
 

@@ -116,33 +116,33 @@ export class RegistrationRepository extends AbstractDbRepository {
                 db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
                 return true;
             } catch (err) {
-                LOG.log("error", "Error while trying to store API key: {0}.".formatUnicorn(err.message))
+                LOG.error("Error while trying to store API key: {0}.".formatUnicorn(err.message))
                 return false;
             }
         });
     }
 
     public loadRegistrationsFromDb(): Registration[] {
-        LOG.log("info", `Loading all registrations from DB.`)
+        LOG.info(`Loading all registrations from DB.`)
         const execute = this.execute(db => {
             return db.prepare(`SELECT id, api_key, guild, user, registration_role, account_name
                                FROM registrations
                                ORDER BY guild`).all()
         });
-        LOG.log("info", `Loaded ${execute.length} from DB.`)
+        LOG.info(`Loaded ${execute.length} from DB.`)
 
         return execute;
     }
 
     public loadUserIds(guildId: string): string[] {
-        LOG.log("info", `Loading all user ids for guild ${guildId}`)
+        LOG.info(`Loading all user ids for guild ${guildId}`)
         const execute = this.execute(db => {
             return db.prepare(`SELECT user
                                FROM registrations
                                WHERE guild = ?
                                ORDER BY user`).all(guildId)
         });
-        LOG.log("info", `Loaded ${execute.length} user ids from DB.`)
+        LOG.info(`Loaded ${execute.length} user ids from DB.`)
 
         return execute.map(value => value.user);
     }

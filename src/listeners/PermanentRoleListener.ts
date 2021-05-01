@@ -19,9 +19,9 @@ export class PermanentRoleListener extends Listener {
             let role = g.roles.find(r => r.name === roleName);
             if(role) {
                 member.addRole(role, "permanent role");
-                LOG.log("info", "Succesfully re-added permanent role {0} to user {1}.".formatUnicorn(roleName, member.user.username))
+                LOG.info("Succesfully re-added permanent role {0} to user {1}.".formatUnicorn(roleName, member.user.username))
             } else {
-                LOG.log("warning", "No role with name '{0}' was found on this server, which was configured as permanent role for user {1}. Skipping.".formatUnicorn(roleName, member.user.username))
+                LOG.warn("No role with name '{0}' was found on this server, which was configured as permanent role for user {1}. Skipping.".formatUnicorn(roleName, member.user.username))
             }
         });
     }

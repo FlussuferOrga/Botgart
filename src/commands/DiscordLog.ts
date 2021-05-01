@@ -35,7 +35,7 @@ export class DiscordLog extends BotgartCommand {
     command(message, responsible, guild, args) {
         const cl = this.getBotgartClient();
         cl.logChannelRepository.addLogChannel(guild, args.type, args.channel);
-        LOG.log("notice", "Set up log channel '{0}' for event type '{1}' in guild '{2}'.".formatUnicorn(args.channel.name, args.type, guild.name));
+        LOG.info("Set up log channel '{0}' for event type '{1}' in guild '{2}'.".formatUnicorn(args.channel.name, args.type, guild.name));
         (<discord.Message>message).react("✅"); // that's a white checkmark, even if not rendered properly...
     }
 }

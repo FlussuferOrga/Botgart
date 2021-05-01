@@ -40,16 +40,16 @@ export class Say extends BotgartCommand {
         let result;
         let g = this.client.guilds.cache.find(g => g.id == guild.id);
         if(!g) {
-            LOG.log("error", "I am not a member of guild {0}.".formatUnicorn(guild.id))
+            LOG.error("I am not a member of guild {0}.".formatUnicorn(guild.id))
             result = false;
         } else {
             let c:discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
             if(!c) {
-                LOG.log("error", "Can not find a channel {0}.".formatUnicorn(args.channel.id))
+                LOG.error("Can not find a channel {0}.".formatUnicorn(args.channel.id))
                 result = false;
             } else {
                 c.send(args.text);
-                LOG.log("info", "Executed Say.")
+                LOG.info("Executed Say.")
                 result = true;
             }
         }

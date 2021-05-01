@@ -265,7 +265,7 @@ function loadConfiguration() {
 
         return config;
     } catch (e) {
-        LOG.log("error", "Could not load configuration: " + e)
+        LOG.error("Could not load configuration: " + e)
         process.exit(1)
     }
 }
@@ -275,6 +275,6 @@ function logConfig(config) {
 
     //probably we shouldn't log a token.
     configJsonString = configJsonString.replace(config.get().token, "***REDACTED***")
-    LOG.log("debug", `Resolved Configuration:\n${configJsonString}`);
+    LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
 

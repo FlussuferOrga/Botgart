@@ -13,10 +13,10 @@ export class Startup extends Listener {
     }
 
     exec() {
-        LOG.log("info", "Bot started!");
+        LOG.info("Bot started!");
         const client: BotgartClient = <BotgartClient>this.client;
 
-        LOG.log("info", "Rescheduling cronjobs from database.");
+        LOG.info("Rescheduling cronjobs from database.");
         client.cronJobService.rescheduleCronJobs();
 
         const help = client.commandHandler.modules.get("help")?.id;

@@ -22,7 +22,7 @@ export class FindDuplicates extends BotgartCommand {
             Promise.all(userNames.map(async u => await guild.members.fetch(u)).filter(u => u))
             .then(users => responsible.send(`${d.gw2account}: ${users.join(", ")}`));           
         });
-        LOG.log("info", "Finding duplicates complete.")
+        LOG.info("Finding duplicates complete.")
     }
 
     postExecHook(message: discord.Message, args: any, result: any): void {

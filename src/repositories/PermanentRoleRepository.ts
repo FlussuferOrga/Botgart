@@ -11,7 +11,7 @@ export class PermanentRoleRepository extends AbstractDbRepository {
                 db.prepare(sql).run(guild, user, role);
                 return true;
             } catch(err) {
-                LOG.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message))
+                LOG.error("Error while trying to store permanent role: {0}.".formatUnicorn(err.message))
                 return false;
             }
         }) as boolean;
@@ -28,7 +28,7 @@ export class PermanentRoleRepository extends AbstractDbRepository {
                 db.prepare(sql).run(guild, user, role);
                 return true;
             } catch(err) {
-                LOG.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message))
+                LOG.error("Error while trying to store permanent role: {0}.".formatUnicorn(err.message))
                 return false;
             }
         }) as boolean;

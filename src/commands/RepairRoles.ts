@@ -38,15 +38,15 @@ export class RepairRoles extends BotgartCommand {
             }
             // check again, in case lookup fails
             if (g === undefined) {
-                LOG.log("error", `Could not look up a guild with ID ${d.guild}. Have I been kicked?`)
+                LOG.error(`Could not look up a guild with ID ${d.guild}. Have I been kicked?`)
             } else {
                 r = g.roles.cache.find(role => role.name === d.registration_role);
                 m = await g.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
                 if (r === undefined) {
-                    LOG.log("error", `Was supposed to assign role '${d.registration_role}' to user, but could not find it.`)
+                    LOG.error(`Was supposed to assign role '${d.registration_role}' to user, but could not find it.`)
                 } else {
                     if (!m) {
-                        LOG.log("error", `User ${d.user} is not present in this guild.`)
+                        LOG.error(`User ${d.user} is not present in this guild.`)
                     } else {
                         await this.getBotgartClient().validationService.setMemberRoles(m, [r], "Role Repair")
                     }

@@ -23,7 +23,7 @@ export class ListFaqs extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!responsible) {
-            LOG.log("error", "Can not execute lsfaqs without member to reply to. Canceling.")
+            LOG.error("Can not execute lsfaqs without member to reply to. Canceling.")
             return;
         }
         let format: string = "{0} | {1}";

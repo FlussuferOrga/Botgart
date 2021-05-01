@@ -33,7 +33,7 @@ export class AddPermanentRole extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!message) {
-            LOG.log("error", "Mandatory message parameter missing. This command can not be issued as cron.")
+            LOG.error("Mandatory message parameter missing. This command can not be issued as cron.")
             return;
         }
 
@@ -42,10 +42,10 @@ export class AddPermanentRole extends BotgartCommand {
         const success = cl.permanentRoleRepository.storePermanentRole(args.member.user.id, (<discord.Guild>message.guild).id, args.role.name);
 
         if(success) {
-            LOG.log("info", "Successfully added role {0} to user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, (<discord.Guild>message.guild).name))
+            LOG.info("Successfully added role {0} to user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, (<discord.Guild>message.guild).name))
             message.util?.send(L.get("PERMANENT_ROLE_ADD_SUCC"));
         } else {
-            LOG.log("info", "Could not add role {0} to user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, (<discord.Guild>message.guild).name))
+            LOG.info("Could not add role {0} to user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, (<discord.Guild>message.guild).name))
             message.util?.send(L.get("PERMANENT_ROLE_ADD_FAIL"));
         }
     }

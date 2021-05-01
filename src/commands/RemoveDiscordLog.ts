@@ -40,7 +40,7 @@ export class RemoveDiscordLog extends BotgartCommand {
         let textChannel: TextChannel;
         textChannel = guild.channels.cache.find(channel => channel.name === args.channel)
         cl.logChannelRepository.removeLogChannel(guild, args.type, textChannel);
-        LOG.log("notice", "Removed log channel '{0}' for event type '{1}' in guild '{2}'."
+        LOG.info("Removed log channel '{0}' for event type '{1}' in guild '{2}'."
             .formatUnicorn(textChannel.name, args.type, guild.name));
         (<discord.Message>message).react("✅"); // that's a white checkmark, even if not rendered properly...
         let types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);

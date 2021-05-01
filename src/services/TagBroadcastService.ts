@@ -34,7 +34,7 @@ export class TagBroadcastService {
         // broadcast the message
         const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c.type == "text");
         if (!dchan) {
-            LOG.log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`)
+            LOG.warn(`I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`)
         } else {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
             const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
@@ -85,7 +85,7 @@ export class TagBroadcastService {
         try {
             return await commander.getBroadcastMessage()?.fetch();
         } catch (e) {
-            LOG.log("warn", `Cannot tag down, message not found. ${e}`)
+            LOG.warn(`Cannot tag down, message not found. ${e}`)
         }
         return undefined;
     }
@@ -94,7 +94,7 @@ export class TagBroadcastService {
         for (const commander of this.client.commanders.getAllCommanders()) {
             const message = await TagBroadcastService.fetchMessageOrNull(commander); // better refetch...
             if (message !== undefined) {
-                LOG.log("info", `Setting Broadcast message status to unknown state due to shutdown: ${message.id}`)
+                LOG.info(`Setting Broadcast message status to unknown state due to shutdown: ${message.id}`)
                 await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_UNKNOWN)
             }
         }

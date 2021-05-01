@@ -41,7 +41,7 @@ export class WvWWatcher extends EventEmitter {
                 currentMatchupInfo.all_worlds.blue);
             dbMatchup = this.matchupRepository.getCurrentMatchup(now);
             if (dbMatchup == undefined) {
-                LOG.log("error", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.")
+                LOG.error("Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.")
             } else {
                 this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
             }

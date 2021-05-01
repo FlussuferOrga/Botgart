@@ -21,13 +21,13 @@ export class DatabasePatcher {
             patch = this.createPatch(patchName, this.database);
             if (patch) {
                 if (revert) {
-                    LOG.log("info", `Reverting patch '${patchName.name}'.`)
+                    LOG.info(`Reverting patch '${patchName.name}'.`)
                     await patch.revert();
-                    LOG.log("info", "Patch reversion done.")
+                    LOG.info("Patch reversion done.")
                 } else {
-                    LOG.log("info", `Applying patch '${patchName.name}'.`)
+                    LOG.info(`Applying patch '${patchName.name}'.`)
                     await patch.execute();
-                    LOG.log("info", "Patch application done.")
+                    LOG.info("Patch application done.")
                 }
             }
         } finally {

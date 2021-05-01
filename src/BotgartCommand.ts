@@ -178,7 +178,7 @@ export class BotgartCommand extends Command {
             i++;
         }
         if (!argsPresent) {
-            LOG.log("debug", `Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`)
+            LOG.debug(`Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`)
         }
         return argsPresent ? undefined : L.get(this.helptextKey());
     }

@@ -47,7 +47,7 @@ export class ValidationService {
 
             const toAddList = toAdd.map(value => value.name).join(",");
             const toRemoveList = toRemove.map(value => value.name).join(",");
-            LOG.log("info", `User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`)
+            LOG.info(`User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`)
 
             await guildMember.roles.set(desiredUserRoles, reason)
         }

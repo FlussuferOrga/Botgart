@@ -25,7 +25,7 @@ export class WebServer {
     public start() {
         let httpConfig = getConfig().get().http;
         this.server = this.app.listen(parseInt(httpConfig.port), httpConfig.host, function () {
-            LOG.log("info", `Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`)
+            LOG.info(`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`)
         });
     }
 

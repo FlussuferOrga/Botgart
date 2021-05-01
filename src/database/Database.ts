@@ -7,7 +7,7 @@ export class Database {
     public static getInstance(databaseFilePath) {
         const database = new Database(databaseFilePath);
         database.initSchema();
-        LOG.log("info", "Database initialised.");
+        LOG.info("Database initialised.");
         return database;
     }
 
@@ -94,7 +94,7 @@ export class Database {
             res = f(db);
         } catch (err) {
             res = undefined;
-            LOG.log("error", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
+            LOG.error(`DB execute: ${err["message"]} (stack: ${new Error().stack})`);
         }
 
         db.close();
