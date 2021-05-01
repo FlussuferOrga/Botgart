@@ -13,7 +13,7 @@ const configSchema = {
     prefix: {
         doc: 'Prefix to use in discord',
         format: val => {
-            if (/.+$/.test(val) === false) {
+            if (!/.+$/.test(val)) {
                 throw new Error(`Prefix '${val.first_name}' is not a valid discord prefix`);
             }
         },
@@ -56,7 +56,7 @@ const configSchema = {
                 throw new Error('must be of type Array');
             }
             for (const value of values) {
-                if (value.role !== null && isValidWorldId(value.world_id) == false) {
+                if (value.role !== null && !isValidWorldId(value.world_id)) {
                     throw new Error('World id is not valid');
                 }
                 if (value.role === null && value.role === '') {
@@ -74,7 +74,7 @@ const configSchema = {
                 throw new Error(`Owner ids should be an array`);
             }
             for (const singleOwnerId of val) {
-                if (/\d+$/.test(singleOwnerId) === false) {
+                if (!/\d+$/.test(singleOwnerId)) {
                     throw new Error(`Owner id '${singleOwnerId}' is not a valid discord snowflake`);
                 }
             }
@@ -85,7 +85,7 @@ const configSchema = {
     },
     token: {
         format: val => {
-            if (/.+$/.test(val) === false) {
+            if (!/.+$/.test(val)) {
                 throw new Error(`Token '${val.first_name}' is not a valid discord token`);
             }
         },

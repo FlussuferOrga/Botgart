@@ -149,7 +149,7 @@ export abstract class Achievement<C> {
      * If so, they will be awarded, if not, nothing happens.
      */
     tryAward(discordUser: discord.GuildMember, context: C) {
-        if (!getConfig().get().achievements.enabled) {
+        if (getConfig().get().achievements.enabled) {
             LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
             if (this.checkCondition(discordUser, context)) {
                 LOG.debug(`Success! Awarding achievement to user.`)
