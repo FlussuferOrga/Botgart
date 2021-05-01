@@ -1,7 +1,9 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
-import { log } from "../Util";
+import { logger } from "../Logging";
+
+const LOG = logger();
 
 export class FindDuplicates extends BotgartCommand {
     constructor() {
@@ -20,7 +22,7 @@ export class FindDuplicates extends BotgartCommand {
             Promise.all(userNames.map(async u => await guild.members.fetch(u)).filter(u => u))
             .then(users => responsible.send(`${d.gw2account}: ${users.join(", ")}`));           
         });
-        log("info", "Finding duplicates complete.");      
+        LOG.log("info", "Finding duplicates complete.")
     }
 
     postExecHook(message: discord.Message, args: any, result: any): void {

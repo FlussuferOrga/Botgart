@@ -3,7 +3,9 @@ import * as schedule from "node-schedule";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import { log } from "../../Util";
+import { logger } from "../../Logging";
+
+const LOG = logger();
 
 /**
  Testcases:
@@ -86,10 +88,10 @@ export class MakeCron extends BotgartCommand {
                 guild: message.guild!.id
             });
             if (cid === undefined) {
-                log("error", `An error was encountered while storing a cronjob for the command ${mod.name}, the DB returned an undefined ID.`);
+                LOG.log("error", `An error was encountered while storing a cronjob for the command ${mod.name}, the DB returned an undefined ID.`)
             } else {
                 cl.cronJobService.scheduledJobs[cid] = job;
-                log("info", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
+                LOG.log("info", "Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid))
                 return message.util!.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation));
             }
             return message.util!.send(L.get("INTERNAL_ERROR"));

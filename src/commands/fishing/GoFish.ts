@@ -4,8 +4,8 @@ import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
+import { logger } from "../../Logging";
 import { Fish } from "../../repositories/FishingRepository";
-import * as Util from "../../Util";
 
 /**
  Testcases:
@@ -26,6 +26,8 @@ function gets(url: string, options = {}): Promise<string> {
     });
 }
 
+const LOG = logger();
+
 async function image(term: string): Promise<string> {
     let image: string = "";
 
@@ -42,7 +44,7 @@ async function image(term: string): Promise<string> {
         const urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
         image = (urls.length === 0 ? "" : urls[Math.floor(Math.random() * urls.length)]) ?? ""
     } catch (e) {
-        Util.log("error", `Error while trying to retrieve random image from Dogpile: ${e}`);
+        LOG.log("error", `Error while trying to retrieve random image from Dogpile: ${e}`)
     }
     return image;
 }

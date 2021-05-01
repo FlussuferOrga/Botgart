@@ -1,9 +1,6 @@
-import callsites from "callsites";
 import { Guild, Role } from "discord.js";
 
 import moment from "moment-timezone";
-import path from "path" // ^
-import * as winston from "winston";
 
 export const RESET_WEEKDAY: number = 5; // FRIDAY
 
@@ -109,43 +106,6 @@ export function assertType(obj: any, t: string): void {
     // if we walked the inheritence up and obj IS a t, then  we must have stopped before we hit NULL.
     // -> p being null implies that obj IS NOT a t.
     //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
-}
-
-export const logger = winston.createLogger({
-    levels: winston.config.syslog.levels,
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.splat(),
-        winston.format.simple(),
-        winston.format.printf(({level, label, message, timestamp}) => {
-            return `${timestamp} ${level} [${label}]: ${message}`;
-        })
-    ),
-    transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({
-            filename: 'log/bot_combined.log',
-            level: 'info'
-        }),
-        new winston.transports.File({
-            filename: 'log/bot_errors.log',
-            level: 'error'
-        }),
-        new winston.transports.File({
-            filename: '/tmp/botgart_debug.log',
-            level: 'debug'
-        })
-    ]
-});
-
-export function log(level: string, message: string): winston.Logger {
-    const callFile: string[] = callsites()[1].getFileName()?.split(path.sep) ?? ["UNKNOWN"];
-    const file = callFile[callFile.length - 1];
-    return logger.log({
-        "label": file, // label,
-        "level": level,
-        "message": message
-    });
 }
 
 declare global {

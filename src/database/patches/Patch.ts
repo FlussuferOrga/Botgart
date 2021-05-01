@@ -9,7 +9,9 @@
 * and is only a very weak safety not -- circular dependencies and other fancy stuff is not
 * detected!
 */
-import { log } from "../../Util";
+import { logger } from "../../Logging";
+
+const LOG = logger();
 
 export class Patch {
     /**
@@ -72,21 +74,21 @@ export class Patch {
 
     public async execute(): Promise<void> {
         if(await this.satisfied()) {
-            log("notice", "Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name))
+            LOG.log("notice", "Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name))
             return;
         }
         if(! await this.checkPreconditions()) {
-            log("error", "Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name))
+            LOG.log("error", "Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name))
             return;
         }
-        log("info", "Attempting to apply patch {0}.".formatUnicorn(this.constructor.name))
+        LOG.log("info", "Attempting to apply patch {0}.".formatUnicorn(this.constructor.name))
         await this.apply();
-        log("info", "Application finished.")
+        LOG.log("info", "Application finished.")
         if(await this.checkPostconditions()) {
-            log("notice", "Postconditions for patch {0} are met. Committing.".formatUnicorn(this.constructor.name))
+            LOG.log("notice", "Postconditions for patch {0} are met. Committing.".formatUnicorn(this.constructor.name))
             await this.commit();
         } else {
-            log("error", "Postconditions for patch {0} are not met. Rolling back.".formatUnicorn(this.constructor.name))
+            LOG.log("error", "Postconditions for patch {0} are not met. Rolling back.".formatUnicorn(this.constructor.name))
             await this.rollback();
         }
     }

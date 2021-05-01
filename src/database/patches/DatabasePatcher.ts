@@ -1,6 +1,8 @@
+import { logger } from "../../Logging";
 import { Database } from "../Database";
-import { log } from "../../Util";
 import { DBPatch } from "./DBPatch";
+
+const LOG = logger();
 
 export class DatabasePatcher {
     private readonly database: Database;
@@ -19,13 +21,13 @@ export class DatabasePatcher {
             patch = this.createPatch(patchName, this.database);
             if (patch) {
                 if (revert) {
-                    log("info", `Reverting patch '${patchName.name}'.`)
+                    LOG.log("info", `Reverting patch '${patchName.name}'.`)
                     await patch.revert();
-                    log("info", "Patch reversion done.")
+                    LOG.log("info", "Patch reversion done.")
                 } else {
-                    log("info", `Applying patch '${patchName.name}'.`)
+                    LOG.log("info", `Applying patch '${patchName.name}'.`)
                     await patch.execute();
-                    log("info", "Patch application done.")
+                    LOG.log("info", "Patch application done.")
                 }
             }
         } finally {

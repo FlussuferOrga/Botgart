@@ -2,7 +2,9 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import * as Util from "../../Util";
+import { logger } from "../../Logging";
+
+const LOG = logger();
 
 /**
 Testcases:
@@ -31,7 +33,7 @@ export class RemovePermanentRole extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if(!message || !message.guild) {
-            Util.log("error", "Mandatory message parameter missing or it is a direct message. This command can not be issued as cron.");
+            LOG.log("error", "Mandatory message parameter missing or it is a direct message. This command can not be issued as cron.")
             return;
         }
 
@@ -39,10 +41,10 @@ export class RemovePermanentRole extends BotgartCommand {
         const success = cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
 
         if(success) {
-            Util.log("info", "Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
+            LOG.log("info", "Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name))
             message.util?.send(L.get("PERMANENT_ROLE_RM_SUCC"));
         } else {
-            Util.log("info", "Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
+            LOG.log("info", "Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name))
             message.util?.send(L.get("PERMANENT_ROLE_RM_FAIL"));
         }
     }

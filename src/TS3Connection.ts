@@ -5,8 +5,10 @@ import * as http from "http";
 import * as moment from "moment";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
+import { logger } from "./Logging";
 import { Registration } from "./repositories/RegistrationRepository";
-import { log } from "./Util";
+
+const LOG = logger()
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
@@ -291,7 +293,7 @@ export class CommanderStorage {
         if (this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
             this.commanders.push(commander);
         } else {
-            log("warning", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);
+            LOG.log("warning", `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);
         }
     }
 
@@ -304,7 +306,7 @@ export class CommanderStorage {
     }
 
     public setMinus(stillUp: Set<string>): Commander[] {
-        log("debug", `Calling setMinus on current commanders ${this.commanders.map(c => c.getTS3ClientUID())}`);
+        LOG.log("debug", `Calling setMinus on current commanders ${this.commanders.map(c => c.getTS3ClientUID())}`);
         return this.commanders.filter(c => !stillUp.has(c.getTS3ClientUID()));
     }
 }
@@ -357,15 +359,15 @@ export class TS3Listener extends events.EventEmitter {
     }
 
     private async checkCommanders(): Promise<void> {
-        log("debug", "Requesting commanders from TS-Bot.");
+        LOG.log("debug", "Requesting commanders from TS-Bot.");
         const now: moment.Moment = moment.utc();
         try {
             const res: string = await this.ts3connection.get("commanders");
             const data: { commanders: TS3Commander[] } = JSON.parse(res); // FIXME: error check
             const commanderTSUIDs: string[] = data.commanders.map(c => c.ts_cluid);
-            log("debug", `Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
+            LOG.log("debug", `Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
             const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(commanderTSUIDs));
-            log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
+            LOG.log("debug", "Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
             this.botgartClient.guilds.cache.forEach(g => {
                 data.commanders.forEach(c => {
                     const account = c.account_name; // for lookup
@@ -381,7 +383,7 @@ export class TS3Listener extends events.EventEmitter {
                         commander = new Commander(account, username, uid, channel, channel_path, ts_join_url);
                         commander.setState(CommanderState.TAG_UP); // happens in constructor too, but for clarity
                         this.botgartClient.commanders.addCommander(commander);
-                        log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
+                        LOG.log("debug", `Moving newly discovered ${username} to TAG_UP state.`);
                     }
 
                     const elapsed = now.valueOf() - commander.getLastUpdate().valueOf();
@@ -395,7 +397,7 @@ export class TS3Listener extends events.EventEmitter {
                                 commander.setTS3Channel(channel);
                                 commander.setTs3channelPath(channel_path);
                                 this.tagUp(g, commander);
-                                log("debug", `Moving ${username} from TAG_UP to COMMANDER state.`);
+                                LOG.log("debug", `Moving ${username} from TAG_UP to COMMANDER state.`);
                             }
                             break;
 
@@ -404,7 +406,7 @@ export class TS3Listener extends events.EventEmitter {
                             if (elapsed > this.userDelay) {
                                 commander.setLastUpdate(now);
                                 commander.setState(CommanderState.TAG_UP);
-                                log("debug", `Moving ${username} from COOLDOWN to TAG_UP state.`);
+                                LOG.log("debug", `Moving ${username} from COOLDOWN to TAG_UP state.`);
                             }
                             break;
 
@@ -414,10 +416,10 @@ export class TS3Listener extends events.EventEmitter {
                             if (elapsed > this.userDelay) {
                                 commander.setLastUpdate(now);
                                 commander.setState(CommanderState.TAG_UP);
-                                log("debug", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
+                                LOG.log("debug", `Moving ${username} from TAG_DOWN to TAG_UP state.`);
                             } else {
                                 commander.setState(CommanderState.COOLDOWN);
-                                log("debug", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
+                                LOG.log("debug", `Moving ${username} from TAG_DOWN to COOLDOWN state.`);
                             }
                             break;
 
@@ -431,17 +433,17 @@ export class TS3Listener extends events.EventEmitter {
                     commander.setLastUpdate(now);
                     commander.setState(CommanderState.TAG_DOWN);
                     this.tagDown(g, commander);
-                    log("debug", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
+                    LOG.log("debug", `Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
                 });
             });
             this.patience = RECONNECT_PATIENCE;
         } catch (ex) {
-            log("error", `Could not retrieve active commanders: ${ex}`);
+            LOG.log("error", `Could not retrieve active commanders: ${ex}`);
             // by going as low -1 we do not get an underflow by going indefinitely low 
             // but we do the reset only once (when reaching 0) instead of every time after reaching 0.
             this.patience = Math.max(this.patience - 1, -1);
             if (this.patience == 0) {
-                log("warning", `Could not reconnect to TS after ${RECONNECT_PATIENCE} tries. Tagging down all active commanders.`);
+                LOG.log("warning", `Could not reconnect to TS after ${RECONNECT_PATIENCE} tries. Tagging down all active commanders.`);
                 this.botgartClient.commanders.getAllCommanders()
                     .filter(commander => commander.getDiscordMember() !== undefined)
                     .map(commander => this.botgartClient.guilds.cache.map(g => this.tagDown(g, commander)));
@@ -457,7 +459,7 @@ export class TS3Listener extends events.EventEmitter {
      * - a mapping of the TS-UID to the Discord-username is created
      */
     private async tagUp(g: discord.Guild, commander: Commander) {
-        log("info", `Tagging up ${(commander.getTS3DisplayName())} in ${g.name}.`);
+        LOG.log("info", `Tagging up ${(commander.getTS3DisplayName())} in ${g.name}.`);
         const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
 
         let duser: discord.GuildMember | undefined;
@@ -465,7 +467,7 @@ export class TS3Listener extends events.EventEmitter {
             // the commander is member of the current discord -> give role
             duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser === undefined) {
-                log("warning", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
+                LOG.log("warning", `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
             }
             commander.setDiscordMember(duser);
 
@@ -499,7 +501,7 @@ export class TS3Listener extends events.EventEmitter {
             await this.tagDownRemoveRole(g, dmember);
 
             this.tagDownWriteToDb(dmember, commander, registration);
-            log("debug", "Done processing commander. Will now send out tagdown event.");
+            LOG.log("debug", "Done processing commander. Will now send out tagdown event.");
         }
 
         this.botgartClient.commanders.deleteCommander(commander);
@@ -514,13 +516,13 @@ export class TS3Listener extends events.EventEmitter {
         // do not write leads of members which hide their roles
         const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
         if (writeToDB) {
-            log("debug", "Writing raid information to database.");
+            LOG.log("debug", "Writing raid information to database.");
             if (commander.getRaidStart() === undefined) {
-                log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
+                LOG.log("error", `Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
             } else {
                 this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
             }
-            log("debug", "Done writing to database.");
+            LOG.log("debug", "Done writing to database.");
         }
     }
 
@@ -539,12 +541,12 @@ export class TS3Listener extends events.EventEmitter {
         const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
         if (crole && dmember) {
 
-            log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
+            LOG.log("info", `Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
             await dmember.roles.remove(crole).catch(e => {
-                log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
+                LOG.log("warning", `Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
             });
 
-            log("debug", "Done managing roles for former commander.");
+            LOG.log("debug", "Done managing roles for former commander.");
         }
     }
 }

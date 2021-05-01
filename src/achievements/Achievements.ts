@@ -3,6 +3,7 @@ import * as moment from "moment";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as gw2api from "../emitters/APIEmitter";
+import { logger } from "../Logging";
 import { FactionColour, Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
 import * as U from "../Util";
@@ -143,6 +144,8 @@ export class Earlybird extends TagDownAchievement {
     }
 }
 
+const LOG = logger();
+
 @registrableAchievement
 export class Annihilator extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
@@ -159,7 +162,7 @@ export class Annihilator extends ObjectiveAchievement {
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
         if (ourTeam === undefined) {
-            U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+            LOG.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`)
         } else {
             const [ourColour, ourWorlds] = ourTeam;
             holds = obj.kills[ourColour] / obj.kills[ourColour] >= 2.0;
@@ -187,7 +190,7 @@ export class NeverSurrender extends TagUpAchievement {
                 const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
                 if (ourColour === undefined) {
                     const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";
-                    U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
+                    LOG.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`)
                 } else {
                     const ourStats = stats.find(s => s.faction === ourColour);
                     holds = ourStats
@@ -218,7 +221,7 @@ export class Conqueror extends ObjectiveAchievement {
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
         if (ourTeam === undefined) {
-            U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+            LOG.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`)
         } else {
             const [ourColour, ourWorlds] = ourTeam;
             const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives

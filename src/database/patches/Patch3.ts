@@ -1,8 +1,10 @@
 import { Semaphore } from "await-semaphore";
-import { Database } from "../Database";
 import { getAccountName } from "../../Gw2ApiUtils";
-import { log } from "../../Util";
+import { logger } from "../../Logging";
+import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
+
+const LOG = logger();
 
 /**
 * Adds the account-name column to the registrations table and populates it.
@@ -27,7 +29,7 @@ export class Patch3 extends DBPatch {
                 accname = "INVALID API KEY"; // doesn't matter, will be deleted in next reauth anyway.
             }
             release();
-            log("debug", "resolved " + accname);
+            LOG.log("debug", "resolved " + accname)
             this.connection.prepare(`INSERT INTO new_registrations(id, user, guild, api_key, gw2account, registration_role, account_name, created)
                                      VALUES(?,?,?,?,?,?,?,?)`)
                             .run(r.id, r.user, r.guild, r.api_key, r.gw2account, r.registration_role, accname, r.created);
@@ -67,7 +69,7 @@ export class Patch3 extends DBPatch {
         const newCount = this.connection.prepare(`SELECT COUNT(*) AS c FROM registrations`).get().c
         const post = this.oldCount === newCount;
         if(!post) {
-            log("error", "Expected equal number of entries for old and new table. But old table had {0} entries while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
+            LOG.log("error", "Expected equal number of entries for old and new table. But old table had {0} entries while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount))
         }
         return post;
     }

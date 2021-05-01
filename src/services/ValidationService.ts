@@ -2,7 +2,10 @@ import { GuildMember, Role } from "discord.js";
 import _ from "lodash";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
-import { findRole, log } from "../Util";
+import { logger } from "../Logging";
+import { findRole} from "../Util";
+
+const LOG = logger();
 
 export class ValidationService {
     private client: BotgartClient;
@@ -44,7 +47,7 @@ export class ValidationService {
 
             const toAddList = toAdd.map(value => value.name).join(",");
             const toRemoveList = toRemove.map(value => value.name).join(",");
-            log("info", `User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`)
+            LOG.log("info", `User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`)
 
             await guildMember.roles.set(desiredUserRoles, reason)
         }

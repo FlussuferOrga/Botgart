@@ -1,7 +1,9 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
-import { log } from "../Util";
+import { logger } from "../Logging";
+
+const LOG = logger();
 
 /**
 Testcases:
@@ -77,7 +79,7 @@ export class Poll extends BotgartCommand {
             });
         },
         _ => {});
-        log("info", "Created poll '{0}'.".formatUnicorn(args.question));
+        LOG.log("info", "Created poll '{0}'.".formatUnicorn(args.question))
     }
 }
 

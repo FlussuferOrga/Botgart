@@ -1,6 +1,8 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
-import { log } from "../Util";
+import { logger } from "../Logging";
+
+const LOG = logger();
 
 /**
 Testcases:
@@ -38,16 +40,16 @@ export class Say extends BotgartCommand {
         let result;
         let g = this.client.guilds.cache.find(g => g.id == guild.id);
         if(!g) {
-            log("error", "I am not a member of guild {0}.".formatUnicorn(guild.id));
+            LOG.log("error", "I am not a member of guild {0}.".formatUnicorn(guild.id))
             result = false;
         } else {
             let c:discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
             if(!c) {
-                log("error", "Can not find a channel {0}.".formatUnicorn(args.channel.id));
+                LOG.log("error", "Can not find a channel {0}.".formatUnicorn(args.channel.id))
                 result = false;
             } else {
                 c.send(args.text);
-                log("info", "Executed Say.");
+                LOG.log("info", "Executed Say.")
                 result = true;
             }
         }

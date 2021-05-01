@@ -4,6 +4,7 @@ import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as gw2api from "../emitters/APIEmitter";
 import * as L from "../Locale";
+import { logger } from "../Logging";
 import { Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
 import * as U from "../Util";
@@ -15,6 +16,8 @@ export enum AchievementAwardResult {
     USER_NOT_FOUND,
     HIDDEN // users hides achievements
 }
+
+const LOG = logger();
 
 /**
  * Abstract achievement class.
@@ -95,7 +98,7 @@ export abstract class Achievement<C> {
 
         const userdata = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
         if (userdata === undefined) {
-            U.log("warning", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
+            LOG.log("warning", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`)
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
@@ -120,7 +123,7 @@ export abstract class Achievement<C> {
 
                         }
                     } else {
-                        U.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+                        LOG.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`)
                     }
 
                     const role = this.getRole(guild)
@@ -129,7 +132,7 @@ export abstract class Achievement<C> {
                     } else {
                         this.createRole(guild)
                             .then(r => discordUser.roles.add(r))
-                            .catch(e => U.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
+                            .catch(e => LOG.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
                     }
                 }
             }
@@ -147,12 +150,12 @@ export abstract class Achievement<C> {
      */
     tryAward(discordUser: discord.GuildMember, context: C) {
         if (!getConfig().get().achievements.enabled) {
-            U.log("debug", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
+            LOG.log("debug", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
             if (this.checkCondition(discordUser, context)) {
-                U.log("debug", `Success! Awarding achievement to user.`);
+                LOG.log("debug", `Success! Awarding achievement to user.`)
                 this.awardIn(discordUser.guild, discordUser);
             } else {
-                U.log("debug", `User did not pass condition.`)
+                LOG.log("debug", `User did not pass condition.`)
             }
         }
     }
@@ -218,7 +221,7 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
             if (x.commander.getDiscordMember() !== undefined) {
                 this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
-                U.log("warning", `Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
+                LOG.log("warning", `Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`)
             }
         });
     }
@@ -232,7 +235,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
             if (x.commander.getDiscordMember() !== undefined) {
                 this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
-                U.log("warning", `Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
+                LOG.log("warning", `Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`)
             }
         });
     }

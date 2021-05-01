@@ -2,7 +2,9 @@ import * as discord from "discord.js";
 import { Achievement } from "../../achievements/Achievement";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import * as Util from "../../Util";
+import { logger } from "../../Logging";
+
+const LOG = logger();
 
 /**
  Testcases:
@@ -82,7 +84,7 @@ export class RevokeAchievement extends BotgartCommand {
                 // revoke all instances
                 // assert args.achievement instanceof Achievement
                 if (userdata === undefined) {
-                    Util.log("error", `Should have revoked Achievement instance ${args.achievement.name} from a user which was not successfully determined.`);
+                    LOG.log("error", `Should have revoked Achievement instance ${args.achievement.name} from a user which was not successfully determined.`)
                     message.reply(L.get("REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
                 } else {
                     revokedCount = repo.revokePlayerAchievements(args.achievement.name, userdata.gw2account);

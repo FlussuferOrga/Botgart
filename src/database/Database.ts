@@ -1,12 +1,13 @@
 import betterSqlite3 from "better-sqlite3";
+import { logger } from "../Logging";
 
-import { log } from "../Util";
+const LOG = logger();
 
 export class Database {
     public static getInstance(databaseFilePath) {
         const database = new Database(databaseFilePath);
         database.initSchema();
-        log("info", "Database initialised.");
+        LOG.log("info", "Database initialised.");
         return database;
     }
 
@@ -93,7 +94,7 @@ export class Database {
             res = f(db);
         } catch (err) {
             res = undefined;
-            log("error", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
+            LOG.log("error", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
         }
 
         db.close();

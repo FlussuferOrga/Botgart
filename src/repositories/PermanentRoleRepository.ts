@@ -1,5 +1,7 @@
-import * as Util from "../Util";
+import { logger } from "../Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
+
+const LOG = logger();
 
 export class PermanentRoleRepository extends AbstractDbRepository {
     public storePermanentRole(user: string, guild: string, role: string) : boolean {
@@ -9,7 +11,7 @@ export class PermanentRoleRepository extends AbstractDbRepository {
                 db.prepare(sql).run(guild, user, role);
                 return true;
             } catch(err) {
-                Util.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                LOG.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message))
                 return false;
             }
         }) as boolean;
@@ -26,7 +28,7 @@ export class PermanentRoleRepository extends AbstractDbRepository {
                 db.prepare(sql).run(guild, user, role);
                 return true;
             } catch(err) {
-                Util.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
+                LOG.log("error", "Error while trying to store permanent role: {0}.".formatUnicorn(err.message))
                 return false;
             }
         }) as boolean;

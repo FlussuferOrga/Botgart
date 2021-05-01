@@ -2,8 +2,10 @@ import { EventEmitter } from "events";
 import * as moment from "moment";
 import { getConfig } from "./config/Config";
 import { createApiInstance } from "./Gw2ApiUtils";
+import { logger } from "./Logging";
 import { Matchup, MatchupRepository } from "./repositories/MatchupRepository";
-import * as Util from "./Util";
+
+const LOG = logger();
 
 export class WvWWatcher extends EventEmitter {
     private api;
@@ -39,7 +41,7 @@ export class WvWWatcher extends EventEmitter {
                 currentMatchupInfo.all_worlds.blue);
             dbMatchup = this.matchupRepository.getCurrentMatchup(now);
             if (dbMatchup == undefined) {
-                Util.log("error", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
+                LOG.log("error", "Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.")
             } else {
                 this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
             }

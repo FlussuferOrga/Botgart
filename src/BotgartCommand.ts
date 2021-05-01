@@ -4,7 +4,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import * as L from "./Locale";
-import * as U from "./Util";
+import { logger } from "./Logging";
 
 export enum PermissionTypes {
     user = "user",
@@ -23,6 +23,8 @@ interface BotgartCommandOptions {
     cronable: boolean,
     everyonePermission: number
 }
+
+const LOG = logger();
 
 export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
@@ -176,7 +178,7 @@ export class BotgartCommand extends Command {
             i++;
         }
         if (!argsPresent) {
-            U.log("debug", `Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`)
+            LOG.log("debug", `Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`)
         }
         return argsPresent ? undefined : L.get(this.helptextKey());
     }

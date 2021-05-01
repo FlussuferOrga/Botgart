@@ -3,8 +3,11 @@ import fs from 'fs';
 import { Memoizer } from "memoizer-ts";
 import moment from "moment-timezone";
 import * as Locale from "../Locale";
+import { logger } from "../Logging";
 import * as Util from "../Util";
 import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
+
+const LOG = logger();
 
 const configSchema = {
     prefix: {
@@ -262,7 +265,7 @@ function loadConfiguration() {
 
         return config;
     } catch (e) {
-        Util.log("error", "Could not load configuration: " + e)
+        LOG.log("error", "Could not load configuration: " + e)
         process.exit(1)
     }
 }
@@ -272,6 +275,6 @@ function logConfig(config) {
 
     //probably we shouldn't log a token.
     configJsonString = configJsonString.replace(config.get().token, "***REDACTED***")
-    Util.log("debug", `Resolved Configuration:\n${configJsonString}`);
+    LOG.log("debug", `Resolved Configuration:\n${configJsonString}`);
 }
 

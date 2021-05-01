@@ -1,5 +1,5 @@
 import { BotgartClient } from "../BotgartClient";
-import * as Util from "../Util";
+import { logger } from "../Logging";
 import { Achievement } from "./Achievement";
 
 //basically the type of the constructor function
@@ -15,11 +15,13 @@ export function registrableAchievement(target: AchievementType) {
 export * as allAchievements from "./Achievements"
 
 // ---- AchievementRegistry ----
+const LOG = logger();
+
 export class AchievementRegistry {
     private readonly achievements: { [key: string]: Achievement<any> } = {};
 
     constructor(achievements: Achievement<any>[]) {
-        Util.log("info", `Registering achievements: [${achievements.map(value => value.name).join(", ")}].`);
+        LOG.log("info", `Registering achievements: [${achievements.map(value => value.name).join(", ")}].`)
         for (let achievement of achievements) {
             this.achievements[achievement.name.toLowerCase()] = achievement;
         }

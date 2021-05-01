@@ -1,12 +1,14 @@
 import * as discord from "discord.js";
 import { TextChannel } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
-import { log } from "../Util";
+import { logger } from "../Logging";
+
+const LOG = logger();
 
 /**
-Testcases:
+ Testcases:
 
-*/
+ */
 export class RemoveDiscordLog extends BotgartCommand {
     constructor() {
         super("removediscordlog", {
@@ -20,9 +22,9 @@ export class RemoveDiscordLog extends BotgartCommand {
                     {
                         id: "channel",
                         type: (message: discord.Message | undefined, phrase?: string) => message?.guild?.channels.cache.find(channel => channel.name === phrase)?.name
-                                                                  ?? (message?.channel as discord.TextChannel).name
+                            ?? (message?.channel as discord.TextChannel).name
                     }
-                    
+
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },
@@ -35,13 +37,14 @@ export class RemoveDiscordLog extends BotgartCommand {
 
     command(message, responsible, guild, args) {
         const cl = this.getBotgartClient();
-        let textChannel : TextChannel; 
+        let textChannel: TextChannel;
         textChannel = guild.channels.cache.find(channel => channel.name === args.channel)
         cl.logChannelRepository.removeLogChannel(guild, args.type, textChannel);
-        log("notice", "Removed log channel '{0}' for event type '{1}' in guild '{2}'.".formatUnicorn(textChannel.name, args.type, guild.name));
+        LOG.log("notice", "Removed log channel '{0}' for event type '{1}' in guild '{2}'."
+            .formatUnicorn(textChannel.name, args.type, guild.name));
         (<discord.Message>message).react("✅"); // that's a white checkmark, even if not rendered properly...
-        let types : string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
-        const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name) .concat( types.join("\n"));
+        let types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
+        const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name).concat(types.join("\n"));
         message.reply(desc);
     }
 }

@@ -4,8 +4,10 @@ import { ResetLeader } from "../commands/resetlead/ResetLeader";
 import * as ResetUtil from "../commands/resetlead/ResetUtil";
 import { Roster } from "../commands/resetlead/Roster";
 import { WvwMap } from "../commands/resetlead/WvwMap";
-import * as Util from "../Util";
+import { logger } from "../Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
+
+const LOG = logger();
 
 export class RosterRepository extends AbstractDbRepository {
     public getActiveRosters(guild: discord.Guild): Promise<[Roster, discord.TextChannel, discord.Message]>[] {
@@ -78,7 +80,7 @@ export class RosterRepository extends AbstractDbRepository {
                     message = await (<discord.TextChannel>channel).messages.fetch(entries[0].message);
                     postExists = true;
                 } catch(e) {
-                    Util.log("error", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`);
+                    LOG.log("error", `Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`)
                     postExists = false;
                 }
             }

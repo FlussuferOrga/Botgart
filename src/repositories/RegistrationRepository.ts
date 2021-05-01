@@ -1,7 +1,9 @@
 import discord from "discord.js";
-import * as Util from "../Util";
+import { logger } from "../Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
+
+const LOG = logger();
 
 export class RegistrationRepository extends AbstractDbRepository {
     /**
@@ -114,33 +116,33 @@ export class RegistrationRepository extends AbstractDbRepository {
                 db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
                 return true;
             } catch (err) {
-                Util.log("error", "Error while trying to store API key: {0}.".formatUnicorn(err.message));
+                LOG.log("error", "Error while trying to store API key: {0}.".formatUnicorn(err.message))
                 return false;
             }
         });
     }
 
     public loadRegistrationsFromDb(): Registration[] {
-        Util.log("info", `Loading all registrations from DB.`);
+        LOG.log("info", `Loading all registrations from DB.`)
         const execute = this.execute(db => {
             return db.prepare(`SELECT id, api_key, guild, user, registration_role, account_name
                                FROM registrations
                                ORDER BY guild`).all()
         });
-        Util.log("info", `Loaded ${execute.length} from DB.`)
+        LOG.log("info", `Loaded ${execute.length} from DB.`)
 
         return execute;
     }
 
     public loadUserIds(guildId: string): string[] {
-        Util.log("info", `Loading all user ids for guild ${guildId}`);
+        LOG.log("info", `Loading all user ids for guild ${guildId}`)
         const execute = this.execute(db => {
             return db.prepare(`SELECT user
                                FROM registrations
                                WHERE guild = ?
                                ORDER BY user`).all(guildId)
         });
-        Util.log("info", `Loaded ${execute.length} user ids from DB.`)
+        LOG.log("info", `Loaded ${execute.length} user ids from DB.`)
 
         return execute.map(value => value.user);
     }

@@ -2,6 +2,7 @@ import discord from "discord.js";
 import moment from "moment-timezone";
 import { BotgartClient } from "../../BotgartClient";
 import { getConfig } from "../../config/Config";
+import { logger } from "../../Logging";
 import { RosterRepository } from "../../repositories/RosterRepository";
 import * as Util from "../../Util";
 import { ResetLeader } from "./ResetLeader";
@@ -9,6 +10,8 @@ import * as ResetUtil from "./ResetUtil";
 import { Roster } from "./Roster";
 import { WvwMap } from "./WvwMap";
 
+
+const LOG = logger();
 
 export class RosterService {
     private static readonly UPDATE_DELAY = 1000;
@@ -53,7 +56,7 @@ export class RosterService {
     public prepareRefresh(guild: discord.Guild, message: discord.Message, roster: Roster): void {
         const dbRoster = this.getCachedRoster(guild, roster.weekNumber, roster.year);
         if (dbRoster === undefined) {
-            Util.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
+            LOG.log("error", `Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`)
             return;
         }
         const rosterService = this
@@ -90,7 +93,7 @@ export class RosterService {
     }
 
     public watchRosterMessageReactions(message: discord.Message, roster: Roster): void {
-        Util.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
+        LOG.log("debug", "Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber))
         message.createReactionCollector(e =>
             RosterService.EMOTES.includes(e.emoji.name), {}).on("collect", r => this.processReacts(r, roster));
 
@@ -167,7 +170,7 @@ export class RosterService {
             const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await this.repository.getRosterPost(guild, rosterWeek, rosterYear);
 
             if (roster === undefined) {
-                Util.log("error", `Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
+                LOG.log("error", `Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`)
             } else {
                 const [r, chan, mes] = roster;
                 this.syncToTS3(guild, r);

@@ -1,5 +1,5 @@
 import gw2client from "gw2api-client";
-import { log } from "./Util";
+import { logger } from "./Logging";
 
 
 export function createApiInstance() {
@@ -14,6 +14,8 @@ export function createApiInstance() {
 }
 
 const api = createApiInstance();
+
+const LOG = logger();
 
 /**
  * Tries to validate the passed API key.
@@ -45,7 +47,7 @@ export function validateWorld(apikey: string, worldAssignments: { world_id: numb
             }
         }),
         err => new Promise((resolve, reject) => {
-            log("error", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
+            LOG.log("error", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)))
             if (err.content.text === "invalid key") {
                 return reject(exports.validateWorld.ERRORS.invalid_key);
             } else {

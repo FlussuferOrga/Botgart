@@ -6,6 +6,7 @@ import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
 import { Database } from "./database/Database";
 import { APIEmitter } from "./emitters/APIEmitter"
+import { logger } from "./Logging";
 import { AchievementRepository } from "./repositories/AchievementRepository";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
 import { CronJobRepository } from "./repositories/CronJobRepository";
@@ -23,8 +24,9 @@ import { TagBroadcastService } from "./services/TagBroadcastService";
 import { ValidationService } from "./services/ValidationService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection"
 import * as Util from "./Util";
-import { log } from "./Util";
 import { WvWWatcher } from "./WvWWatcher";
+
+const LOG = logger();
 
 export class BotgartClient extends akairo.AkairoClient {
     public fishingRepository: FishingRepository;
@@ -128,10 +130,10 @@ export class BotgartClient extends akairo.AkairoClient {
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
                 if (stats === undefined) return;
-                Util.log("debug", "Starting to write WvWStats.");
+                LOG.log("debug", "Starting to write WvWStats.");
                 const match = await this.wvwWatcher.getCurrentMatch();
                 if (match === undefined) {
-                    Util.log("error", "Could not produce a proper matchup. API might be down.");
+                    LOG.log("error", "Could not produce a proper matchup. API might be down.");
                 } else {
                     const snapshotId = this.matchupRepository.addStatsSnapshot();
                     for await(const mapData of stats.maps) {
@@ -148,17 +150,17 @@ export class BotgartClient extends akairo.AkairoClient {
 
                     }
                 }
-                Util.log("debug", "Done writing WvWStats.");
+                LOG.log("debug", "Done writing WvWStats.");
             });
         });
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 if (match === undefined) return;
-                Util.log("debug", "Starting to write WvWMatches.");
+                LOG.log("debug", "Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 if (matchInfo === undefined) {
-                    Util.log("error", "Current match should be available at this point, but getCurrentMatch created an empty result. Will not add objectives either.")
+                    LOG.log("error", "Current match should be available at this point, but getCurrentMatch created an empty result. Will not add objectives either.")
                 } else {
                     const snapshotId = this.matchupRepository.addObjectivesSnapshot();
                     const objs = match.maps
@@ -167,7 +169,7 @@ export class BotgartClient extends akairo.AkairoClient {
                         .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                     this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
                 }
-                Util.log("debug", "Done writing WvWMatches.");
+                LOG.log("debug", "Done writing WvWMatches.");
             });
         });
 
@@ -196,14 +198,14 @@ export class BotgartClient extends akairo.AkairoClient {
     public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
-            log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
+            LOG.log("debug", "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message))
         } else {
             channels.forEach(cid => {
                 const channel: discord.GuildChannel | undefined = guild.channels.cache.find(c => c.id === cid);
                 if (!channel) {
-                    log("error", `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`);
+                    LOG.log("error", `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`)
                 } else if (!(channel instanceof discord.TextChannel)) {
-                    log("error", `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
+                    LOG.log("error", `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`)
                 } else {
                     (<discord.TextChannel>channel).send(message);
                 }
@@ -213,7 +215,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
     public async prepareShutdown() {
         if (this.token != null) { //is logged in
-            log("info", `Preparing Shutdown`);
+            LOG.log("info", `Preparing Shutdown`)
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }
     }
