@@ -160,7 +160,7 @@ export abstract class Achievement<C> {
                     LOG.debug(`User did not pass condition.`)
                 }
             } finally {
-                profiler.done({message: "Check - ${this.name} -  ${discordUser.displayName}"})
+                profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`})
             }
         }
     }
