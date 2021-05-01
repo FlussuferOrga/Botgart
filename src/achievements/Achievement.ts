@@ -4,9 +4,9 @@ import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as gw2api from "../emitters/APIEmitter";
 import * as L from "../Locale";
-import { logger } from "../util/Logging";
 import { Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
+import { logger } from "../util/Logging";
 import * as U from "../util/Util";
 
 export enum AchievementAwardResult {
@@ -148,14 +148,19 @@ export abstract class Achievement<C> {
      * Checks, if the user is elligble for the achievement.
      * If so, they will be awarded, if not, nothing happens.
      */
-    tryAward(discordUser: discord.GuildMember, context: C) {
+    async tryAward(discordUser: discord.GuildMember, context: C) {
         if (getConfig().get().achievements.enabled) {
             LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
-            if (this.checkCondition(discordUser, context)) {
-                LOG.debug(`Success! Awarding achievement to user.`)
-                this.awardIn(discordUser.guild, discordUser);
-            } else {
-                LOG.debug(`User did not pass condition.`)
+            const profiler = LOG.startTimer();
+            try {
+                if (this.checkCondition(discordUser, context)) {
+                    LOG.debug(`Success! Awarding achievement to user.`)
+                    this.awardIn(discordUser.guild, discordUser);
+                } else {
+                    LOG.debug(`User did not pass condition.`)
+                }
+            } finally {
+                profiler.done({message: "Check - ${this.name} -  ${discordUser.displayName}"})
             }
         }
     }
@@ -217,9 +222,9 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
-        client.ts3listener.on("tagup", (x: ts3.TagUpEvent) => {
+        client.ts3listener.on("tagup", async (x: ts3.TagUpEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
                 LOG.warn(`Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`)
             }
@@ -231,9 +236,9 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
 
-        client.ts3listener.on("tagdown", (x: ts3.TagDownEvent) => {
+        client.ts3listener.on("tagdown", async (x: ts3.TagDownEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
                 LOG.warn(`Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`)
             }
@@ -248,12 +253,12 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
         client.gw2apiemitter.on("wvw-matches",
             async (prom) => {
                 const objs = await prom;
-                this.client
+                await Promise.all(this.client
                     .commanders
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
-                    .map(c => this.tryAward(<discord.GuildMember>c.getDiscordMember(),
-                        {"commander": c, "objectives": objs}))
+                    .map(async c => await this.tryAward(<discord.GuildMember>c.getDiscordMember(),
+                        {"commander": c, "objectives": objs})))
             });
     }
 }
@@ -274,7 +279,7 @@ export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: M
                         })
                 ).then(gm =>
                     gm.filter(c => c !== undefined)
-                        .map((c: discord.GuildMember) => this.tryAward(c, mu))
+                        .map(async (c: discord.GuildMember) => await this.tryAward(c, mu))
                 );
             });
     }
