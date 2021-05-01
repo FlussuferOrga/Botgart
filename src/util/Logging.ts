@@ -7,8 +7,12 @@ function createLogger() {
         winston.format.timestamp(),
         winston.format.splat(),
         winston.format.simple(),
-        winston.format.printf(({level, file, message, timestamp}) => {
-            return `${timestamp} ${level} [${file}]: ${message}`;
+        winston.format.printf(({level, file, message, timestamp, ...rest}) => {
+            let restString = "";
+            if (Object.getOwnPropertyNames(rest).length > 0) {
+                restString = " " + JSON.stringify(rest)
+            }
+            return `${timestamp} ${level} [${file}]: ${message}${restString}`;
         })
     );
     return winston.createLogger({
