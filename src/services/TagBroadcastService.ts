@@ -2,9 +2,9 @@ import discord, { Message, MessageEmbed, Util } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
-import { logger } from "../util/Logging";
 import { Registration } from "../repositories/RegistrationRepository";
 import { Commander } from "../TS3Connection";
+import { logger } from "../util/Logging";
 
 const LOG = logger();
 
@@ -67,6 +67,7 @@ export class TagBroadcastService {
         }
         embed.addField("🔊 TeamSpeak 3", text, false)
         embed.setColor(color)
+        embed.setTimestamp(new Date())
         return embed;
     }
 
@@ -77,7 +78,7 @@ export class TagBroadcastService {
     async tagDownBroadcast(commander: Commander) {
         let message = await TagBroadcastService.fetchMessageOrNull(commander);
         if (message !== undefined) {
-            await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_INACTIVE);
+            await TagBroadcastService.updateEmbedTagDown(message, this.COLOR_INACTIVE);
         }
     }
 
@@ -95,12 +96,12 @@ export class TagBroadcastService {
             const message = await TagBroadcastService.fetchMessageOrNull(commander); // better refetch...
             if (message !== undefined) {
                 LOG.info(`Setting Broadcast message status to unknown state due to shutdown: ${message.id}`)
-                await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_UNKNOWN)
+                await TagBroadcastService.updateEmbedTagDown(message, this.COLOR_UNKNOWN)
             }
         }
     }
 
-    private static async updateEmbedTagdown(message: Message, color: number) {
+    private static async updateEmbedTagDown(message: Message, color: number) {
         const embed = message.embeds[0];
         if (embed) {
             let toUpdate = false
@@ -119,6 +120,7 @@ export class TagBroadcastService {
                 }
             }
             if (toUpdate) {
+                embed.setTimestamp(new Date())
                 await message.edit(embed)
             }
         }

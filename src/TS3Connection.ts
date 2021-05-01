@@ -5,8 +5,8 @@ import * as http from "http";
 import * as moment from "moment";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import { logger } from "./util/Logging";
 import { Registration } from "./repositories/RegistrationRepository";
+import { logger } from "./util/Logging";
 
 const LOG = logger()
 
@@ -474,8 +474,9 @@ export class TS3Listener extends events.EventEmitter {
             await this.tagUpAssignRole(g, commander);
         }
 
-        const message = await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration);
-        commander.setBroadcastMessage(message)
+        await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration)
+            .then(value => commander.setBroadcastMessage(value))
+            .catch(e => LOG.error("Could send tag up broadcast", e))
 
         this.emit("tagup", {
             "guild": g,
@@ -493,12 +494,19 @@ export class TS3Listener extends events.EventEmitter {
         let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
 
-        await this.botgartClient.tagBroadcastService.tagDownBroadcast(commander);
+        try {
+            await this.botgartClient.tagBroadcastService.tagDownBroadcast(commander);
+        } catch (e) {
+            LOG.error("Could not close broadcast on tagdown", e)
+        }
 
         if (registration !== undefined) {
             dmember = await g.members.fetch(registration.user);
-
-            await this.tagDownRemoveRole(g, dmember);
+            try {
+                await this.tagDownRemoveRole(g, dmember);
+            } catch (e) {
+                LOG.error("Could not unassign commander role from user", e)
+            }
 
             this.tagDownWriteToDb(dmember, commander, registration);
             LOG.debug("Done processing commander. Will now send out tagdown event.");
@@ -518,9 +526,14 @@ export class TS3Listener extends events.EventEmitter {
         if (writeToDB) {
             LOG.debug("Writing raid information to database.");
             if (commander.getRaidStart() === undefined) {
-                LOG.error(`Wanted to write raid for commander ${dmember.displayName} during tag-down, but no raid start was stored.`);
+                LOG.error(`Wanted to write raid for commander ${dmember.displayName} ` +
+                    "during tag-down, but no raid start was stored.");
             } else {
-                this.botgartClient.tsLeadRepository.addLead(registration.gw2account, <moment.Moment>commander.getRaidStart(), moment.utc(), commander.getTS3Channel());
+                this.botgartClient.tsLeadRepository.addLead(
+                    registration.gw2account,
+                    <moment.Moment>commander.getRaidStart(),
+                    moment.utc(),
+                    commander.getTS3Channel());
             }
             LOG.debug("Done writing to database.");
         }
@@ -529,7 +542,9 @@ export class TS3Listener extends events.EventEmitter {
     private async tagUpAssignRole(g: discord.Guild, commander: Commander) {
         const crole = g.roles.cache.find(r => r.name === this.commanderRole);
         if (crole && commander.getDiscordMember()) {
-            await commander.getDiscordMember()?.roles.add(crole);
+            await commander.getDiscordMember()?.roles.add(crole)
+                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from ` +
+                    `user '${(<discord.GuildMember>commander.getDiscordMember()).displayName}'`, e));
         }
     }
 
@@ -540,11 +555,11 @@ export class TS3Listener extends events.EventEmitter {
         // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
         const crole: discord.Role | undefined = (await g.roles.fetch()).cache.find(r => r.name === this.commanderRole);
         if (crole && dmember) {
-
             LOG.info(`Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
-            await dmember.roles.remove(crole).catch(e => {
-                LOG.warn(`Could not remove role '${this.commanderRole}' from user '${(<discord.GuildMember>dmember).displayName}' which was expected to be there. Maybe someone else already removed it. ${e}`)
-            });
+            await dmember.roles.remove(crole)
+                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user ` +
+                    `'${(<discord.GuildMember>dmember).displayName}' which was expected to be there.` +
+                    ` Maybe someone else already removed it. ${e}`));
 
             LOG.debug("Done managing roles for former commander.");
         }
