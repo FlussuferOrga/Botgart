@@ -52,7 +52,7 @@ export class Authenticate extends BotgartCommand {
         const members: { guild: discord.Guild, member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
         let reply = "";
         // this snippet allows users to authenticate themselves
-        // through a DM and is dedicated to Jey, who is a fucking 
+        // through a DM and is dedicated to Jey, who is a fucking
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
         this.client.guilds.cache.forEach(async g => {
@@ -65,10 +65,7 @@ export class Authenticate extends BotgartCommand {
         message.util?.send(L.get("CHECKING_KEY"));
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
         const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key);
-        if (!validFormat) {
-            message.util?.send(L.get("KEY_INVALID_FORMAT"));
-            return;
-        } else {
+        if (validFormat) {
             // try to delete the message for privacy reasons if it is not a direct message
             if (message && message.member) {
                 if (message.deletable) {
@@ -105,7 +102,7 @@ export class Authenticate extends BotgartCommand {
                                     }
                                     let currentRole: discord.Role | null = null;
                                     if (typeof accountName === "string" && accountName) {
-                                        // check if the user is registering after having registered before, eg after transferring to another server. 
+                                        // check if the user is registering after having registered before, eg after transferring to another server.
                                         // In that case, remove the role they are currently having.
                                         const reg: Registration | undefined = cl.registrationRepository.getUserByAccountName(accountName);
                                         if (reg) {
@@ -120,7 +117,7 @@ export class Authenticate extends BotgartCommand {
                                         LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // Beware! This is not 100% fail safe and users have figured out the weirdest ways and configurations which are just too wild to cover entirely:
                                         // - players registering with multiple Discord accounts for the same GW2 account due to using multiple devices
-                                        // - players registering with a secondary account on the Discord account they were already using which is another server 
+                                        // - players registering with a secondary account on the Discord account they were already using which is another server
                                         // - players transferring to another world and immediately sending a new key from that very account they have already been registered with from another world
                                         // - etc.
                                         // which makes it hard to figure out which Discord account should have which registration role.
@@ -167,6 +164,8 @@ export class Authenticate extends BotgartCommand {
                     }
                 }
             );
+        } else {
+            message.util?.send(L.get("KEY_INVALID_FORMAT"));
         }
     }
 }

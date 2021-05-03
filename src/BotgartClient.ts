@@ -207,7 +207,7 @@ export class BotgartClient extends akairo.AkairoClient {
     }
 
     public async prepareShutdown() {
-        if (this.token != null) { //is logged in
+        if (this.token !== null) { //is logged in
             LOG.info(`Preparing Shutdown`);
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }

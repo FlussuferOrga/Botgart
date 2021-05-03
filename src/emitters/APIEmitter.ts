@@ -1,7 +1,9 @@
 import * as events from "events";
 import { getConfig } from "../config/Config";
 import { createApiInstance } from "../Gw2ApiUtils";
+import { logger } from "../util/Logging";
 
+const LOG = logger();
 
 enum WvWMapNames {
     Center = "Center",
@@ -65,11 +67,11 @@ export class APIEmitter extends events.EventEmitter {
         const homeId = getConfig().get().home_id;
         this.schedule("wvw-stats",
             api => api.wvw().matches().live().stats().world(homeId)
-                .catch(err => console.log(`Error while fetching match stats: ${err}`)),
+                .catch(err => LOG.warn(`Error while fetching match stats: ${err}`)),
             getConfig().get().gw2api.delays.wvw_stats);
         this.schedule("wvw-matches",
             api => api.wvw().matches().live().world(homeId)
-                .catch(err => console.log(`Error while fetching match details: ${err}`)),
+                .catch(err => LOG.warn(`Error while fetching match details: ${err}`)),
             getConfig().get().gw2api.delays.wvw_matches);
 
     }

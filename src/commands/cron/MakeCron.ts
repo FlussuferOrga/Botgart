@@ -38,7 +38,7 @@ export class MakeCron extends BotgartCommand {
     }
 
     command(message, responsible, guild, args) {
-        if (message.member == null || !message.member) {
+        if (message.member === null || !message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
 

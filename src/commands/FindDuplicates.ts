@@ -18,7 +18,7 @@ export class FindDuplicates extends BotgartCommand {
         const cl = this.getBotgartClient();
         cl.registrationRepository.findDuplicateRegistrations().forEach(dup => {
             // unknown users are already filtered out. Maybe we want to change that and notify the caller
-            Promise.all(dup.users.map(async u => await guild.members.fetch(u)).filter(u => u))
+            Promise.all(dup.users.map(async u => guild.members.fetch(u)).filter(u => u))
                 .then(users => responsible.send(`${dup.gw2account}: ${users.join(", ")}`));
         });
         LOG.info("Finding duplicates complete.");

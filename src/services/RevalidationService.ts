@@ -48,7 +48,6 @@ export class RevalidationService {
                     await this.handle(reg, result);
                 } else {
                     LOG.error("API validation yielded undefined for the entire result of revalidations. Critical error!");
-                    return;
                 }
             });
     }

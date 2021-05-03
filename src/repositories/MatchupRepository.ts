@@ -12,7 +12,10 @@ export class MatchupRepository extends AbstractDbRepository {
 
     public getLatestMatchup(): Matchup | undefined {
         return this.execute(db =>
-            db.prepare(`SELECT matchup_id, tier, start, end FROM matchups ORDER BY start DESC LIMIT 1`).get());
+            db.prepare(`SELECT matchup_id, tier, start, end
+                        FROM matchups
+                        ORDER BY start DESC
+                        LIMIT 1`).get());
     }
 
     public addMatchup(tier: number, start: moment.Moment, end: moment.Moment, reds: number[], greens: number[], blues: number[]) {
@@ -42,68 +45,54 @@ export class MatchupRepository extends AbstractDbRepository {
 
     public getFactionColour(now: moment.Moment, serverId: number): FactionColour | undefined {
         const row = this.execute(db => db.prepare(`
-                SELECT 
-                    colour
-                FROM 
-                    matchup_factions AS mf 
-                    JOIN matchups AS m 
-                      ON mf.matchup_id = m.matchup_id
-                WHERE
-                    datetime(?, 'localtime') BETWEEN m.start AND m.end    
-                    AND mf.world_id = ?
-                    
-                `).get(Util.momentToLocalSqliteTimestamp(now), serverId)
+                    SELECT colour
+                    FROM matchup_factions AS mf
+                             JOIN matchups AS m
+                                  ON mf.matchup_id = m.matchup_id
+                    WHERE datetime(?, 'localtime') BETWEEN m.start AND m.end
+                      AND mf.world_id = ?
+
+            `).get(Util.momentToLocalSqliteTimestamp(now), serverId)
         );
         return row ? row.colour : undefined;
     }
 
     public crashedT3ByCommander(homeWorldId: number, gw2account: string): number {
         const crashed: { count: number } | undefined = this.execute(db => db.prepare(`
-                SELECT 
-                    tl.gw2account,
-                    COUNT(*) AS count
-                    
-                FROM 
-                    captured_objectives AS co 
-                    JOIN ts_leads AS tl 
-                      ON datetime(new_last_flipped, 'localtime') BETWEEN datetime(tl.start, 'localtime') AND datetime(tl.end, 'localtime')
-                    JOIN matchup_factions AS mf
-                      ON co.matchup_id = mf.matchup_id
-                         AND co.new_owner = mf.colour
-                WHERE 
-                    old_tier = 3
-                    AND mf.world_id = ?
-                    AND tl.gw2account = ?
-                GROUP BY
-                    gw2account
-                `).get(homeWorldId, gw2account));
+            SELECT tl.gw2account,
+                   COUNT(*) AS count
+
+            FROM captured_objectives AS co
+                     JOIN ts_leads AS tl
+                          ON datetime(new_last_flipped, 'localtime') BETWEEN datetime(tl.start, 'localtime') AND datetime(tl.end, 'localtime')
+                     JOIN matchup_factions AS mf
+                          ON co.matchup_id = mf.matchup_id
+                              AND co.new_owner = mf.colour
+            WHERE old_tier = 3
+              AND mf.world_id = ?
+              AND tl.gw2account = ?
+            GROUP BY gw2account
+        `).get(homeWorldId, gw2account));
         return crashed !== undefined ? crashed.count : 0;
     }
 
     public wasCapturedBetween(start: moment.Moment, end: moment.Moment, objectiveId: string, colour: FactionColour): boolean {
         return this.execute(db => db.prepare(`
-                SELECT 
-                    *
-                FROM 
-                    captured_objectives
-                WHERE
-                    objective_id = ?
-                    AND new_owner = ?
-                    AND datetime(new_last_flipped, 'localtime') BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
-                LIMIT
-                    1
-            `).get(objectiveId, colour, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))) !== undefined;
+            SELECT *
+            FROM captured_objectives
+            WHERE objective_id = ?
+              AND new_owner = ?
+              AND datetime(new_last_flipped, 'localtime') BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
+            LIMIT 1
+        `).get(objectiveId, colour, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))) !== undefined;
     }
 
     public capturedBetween(start: moment.Moment, end: moment.Moment): Capture[] {
         return this.execute(db => db.prepare(`
-                SELECT 
-                    *
-                FROM
-                    captured_objectives
-                WHERE 
-                    new_last_flipped BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
-            `).all(Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end)));
+            SELECT *
+            FROM captured_objectives
+            WHERE new_last_flipped BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
+        `).all(Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end)));
     }
 
     public addStatsSnapshot(): number {
@@ -138,15 +127,12 @@ export class MatchupRepository extends AbstractDbRepository {
     public getColourOf(worldId: number, now: moment.Moment | undefined = undefined): FactionColour | undefined {
         const timestamp: moment.Moment = now ?? moment.utc().local();
         const res = this.execute(db => db.prepare(`
-            SELECT
-                mf.colour
-            FROM 
-                matchup_factions AS mf 
-                JOIN matchups AS m 
-                  ON mf.matchup_id = m.matchup_id
-            WHERE
-                mf.world_id = ?
-                AND ? BETWEEN m.start AND m.end
+            SELECT mf.colour
+            FROM matchup_factions AS mf
+                     JOIN matchups AS m
+                          ON mf.matchup_id = m.matchup_id
+            WHERE mf.world_id = ?
+              AND ? BETWEEN m.start AND m.end
 
         `).get(worldId, Util.momentToLocalSqliteTimestamp(timestamp)));
         return res !== undefined ? res.colour : undefined;
@@ -161,8 +147,7 @@ export class MatchupRepository extends AbstractDbRepository {
      * @param now: the moment around which the state should be determined
      * @returns: information about the state of all objectives
      */
-    public getObjectivesAround(now: moment.Moment | undefined = undefined)
-        : {
+    public getObjectivesAround(now: moment.Moment | undefined = undefined): {
         snapshot_id: number,
         timestamp: string,
         matchup_objective_id: number,
@@ -176,65 +161,54 @@ export class MatchupRepository extends AbstractDbRepository {
         yaks_delivered: number,
         tier: number
     }[] {
+        let timestamp: moment.Moment | undefined;
         if (!now) {
-            now = moment.utc().local();
+            timestamp = moment.utc().local();
+        } else {
+            timestamp = now;
         }
-        const ts = Util.momentToLocalSqliteTimestamp(now);
+        const ts = Util.momentToLocalSqliteTimestamp(timestamp);
+
         return this.execute(db => db.prepare(`
-            WITH 
-            surrounding AS (
-                SELECT * FROM
-                (SELECT 
-                        *
-                    FROM
-                        objectives_snapshots
-                    WHERE
-                        datetime(?, 'localtime') >= timestamp
-                    ORDER BY
-                        timestamp DESC
-                    LIMIT 1
-                ) before
+            WITH surrounding AS (
+                SELECT *
+                FROM (SELECT *
+                      FROM objectives_snapshots
+                      WHERE datetime(?, 'localtime') >= timestamp
+                      ORDER BY timestamp DESC
+                      LIMIT 1
+                     ) before
                 UNION ALL
-                SELECT * FROM
-                (SELECT 
-                        *
-                    FROM
-                        objectives_snapshots
-                    WHERE
-                        datetime(?, 'localtime') < timestamp
-                    ORDER BY
-                        timestamp ASC
-                    LIMIT 1
-                ) after
+                SELECT *
+                FROM (SELECT *
+                      FROM objectives_snapshots
+                      WHERE datetime(?, 'localtime') < timestamp
+                      ORDER BY timestamp ASC
+                      LIMIT 1
+                     ) after
             ),
-            closest AS (
-                SELECT 
-                    *
-                FROM 
-                    surrounding
-                ORDER BY
-                    ABS(julianday(?) - julianday(timestamp))
-                LIMIT
-                    1
-            )
-            SELECT 
-                c.objectives_snapshot_id AS snapshot_id,
-                c.timestamp,
-                mo.matchup_objective_id,
-                mo.matchup_id,
-                mo.objective_id,
-                mo.map,
-                mo.owner,
-                mo.type,
-                mo.points_tick,
-                mo.points_capture,
-                mo.last_flipped,
-                mo.yaks_delivered,
-                mo.tier
-            FROM 
-                closest AS c
-                JOIN matchup_objectives AS mo
-                  ON c.objectives_snapshot_id = mo.snapshot_id
+                 closest AS (
+                     SELECT *
+                     FROM surrounding
+                     ORDER BY ABS(julianday(?) - julianday(timestamp))
+                     LIMIT 1
+                 )
+            SELECT c.objectives_snapshot_id AS snapshot_id,
+                   c.timestamp,
+                   mo.matchup_objective_id,
+                   mo.matchup_id,
+                   mo.objective_id,
+                   mo.map,
+                   mo.owner,
+                   mo.type,
+                   mo.points_tick,
+                   mo.points_capture,
+                   mo.last_flipped,
+                   mo.yaks_delivered,
+                   mo.tier
+            FROM closest AS c
+                     JOIN matchup_objectives AS mo
+                          ON c.objectives_snapshot_id = mo.snapshot_id
         `).all(ts, ts, ts));
     }
 
@@ -259,61 +233,49 @@ export class MatchupRepository extends AbstractDbRepository {
         kills: number,
         victory_points: number
     }[] {
+        let timestamp: moment.Moment | undefined;
         if (!now) {
-            now = moment.utc().local();
+            timestamp = moment.utc().local();
+        } else {
+            timestamp = now;
         }
-        const ts = Util.momentToLocalSqliteTimestamp(now);
+        const ts = Util.momentToLocalSqliteTimestamp(timestamp);
         return this.execute(db => db.prepare(`
-            WITH 
-            surrounding AS (
-                SELECT * FROM
-                (SELECT 
-                        *
-                    FROM
-                        stats_snapshots
-                    WHERE
-                        datetime(?, 'localtime') >= timestamp
-                    ORDER BY
-                        timestamp DESC
-                    LIMIT 1
-                ) before
+            WITH surrounding AS (
+                SELECT *
+                FROM (SELECT *
+                      FROM stats_snapshots
+                      WHERE datetime(?, 'localtime') >= timestamp
+                      ORDER BY timestamp DESC
+                      LIMIT 1
+                     ) before
                 UNION ALL
-                SELECT * FROM
-                (SELECT 
-                        *
-                    FROM
-                        stats_snapshots
-                    WHERE
-                        datetime(?, 'localtime') < timestamp
-                    ORDER BY
-                        timestamp ASC
-                    LIMIT 1
-                ) after
+                SELECT *
+                FROM (SELECT *
+                      FROM stats_snapshots
+                      WHERE datetime(?, 'localtime') < timestamp
+                      ORDER BY timestamp ASC
+                      LIMIT 1
+                     ) after
             ),
-            closest AS (
-                SELECT 
-                    *
-                FROM 
-                    surrounding
-                ORDER BY
-                    ABS(julianday(?) - julianday(timestamp))
-                LIMIT
-                    1
-            )
-            SELECT 
-                c.stats_snapshot_id AS snapshot_id,
-                c.timestamp,
-                ms.matchup_stats_id,
-                ms.matchup_id,
-                ms.map,
-                ms.faction,
-                ms.deaths,
-                ms.kills,
-                ms.victory_points 
-            FROM 
-                closest AS c
-                JOIN matchup_stats AS ms 
-                  ON c.stats_snapshot_id = ms.snapshot_id
+                 closest AS (
+                     SELECT *
+                     FROM surrounding
+                     ORDER BY ABS(julianday(?) - julianday(timestamp))
+                     LIMIT 1
+                 )
+            SELECT c.stats_snapshot_id AS snapshot_id,
+                   c.timestamp,
+                   ms.matchup_stats_id,
+                   ms.matchup_id,
+                   ms.map,
+                   ms.faction,
+                   ms.deaths,
+                   ms.kills,
+                   ms.victory_points
+            FROM closest AS c
+                     JOIN matchup_stats AS ms
+                          ON c.stats_snapshot_id = ms.snapshot_id
         `).all(ts, ts, ts));
     }
 
@@ -325,8 +287,9 @@ export class MatchupRepository extends AbstractDbRepository {
     public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, { id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[] }, number][]) {
         return this.execute(db => {
             const stmt = db.prepare(`INSERT INTO matchup_objectives
-                              (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
-                              VALUES (?,?,?,?,?,?,?,?,?,?,?)`);
+                                     (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick,
+                                      points_capture, last_flipped, yaks_delivered, tier)
+                                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
             db.transaction((matchId, objectives) => {
                 for (const [mapname, details, tier] of objectives) {
                     stmt.run(matchId,

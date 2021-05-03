@@ -54,7 +54,7 @@ export class RevokeAchievement extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: AchievementArg, player?: discord.GuildMember }): Promise<void> {
-        // note that args.achievement is not typed Achievement|number on purpose, as it would prevent stuff like 
+        // note that args.achievement is not typed Achievement|number on purpose, as it would prevent stuff like
         // Number.isInteger(args.achievement) (which only takes number as argument) and would make the code a whole lot more clunky
         // for very little benefit.
         const repo = this.getBotgartClient().achievementRepository;

@@ -101,7 +101,8 @@ export class RosterService {
         }
     }
 
-    private async processReacts(r: discord.MessageReaction, roster: Roster) {
+    private async processReacts(partialReaction: discord.MessageReaction, roster: Roster) {
+        let r = partialReaction;
         if (r.partial) {
             r = await r.fetch();
         }

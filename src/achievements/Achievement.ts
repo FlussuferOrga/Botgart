@@ -79,13 +79,11 @@ export abstract class Achievement<C> {
      *          and [1] whether this achievement was awarded for the first time, which will be relevant to determine whether to post something to Discord.
      */
     award(gw2account: string, by?: string, timestamp?: moment.Moment): [number, boolean] {
-        timestamp = timestamp || moment.utc();
-        by = by ?? "";
         const repo = this.client.achievementRepository;
         const has: boolean = repo.checkAchievement(this.name, gw2account).length > 0;
         let rowId = -1;
         if (this.repeatable || !has) {
-            rowId = repo.awardAchievement(this.name, gw2account, by, timestamp);
+            rowId = repo.awardAchievement(this.name, gw2account, by ?? "", timestamp || moment.utc());
         }
         return [rowId, !has];
     }
@@ -269,7 +267,7 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
                     .commanders
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
-                    .map(async c => await this.tryAward(<discord.GuildMember>c.getDiscordMember(),
+                    .map(async c => this.tryAward(<discord.GuildMember>c.getDiscordMember(),
                         {"commander": c, "objectives": objs})));
             });
     }
@@ -291,11 +289,11 @@ export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: M
                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                         .map(async r => {
                             const guild: discord.Guild | undefined = client.guilds.cache.get(r.guild);
-                            return guild !== undefined ? await guild.members.fetch(r.user) : undefined; // .cache.get(r.user) : undefined;
+                            return guild !== undefined ? guild.members.fetch(r.user) : undefined; // .cache.get(r.user) : undefined;
                         })
                 ).then(gm =>
                     gm.filter(c => c !== undefined)
-                        .map(async (c: discord.GuildMember) => await this.tryAward(c, mu))
+                        .map(async (c: discord.GuildMember) => this.tryAward(c, mu))
                 );
             });
     }

@@ -32,11 +32,11 @@ describe("Util - WvW", function () {
     it("determine tier", () => {
         for (let i = 0; i < 100; i++) {
             const tier = U.determineTier(i);
-            if (0 <= i && i < 20) {
+            if (i >= 0 && i < 20) {
                 expect(tier).equal(0);
-            } else if (20 <= i && i < 40) {
+            } else if (i >= 20 && i < 40) {
                 expect(tier).equal(1);
-            } else if (40 <= i && i < 80) {
+            } else if (i >= 40 && i < 80) {
                 expect(tier).equal(2);
             } else {
                 expect(tier).equal(3);

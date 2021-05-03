@@ -25,7 +25,7 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository {
                 let casted: string | number | boolean | null = null;
                 switch (res.type) {
                     case "boolean":
-                        casted = ("true" === res.value);
+                        casted = (res.value === "true");
                         break;
                     case "number":
                         casted = Number(res.value);
@@ -55,7 +55,7 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository {
      * type: type of the variable as it should be stored. This will affect how it will be retrieved later on in getEnvironmentVariable.
      */
     public _setEnvironmentVariable(guildId: string, name: string, value: (boolean | number | string), type: string | null = null) {
-        type = type || typeof value;
+        const typeName = type || typeof value;
         return this.execute(db => db.prepare(`
             INSERT INTO 
                     environment_variables(guild, name, type, value) 
@@ -65,6 +65,6 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository {
                     name = ?,
                     type = ?,
                     value = ?
-        `).run(guildId, name, "" + type, "" + value, guildId, name, "" + type, "" + value));
+        `).run(guildId, name, "" + typeName, "" + value, guildId, name, "" + typeName, "" + value));
     }
 }

@@ -15,7 +15,7 @@ const LOG = logger();
 const RECONNECT_TIMER_MS = 3000;
 // after failing to reconnect to TS after losing connection once this many times,
 // all ongoing raids will be terminated to avoid commanders being credited for seemingly extremely
-// long raids after the TS bot has been unreachable for a prolonged time, althrough they have long 
+// long raids after the TS bot has been unreachable for a prolonged time, althrough they have long
 // since tagged down.
 const RECONNECT_PATIENCE = 10;
 
@@ -132,19 +132,19 @@ export class TS3Connection {
 
 Note that there is also an uncovered case:
 the transition from anywhere to TAG_DOWN only happens, if
-the user tags down when they are already in COMMANDER state. 
-That means having a user tag down while in COOLDOWN or TAG_UP 
+the user tags down when they are already in COMMANDER state.
+That means having a user tag down while in COOLDOWN or TAG_UP
 places them in a bit of a limbo state, resulting in them staying on
-the exact state where they have left off. This is not an actial problem. 
+the exact state where they have left off. This is not an actial problem.
 The "worst case" here could be the following:
 
 imagine the delay being set to 30 minutes.
-Now, an active player P commands for a while, 
+Now, an active player P commands for a while,
 tags down and up again, playing P in COOLDOWN.
 They then tag down immediately and play tagless for two hours.
-Then, they decide to tag up again, resuming in COOLDOWN. 
+Then, they decide to tag up again, resuming in COOLDOWN.
 But since their last known timestep is two hours old, they will leave that
-state immediately on the next tag to become TAG_UP. 
+state immediately on the next tag to become TAG_UP.
 *********************************************************************************
 */
 enum CommanderState {
@@ -437,7 +437,7 @@ export class TS3Listener extends events.EventEmitter {
             this.patience = RECONNECT_PATIENCE;
         } catch (ex) {
             LOG.error(`Could not retrieve active commanders: ${ex}`);
-            // by going as low -1 we do not get an underflow by going indefinitely low 
+            // by going as low -1 we do not get an underflow by going indefinitely low
             // but we do the reset only once (when reaching 0) instead of every time after reaching 0.
             this.patience = Math.max(this.patience - 1, -1);
             if (this.patience == 0) {

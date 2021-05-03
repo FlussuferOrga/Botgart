@@ -32,8 +32,8 @@ export class AchievementRegistry {
     }
 
     public getAchievement(name: string): Achievement<never> | undefined {
-        name = name.toLowerCase();
-        return name in this.achievements ? this.achievements[name] : undefined;
+        const nameLower = name.toLowerCase();
+        return nameLower in this.achievements ? this.achievements[nameLower] : undefined;
     }
 
     public static create(client: BotgartClient) {

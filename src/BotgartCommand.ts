@@ -202,7 +202,7 @@ export class BotgartCommand extends Command {
      * @param {map} args - arguments for the command. Each command specifies the format themselves.
      */
     public command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Record<string, unknown>): unknown {
-        throw "command() not implemented.";
+        throw new Error("command() not implemented.");
     }
 
     /**
@@ -222,7 +222,7 @@ export class BotgartCommand extends Command {
 
     /*
     * Inverse to serialiseArgs. Has to revert everything that was done there.
-    * @param {string} jsonargs - serialised JSON arguments for the command. 
+    * @param {string} jsonargs - serialised JSON arguments for the command.
     *                 NOTE: deserialiseArgs may _not_ modify the arguments by reference!
     * @returns {Map} the deserialised arguments.
     */
@@ -288,7 +288,7 @@ export class BotgartCommand extends Command {
     * where a message to reply to is not available.
     * @param {Message} message - the message to reply to, may be null.
     * @param {User} responsible - the person responsible for the execution of the command.
-    * @param response - the message text to send to the user. 
+    * @param response - the message text to send to the user.
     * @returns {Promise} - the promise for whichever method was executed.
     */
     public reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {

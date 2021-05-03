@@ -44,7 +44,7 @@ export class Whois extends BotgartCommand {
             await this.reply(message, responsible, L.get("WHOIS_EMPTY_RESULT"));
         } else {
             await this.reply(message, responsible, L.get("WHOIS_RESULTS", [], "\n")
-                + "\n\n" + "@Mention | (D) Id | (D) Tag | (D) Nickname | (GW) Account");
+                + "\n\n@Mention | (D) Id | (D) Tag | (D) Nickname | (GW) Account");
 
             let chunk = "\u200B";
             for (const queryResult of res) {

@@ -23,7 +23,7 @@ export class ValidationService {
             .map(roleName => findRole(member.guild, roleName))
             .filter(value => value !== undefined) as Role[];
 
-        return await this.setMemberRoles(member, wantedRoles, reason);
+        return this.setMemberRoles(member, wantedRoles, reason);
     }
 
     public async setMemberRoles(member: GuildMember, wantedRoles: Role[], reason?: string) {

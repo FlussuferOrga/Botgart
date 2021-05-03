@@ -24,7 +24,7 @@ export class ReactionSnapshot extends BotgartCommand {
                                 if (guild !== undefined) {
                                     const channel: discord.TextChannel | undefined = <discord.TextChannel>guild.channels.cache.find(c => c instanceof discord.TextChannel && c.id === channelId);
                                     if (channel !== undefined) {
-                                        return await channel.messages.fetch(messageId).catch(er => null);
+                                        return channel.messages.fetch(messageId).catch(er => null);
                                     }
                                 }
                             }
