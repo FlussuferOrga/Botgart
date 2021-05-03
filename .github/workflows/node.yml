@@ -17,7 +17,7 @@ jobs:
           github_token: ${{ github.token }}
           do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
           concurrent_skipping: same_content
-  setup:
+  ci:
     needs: pre_job
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
