@@ -14,5 +14,5 @@ export const allPatches: (typeof DBPatch)[] =
     [Patch1, Patch2, Patch3, Patch4, Patch5, Patch6, Patch7, Patch8, Patch9, Patch10];
 
 export function getPatch(patchName: string) {
-    return allPatches.find(value => value.name == patchName)
+    return allPatches.find(value => value.name == patchName);
 }

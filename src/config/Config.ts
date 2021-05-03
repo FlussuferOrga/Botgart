@@ -37,10 +37,10 @@ const configSchema = {
             if (!Array.isArray(val)) {
                 throw new Error(`Languages should be an array`);
             }
-            const availableLanguages = Locale.availableLanguages.map(language => language.abbreviation)
+            const availableLanguages = Locale.availableLanguages.map(language => language.abbreviation);
             for (const language of val) {
                 if (!availableLanguages.includes(language)) {
-                    throw new Error(`"${language}" is not an available language in ${availableLanguages}`)
+                    throw new Error(`"${language}" is not an available language in ${availableLanguages}`);
                 }
             }
         },
@@ -264,8 +264,8 @@ function loadConfiguration() {
 
         return config;
     } catch (e) {
-        LOG.error("Could not load configuration: " + e)
-        process.exit(1)
+        LOG.error("Could not load configuration: " + e);
+        process.exit(1);
     }
 }
 
@@ -273,7 +273,7 @@ function logConfig(config) {
     let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
 
     //probably we shouldn't log a token.
-    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***")
+    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
     LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
 

@@ -11,7 +11,7 @@ export class DatabasePatcher {
         this.database = database;
     }
 
-    public createPatch<T extends DBPatch>(type: { new(db: Database): T ;}, db :Database): T {
+    public createPatch<T extends DBPatch>(type: { new(db: Database): T; }, db: Database): T {
         return new type(db);
     }
 
@@ -21,25 +21,25 @@ export class DatabasePatcher {
             patch = this.createPatch(patchName, this.database);
             if (patch) {
                 if (revert) {
-                    LOG.info(`Reverting patch '${patchName.name}'.`)
+                    LOG.info(`Reverting patch '${patchName.name}'.`);
                     await patch.revert();
-                    LOG.info("Patch reversion done.")
+                    LOG.info("Patch reversion done.");
                 } else {
-                    LOG.info(`Applying patch '${patchName.name}'.`)
+                    LOG.info(`Applying patch '${patchName.name}'.`);
                     await patch.execute();
-                    LOG.info("Patch application done.")
+                    LOG.info("Patch application done.");
                 }
             }
         } finally {
-            if(patch !== undefined) {
-                patch.close() // free database after applying/reverting the patch    
+            if (patch !== undefined) {
+                patch.close(); // free database after applying/reverting the patch
             }
         }
     }
 
     async applyPatches(patches: typeof DBPatch[], revert: boolean = false) {
         const ps = revert === true ? patches.reverse() : patches;
-        for (let p of ps) {
+        for (const p of ps) {
             await this.applyPatch(p, revert === true);
         }
     }

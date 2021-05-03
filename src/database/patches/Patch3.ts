@@ -21,15 +21,15 @@ export class Patch3 extends DBPatch {
     }
 
     private async resolveAccountNames(rows) {
-        let semaphore = new Semaphore(10);
-        for await(let r of rows) {
-            let release = await semaphore.acquire();
-            let accname = await getAccountName(r.api_key)
+        const semaphore = new Semaphore(10);
+        for await(const r of rows) {
+            const release = await semaphore.acquire();
+            let accname = await getAccountName(r.api_key);
             if (accname === false) {
                 accname = "INVALID API KEY"; // doesn't matter, will be deleted in next reauth anyway.
             }
             release();
-            LOG.debug("resolved " + accname)
+            LOG.debug("resolved " + accname);
             this.connection.prepare(`INSERT INTO new_registrations(id, user, guild, api_key, gw2account,
                                                                    registration_role, account_name, created)
                                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
@@ -38,9 +38,9 @@ export class Patch3 extends DBPatch {
     }
 
     protected async apply(): Promise<void> {
-        let con = this.connection;
+        const con = this.connection;
         this.oldCount = this.connection.prepare(`SELECT COUNT(*) AS c
-                                                 FROM registrations`).get().c
+                                                 FROM registrations`).get().c;
         this.dbbegin();
         con.pragma("foreign_keys = OFF");
         // adding a column with NOT NULL constraint to an existing
@@ -72,17 +72,17 @@ export class Patch3 extends DBPatch {
 
     public async checkPostconditions(): Promise<boolean> {
         const newCount = this.connection.prepare(`SELECT COUNT(*) AS c
-                                                  FROM registrations`).get().c
+                                                  FROM registrations`).get().c;
         const post = this.oldCount === newCount;
         if (!post) {
             LOG.error("Expected equal number of entries for old and new table. But old table had {0} entries " +
-                "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount))
+                "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
         }
         return post;
     }
 
     public async revert(): Promise<void> {
-        let con = this.connection;
+        const con = this.connection;
         this.dbbegin();
         con.pragma("foreign_keys = OFF");
         // adding a column with NOT NULL constraint to an existing

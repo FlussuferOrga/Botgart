@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class FishingRepository extends AbstractDbRepository{
+export class FishingRepository extends AbstractDbRepository {
     /**
      * Randomly selects a Fish.
      * Weight is already randomly selected.
@@ -24,7 +24,7 @@ export class FishingRepository extends AbstractDbRepository{
                     ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC         
                 LIMIT 
                     1
-        `).get())
+        `).get());
     }
 
     /**

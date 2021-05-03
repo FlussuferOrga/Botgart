@@ -47,7 +47,7 @@ export class Whois extends BotgartCommand {
                 + "\n\n" + "@Mention | (D) Id | (D) Tag | (D) Nickname | (GW) Account");
 
             let chunk = "\u200B";
-            for (let queryResult of res) {
+            for (const queryResult of res) {
                 // output result
                 const response = "{0}{1} | {2} | {3} | {4} | {5}"
                     .formatUnicorn(
@@ -59,13 +59,13 @@ export class Whois extends BotgartCommand {
                         Whois.backticksIfNotEmpty(queryResult?.account_name)
                     );
 
-                let nextChunk = chunk + "\n" + response
+                const nextChunk = chunk + "\n" + response;
                 if (nextChunk.length >= 2000) {
                     // chunk would be too big -> send and prepare new chunk
                     await this.reply(message, responsible, chunk);
-                    chunk = "\u200B"
+                    chunk = "\u200B";
                 }
-                chunk = nextChunk
+                chunk = nextChunk;
             }
             if (chunk.length > 0) {
                 await this.reply(message, responsible, chunk);
@@ -97,11 +97,11 @@ export class Whois extends BotgartCommand {
     }
 
     private async query(guild: discord.Guild, namedEscaped: string, name: string) {
-        const members = await guild.members.fetch()
+        const members = await guild.members.fetch();
 
         const matchingDiscordMembers = members
             .filter(member => Whois.matches(member, namedEscaped))
-            .map(value => value.user.id)
+            .map(value => value.user.id);
 
         const res = this.getBotgartClient().registrationRepository.whois(name, matchingDiscordMembers);
 
@@ -118,8 +118,8 @@ export class Whois extends BotgartCommand {
         return enhancedResult.sort((a, b) => {
             return Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
                 || Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag)
-                || Whois.compareStringSafe(a.account_name, b.account_name)
-        })
+                || Whois.compareStringSafe(a.account_name, b.account_name);
+        });
     }
 
     private static compareStringSafe(a: string | null | undefined, b: string | null | undefined) {

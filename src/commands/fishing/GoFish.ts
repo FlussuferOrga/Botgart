@@ -4,8 +4,8 @@ import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import { logger } from "../../util/Logging";
 import { Fish } from "../../repositories/FishingRepository";
+import { logger } from "../../util/Logging";
 
 /**
  Testcases:
@@ -19,10 +19,10 @@ const WAIT_MAX_SECONDS = 150;
 function gets(url: string, options = {}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         https.get(url, options, (response) => {
-            let body = ""
-            response.on("data", (chunk) => body += chunk)
-            response.on("end", () => resolve(body))
-        }).on("error", reject)
+            let body = "";
+            response.on("data", (chunk) => body += chunk);
+            response.on("end", () => resolve(body));
+        }).on("error", reject);
     });
 }
 
@@ -42,9 +42,9 @@ async function image(term: string): Promise<string> {
         const page = cheerio.load(response);
         const links = page(".image a.link");
         const urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
-        image = (urls.length === 0 ? "" : urls[Math.floor(Math.random() * urls.length)]) ?? ""
+        image = (urls.length === 0 ? "" : urls[Math.floor(Math.random() * urls.length)]) ?? "";
     } catch (e) {
-        LOG.error(`Error while trying to retrieve random image from Dogpile: ${e}`)
+        LOG.error(`Error while trying to retrieve random image from Dogpile: ${e}`);
     }
     return image;
 }
@@ -69,7 +69,7 @@ class ActiveFisher {
             .setTitle(L.get("FISHING_IDLE_TITLE", [], " | ", false))
             .setColor(0x0000FF)
             .setDescription(L.get("FISHING_IDLE_DESCRIPTION"))
-            .setImage(await image("river"))
+            .setImage(await image("river"));
     }
 
     public async createBittenEmbed(): Promise<discord.MessageEmbed> {
@@ -92,7 +92,7 @@ class ActiveFisher {
             .setTitle(L.get("FISHING_ESCAPED_TITLE", [], " | ", false))
             .setColor(0xFF0000)
             .setDescription(L.get("FISHING_ESCAPED_DESCRIPTION"))
-            .setImage(await image("sunset"))
+            .setImage(await image("sunset"));
     }
 
     public async bite(): Promise<void> {

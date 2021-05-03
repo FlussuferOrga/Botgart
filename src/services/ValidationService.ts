@@ -3,7 +3,7 @@ import _ from "lodash";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import { logger } from "../util/Logging";
-import { findRole} from "../util/Util";
+import { findRole } from "../util/Util";
 
 const LOG = logger();
 
@@ -23,7 +23,7 @@ export class ValidationService {
             .map(roleName => findRole(member.guild, roleName))
             .filter(value => value !== undefined) as Role[];
 
-        return await this.setMemberRoles(member, wantedRoles, reason)
+        return await this.setMemberRoles(member, wantedRoles, reason);
     }
 
     public async setMemberRoles(member: GuildMember, wantedRoles: Role[], reason?: string) {
@@ -47,9 +47,9 @@ export class ValidationService {
 
             const toAddList = toAdd.map(value => value.name).join(",");
             const toRemoveList = toRemove.map(value => value.name).join(",");
-            LOG.info(`User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`)
+            LOG.info(`User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`);
 
-            await guildMember.roles.set(desiredUserRoles, reason)
+            await guildMember.roles.set(desiredUserRoles, reason);
         }
     }
 }

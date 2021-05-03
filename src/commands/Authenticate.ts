@@ -4,8 +4,8 @@ import { BotgartCommand } from "../BotgartCommand";
 import { getConfig } from "../config/Config";
 import { getAccountGUID, getAccountName, validateWorld } from "../Gw2ApiUtils";
 import * as L from "../Locale";
-import { logger } from "../util/Logging";
 import { Registration } from "../repositories/RegistrationRepository";
+import { logger } from "../util/Logging";
 import * as Util from "../util/Util";
 
 const LOG = logger();
@@ -45,11 +45,11 @@ export class Authenticate extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if (!message) {
-            LOG.error("Mandatory message parameter missing. This command can not be issued as cron.")
+            LOG.error("Mandatory message parameter missing. This command can not be issued as cron.");
             return;
         }
 
-        let members: { guild: discord.Guild, member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
+        const members: { guild: discord.Guild, member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
         let reply = "";
         // this snippet allows users to authenticate themselves
         // through a DM and is dedicated to Jey, who is a fucking 
@@ -62,9 +62,9 @@ export class Authenticate extends BotgartCommand {
             }
         });
 
-        message.util?.send(L.get("CHECKING_KEY"))
+        message.util?.send(L.get("CHECKING_KEY"));
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
-        const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key)
+        const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key);
         if (!validFormat) {
             message.util?.send(L.get("KEY_INVALID_FORMAT"));
             return;
@@ -82,7 +82,7 @@ export class Authenticate extends BotgartCommand {
             validateWorld(args.key, worldAssignments).then(
                 role => {
                     if (role === false) {
-                        LOG.info("Declined API key {0}.".formatUnicorn(args.key))
+                        LOG.info("Declined API key {0}.".formatUnicorn(args.key));
                         reply = L.get("KEY_DECLINED");
                         responsible.send(reply);
                     } else {
@@ -90,7 +90,7 @@ export class Authenticate extends BotgartCommand {
                             await Util.asyncForEach(members, async (m: { guild: discord.Guild, member: discord.GuildMember }) => {
                                 const r: discord.Role | undefined = (await m.guild.roles.fetch()).cache.find(r => r.name === role);
                                 if (r === undefined) {
-                                    LOG.error(`Role '${role}' not found on server '${m.guild.name}'. Skipping.`)
+                                    LOG.error(`Role '${role}' not found on server '${m.guild.name}'. Skipping.`);
                                     reply = L.get("INTERNAL_ERROR");
                                 } else {
                                     let accountName: string | boolean = await getAccountName(args.key);
@@ -100,7 +100,7 @@ export class Authenticate extends BotgartCommand {
                                         i--;
                                     }
                                     if (accountName === false) {
-                                        LOG.warn(`After trying several times, I could not resolve the account name for discord user '${responsible.username}'. This may be a temporary problem with the API. Falling back to NULL to fix another day.`)
+                                        LOG.warn(`After trying several times, I could not resolve the account name for discord user '${responsible.username}'. This may be a temporary problem with the API. Falling back to NULL to fix another day.`);
                                         accountName = "";
                                     }
                                     let currentRole: discord.Role | null = null;
@@ -111,13 +111,13 @@ export class Authenticate extends BotgartCommand {
                                         if (reg) {
                                             // assignServerRole() expects Role | null, but find() returns Role | undefined, so we do null-coalescing here
                                             currentRole = (await m.guild.roles.fetch()).cache.find(r => r.name === reg.registration_role) || null;
-                                            LOG.info(`User '${responsible.username}' was already registered with role '${currentRole}' which will be removed.`)
+                                            LOG.info(`User '${responsible.username}' was already registered with role '${currentRole}' which will be removed.`);
                                         }
 
                                     }
-                                    let unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
+                                    const unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if (unique) {
-                                        LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id))
+                                        LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // Beware! This is not 100% fail safe and users have figured out the weirdest ways and configurations which are just too wild to cover entirely:
                                         // - players registering with multiple Discord accounts for the same GW2 account due to using multiple devices
                                         // - players registering with a secondary account on the Discord account they were already using which is another server 
@@ -126,7 +126,7 @@ export class Authenticate extends BotgartCommand {
                                         // which makes it hard to figure out which Discord account should have which registration role.
                                         // It could therefore happen that some users end up with access to channels they should not really have, but oh well...
                                         // Maybe some day someone wants to take a really good look into this.
-                                        await this.getBotgartClient().validationService.setMemberRolesByString(m.member, [r.name], "Authentication")
+                                        await this.getBotgartClient().validationService.setMemberRolesByString(m.member, [r.name], "Authentication");
 
                                         // give earned achievement roles again
                                         const achievements = cl.achievementRepository.getPlayerAchievements(guid.toString())
@@ -136,10 +136,10 @@ export class Authenticate extends BotgartCommand {
                                             achievement?.giveRole(m.member);
                                         }
                                         cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);
-                                        reply = L.get("KEY_ACCEPTED")
+                                        reply = L.get("KEY_ACCEPTED");
                                     } else {
-                                        LOG.info("Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name))
-                                        reply = L.get("KEY_NOT_UNIQUE")
+                                        LOG.info("Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));
+                                        reply = L.get("KEY_NOT_UNIQUE");
                                     }
                                 }
                             });
@@ -149,20 +149,20 @@ export class Authenticate extends BotgartCommand {
                 }, err => {
                     switch (err) {
                         case validateWorld.ERRORS.config_world_duplicate:
-                            LOG.error("A world is defined more than once in the config. Please fix the config file.")
+                            LOG.error("A world is defined more than once in the config. Please fix the config file.");
                             responsible.send(L.get("INTERNAL_ERROR"));
                             break;
                         case validateWorld.ERRORS.network_error:
-                            LOG.error("Network error while trying to resolve world.")
+                            LOG.error("Network error while trying to resolve world.");
                             responsible.send(L.get("INTERNAL_ERROR"));
                             break;
                         case validateWorld.ERRORS.invalid_key:
-                            LOG.error("Invalid key: {0}".formatUnicorn(args.key))
+                            LOG.error("Invalid key: {0}".formatUnicorn(args.key));
                             responsible.send(L.get("KEY_DECLINED"));
                             break;
                         default:
-                            LOG.error("Unexpected error occured while validating world.")
-                            LOG.error(err)
+                            LOG.error("Unexpected error occured while validating world.");
+                            LOG.error(err);
                             responsible.send(L.get("INTERNAL_ERROR"));
                     }
                 }

@@ -2,8 +2,8 @@ import discord from "discord.js";
 import moment from "moment-timezone";
 import { BotgartClient } from "../../BotgartClient";
 import { getConfig } from "../../config/Config";
-import { logger } from "../../util/Logging";
 import { RosterRepository } from "../../repositories/RosterRepository";
+import { logger } from "../../util/Logging";
 import * as Util from "../../util/Util";
 import { ResetLeader } from "./ResetLeader";
 import * as ResetUtil from "./ResetUtil";
@@ -22,7 +22,7 @@ export class RosterService {
         ...WvwMap.getMaps().map(m => m.emote), RosterService.WITHDRAW, RosterService.VISIBLE
     ];
 
-    private repository: RosterRepository
+    private repository: RosterRepository;
 
     private client: BotgartClient;
 
@@ -56,10 +56,10 @@ export class RosterService {
     public prepareRefresh(guild: discord.Guild, message: discord.Message, roster: Roster): void {
         const dbRoster = this.getCachedRoster(guild, roster.weekNumber, roster.year);
         if (dbRoster === undefined) {
-            LOG.error(`Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`)
+            LOG.error(`Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
             return;
         }
-        const rosterService = this
+        const rosterService = this;
         const refreshDelayedFn = (eventRoster: Roster, map: string, p: string) => {
             const onDelayReached = function (service: RosterService, roster: Roster) { // no arrow function, as we need to bind()!
                 service.refreshGuarded(guild, roster, message);
@@ -93,18 +93,18 @@ export class RosterService {
     }
 
     public watchRosterMessageReactions(message: discord.Message, roster: Roster): void {
-        LOG.debug("Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber))
+        LOG.debug("Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
         message.createReactionCollector(e =>
             RosterService.EMOTES.includes(e.emoji.name), {}).on("collect", r => this.processReacts(r, roster));
 
-        for (let [_, e] of message.reactions.cache) {
+        for (const [_, e] of message.reactions.cache) {
             this.processReacts(e, roster);
         }
     }
 
     private async processReacts(r: discord.MessageReaction, roster: Roster) {
         if (r.partial) {
-            r = await r.fetch()
+            r = await r.fetch();
         }
         const mapForEmote = WvwMap.getMapByEmote(r.emoji.name);
         const reactedUsers = await r.users.fetch();
@@ -162,15 +162,15 @@ export class RosterService {
     }
 
     private initSyncToTS3(): void {
-        const rosterWeek = ResetUtil.currentWeek()
-        const rosterYear = moment().utc().year()
+        const rosterWeek = ResetUtil.currentWeek();
+        const rosterYear = moment().utc().year();
         const guilds = this.client.guilds.cache;
 
         guilds.forEach(async (guild) => {
             const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await this.repository.getRosterPost(guild, rosterWeek, rosterYear);
 
             if (roster === undefined) {
-                LOG.error(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`)
+                LOG.error(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
             } else {
                 const [r, chan, mes] = roster;
                 this.syncToTS3(guild, r);
@@ -186,14 +186,14 @@ export class RosterService {
             const match = idregxp.exec(sid);
             let user = sid;
             if (match !== null) {
-                const resolved: discord.GuildMember | undefined = await guild.members.fetch(match[1])
+                const resolved: discord.GuildMember | undefined = await guild.members.fetch(match[1]);
                 if (resolved !== undefined) {
                     user = resolved.displayName;
                 }
             }
             return user;
-        }
-        const resetDateTime = roster.getResetMoment().tz(getConfig().get().timeZone)
+        };
+        const resetDateTime = roster.getResetMoment().tz(getConfig().get().timeZone);
         await this.client.getTS3Connection().post("resetroster", {
             "date": resetDateTime.format("DD.MM.YYYY HH:mm z"), //TODO: remove
             "datetime": resetDateTime.format(),

@@ -26,7 +26,7 @@ export class Database {
      * creating the init.
      */
     public initSchema(): void {
-        let sqls = [
+        const sqls = [
             `CREATE TABLE IF NOT EXISTS registrations
              (
                  id                INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,10 +75,10 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    private openConnection(state: String[]): betterSqlite3.Database {
+    private openConnection(state: string[]): betterSqlite3.Database {
         const options = {
             verbose: (message, additionalArgs) => {
-                state.push(message)
+                state.push(message);
                 // LOG.debug("Sqlite Query:\n" + message, additionalArgs)
             }
         };
@@ -93,7 +93,7 @@ export class Database {
      * returns: the result of the lambda.
      */
     public execute<T>(f: (sqlite3) => T): T | undefined {
-        const queries: String[] = []
+        const queries: string[] = [];
         const db = this.openConnection(queries);
         const start: number = new Date().getTime();
 
@@ -107,7 +107,7 @@ export class Database {
             const end = new Date().getTime();
             const time = end - start;
             if (time > 5000) {
-                LOG.debug(`Sqlite Execution took long: ${time}ms: \n` + queries.join("\n---\n"))
+                LOG.debug(`Sqlite Execution took long: ${time}ms: \n` + queries.join("\n---\n"));
             }
         }
 

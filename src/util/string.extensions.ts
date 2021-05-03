@@ -16,7 +16,7 @@ if (!String.prototype.formatUnicorn) {
             }
         }
         return str;
-    }
+    };
 }
 
 export {};

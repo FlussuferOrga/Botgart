@@ -2,7 +2,7 @@ import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { logger } from "../util/Logging";
 
-const LOG = logger()
+const LOG = logger();
 
 export class Startup extends Listener {
     constructor() {

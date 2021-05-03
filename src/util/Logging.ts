@@ -10,7 +10,7 @@ function createLogger() {
         winston.format.printf(({level, file, message, timestamp, ...rest}) => {
             let restString = "";
             if (Object.getOwnPropertyNames(rest).length > 0) {
-                restString = " " + JSON.stringify(rest)
+                restString = " " + JSON.stringify(rest);
             }
             return `${timestamp} ${level} [${file}]: ${message}${restString}`;
         })
@@ -39,7 +39,7 @@ function createLogger() {
                 level: 'debug'
             })
         ]
-    })
+    });
 }
 
 const internalLogger = createLogger();

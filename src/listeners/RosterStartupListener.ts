@@ -13,7 +13,7 @@ export class RosterStartupListener extends Listener {
     }
 
     exec() {
-        LOG.info("Start watching rosters!")
+        LOG.info("Start watching rosters!");
         const client: BotgartClient = <BotgartClient>this.client;
         client.rosterService.onStartup();
     }

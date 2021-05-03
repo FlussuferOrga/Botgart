@@ -3,6 +3,7 @@ export enum WvwRegion {
     NA = "NA"
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace WvwRegion {
     export function getProperties(wvwRegion: WvwRegion) {
         let resetWeekDay: number;
@@ -11,13 +12,13 @@ export namespace WvwRegion {
             case WvwRegion.EU:
                 resetWeekDay = 5;
                 resetTimeUTC = 18;
-                break
+                break;
             case WvwRegion.NA:
-                resetWeekDay = 6
-                resetTimeUTC = 2
-                break
+                resetWeekDay = 6;
+                resetTimeUTC = 2;
+                break;
             default:
-                throw Error("Unmapped WvW Region")
+                throw Error("Unmapped WvW Region");
         }
         return {resetWeekDay, resetTimeUTC};
     }

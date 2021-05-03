@@ -2,26 +2,26 @@ import moment, { Moment } from "moment-timezone";
 import { WvwRegion } from "./WvwRegion";
 
 export function currentWeek(): number {
-    return moment().utc().isoWeek()
+    return moment().utc().isoWeek();
 }
 
 export function currentYear(): number {
-    return moment().utc().year()
+    return moment().utc().year();
 }
 
 export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
-    let {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion)
+    const {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion);
     return moment().tz("UTC")
         .year(year)
         .isoWeek(isoWeek)
         .isoWeekday(resetWeekDay)
         .hour(resetTimeUTC)
-        .startOf("hour")
+        .startOf("hour");
 }
 
 export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
-    let _startingPoint = startingPoint.clone().tz("UTC")
-    let {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion)
+    const _startingPoint = startingPoint.clone().tz("UTC");
+    const {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion);
 
     let nextResetMoment;
     if (_startingPoint.isoWeekday() < resetWeekDay) {
@@ -36,10 +36,10 @@ export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwR
             // reset is happening or happened today
             nextResetMoment = _startingPoint.add(1, 'weeks').isoWeekday(resetWeekDay);
         } else {
-            nextResetMoment = _startingPoint //starting point IS reset day but before reset time
+            nextResetMoment = _startingPoint; //starting point IS reset day but before reset time
         }
     }
     // reset time
-    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf('hour')
+    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf('hour');
     return nextResetMoment;
 }

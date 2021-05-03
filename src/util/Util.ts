@@ -34,7 +34,7 @@ export function escapeRegExp(text: string) {
 export function capitalise(word: string) {
     return word.length === 0
         ? word
-        : word.charAt(0).toUpperCase() + word.slice(1)
+        : word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 export function determineTier(yaksDelivered: number) {
@@ -75,7 +75,7 @@ export function parseCronDate(input: string, dateFomat: string = "DD.MM.YYYY H:m
 export function compareDatesWithoutTime(d1: Date, d2: Date) {
     return d1.getUTCDate() == d2.getUTCDate()
         && d1.getUTCMonth() == d2.getUTCMonth()
-        && d1.getUTCFullYear() == d2.getUTCFullYear()
+        && d1.getUTCFullYear() == d2.getUTCFullYear();
 }
 
 export function formatUserPing(uid: string) {

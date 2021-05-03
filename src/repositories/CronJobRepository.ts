@@ -2,7 +2,7 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export class CronJobRepository extends AbstractDbRepository {
     public storeCronJob(job: CronJobEntity): number | undefined {
-        let sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?, ?, ?, ?, ?)`;
+        const sql = `INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?, ?, ?, ?, ?)`;
         return this.execute(db => {
             let lastId = undefined;
             db.transaction((_) => {
@@ -24,7 +24,7 @@ export class CronJobRepository extends AbstractDbRepository {
             db.transaction((_) => {
                 db.prepare(`DELETE
                             FROM cronjobs
-                            WHERE id = ?`).run(id)
+                            WHERE id = ?`).run(id);
                 changes = db.prepare(`SELECT changes() AS changes`).get().changes;
             })(null);
             return changes > 0;

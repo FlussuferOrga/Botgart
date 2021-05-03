@@ -2,8 +2,8 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds the command_permissions table.
-*/
+ * Adds the command_permissions table.
+ */
 export class Patch4 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -41,7 +41,7 @@ export class Patch4 extends DBPatch {
               GROUP BY 
                 cp.command, cp.receiver, cp.type, cp.guild
             `).run();
-      }
+    }
 
     public async revert(): Promise<void> {
         this.dbbegin();

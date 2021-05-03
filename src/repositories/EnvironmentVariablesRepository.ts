@@ -1,12 +1,12 @@
 import * as discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class EnvironmentVariablesRepository extends AbstractDbRepository{
+export class EnvironmentVariablesRepository extends AbstractDbRepository {
 
     /**
      * Convenience method for _getEnvironmentVariable.
      */
-    public getEnvironmentVariable(guild: discord.Guild, name: string): [string, string, (boolean|number|string|null)] {
+    public getEnvironmentVariable(guild: discord.Guild, name: string): [string, string, (boolean | number | string | null)] {
         return this._getEnvironmentVariable(guild.id, name);
     }
 
@@ -20,29 +20,29 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository{
      */
     public _getEnvironmentVariable(guildId: string, name: string): [string, string, (boolean | number | string | null)] {
         return this.execute(db => {
-            const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
-                .get(guildId, name)
-            let casted: string | number | boolean | null = null;
-            switch(res.type) {
-                case "boolean":
-                    casted = ("true" === res.value);
-                    break;
-                case "number":
-                    casted = Number(res.value);
-                    break;
-                case "string":
-                    casted = res.value;
-                    break;
-            }
-            return [""+res.value, ""+res.type, casted];
-        })
-        ?? ["null", "null", null];
+                const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
+                    .get(guildId, name);
+                let casted: string | number | boolean | null = null;
+                switch (res.type) {
+                    case "boolean":
+                        casted = ("true" === res.value);
+                        break;
+                    case "number":
+                        casted = Number(res.value);
+                        break;
+                    case "string":
+                        casted = res.value;
+                        break;
+                }
+                return ["" + res.value, "" + res.type, casted];
+            })
+            ?? ["null", "null", null];
     }
 
     /**
      * Convenience method for _setEnvironmentVariable.
      */
-    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean|number|string), type: string | null = null) {
+    public setEnvironmentVariable(guild: discord.Guild, name: string, value: (boolean | number | string), type: string | null = null) {
         return this._setEnvironmentVariable(guild.id, name, value, type);
     }
 
@@ -54,7 +54,7 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository{
      * name: name of the EV.
      * type: type of the variable as it should be stored. This will affect how it will be retrieved later on in getEnvironmentVariable.
      */
-    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean|number|string), type: string | null = null) {
+    public _setEnvironmentVariable(guildId: string, name: string, value: (boolean | number | string), type: string | null = null) {
         type = type || typeof value;
         return this.execute(db => db.prepare(`
             INSERT INTO 
@@ -65,6 +65,6 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository{
                     name = ?,
                     type = ?,
                     value = ?
-        `).run(guildId, name, ""+type, ""+value, guildId, name, ""+type, ""+value));
+        `).run(guildId, name, "" + type, "" + value, guildId, name, "" + type, "" + value));
     }
 }

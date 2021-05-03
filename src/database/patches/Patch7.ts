@@ -2,8 +2,8 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds the year column to the reset_roster table
-*/
+ * Adds the year column to the reset_roster table
+ */
 export class Patch7 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -40,7 +40,7 @@ export class Patch7 extends DBPatch {
         this.connection.prepare(`DROP TABLE reset_rosters`).run();
         this.connection.prepare(`ALTER TABLE new_reset_rosters RENAME TO reset_rosters`).run();
         this.connection.pragma("foreign_keys = ON");
-      }
+    }
 
     public async revert(): Promise<void> {
         this.dbbegin();

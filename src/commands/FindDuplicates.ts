@@ -8,9 +8,9 @@ const LOG = logger();
 export class FindDuplicates extends BotgartCommand {
     constructor() {
         super("findduplicates", {
-            aliases: ["findduplicates", "finddupes"],
-            // userPermissions: ['ADMINISTRATOR']
-        }
+                aliases: ["findduplicates", "finddupes"],
+                // userPermissions: ['ADMINISTRATOR']
+            }
         );
     }
 
@@ -20,9 +20,9 @@ export class FindDuplicates extends BotgartCommand {
             // unknown users are already filtered out. Maybe we want to change that and notify the caller
             const userNames: string[] = d.users.split(",");
             Promise.all(userNames.map(async u => await guild.members.fetch(u)).filter(u => u))
-            .then(users => responsible.send(`${d.gw2account}: ${users.join(", ")}`));           
+                .then(users => responsible.send(`${d.gw2account}: ${users.join(", ")}`));
         });
-        LOG.info("Finding duplicates complete.")
+        LOG.info("Finding duplicates complete.");
     }
 
     postExecHook(message: discord.Message, args: any, result: any): void {

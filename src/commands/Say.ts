@@ -5,16 +5,16 @@ import { logger } from "../util/Logging";
 const LOG = logger();
 
 /**
-Testcases:
-- missing parameters -> error
-- regular say -> bot posts text
-- with invalid channel -> error
-- from cron: remove channel bot was supposed to talk in -> error
-*/
+ Testcases:
+ - missing parameters -> error
+ - regular say -> bot posts text
+ - with invalid channel -> error
+ - from cron: remove channel bot was supposed to talk in -> error
+ */
 export class Say extends BotgartCommand {
     constructor() {
         super("say", {
-                aliases: ["say","speak"],
+                aliases: ["say", "speak"],
                 quoted: true,
                 args: [
                     {
@@ -38,18 +38,18 @@ export class Say extends BotgartCommand {
         // So the bot could no longer be there. We therefore need to find() the guild
         // again to make sure the bot is still on there.
         let result;
-        let g = this.client.guilds.cache.find(g => g.id == guild.id);
-        if(!g) {
-            LOG.error("I am not a member of guild {0}.".formatUnicorn(guild.id))
+        const g = this.client.guilds.cache.find(g => g.id == guild.id);
+        if (!g) {
+            LOG.error("I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
-            let c:discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
-            if(!c) {
-                LOG.error("Can not find a channel {0}.".formatUnicorn(args.channel.id))
+            const c: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
+            if (!c) {
+                LOG.error("Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
             } else {
                 c.send(args.text);
-                LOG.info("Executed Say.")
+                LOG.info("Executed Say.");
                 result = true;
             }
         }
@@ -57,14 +57,14 @@ export class Say extends BotgartCommand {
     }
 
     serialiseArgs(args) {
-        let clone = Object.assign({}, args);
+        const clone = Object.assign({}, args);
         clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
         return JSON.stringify(clone);
     }
 
     deserialiseArgs(jsonargs) {
-        let args = JSON.parse(jsonargs);
-        let guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
+        const args = JSON.parse(jsonargs);
+        const guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
         args.channel = guild?.channels.cache.find(c => c.id == args.channel.channel);
         return args;
     }

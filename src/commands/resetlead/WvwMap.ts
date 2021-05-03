@@ -20,11 +20,11 @@ export class WvwMap {
     }
 
     static getMapByEmote(emote: string): WvwMap {
-        return WvwMap.getMaps().filter(m => m.emote === emote)[0] // yields undefined if no match
+        return WvwMap.getMaps().filter(m => m.emote === emote)[0]; // yields undefined if no match
     }
 
     static getMapByName(name: string): WvwMap {
-        return WvwMap.getMaps().filter(m => m.getAllNames().includes(name))[0] // yields undefined if no match
+        return WvwMap.getMaps().filter(m => m.getAllNames().includes(name))[0]; // yields undefined if no match
     }
 
     public readonly emote: string;

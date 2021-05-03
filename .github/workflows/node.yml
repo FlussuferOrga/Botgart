@@ -25,11 +25,15 @@ jobs:
           path: ./node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
       - run: npm install
+        if: steps.cache.outputs.cache-hit != 'true'
         env:
           CI: true
       - run: npm run build
         env:
           CI: true
-      - run: npm test
+      - run: npm run test
+        env:
+          CI: true
+      - run: npm run lint
         env:
           CI: true

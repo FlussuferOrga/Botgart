@@ -51,7 +51,7 @@ export class ResetRoster extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        const currentWeek = ResetUtil.currentWeek()
+        const currentWeek = ResetUtil.currentWeek();
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
         const rosterYear = !args.year ? ResetUtil.currentYear() : args.year;
 
@@ -64,7 +64,7 @@ export class ResetRoster extends BotgartCommand {
             } else {
                 const [dbRoster, dbChannel, dbMessage] = dbEntry;
                 // there is already a roster-post for this guild+week -> do nothing, log warning
-                LOG.warn(`Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`)
+                LOG.warn(`Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
@@ -81,7 +81,7 @@ export class ResetRoster extends BotgartCommand {
         const args = JSON.parse(jsonargs);
         const guild: discord.Guild | undefined = this.client.guilds.cache.find(g => g.id == args.channel.guild);
         if (guild === undefined) {
-            LOG.warn(`The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`)
+            LOG.warn(`The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
             args.channel = undefined;
         } else {
             args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);

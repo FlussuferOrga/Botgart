@@ -897,7 +897,7 @@ class Language {
     public constructor(abbreviation: string, flag: string, strings: { [key: string]: string }) {
         this.abbreviation = abbreviation;
         this.flag = flag;
-        this.strings = strings
+        this.strings = strings;
     }
 
     public get(key: string, args: string[] = [], options: { [option: string]: boolean } = {}): string {
@@ -954,5 +954,5 @@ export function setLanguages(abbreviations: string[]) {
 export function get(key: string, args?: string[], separator: string = "\n\n", flags = true, options: { [option: string]: boolean } = {}): string {
     options.flags = flags; // flags was a separate parameter for historical reasons. Monkey-patching this into a proper option-dictionary now~
     return currentLanguages.map(l => l.get(key, args, options)).join(separator);
-};
+}
 

@@ -4,7 +4,7 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export type FactionColour = "Red" | "Blue" | "Green";
 
-export class MatchupRepository extends AbstractDbRepository{
+export class MatchupRepository extends AbstractDbRepository {
     public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
         return this.execute(db =>
             db.prepare("SELECT matchup_id, tier, start, end FROM matchups WHERE datetime(?, 'localtime') BETWEEN start AND end").get(Util.momentToLocalSqliteTimestamp(now)));
@@ -20,14 +20,14 @@ export class MatchupRepository extends AbstractDbRepository{
             const existingMatch = db.prepare("SELECT matchup_id AS id FROM matchups WHERE start = datetime(?, 'localtime')")
                 .get(Util.momentToLocalSqliteTimestamp(start));
             let matchId: number = existingMatch ? existingMatch.id : undefined;
-            if(matchId === undefined) {
+            if (matchId === undefined) {
                 db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
                     .run(tier,
                         Util.momentToLocalSqliteTimestamp(start),
                         Util.momentToLocalSqliteTimestamp(end));
                 matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-                for(const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
-                    for(const worldId of worlds) {
+                for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
+                    for (const worldId of worlds) {
                         this.addMatchupFaction(matchId, worldId, colour);
                     }
                 }
@@ -57,8 +57,8 @@ export class MatchupRepository extends AbstractDbRepository{
         return row ? row.colour : undefined;
     }
 
-    public crashedT3ByCommander(homeWorldId: number,gw2account: string): number {
-        const crashed: {count:number} | undefined = this.execute(db => db.prepare(`
+    public crashedT3ByCommander(homeWorldId: number, gw2account: string): number {
+        const crashed: { count: number } | undefined = this.execute(db => db.prepare(`
                 SELECT 
                     tl.gw2account,
                     COUNT(*) AS count
@@ -149,7 +149,7 @@ export class MatchupRepository extends AbstractDbRepository{
                 AND ? BETWEEN m.start AND m.end
 
         `).get(worldId, Util.momentToLocalSqliteTimestamp(timestamp)));
-        return res !== undefined ? res.colour : undefined
+        return res !== undefined ? res.colour : undefined;
     }
 
     /**
@@ -176,7 +176,7 @@ export class MatchupRepository extends AbstractDbRepository{
         yaks_delivered: number,
         tier: number
     }[] {
-        if(!now) {
+        if (!now) {
             now = moment.utc().local();
         }
         const ts = Util.momentToLocalSqliteTimestamp(now);
@@ -235,7 +235,7 @@ export class MatchupRepository extends AbstractDbRepository{
                 closest AS c
                 JOIN matchup_objectives AS mo
                   ON c.objectives_snapshot_id = mo.snapshot_id
-        `).all(ts,ts,ts));
+        `).all(ts, ts, ts));
     }
 
     /**
@@ -259,7 +259,7 @@ export class MatchupRepository extends AbstractDbRepository{
         kills: number,
         victory_points: number
     }[] {
-        if(!now) {
+        if (!now) {
             now = moment.utc().local();
         }
         const ts = Util.momentToLocalSqliteTimestamp(now);
@@ -314,7 +314,7 @@ export class MatchupRepository extends AbstractDbRepository{
                 closest AS c
                 JOIN matchup_stats AS ms 
                   ON c.stats_snapshot_id = ms.snapshot_id
-        `).all(ts,ts,ts));
+        `).all(ts, ts, ts));
     }
 
     public addMatchupStats(matchId: number, snapshotId: number, map: string, faction: string, deaths: number, kills: number, victoryPoints: number) {
@@ -322,13 +322,13 @@ export class MatchupRepository extends AbstractDbRepository{
             .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
     }
 
-    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, {id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[]}, number][]) {
+    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, { id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[] }, number][]) {
         return this.execute(db => {
             const stmt = db.prepare(`INSERT INTO matchup_objectives
                               (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick, points_capture, last_flipped, yaks_delivered, tier)
                               VALUES (?,?,?,?,?,?,?,?,?,?,?)`);
             db.transaction((matchId, objectives) => {
-                for(const [mapname, details, tier] of objectives) {
+                for (const [mapname, details, tier] of objectives) {
                     stmt.run(matchId,
                         snapshotId,
                         details.id,

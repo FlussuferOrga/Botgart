@@ -12,7 +12,7 @@ export function registrableAchievement(target: AchievementType) {
 }
 
 //this triggers loading the achievements, which are then collected by the decorator.
-export * as allAchievements from "./Achievements"
+export * as allAchievements from "./Achievements";
 
 // ---- AchievementRegistry ----
 const LOG = logger();
@@ -21,11 +21,12 @@ export class AchievementRegistry {
     private readonly achievements: { [key: string]: Achievement<any> } = {};
 
     constructor(achievements: Achievement<any>[]) {
-        LOG.info(`Registering achievements: [${achievements.map(value => value.name).join(", ")}].`)
-        for (let achievement of achievements) {
+        LOG.info(`Registering achievements: [${achievements.map(value => value.name).join(", ")}].`);
+        for (const achievement of achievements) {
             this.achievements[achievement.name.toLowerCase()] = achievement;
         }
     }
+
     public getAchievements(): Achievement<any>[] {
         return Object.values(this.achievements);
     }
@@ -37,7 +38,7 @@ export class AchievementRegistry {
 
     public static create(client: BotgartClient) {
         const achievements = achievementCreators.map(type => new type(client));
-        return new AchievementRegistry(achievements)
+        return new AchievementRegistry(achievements);
     }
 
 }

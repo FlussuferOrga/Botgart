@@ -3,9 +3,9 @@ import { BotgartCommand } from "../../BotgartCommand";
 import { FishLadderEntry } from "../../repositories/FishingRepository";
 
 /**
-Testcases:
+ Testcases:
 
-*/
+ */
 function pad(n: number, l: number): string {
     return " ".repeat(l - n.toString().length) + n;
 }
@@ -19,12 +19,12 @@ function readableWeight(n: number): string {
 export class FishingLadder extends BotgartCommand {
     constructor() {
         super("fishingladder", {
-            aliases: ["fishingladder", "epeen"]
-        },
-        {
-            availableAsDM: true,
-            everyonePermission: 1
-        }
+                aliases: ["fishingladder", "epeen"]
+            },
+            {
+                availableAsDM: true,
+                everyonePermission: 1
+            }
         );
     }
 
@@ -33,8 +33,8 @@ export class FishingLadder extends BotgartCommand {
         const ladder: FishLadderEntry[] = this.getBotgartClient().fishingRepository.fishLadder(length);
 
         Promise.all(ladder.map(fle => this.client.users.fetch(fle.user)
-                                                 .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))
-               .then(xs => message.reply(`:fish::crown:\n${xs.join("\n")}`, {split:true}));
+            .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))
+            .then(xs => message.reply(`:fish::crown:\n${xs.join("\n")}`, {split: true}));
     }
 }
 

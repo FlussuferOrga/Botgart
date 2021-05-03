@@ -41,10 +41,10 @@ export class RemoveResetLeader extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
         if (args.weekNumber <= 0) {
-            args.weekNumber = ResetUtil.currentWeek()
+            args.weekNumber = ResetUtil.currentWeek();
         }
         if (args.year <= 0) {
-            args.year = ResetUtil.currentYear()
+            args.year = ResetUtil.currentYear();
         }
         const dbRoster = this.getBotgartClient().rosterService.getCachedRoster(guild, args.weekNumber, args.year);
         if (dbRoster !== undefined) {

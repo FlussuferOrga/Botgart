@@ -109,40 +109,40 @@ export class RegistrationRepository extends AbstractDbRepository {
     }
 
     public storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean | undefined {
-        let sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role)
+        const sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role)
                    VALUES (?, ?, ?, ?, ?, ?)`;
         return this.execute(db => {
             try {
                 db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
                 return true;
             } catch (err) {
-                LOG.error("Error while trying to store API key: {0}.".formatUnicorn(err.message))
+                LOG.error("Error while trying to store API key: {0}.".formatUnicorn(err.message));
                 return false;
             }
         });
     }
 
     public loadRegistrationsFromDb(): Registration[] {
-        LOG.info(`Loading all registrations from DB.`)
+        LOG.info(`Loading all registrations from DB.`);
         const execute = this.execute(db => {
             return db.prepare(`SELECT id, api_key, guild, user, registration_role, account_name
                                FROM registrations
-                               ORDER BY guild`).all()
+                               ORDER BY guild`).all();
         });
-        LOG.info(`Loaded ${execute.length} from DB.`)
+        LOG.info(`Loaded ${execute.length} from DB.`);
 
         return execute;
     }
 
     public loadUserIds(guildId: string): string[] {
-        LOG.info(`Loading all user ids for guild ${guildId}`)
+        LOG.info(`Loading all user ids for guild ${guildId}`);
         const execute = this.execute(db => {
             return db.prepare(`SELECT user
                                FROM registrations
                                WHERE guild = ?
-                               ORDER BY user`).all(guildId)
+                               ORDER BY user`).all(guildId);
         });
-        LOG.info(`Loaded ${execute.length} user ids from DB.`)
+        LOG.info(`Loaded ${execute.length} user ids from DB.`);
 
         return execute.map(value => value.user);
     }
@@ -153,7 +153,7 @@ export class RegistrationRepository extends AbstractDbRepository {
             db.transaction((_) => {
                 db.prepare(`DELETE
                             FROM registrations
-                            WHERE api_key = ?`).run(key)
+                            WHERE api_key = ?`).run(key);
                 changes = db.prepare(`SELECT changes() AS changes`).get().changes;
             })(null);
             return changes > 0;
@@ -172,8 +172,8 @@ export class RegistrationRepository extends AbstractDbRepository {
             db.prepare(`UPDATE registrations
                         SET registration_role = ?
                         WHERE id = ?`)
-                .run(roleName, id)
-        })
+                .run(roleName, id);
+        });
     }
 }
 

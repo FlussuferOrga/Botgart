@@ -102,7 +102,7 @@ export abstract class Achievement<C> {
 
         const userdata = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
         if (userdata === undefined) {
-            LOG.warn(`Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`)
+            LOG.warn(`Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
@@ -127,10 +127,10 @@ export abstract class Achievement<C> {
 
                         }
                     } else {
-                        LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`)
+                        LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
-                    const role = this.getRole(guild)
+                    const role = this.getRole(guild);
                     if (role !== undefined) {
                         discordUser.roles.add(role);
                     } else {
@@ -153,17 +153,17 @@ export abstract class Achievement<C> {
      * If so, they will be awarded, if not, nothing happens.
      */
     async tryAward(discordUser: discord.GuildMember, context: C) {
-        LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
+        LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`);
         const profiler = LOG.startTimer();
         try {
             if (this.checkCondition(discordUser, context)) {
-                LOG.debug(`Success! Awarding achievement to user.`)
+                LOG.debug(`Success! Awarding achievement to user.`);
                 this.awardIn(discordUser.guild, discordUser);
             } else {
-                LOG.debug(`User did not pass condition.`)
+                LOG.debug(`User did not pass condition.`);
             }
         } finally {
-            profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`})
+            profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`});
         }
 
     }
@@ -190,7 +190,7 @@ export abstract class Achievement<C> {
      */
     giveRole(discordUser: discord.GuildMember): boolean {
         let given = false;
-        const role = this.getRole(discordUser.guild)
+        const role = this.getRole(discordUser.guild);
         if (role) {
             discordUser.roles.add(role);
             given = true;
@@ -234,7 +234,7 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
             if (x.commander.getDiscordMember() !== undefined) {
                 await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
-                LOG.warn(`Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`)
+                LOG.warn(`Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
             }
         });
     }
@@ -250,7 +250,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
             if (x.commander.getDiscordMember() !== undefined) {
                 await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
-                LOG.warn(`Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`)
+                LOG.warn(`Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
             }
         });
     }
@@ -270,7 +270,7 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
                     .map(async c => await this.tryAward(<discord.GuildMember>c.getDiscordMember(),
-                        {"commander": c, "objectives": objs})))
+                        {"commander": c, "objectives": objs})));
             });
     }
 }
@@ -291,7 +291,7 @@ export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: M
                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                         .map(async r => {
                             const guild: discord.Guild | undefined = client.guilds.cache.get(r.guild);
-                            return guild !== undefined ? await guild.members.fetch(r.user) : undefined // .cache.get(r.user) : undefined;
+                            return guild !== undefined ? await guild.members.fetch(r.user) : undefined; // .cache.get(r.user) : undefined;
                         })
                 ).then(gm =>
                     gm.filter(c => c !== undefined)

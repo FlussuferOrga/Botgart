@@ -18,23 +18,23 @@ export class IgnoringRolesListener extends Listener {
         const oldRoles = oldMember.roles.cache.map(r => r.name);
         const newRoles: discord.Role[] = newMember.roles.cache.filter(r => !oldRoles.includes(r.name)).array();
         const ignoringRoles = newRoles.filter(r => getConfig().get().achievements.ignoring_roles.includes(r.name));
-        if(ignoringRoles.length > 0) {
+        if (ignoringRoles.length > 0) {
             const client = <BotgartClient>this.client;
             const userdata = client.registrationRepository.getUserByDiscordId(newMember.user);
             let deletedLeads = 0;
             let revokedAchievements = 0;
-            for(const achievement of client.achievementRegistry.getAchievements()) {
+            for (const achievement of client.achievementRegistry.getAchievements()) {
                 const role: discord.Role | undefined = newMember.guild.roles.cache.find(r => r.name === achievement.getRoleName());
-                if(role === undefined) {
-                    LOG.warn(`Could not find a role ${achievement.getRoleName()} on server ${newMember.guild.name} to remove when user ${newMember.displayName} chose to ignore achievement roles.`)
+                if (role === undefined) {
+                    LOG.warn(`Could not find a role ${achievement.getRoleName()} on server ${newMember.guild.name} to remove when user ${newMember.displayName} chose to ignore achievement roles.`);
                 } else {
                     newMember.roles.remove(role);
                 }
             }
-            if(userdata) {
+            if (userdata) {
                 [deletedLeads, revokedAchievements] = client.achievementRepository.deleteAchievementInformation(userdata.gw2account);
             }
-            LOG.info(`Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`)
+            LOG.info(`Player ${newMember.displayName} assigned themselves an achievement ignoring role(s) ${ignoringRoles.map(r => r.name)}. Revoked ${revokedAchievements} achievements and all information about ${deletedLeads} leads from the DB.`);
         }
     }
 }

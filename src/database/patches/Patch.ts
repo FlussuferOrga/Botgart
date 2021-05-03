@@ -85,21 +85,21 @@ export class Patch {
 
     public async execute(): Promise<void> {
         if (await this.satisfied()) {
-            LOG.info("Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name))
+            LOG.info("Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name));
             return;
         }
         if (!await this.checkPreconditions()) {
-            LOG.error("Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name))
+            LOG.error("Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name));
             return;
         }
-        LOG.info("Attempting to apply patch {0}.".formatUnicorn(this.constructor.name))
+        LOG.info("Attempting to apply patch {0}.".formatUnicorn(this.constructor.name));
         await this.apply();
-        LOG.info("Application finished.")
+        LOG.info("Application finished.");
         if (await this.checkPostconditions()) {
-            LOG.info("Postconditions for patch {0} are met. Committing.".formatUnicorn(this.constructor.name))
+            LOG.info("Postconditions for patch {0} are met. Committing.".formatUnicorn(this.constructor.name));
             await this.commit();
         } else {
-            LOG.error("Postconditions for patch {0} are not met. Rolling back.".formatUnicorn(this.constructor.name))
+            LOG.error("Postconditions for patch {0} are not met. Rolling back.".formatUnicorn(this.constructor.name));
             await this.rollback();
         }
     }

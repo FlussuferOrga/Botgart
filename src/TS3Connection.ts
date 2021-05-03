@@ -8,7 +8,7 @@ import { getConfig } from "./config/Config";
 import { Registration } from "./repositories/RegistrationRepository";
 import { logger } from "./util/Logging";
 
-const LOG = logger()
+const LOG = logger();
 
 // shouldn't be too large, or else the lockout at start (two concurrent connections connecting at the same time)
 // take ages to connect upon boot.
@@ -467,7 +467,7 @@ export class TS3Listener extends events.EventEmitter {
             // the commander is member of the current discord -> give role
             duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser === undefined) {
-                LOG.warn(`Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`)
+                LOG.warn(`Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`);
             }
             commander.setDiscordMember(duser);
 
@@ -476,7 +476,7 @@ export class TS3Listener extends events.EventEmitter {
 
         await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration)
             .then(value => commander.setBroadcastMessage(value))
-            .catch(e => LOG.error("Could send tag up broadcast", e))
+            .catch(e => LOG.error("Could send tag up broadcast", e));
 
         this.emit("tagup", {
             "guild": g,
@@ -491,13 +491,13 @@ export class TS3Listener extends events.EventEmitter {
      * - the user's TS-UID-Discordname is forgotten
      */
     private async tagDown(g: discord.Guild, commander: Commander) {
-        let registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
+        const registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
 
         try {
             await this.botgartClient.tagBroadcastService.tagDownBroadcast(commander);
         } catch (e) {
-            LOG.error("Could not close broadcast on tagdown", e)
+            LOG.error("Could not close broadcast on tagdown", e);
         }
 
         if (registration !== undefined) {
@@ -505,7 +505,7 @@ export class TS3Listener extends events.EventEmitter {
             try {
                 await this.tagDownRemoveRole(g, dmember);
             } catch (e) {
-                LOG.error("Could not unassign commander role from user", e)
+                LOG.error("Could not unassign commander role from user", e);
             }
 
             this.tagDownWriteToDb(dmember, commander, registration);

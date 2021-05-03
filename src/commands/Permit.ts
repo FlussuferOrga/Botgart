@@ -6,51 +6,51 @@ import { logger } from "../util/Logging";
 const LOG = logger();
 
 /**
-Testcases:
+ Testcases:
 
-*/
+ */
 export class Permit extends BotgartCommand {
     constructor() {
         super("permit", {
-            aliases: ["permit", "allow", "permission"],
-            quoted: true,
-            args: [
-                {
-                    id: "command",
-                    type: "commandAlias"
-                },
-                {
-                    id: "receiver",
-                    type: async (message: discord.Message, phrase: string) => { 
-                        let receiver: discord.GuildMember | discord.User | discord.Role | undefined = undefined;
-                        const snowflake = phrase.match(/<@[^\d]?(\d*)>/);
-                        if(snowflake !== null) {
-                            const snowflakeId: string = snowflake[1];                           
-                            if(message.guild) {
-                                // either group or guildmember
-                                receiver = message.guild.roles.cache.find(r => r.id == snowflakeId) 
-                                           || await message.guild.members.fetch(snowflakeId) //cache.find(m => m.id == snowflakeId);
+                aliases: ["permit", "allow", "permission"],
+                quoted: true,
+                args: [
+                    {
+                        id: "command",
+                        type: "commandAlias"
+                    },
+                    {
+                        id: "receiver",
+                        type: async (message: discord.Message, phrase: string) => {
+                            let receiver: discord.GuildMember | discord.User | discord.Role | undefined = undefined;
+                            const snowflake = phrase.match(/<@[^\d]?(\d*)>/);
+                            if (snowflake !== null) {
+                                const snowflakeId: string = snowflake[1];
+                                if (message.guild) {
+                                    // either group or guildmember
+                                    receiver = message.guild.roles.cache.find(r => r.id == snowflakeId)
+                                        || await message.guild.members.fetch(snowflakeId); //cache.find(m => m.id == snowflakeId);
+                                } else {
+                                    // direct message -> user
+                                    receiver = this.client.users.cache.find(u => u.id == snowflakeId);
+                                }
                             } else {
-                                // direct message -> user 
-                                receiver = this.client.users.cache.find(u => u.id == snowflakeId);
-                            }    
-                        } else {
-                            // plaintext name -> try to resolve among guild members and roles as fallback
-                            if(message.guild) {
-                                receiver = message.guild.members.cache.find(m => m.displayName === phrase) // might fail!
-                                            || message.guild.roles.cache.find(r => r.name === phrase) 
+                                // plaintext name -> try to resolve among guild members and roles as fallback
+                                if (message.guild) {
+                                    receiver = message.guild.members.cache.find(m => m.displayName === phrase) // might fail!
+                                        || message.guild.roles.cache.find(r => r.name === phrase);
+                                }
                             }
+                            return receiver;
                         }
-                        return receiver;
+                    },
+                    {
+                        id: "value",
+                        type: "integer",
                     }
-                },
-                {
-                    id: "value",
-                    type: "integer",
-                }
-            ]
-            //userPermissions: ["ADMINISTRATOR"]
-        }
+                ]
+                //userPermissions: ["ADMINISTRATOR"]
+            }
         );
     }
 
@@ -62,7 +62,8 @@ export class Permit extends BotgartCommand {
         const value = args.value;
         const perm = this.getBotgartClient().commandPermissionRepository.setPermission(cmd, receiver, type, value, (<discord.Guild>message.guild).id);
         this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm])).then(
-            () => {},
+            () => {
+            },
             (err) => LOG.error(err.message)
         );
     }

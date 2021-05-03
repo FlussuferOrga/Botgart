@@ -31,14 +31,14 @@ export class Roster extends events.EventEmitter {
      * @returns the date for the reset this roster represents.
      */
     public getResetMoment(): Moment {
-        return this.resetMoment.clone() //better hand out a close..
+        return this.resetMoment.clone(); //better hand out a close..
     }
 
     /**
      * @returns true iff the reset of this roster is the next reset.
      */
     public isUpcoming(): boolean {
-        return this.resetMoment.isSameOrAfter(moment())
+        return this.resetMoment.isSameOrAfter(moment());
     }
 
     /**
@@ -76,7 +76,7 @@ export class Roster extends events.EventEmitter {
 
     public toggleLeaderVisibility(formattedName: string): void {
         const leaders: ResetLeader[] = this.findLeader(formattedName);
-        for (let l of leaders) {
+        for (const l of leaders) {
             l.toggleVisibility();
         }
         if (leaders.length > 0) {
@@ -115,7 +115,7 @@ export class Roster extends events.EventEmitter {
                 }
             }
         } else {
-            this.leads[map.name][1].delete(leader)
+            this.leads[map.name][1].delete(leader);
             this.emit("removeleader", this, map, leader);
         }
     }
@@ -157,7 +157,7 @@ export class Roster extends events.EventEmitter {
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${displayedDateTime})`)
             //.setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
-            .setDescription(L.get("RESETLEAD_HEADER"))
+            .setDescription(L.get("RESETLEAD_HEADER"));
         for (const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
             re.addField(`${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`, leads.size() === 0 ? "-" : Array.from(leads)
@@ -169,12 +169,12 @@ export class Roster extends events.EventEmitter {
     }
 
     public toMessage() {
-        let result: ResetLeader[] = []
+        const result: ResetLeader[] = [];
         for (const mname in this.leads) {
             const [, leads] = this.leads[mname];
-            result.push(...leads)
+            result.push(...leads);
         }
         const uniqueResult = [...new Set(result.map(value => value.name))];
-        return uniqueResult.join(",")
+        return uniqueResult.join(",");
     }
 }

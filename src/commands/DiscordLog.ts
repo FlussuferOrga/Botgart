@@ -5,9 +5,9 @@ import { logger } from "../util/Logging";
 const LOG = logger();
 
 /**
-Testcases:
+ Testcases:
 
-*/
+ */
 export class DiscordLog extends BotgartCommand {
     constructor() {
         super("discordlog", {
@@ -22,7 +22,7 @@ export class DiscordLog extends BotgartCommand {
                         id: "channel",
                         type: "textChannel"
                     }
-                    
+
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },

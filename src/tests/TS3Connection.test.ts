@@ -2,9 +2,9 @@ import { expect } from "chai";
 import * as ts3 from "../TS3Connection";
 
 
-const c1: ts3.Commander = new ts3.Commander("Len.1879", "[RoE] Len", "111111", "Öffentlicher Raid [DE]", ["Öffentlicher Raid [DE]"],"");
-const c2: ts3.Commander = new ts3.Commander("Jey.1879", "[RoE] Jey", "222222", "Internal Raid [EN]", ["Internal Raid [EN]"],"");
-const c3: ts3.Commander = new ts3.Commander("Dr Eisenfaust.1111", "⭐ Dr. Eisenfaust ⭐", "333333", "⭐ Event", ["Events", "⭐ Event"],"");
+const c1: ts3.Commander = new ts3.Commander("Len.1879", "[RoE] Len", "111111", "Öffentlicher Raid [DE]", ["Öffentlicher Raid [DE]"], "");
+const c2: ts3.Commander = new ts3.Commander("Jey.1879", "[RoE] Jey", "222222", "Internal Raid [EN]", ["Internal Raid [EN]"], "");
+const c3: ts3.Commander = new ts3.Commander("Dr Eisenfaust.1111", "⭐ Dr. Eisenfaust ⭐", "333333", "⭐ Event", ["Events", "⭐ Event"], "");
 
 const emptyStorage: ts3.CommanderStorage = new ts3.CommanderStorage();
 const singleStorage: ts3.CommanderStorage = new ts3.CommanderStorage();

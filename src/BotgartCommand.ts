@@ -187,7 +187,7 @@ export class BotgartCommand extends Command {
             i++;
         }
         if (!argsPresent) {
-            LOG.debug(`Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`)
+            LOG.debug(`Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`);
         }
         return argsPresent ? undefined : L.get(this.helptextKey());
     }
@@ -261,19 +261,19 @@ export class BotgartCommand extends Command {
             return;
         }
 
-        let causer = message.member || message.author;
+        const causer = message.member || message.author;
         if (!this.isAllowed(causer)) {
             message.util?.send(L.get("NOT_PERMITTED"));
             return;
         }
 
-        let errorMessage = this.checkArgs(args);
+        const errorMessage = this.checkArgs(args);
         if (errorMessage && message.util) {
-            message.util.send(errorMessage)
+            message.util.send(errorMessage);
             return;
         }
 
-        let res = this.command(message, message.author, message.guild, args);
+        const res = this.command(message, message.author, message.guild, args);
         return this.postExecHook(message, args, res);
     }
 
