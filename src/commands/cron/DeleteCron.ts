@@ -5,6 +5,8 @@ import { logger } from "../../util/Logging";
 
 const LOG = logger();
 
+type Args = { id?: number };
+
 /**
  Testcases:
  - missing parameters -> error
@@ -28,15 +30,15 @@ export class DeleteCron extends BotgartCommand {
         );
     }
 
-    checkArgs(args: any): string | undefined {
+    checkArgs(args: Args): string | undefined {
         return args === undefined || args.id === undefined || args.id < 0 ? L.get(this.helptextKey()) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): boolean {
-        return this.deleteCronjob(args.id);
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Args): boolean {
+        return this.deleteCronjob(<number>args.id);
     }
 
-    exec(message: discord.Message, args: any): void {
+    exec(message: discord.Message, args: Args): void {
         if (!message.member) {
             message.util?.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;

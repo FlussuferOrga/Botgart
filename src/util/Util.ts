@@ -1,7 +1,7 @@
 import { Guild, Role } from "discord.js";
 import moment from "moment-timezone";
 
-export const RESET_WEEKDAY: number = 5; // FRIDAY
+export const RESET_WEEKDAY = 5; // FRIDAY
 
 export function sqliteTimestampToMoment(str: string): moment.Moment {
     return moment(str, "YYYY-MM-DD HH:mm:ss");
@@ -51,7 +51,7 @@ export function determineTier(yaksDelivered: number) {
  or the input string, if it was parsed to a cron-like string,
  or false, if the input could not be parsed to either format.
  */
-export function parseCronDate(input: string, dateFomat: string = "DD.MM.YYYY H:m"): string | moment.Moment | boolean {
+export function parseCronDate(input: string, dateFomat = "DD.MM.YYYY H:m"): string | moment.Moment | boolean {
     if (input === "") { // empty strings are "valid dates"
         return false;
     }
@@ -96,17 +96,6 @@ export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
-
-export function assertType(obj: any, t: string): void {
-    let p = obj;
-    while (p && p.constructor.name !== t) {
-        p = p.__proto__;
-    }
-    // if we walked the inheritence up and obj IS a t, then  we must have stopped before we hit NULL.
-    // -> p being null implies that obj IS NOT a t.
-    //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
-}
-
 export interface Equalable<T> {
     equals: (other: T) => boolean;
 }
@@ -127,7 +116,7 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
     }
 
     public find(item: T): number {
-        let i: number = 0;
+        let i = 0;
         while (i < this.elements.length && !this.elements[i].equals(item)) {
             i++;
         }
@@ -139,7 +128,7 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
     }
 
     public add(item: T): boolean {
-        let added: boolean = false;
+        let added = false;
         if (!this.has(item)) {
             this.elements.push(item);
             added = true;

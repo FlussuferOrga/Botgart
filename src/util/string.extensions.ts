@@ -1,12 +1,12 @@
 declare global {
     interface String {
-        formatUnicorn(...fnargs: any[]): string;
+        formatUnicorn(...fnargs: unknown[]): string;
     }
 }
 
 // taken from https://stackoverflow.com/a/18234317
 if (!String.prototype.formatUnicorn) {
-    String.prototype.formatUnicorn = function (...fnargs: any[]): string {
+    String.prototype.formatUnicorn = function (...fnargs: unknown[]): string {
         let str = this.toString();
         if (fnargs.length) {
             const t = typeof fnargs[0];

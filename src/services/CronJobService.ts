@@ -66,7 +66,7 @@ export class CronJobService {
      * @param {Map} args - Args for the command.
      * @returns {Job}
      */
-    scheduleCronJob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: any) {
+    scheduleCronJob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: unknown) {
         return schedule.scheduleJob(time, function (m, r, g, as) {
             m.command(null, r, g, as);
         }.bind(this, cmd, responsible, guild, args));

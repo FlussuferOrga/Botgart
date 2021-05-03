@@ -52,7 +52,7 @@ export abstract class Achievement<C> {
         return this.roleName;
     }
 
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable: boolean = false, announceRepetitions: boolean = false) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour = "BLUE", repeatable = false, announceRepetitions = false) {
         this.client = client;
         this.name = this.constructor.name;
         this.imageURL = imageURL;
@@ -83,7 +83,7 @@ export abstract class Achievement<C> {
         by = by ?? "";
         const repo = this.client.achievementRepository;
         const has: boolean = repo.checkAchievement(this.name, gw2account).length > 0;
-        let rowId: number = -1;
+        let rowId = -1;
         if (this.repeatable || !has) {
             rowId = repo.awardAchievement(this.name, gw2account, by, timestamp);
         }

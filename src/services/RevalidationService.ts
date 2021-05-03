@@ -14,8 +14,8 @@ import { formatUserPing } from "../util/Util";
 const LOG = logger();
 
 export class RevalidationService {
-    private static REAUTH_DELAY: number = 8000;
-    private static REAUTH_MAX_PARALLEL_REQUESTS: number = 3;
+    private static REAUTH_DELAY = 8000;
+    private static REAUTH_MAX_PARALLEL_REQUESTS = 3;
 
 
     private static SEM = new Semaphore(RevalidationService.REAUTH_MAX_PARALLEL_REQUESTS);

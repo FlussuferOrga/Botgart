@@ -40,7 +40,7 @@ export class ReactionSnapshot extends BotgartCommand {
         );
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const listings: string[] = [];
         for (const [, reaction] of (<discord.Message>args.message).reactions.cache.sort((r1, r2) => (r2.count ?? 0) - (r1.count ?? 0))) {
             const users = await reaction.users.fetch();

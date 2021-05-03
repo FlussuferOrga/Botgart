@@ -20,7 +20,7 @@ export class ListAchievements extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, unknown>): void {
         message.reply(this.getBotgartClient().achievementRegistry.getAchievements()
                 .map(a => `\`${a.name}\`: ${a.getDescription()}`)
                 .join("\n")

@@ -23,7 +23,7 @@ export class DeleteTsRegistration extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { gw2account: string }): void {
         const gw2account: string = args.gw2account;
         if (getConfig().get().ts_unregister_protection.includes(gw2account)) {
             this.reply(message, responsible, L.get("TS_UNREGISTER_PROTECTION"));

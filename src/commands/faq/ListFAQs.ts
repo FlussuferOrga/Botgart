@@ -21,12 +21,12 @@ export class ListFaqs extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         if (!responsible) {
             LOG.error("Can not execute lsfaqs without member to reply to. Canceling.");
             return;
         }
-        const format: string = "{0} | {1}";
+        const format = "{0} | {1}";
         const header: string = format.formatUnicorn("KEY", "       TEXT      ") + "\n";
         let mes: string = header;
         this.getBotgartClient().faqRepository.getFAQs(guild.id).forEach((faq) => {

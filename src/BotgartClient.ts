@@ -118,13 +118,6 @@ export class BotgartClient extends akairo.AkairoClient {
         });
         this.inhibitorHandler.loadAll();
 
-        this.on("ready", () =>
-            this.commandHandler.modules.forEach(m => {
-                if (m instanceof BotgartCommand) {
-                    (<BotgartCommand>m).init(this);
-                }
-            }));
-
         // yes, both listeners listen to wvw-matches on purpose,
         // as it contains the info on the stats as well as on the objectives!
         this.gw2apiemitter.on("wvw-matches", (prom) => {
@@ -195,7 +188,7 @@ export class BotgartClient extends akairo.AkairoClient {
      * @param message - the message to log
      * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback.
      */
-    public discordLog(guild: discord.Guild, type: string, message: string, disposable: boolean = true) {
+    public discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
             LOG.debug("Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));

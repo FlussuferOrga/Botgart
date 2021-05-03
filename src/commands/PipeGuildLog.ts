@@ -34,11 +34,11 @@ export class PipeGuildLog extends BotgartCommand {
         );
     }
 
-    checkArgs(args: any): string | undefined {
+    checkArgs(args): string | undefined {
         return !args || !args.guildnamechannel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
 
     }
 }

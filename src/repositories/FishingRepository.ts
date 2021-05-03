@@ -44,7 +44,7 @@ export class FishingRepository extends AbstractDbRepository {
      * @param length: the number of ladder enties that should be retrieved.
      * @returns the ladder
      */
-    public fishLadder(length: number = 10): FishLadderEntry[] {
+    public fishLadder(length = 10): FishLadderEntry[] {
         return this.execute(db => db.prepare(`
             SELECT 
                 user,

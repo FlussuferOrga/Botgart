@@ -3,7 +3,7 @@ import { logger } from "../util/Logging";
 import { Achievement } from "./Achievement";
 
 //basically the type of the constructor function
-type AchievementType = new (client: BotgartClient) => Achievement<any>
+type AchievementType = new (client: BotgartClient) => Achievement<never>
 
 const achievementCreators: AchievementType[] = [];
 
@@ -18,20 +18,20 @@ export * as allAchievements from "./Achievements";
 const LOG = logger();
 
 export class AchievementRegistry {
-    private readonly achievements: { [key: string]: Achievement<any> } = {};
+    private readonly achievements: { [key: string]: Achievement<never> } = {};
 
-    constructor(achievements: Achievement<any>[]) {
+    constructor(achievements: Achievement<never>[]) {
         LOG.info(`Registering achievements: [${achievements.map(value => value.name).join(", ")}].`);
         for (const achievement of achievements) {
             this.achievements[achievement.name.toLowerCase()] = achievement;
         }
     }
 
-    public getAchievements(): Achievement<any>[] {
+    public getAchievements(): Achievement<never>[] {
         return Object.values(this.achievements);
     }
 
-    public getAchievement(name: string): Achievement<any> | undefined {
+    public getAchievement(name: string): Achievement<never> | undefined {
         name = name.toLowerCase();
         return name in this.achievements ? this.achievements[name] : undefined;
     }

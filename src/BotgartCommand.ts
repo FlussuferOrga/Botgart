@@ -61,16 +61,6 @@ export class BotgartCommand extends Command {
     }
 
     /**
-     * Used to execute code after the client.ready event has been thrown.
-     * Especially useful if the referenced client object (parameter) must be used, which
-     * is not available within the constructor.
-     * @param client - the client after throwing the ready event.
-     */
-    public init(client: BotgartClient): void {
-
-    }
-
-    /**
      * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
      */
     protected getBotgartClient(): BotgartClient {
@@ -178,7 +168,7 @@ export class BotgartCommand extends Command {
      * @param {Object} args - arguments to the command.
      * @returns {String} error-string in case of malformed args, else undefined.
      */
-    public checkArgs(args: Object): string | undefined {
+    public checkArgs(args: Record<string, unknown>): string | undefined {
         let argsPresent: boolean = args !== undefined;
         let i = 0;
         while (argsPresent && i < this.cmdargs.length) {
@@ -211,7 +201,7 @@ export class BotgartCommand extends Command {
      * @param {Guild} guild - the Guild on which to execute the command.
      * @param {map} args - arguments for the command. Each command specifies the format themselves.
      */
-    public command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Object): any {
+    public command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Record<string, unknown>): unknown {
         throw "command() not implemented.";
     }
 
@@ -226,7 +216,7 @@ export class BotgartCommand extends Command {
      * @param {Map} args - arguments to serialise to the DB.
      * @returns {string} - the serialised args
      */
-    public serialiseArgs(args: Map<any, any>): string {
+    public serialiseArgs(args: Record<string, unknown>): string {
         return JSON.stringify(args);
     }
 
@@ -236,7 +226,7 @@ export class BotgartCommand extends Command {
     *                 NOTE: deserialiseArgs may _not_ modify the arguments by reference!
     * @returns {Map} the deserialised arguments.
     */
-    public deserialiseArgs(jsonargs: string): Map<any, any> {
+    public deserialiseArgs(jsonargs: string): Record<string, unknown> {
         return JSON.parse(jsonargs);
     }
 
@@ -255,7 +245,7 @@ export class BotgartCommand extends Command {
      * @param {Message} message - message that triggered this command.
      * @param {Object} args - parameters.
      */
-    public exec(message: discord.Message, args: Object): void {
+    public exec(message: discord.Message, args: Record<string, unknown>): void {
         if (!this.availableAsDM && !message.member && message.util) {
             message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
@@ -286,7 +276,7 @@ export class BotgartCommand extends Command {
      * @param {any} result - the result from command().
      * @returns {any} - is returned to the caller.
      */
-    public postExecHook(message: discord.Message, args: Object, result: any): any {
+    public postExecHook(message: discord.Message, args: Record<string, unknown>, result: unknown): void {
     }
 
     /*

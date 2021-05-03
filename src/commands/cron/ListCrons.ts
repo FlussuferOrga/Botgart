@@ -2,7 +2,6 @@ import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as Const from "../../util/Const";
 import { logger } from "../../util/Logging";
-import { assertType } from "../../util/Util";
 
 const LOG = logger();
 
@@ -24,9 +23,7 @@ export class ListCrons extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message | null, responsible: discord.User, guild: discord.Guild, args: any) {
-        assertType(responsible, "User");
-        assertType(guild, "Guild");
+    command(message: discord.Message | null, responsible: discord.User, guild: discord.Guild, args) {
         if (!responsible) {
             LOG.error("Can not execute lscron without member to reply to. Canceling.");
             return;

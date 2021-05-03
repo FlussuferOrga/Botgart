@@ -27,9 +27,9 @@ export class Whois extends BotgartCommand {
         return !args || !args.name || args.name.length < 3 ? L.get("HELPTEXT_WHOIS") : undefined;
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
 
-        let res: { account_name: string; member: any; discord_id: string }[];
+        let res: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[];
 
         if (args?.name instanceof GuildMember) {
             res = await this.queryUser(args.name);
@@ -113,7 +113,7 @@ export class Whois extends BotgartCommand {
         return this.sort(enhancedResult);
     }
 
-    private sort(enhancedResult: { account_name: string; member: any; discord_id: string }[]) {
+    private sort(enhancedResult: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[]) {
         // sort and return
         return enhancedResult.sort((a, b) => {
             return Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)

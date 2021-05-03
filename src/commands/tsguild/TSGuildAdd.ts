@@ -4,6 +4,13 @@ import * as gw2u from "../../Gw2ApiUtils";
 import * as L from "../../Locale";
 import * as Const from "../../util/Const";
 
+type ArgType = {
+    confirm?: boolean;
+    guildTSGroup?: string;
+    contacts: string[];
+    guildName: string;
+};
+
 /**
  Testcases:
 
@@ -62,10 +69,10 @@ export class TsGuildAdd extends BotgartCommand {
         return {guildName, contacts, guildTSGroup, confirm};
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
-        if (args.confirm === false) {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: ArgType): Promise<void> {
+        if (!args.confirm) {
             message.reply(L.get("MK_GUILD_CANCELED"));
-        } else if (args.confirm === true) {
+        } else if (args.confirm) {
             if (!(await gw2u.guildExists(args.guildName))) {
                 message.reply(L.get("MK_GUILD_UNKNOWN_GUILD", [args.guildName]));
             } else {

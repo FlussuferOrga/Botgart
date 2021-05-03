@@ -28,7 +28,7 @@ export class FishingLadder extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         const length = 10;
         const ladder: FishLadderEntry[] = this.getBotgartClient().fishingRepository.fishLadder(length);
 

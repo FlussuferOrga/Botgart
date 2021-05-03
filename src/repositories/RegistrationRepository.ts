@@ -95,13 +95,6 @@ export class RegistrationRepository extends AbstractDbRepository {
         });
     }
 
-    public getGW2Accounts(accnames: [string]): [object] {
-        return this.execute(db => db.prepare(`SELECT id, user, guild, api_key, gw2account, registration_role, created
-                                              FROM registrations
-                                              WHERE gw2account IN (?)`)
-            .run(accnames.join(",")).all());
-    }
-
     public getDesignatedRoles(): DesignatedRole[] {
         return this.execute(db => db.prepare(`SELECT user, guild, registration_role
                                               FROM registrations
@@ -110,7 +103,7 @@ export class RegistrationRepository extends AbstractDbRepository {
 
     public storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean | undefined {
         const sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role)
-                   VALUES (?, ?, ?, ?, ?, ?)`;
+                     VALUES (?, ?, ?, ?, ?, ?)`;
         return this.execute(db => {
             try {
                 db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
@@ -160,11 +153,19 @@ export class RegistrationRepository extends AbstractDbRepository {
         });
     }
 
-    public findDuplicateRegistrations(): any {
-        return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account
-                                              FROM registrations
-                                              GROUP BY gw2account
-                                              HAVING count > 1`).all());
+    public findDuplicateRegistrations() {
+        return this.execute(db => {
+            return db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account
+                               FROM registrations
+                               GROUP BY gw2account
+                               HAVING count > 1`).all();
+        }).map(value => {
+            return {
+                userIds: value.users.split(","),
+                count: value.count,
+                gw2account: value.gw2account
+            };
+        });
     }
 
     public setRegistrationRoleById(id: string, roleName: string) {

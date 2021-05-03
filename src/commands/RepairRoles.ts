@@ -24,7 +24,7 @@ export class RepairRoles extends BotgartCommand {
         );
     }
 
-    public command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Object): void {
+    public command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, unknown>): void {
         const cl = this.getBotgartClient();
         const designations: DesignatedRole[] = cl.registrationRepository.getDesignatedRoles();
         let g: discord.Guild | undefined = undefined;

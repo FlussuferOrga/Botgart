@@ -64,8 +64,7 @@ export class Poll extends BotgartCommand {
                 args.emotes.filter(react => react).forEach(react => {
                     // works for standard emotes, like ":D" etc
                     m.react(react).then(
-                        _ => {
-                        },
+                        _ => {},
                         _ => {
                             const reg = /<a?:[a-zA-Z0-9_]+:(\d+)>/;
                             const match = react.match(reg);

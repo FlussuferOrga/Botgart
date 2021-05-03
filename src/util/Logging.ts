@@ -44,7 +44,7 @@ function createLogger() {
 
 const internalLogger = createLogger();
 
-export function logger(options: Object = {}): winston.Logger {
+export function logger(options: Record<string, unknown> = {}): winston.Logger {
     const callFile: string[] = callsites()[1].getFileName()?.split(path.sep) ?? ["UNKNOWN"];
     const file = callFile[callFile.length - 1];
     return internalLogger.child({

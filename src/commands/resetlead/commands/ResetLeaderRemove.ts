@@ -39,7 +39,7 @@ export class RemoveResetLeader extends BotgartCommand {
         return !args || !args.weekNumber || !args.player ? L.get(this.helptextKey(), [WvwMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek();
         }

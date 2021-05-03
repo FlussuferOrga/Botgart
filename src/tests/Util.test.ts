@@ -12,13 +12,13 @@ describe("Util - Date", function () {
             new Date(Date.UTC(2019, 1, 1)))));
 
     it("convert twice", () => {
-        const orig: string = "2019-12-12 00:00:00";
+        const orig = "2019-12-12 00:00:00";
         const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
         return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
     });
 
     it("convert twice with time", () => {
-        const orig: string = "2019-12-12 12:15:51";
+        const orig = "2019-12-12 12:15:51";
         const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
         return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
     });

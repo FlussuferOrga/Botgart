@@ -45,7 +45,7 @@ export class AddResetLeader extends BotgartCommand {
             : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek();
         }

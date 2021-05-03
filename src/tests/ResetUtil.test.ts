@@ -17,7 +17,7 @@ declare global {
         }
     }
 }
-assert["exactMoment"] = function (actual: any, expected: any) {
+assert["exactMoment"] = function (actual: Moment, expected: Moment) {
     this.sameMoment(actual, expected);
     this.equal(actual.format(), expected.format()); //this also checks the stored timezone to be equal
 };

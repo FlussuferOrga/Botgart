@@ -10,12 +10,21 @@
     "plugin:@typescript-eslint/recommended"
   ],
   "rules": {
-    "@typescript-eslint/no-inferrable-types": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-empty-function": "off",
-    "@typescript-eslint/ban-types": "off"
+    "@typescript-eslint/no-empty-function": [
+      "warn",
+      {
+        "allow": [
+          "arrowFunctions",
+          // sometimes () => {} is more descriptive than passing undefined
+          "methods",
+          // sometimes you want to provide a default behaviour (nothing) in a base class
+          "asyncMethods"
+          // same as above
+        ]
+      }
+    ]
   }
 }

@@ -29,7 +29,7 @@ function gets(url: string, options = {}): Promise<string> {
 const LOG = logger();
 
 async function image(term: string): Promise<string> {
-    let image: string = "";
+    let image = "";
 
     try {
         const response = await gets(`https://results.dogpile.com/serp?qc=images&q=${term}`, {
@@ -130,7 +130,7 @@ export class GoFish extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         const fish: Fish = this.getBotgartClient().fishingRepository.getRandomFish();
 
         responsible.send(":fish:").then(async message => {

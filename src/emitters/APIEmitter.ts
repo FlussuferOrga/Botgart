@@ -10,6 +10,19 @@ enum WvWMapNames {
     RedHome = "RedHome"
 }
 
+interface Objective {
+    "id": string
+    "type": string
+    "owner": string
+    "last_flipped": string
+    "claimed_by": string | null
+    "claimed_at": string | null
+    "points_tick": number,
+    "points_capture": number,
+    "guild_upgrades": number[],
+    "yaks_delivered?": number
+}
+
 interface RGBNumbers {
     readonly red: number;
     readonly blue: number;
@@ -19,18 +32,11 @@ interface RGBNumbers {
 interface MapStats {
     readonly id: number;
     readonly type: WvWMapNames,
-    readonly scores: any[],
+    readonly scores: RGBNumbers[],
     readonly bonues: string[],
-    readonly objectives: any[],
-    readonly deaths: any[],
-    readonly kills: any[]
-}
-
-export interface WvWStats {
-    readonly id: string;
-    readonly deaths: RGBNumbers;
-    readonly kills: RGBNumbers;
-    readonly maps: { id: number, type: WvWMapNames, "deaths": any, kills: any }[];
+    readonly objectives: Objective[],
+    readonly deaths: RGBNumbers[],
+    readonly kills: RGBNumbers[]
 }
 
 export interface WvWMatches {
@@ -43,7 +49,7 @@ export interface WvWMatches {
     readonly deaths: RGBNumbers;
     readonly kills: RGBNumbers;
     readonly victory_points: RGBNumbers;
-    readonly skirmishes: { id: number, scores: any[], map_scores: any[] }[]
+    readonly skirmishes: { id: number, scores: RGBNumbers, map_scores: unknown[] }[]
     readonly maps: MapStats[]
 }
 
@@ -68,7 +74,7 @@ export class APIEmitter extends events.EventEmitter {
 
     }
 
-    public schedule(name: string, endpoint: (gw2) => any, interval: number): void {
+    public schedule(name: string, endpoint: (gw2) => Promise<unknown>, interval: number): void {
         //endpoint(api).then(r => console.log(name, r));
         const gw = createApiInstance();
         setInterval(() => this.emit(name, endpoint(gw)), interval);

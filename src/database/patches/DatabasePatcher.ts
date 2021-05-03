@@ -15,7 +15,7 @@ export class DatabasePatcher {
         return new type(db);
     }
 
-    async applyPatch(patchName: typeof DBPatch, revert: boolean = false) {
+    async applyPatch(patchName: typeof DBPatch, revert = false) {
         let patch: DBPatch | undefined = undefined;
         try {
             patch = this.createPatch(patchName, this.database);
@@ -37,7 +37,7 @@ export class DatabasePatcher {
         }
     }
 
-    async applyPatches(patches: typeof DBPatch[], revert: boolean = false) {
+    async applyPatches(patches: typeof DBPatch[], revert = false) {
         const ps = revert === true ? patches.reverse() : patches;
         for (const p of ps) {
             await this.applyPatch(p, revert === true);

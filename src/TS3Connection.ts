@@ -52,17 +52,17 @@ interface HTTPRequestOptions {
 }
 
 export class TS3Connection {
-    private static CONNECTION_COUNTER: number = 1;
-    private static CIRCULAR_BUFFER_SIZE: number = 4;
+    private static CONNECTION_COUNTER = 1;
+    private static CIRCULAR_BUFFER_SIZE = 4;
 
-    private static MESSAGE_ID: number = 1;
+    private static MESSAGE_ID = 1;
 
     private host: string;
     private port: number;
     private name: string;
     private buffer: CircularBuffer<string>;
 
-    private request(data: object, options: HTTPRequestOptions): Promise<string> {
+    private request(data: unknown, options: HTTPRequestOptions): Promise<string> {
         const dataString: string = JSON.stringify(data);
         const defaults: HTTPRequestOptions = {
             hostname: this.host,
@@ -86,21 +86,21 @@ export class TS3Connection {
         });
     }
 
-    public get(command: string, args: object = {}): Promise<string> {
+    public get(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "GET"
         });
     }
 
-    public post(command: string, args: object = {}): Promise<string> {
+    public post(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "POST"
         });
     }
 
-    public delete(command: string, args: object = {}): Promise<string> {
+    public delete(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "DELETE"
@@ -520,7 +520,7 @@ export class TS3Listener extends events.EventEmitter {
 
     private tagDownWriteToDb(dmember: discord.GuildMember, commander: Commander, registration: Registration) {
         // do not write leads of members which hide their roles
-        const writeToDB: boolean = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
+        const writeToDB = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
         if (writeToDB) {
             LOG.debug("Writing raid information to database.");
             if (commander.getRaidStart() === undefined) {
