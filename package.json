@@ -23,7 +23,7 @@
     "cheerio": "^1.0.0-rc.5",
     "circular-buffer": "^1.0.3",
     "command-line-args": "^5.1.1",
-    "convict": "^6.0.1",
+    "convict": "^6.1.0",
     "dateformat": "^4.5.1",
     "discord": "^0.8.2",
     "discord-akairo": "^8.1.0",
