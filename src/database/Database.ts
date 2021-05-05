@@ -119,8 +119,8 @@ export class Database {
 
     private static closeConnection(db: sqlite.Database) {
         //optimize https://www.sqlite.org/lang_analyze.html
-        db.pragma("optimize")
         db.pragma("analysis_limit=400")
+        db.pragma("optimize")
 
         db.close();
     }
