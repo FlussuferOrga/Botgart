@@ -12,9 +12,13 @@ export class DBPatch extends Patch {
         this.connection = sqlite3.default(this.db.file, undefined);
     }
 
-    protected async commit(): Promise<void> { this.dbcommit(); }
+    protected async commit(): Promise<void> {
+        this.dbcommit();
+    }
 
-    protected async rollback(): Promise<void> { this.dbrollback(); }
+    protected async rollback(): Promise<void> {
+        this.dbrollback();
+    }
 
     protected viewExists(name: string): boolean {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='view' AND name=?").all(name).length > 0;
@@ -25,7 +29,7 @@ export class DBPatch extends Patch {
     }
 
     protected columnExists(table: string, column: string): boolean {
-        return this.connection.prepare("PRAGMA table_info("+table+")").all() // can't use prepared parameters for some reason in this instance
+        return this.connection.prepare("PRAGMA table_info(" + table + ")").all() // can't use prepared parameters for some reason in this instance
             .filter(col => col.name === column).length > 0;
     }
 

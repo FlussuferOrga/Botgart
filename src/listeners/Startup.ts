@@ -1,6 +1,8 @@
 import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
-import { log } from "../Util";
+import { logger } from "../util/Logging";
+
+const LOG = logger();
 
 export class Startup extends Listener {
     constructor() {
@@ -11,10 +13,10 @@ export class Startup extends Listener {
     }
 
     exec() {
-        log("info", "Bot started!");
+        LOG.info("Bot started!");
         const client: BotgartClient = <BotgartClient>this.client;
 
-        log("info", "Rescheduling cronjobs from database.");
+        LOG.info("Rescheduling cronjobs from database.");
         client.cronJobService.rescheduleCronJobs();
 
         const help = client.commandHandler.modules.get("help")?.id;

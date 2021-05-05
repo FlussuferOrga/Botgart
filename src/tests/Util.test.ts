@@ -1,7 +1,7 @@
 import chai, { assert, expect } from "chai";
 import chaiDateTime from "chai-datetime";
 import moment from "moment";
-import * as U from "../Util";
+import * as U from "../util/Util";
 
 chai.use(chaiDateTime);
 
@@ -12,13 +12,13 @@ describe("Util - Date", function () {
             new Date(Date.UTC(2019, 1, 1)))));
 
     it("convert twice", () => {
-        const orig: string = "2019-12-12 00:00:00";
+        const orig = "2019-12-12 00:00:00";
         const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
         return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
     });
 
     it("convert twice with time", () => {
-        const orig: string = "2019-12-12 12:15:51";
+        const orig = "2019-12-12 12:15:51";
         const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
         return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
     });
@@ -32,11 +32,11 @@ describe("Util - WvW", function () {
     it("determine tier", () => {
         for (let i = 0; i < 100; i++) {
             const tier = U.determineTier(i);
-            if (0 <= i && i < 20) {
+            if (i >= 0 && i < 20) {
                 expect(tier).equal(0);
-            } else if (20 <= i && i < 40) {
+            } else if (i >= 20 && i < 40) {
                 expect(tier).equal(1);
-            } else if (40 <= i && i < 80) {
+            } else if (i >= 40 && i < 80) {
                 expect(tier).equal(2);
             } else {
                 expect(tier).equal(3);
@@ -63,7 +63,7 @@ describe("Util - Is Between", function () {
 describe("Util - Crons", function () {
     it("empty string", () => expect(!U.parseCronDate("")));
 
-    //it("undefined", () => expect(!U.parseCronDate(undefined)));
+    //it("undefined", () => expect(!Utils.parseCronDate(undefined)));
 
     it("cron valid string 1", () => expect(U.parseCronDate("0 * 32 * 3")).equal("0 * 32 * 3"));
 

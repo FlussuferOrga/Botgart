@@ -2,8 +2,10 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../../../BotgartClient";
 import { BotgartCommand } from "../../../BotgartCommand";
 import * as L from "../../../Locale";
-import * as Util from "../../../Util";
+import { logger } from "../../../util/Logging";
 import * as ResetUtil from "../ResetUtil";
+
+const LOG = logger();
 
 /**
  Testcases:
@@ -44,12 +46,8 @@ export class ResetRoster extends BotgartCommand {
         return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get(this.helptextKey()) : undefined;
     }
 
-    public init(client: BotgartClient): void {
-
-    }
-
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): void {
-        const currentWeek = ResetUtil.currentWeek()
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+        const currentWeek = ResetUtil.currentWeek();
         const rosterWeek = !args.weekNumber || args.weekNumber < currentWeek ? currentWeek : args.weekNumber;
         const rosterYear = !args.year ? ResetUtil.currentYear() : args.year;
 
@@ -62,7 +60,7 @@ export class ResetRoster extends BotgartCommand {
             } else {
                 const [dbRoster, dbChannel, dbMessage] = dbEntry;
                 // there is already a roster-post for this guild+week -> do nothing, log warning
-                Util.log("warning", `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
+                LOG.warn(`Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
@@ -79,7 +77,7 @@ export class ResetRoster extends BotgartCommand {
         const args = JSON.parse(jsonargs);
         const guild: discord.Guild | undefined = this.client.guilds.cache.find(g => g.id == args.channel.guild);
         if (guild === undefined) {
-            Util.log("warning", `The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
+            LOG.warn(`The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
             args.channel = undefined;
         } else {
             args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);

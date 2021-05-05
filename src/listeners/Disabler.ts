@@ -1,7 +1,9 @@
 import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
-import { log } from "../Util";
+import { logger } from "../util/Logging";
+
+const LOG = logger();
 
 export class Disabler extends Listener {
     constructor() {
@@ -12,14 +14,14 @@ export class Disabler extends Listener {
     }
 
     exec() {
-        let disabler = function(x,xs) {
+        const disabler = function (x, xs) {
             let d = 0;
-            let mod = xs.modules.get(x);
-            if(mod === undefined) {
-                log("warning", "Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
+            const mod = xs.modules.get(x);
+            if (mod === undefined) {
+                LOG.warn("Could not find a module '{0}' to disable. Skipping".formatUnicorn(x));
             } else {
                 d = mod.disable() ? 1 : 0; // yields a boolean, but why would this fail?
-                log("info", "Disabled module '{0}'.".formatUnicorn(x));
+                LOG.info("Disabled module '{0}'.".formatUnicorn(x));
             }
             return d;
         };
@@ -29,7 +31,7 @@ export class Disabler extends Listener {
         disabled += getConfig().get().disabled.listeners.reduce((acc, l) => acc + disabler(l, cl.listenerHandler), 0);
         disabled += getConfig().get().disabled.inhibitors.reduce((acc, l) => acc + disabler(l, cl.inhibitorHandler), 0);
         disabled += getConfig().get().disabled.commands.reduce((acc, l) => acc + disabler(l, cl.commandHandler), 0);
-        log("info", "Done disabling {0} modules as specified by the config.".formatUnicorn(disabled));
+        LOG.info("Done disabling {0} modules as specified by the config.".formatUnicorn(disabled));
     }
 }
 

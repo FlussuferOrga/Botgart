@@ -2,9 +2,9 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds the commander performance and achievement tables
-* also the environment variables
-*/
+ * Adds the commander performance and achievement tables
+ * also the environment variables
+ */
 export class Patch8 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -29,7 +29,7 @@ export class Patch8 extends DBPatch {
             && this.viewExists("total_ticks")
             && this.viewExists("total_stats")
             && this.indexExists("stats_snapshots", "stats_snapshots_timestamp_index")
-            && this.indexExists("objectives_snapshots", "objectives_snapshots_timestamp_index")
+            && this.indexExists("objectives_snapshots", "objectives_snapshots_timestamp_index");
     }
 
     protected async apply(): Promise<void> {
@@ -190,7 +190,7 @@ export class Patch8 extends DBPatch {
             CHECK(0 <= tier AND tier <= 3),
             CHECK(type IN ('Spawn','Camp','Castle','Tower','Keep','Mercenary','Ruins')) -- make sure to ignore spawn!
           )
-          `).run()
+          `).run();
 
         this.connection.prepare(`
             CREATE VIEW captured_objectives(matchup_objective_id,
@@ -326,6 +326,6 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`DROP TABLE IF EXISTS wvw_maps`).run();
 
         this.connection.prepare(`DROP TABLE IF EXISTS environment_variables`).run();
-        this.dbcommit()
+        this.dbcommit();
     }
 }

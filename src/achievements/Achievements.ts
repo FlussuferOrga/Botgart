@@ -5,7 +5,8 @@ import { getConfig } from "../config/Config";
 import * as gw2api from "../emitters/APIEmitter";
 import { FactionColour, Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
-import * as U from "../Util";
+import { logger } from "../util/Logging";
+import * as U from "../util/Util";
 import {
     Achievement,
     NewMatchupAchievement,
@@ -143,6 +144,8 @@ export class Earlybird extends TagDownAchievement {
     }
 }
 
+const LOG = logger();
+
 @registrableAchievement
 export class Annihilator extends ObjectiveAchievement {
     public constructor(client: BotgartClient) {
@@ -155,11 +158,11 @@ export class Annihilator extends ObjectiveAchievement {
     }
 
     checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
-        let holds: boolean = false;
+        let holds = false;
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
         if (ourTeam === undefined) {
-            U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+            LOG.warn(`Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
             const [ourColour, ourWorlds] = ourTeam;
             holds = obj.kills[ourColour] / obj.kills[ourColour] >= 2.0;
@@ -187,7 +190,7 @@ export class NeverSurrender extends TagUpAchievement {
                 const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
                 if (ourColour === undefined) {
                     const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";
-                    U.log("warning", `Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
+                    LOG.warn(`Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
                 } else {
                     const ourStats = stats.find(s => s.faction === ourColour);
                     holds = ourStats
@@ -218,7 +221,7 @@ export class Conqueror extends ObjectiveAchievement {
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
         if (ourTeam === undefined) {
-            U.log("warning", `Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
+            LOG.warn(`Could not find our home id '${getConfig().get().home_id}' within the matchup emitted by the API emitter. Only found ${Object.entries(obj.all_worlds)}. Either the config is broken or the emitter sends out faulty events.`);
         } else {
             const [ourColour, ourWorlds] = ourTeam;
             const ppt: number = context.objectives.maps.reduce((teamPPT, m) => teamPPT + m.objectives
@@ -340,7 +343,7 @@ export class Princess extends ObjectiveAchievement {
     }
 
     checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
-        const palaceID: string = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
+        const palaceID = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
         const colour: FactionColour | undefined = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
         return colour !== undefined
             && context.commander.getRaidStart() !== undefined
@@ -431,7 +434,7 @@ export class Bulletproof extends TagDownAchievement {
 }
 
 @registrableAchievement
-export class Boozecommander extends Achievement<any> {
+export class Boozecommander extends Achievement<unknown> {
     public constructor(client: BotgartClient) {
         super(client, "https://wiki.guildwars2.com/images/1/16/Stein_of_Ale.png",
             "Promillekommandeur",
@@ -441,7 +444,7 @@ export class Boozecommander extends Achievement<any> {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: any): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: unknown): boolean {
         return false;
     }
 }

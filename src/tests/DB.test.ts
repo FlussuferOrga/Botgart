@@ -4,6 +4,7 @@ import { Database } from "../database/Database";
 import { DatabasePatcher } from "../database/patches/DatabasePatcher";
 import { allPatches } from "../database/patches/PatchRegistry";
 import { EnvironmentVariablesRepository } from "../repositories/EnvironmentVariablesRepository";
+import "../util/string.extensions";
 
 describe("DB", function () {
     const testGuild = "00000";
@@ -15,15 +16,15 @@ describe("DB", function () {
     before('setupDatabase', function (done) {
         db = Database.getInstance(databaseFilePath);
         repo = new EnvironmentVariablesRepository(db);
-        done()
+        done();
     });
     before('patchDatabase', async function () {
-        await new DatabasePatcher(db).applyPatches(allPatches, false)
+        await new DatabasePatcher(db).applyPatches(allPatches, false);
     });
 
     after("cleanup", function (done) {
-        fs.unlink(databaseFilePath, done)
-    })
+        fs.unlink(databaseFilePath, done);
+    });
 
     it("write environment implicitly typed boolean to DB", () => {
         repo._setEnvironmentVariable(testGuild, "testBoolean1", true);
@@ -68,22 +69,22 @@ describe("DB", function () {
     });
 
     it("write environment explicitly typed string to DB", () => {
-      repo._setEnvironmentVariable(testGuild, "testString2", "hello world", "string");
-      expect(repo._getEnvironmentVariable(testGuild, "testString2"))
+        repo._setEnvironmentVariable(testGuild, "testString2", "hello world", "string");
+        expect(repo._getEnvironmentVariable(testGuild, "testString2"))
             .deep.equal(["hello world", "string", "hello world"]);
-  });
+    });
 
-  it("overwrite environment implicitly to implicitly typed boolean to DB", () => {
-      repo._setEnvironmentVariable(testGuild, "testBooleanOW1", true);
-      repo._setEnvironmentVariable(testGuild, "testBooleanOW1", false);
-      expect(repo._getEnvironmentVariable(testGuild, "testBooleanOW1"))
+    it("overwrite environment implicitly to implicitly typed boolean to DB", () => {
+        repo._setEnvironmentVariable(testGuild, "testBooleanOW1", true);
+        repo._setEnvironmentVariable(testGuild, "testBooleanOW1", false);
+        expect(repo._getEnvironmentVariable(testGuild, "testBooleanOW1"))
             .deep.equal(["false", "boolean", false]);
-  });
+    });
 
-  it("overwrite environment explicitly to explicitly typed boolean to DB", () => {
-      repo._setEnvironmentVariable(testGuild, "testBooleanOW2", true);
-      repo._setEnvironmentVariable(testGuild, "testBooleanOW2", "false", "boolean");
-      expect(repo._getEnvironmentVariable(testGuild, "testBooleanOW2"))
+    it("overwrite environment explicitly to explicitly typed boolean to DB", () => {
+        repo._setEnvironmentVariable(testGuild, "testBooleanOW2", true);
+        repo._setEnvironmentVariable(testGuild, "testBooleanOW2", "false", "boolean");
+        expect(repo._getEnvironmentVariable(testGuild, "testBooleanOW2"))
             .deep.equal(["false", "boolean", false]);
-  });
+    });
 });

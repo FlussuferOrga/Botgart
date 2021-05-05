@@ -1,7 +1,7 @@
 import discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class LogChannelRepository extends AbstractDbRepository{
+export class LogChannelRepository extends AbstractDbRepository {
     public getLogChannels(guild: discord.Guild, type: string): string[] {
         return this.execute(db => {
             const channels = db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?")

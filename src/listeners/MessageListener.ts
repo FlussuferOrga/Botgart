@@ -1,4 +1,7 @@
 import { Listener } from "discord-akairo";
+import { logger } from "../util/Logging";
+
+const LOG = logger();
 
 export class MessageListener extends Listener {
     constructor() {
@@ -9,7 +12,7 @@ export class MessageListener extends Listener {
     }
 
     exec(message) {
-
+        LOG.info("Received Message: %s", message);
     }
 }
 

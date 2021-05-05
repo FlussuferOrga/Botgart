@@ -2,6 +2,7 @@ import * as discord from "discord.js";
 import * as moment from "moment";
 import { Achievement, AchievementAwardResult } from "../../achievements/Achievement";
 import { BotgartCommand } from "../../BotgartCommand";
+import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
 
 /**
@@ -29,11 +30,14 @@ export class AwardAchievement extends BotgartCommand {
                         default: moment.utc()
                     }
                 ]
+            },
+            {
+                enabled: getConfig().get().achievements.enabled,
             }
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<any>, player: discord.GuildMember, timestamp?: moment.Moment }): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<unknown>, player: discord.GuildMember, timestamp?: moment.Moment }): void {
         if (args.achievement === undefined) {
             message.reply(L.get("NO_SUCH_ACHIEVEMENT"));
         } else {

@@ -1,12 +1,13 @@
 import betterSqlite3 from "better-sqlite3";
+import { logger } from "../util/Logging";
 
-import { log } from "../Util";
+const LOG = logger();
 
 export class Database {
     public static getInstance(databaseFilePath) {
         const database = new Database(databaseFilePath);
         database.initSchema();
-        log("info", "Database initialised.");
+        LOG.info("Database initialised.");
         return database;
     }
 
@@ -25,7 +26,7 @@ export class Database {
      * creating the init.
      */
     public initSchema(): void {
-        let sqls = [
+        const sqls = [
             `CREATE TABLE IF NOT EXISTS registrations
              (
                  id                INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,8 +75,14 @@ export class Database {
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
 
-    private openConnection(): betterSqlite3.Database {
-        const db = betterSqlite3(this.file, {});
+    private openConnection(state: string[]): betterSqlite3.Database {
+        const options = {
+            verbose: (message, additionalArgs) => {
+                state.push(message);
+                // LOG.debug("Sqlite Query:\n" + message, additionalArgs)
+            }
+        };
+        const db = betterSqlite3(this.file, options);
         db.pragma("foreign_keys = ON");
         return db;
     }
@@ -86,14 +93,22 @@ export class Database {
      * returns: the result of the lambda.
      */
     public execute<T>(f: (sqlite3) => T): T | undefined {
-        const db = this.openConnection();
+        const queries: string[] = [];
+        const db = this.openConnection(queries);
+        const start: number = new Date().getTime();
 
         let res: T | undefined;
         try {
             res = f(db);
         } catch (err) {
             res = undefined;
-            log("error", `DB execute: ${err["message"]} (stack: ${new Error().stack})`);
+            LOG.error(`DB execute: ${err["message"]} (stack: ${new Error().stack})`);
+        } finally {
+            const end = new Date().getTime();
+            const time = end - start;
+            if (time > 5000) {
+                LOG.debug(`Sqlite Execution took long: ${time}ms: \n` + queries.join("\n---\n"));
+            }
         }
 
         db.close();

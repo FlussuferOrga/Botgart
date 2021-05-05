@@ -1,8 +1,8 @@
 import * as moment from "moment";
-import * as Util from "../Util";
+import * as Util from "../util/Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class AchievementRepository extends AbstractDbRepository{
+export class AchievementRepository extends AbstractDbRepository {
     /**
      * Inserts a granted achievement into the DB.
      * achievementName: name of the achievement. No checks are done here -- could be an invalid achievement name!
@@ -32,8 +32,7 @@ export class AchievementRepository extends AbstractDbRepository{
         guild: string,
         channel: string,
         message: string
-    }[]
-    {
+    }[] {
         return this.execute(db => db.prepare(`
             SELECT 
                 pa.awarded_by,
@@ -58,8 +57,7 @@ export class AchievementRepository extends AbstractDbRepository{
      * returns: array of achievement, group by the achievemet name with the count included.
      */
     public getPlayerAchievements(gw2account: string)
-        : {times_awarded: number, achievement_name: string}[]
-    {
+        : { times_awarded: number, achievement_name: string }[] {
         return this.execute(db => db.prepare(`
                 SELECT 
                     COUNT(*) AS times_awarded,
@@ -79,14 +77,13 @@ export class AchievementRepository extends AbstractDbRepository{
      * returns: if the passed ID was valid, the deleted row is returned.
      */
     public deletePlayerAchievement(playerAchievementID: number)
-        :  {
+        : {
         player_achievement_id: number,
         achievement_name: string,
         gw2account: string,
         awarded_by: string,
         timestamp: string
-    }
-    {
+    } {
         return this.execute(db =>
             db.transaction((_) => {
                 const achievementData = db.prepare(`
@@ -108,7 +105,7 @@ export class AchievementRepository extends AbstractDbRepository{
                         player_achievement_id = ?
                 `).run(playerAchievementID);
                 return achievementData;
-            })(null))
+            })(null));
     }
 
     /**
@@ -128,7 +125,7 @@ export class AchievementRepository extends AbstractDbRepository{
                         AND gw2account = ?
                 `).run(achievementName, gw2account);
                 return db.prepare(`SELECT changes() AS changes`).get().changes;
-            })(null))
+            })(null));
     }
 
     /**

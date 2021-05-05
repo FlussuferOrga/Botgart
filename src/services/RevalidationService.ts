@@ -7,13 +7,15 @@ import { getConfig } from "../config/Config";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import { Registration } from "../repositories/RegistrationRepository";
-import * as Util from "../Util";
-import { formatUserPing, log } from "../Util";
+import { logger } from "../util/Logging";
+import { formatUserPing } from "../util/Util";
 
+
+const LOG = logger();
 
 export class RevalidationService {
-    private static REAUTH_DELAY: number = 8000;
-    private static REAUTH_MAX_PARALLEL_REQUESTS: number = 3;
+    private static REAUTH_DELAY = 8000;
+    private static REAUTH_MAX_PARALLEL_REQUESTS = 3;
 
 
     private static SEM = new Semaphore(RevalidationService.REAUTH_MAX_PARALLEL_REQUESTS);
@@ -38,25 +40,24 @@ export class RevalidationService {
         await PromisePool.withConcurrency(1)
             .for(allRegistrations)
             .handleError(async (error, user) => {
-                log("error", `Error during validation of ${user.account_name}: ${error}`)
+                LOG.error(`Error during validation of ${user.account_name}: ${error}`);
             })
             .process(async reg => {
                 const result = await this.checkRegistration(this.worldAssignments, reg);
                 if (result !== undefined) {
-                    await this.handle(reg, result)
+                    await this.handle(reg, result);
                 } else {
-                    log("error", "API validation yielded undefined for the entire result of revalidations. Critical error!");
-                    return;
+                    LOG.error("API validation yielded undefined for the entire result of revalidations. Critical error!");
                 }
-            })
+            });
     }
 
 
     private async checkRegistration(worldAssignments: { world_id: number; role: string }[],
                                     r: Registration): Promise<undefined | { roleName?: string, valid: boolean }> {
-        let release = await RevalidationService.SEM.acquire();
-        Util.log("info", `Sending revalidation request for API key ${r.api_key}.`);
-        let res: (string | boolean) | undefined = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments)
+        const release = await RevalidationService.SEM.acquire();
+        LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
+        const res: (string | boolean) | undefined = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments)
             .then(
                 // this ternary hack is required to work around the typing of the Promise from validateWorld
                 // which returns a number upon rejecting and string | boolean in case of success.
@@ -72,7 +73,7 @@ export class RevalidationService {
                         // => remove the validation role from the user
                         return false;
                     } else {
-                        Util.log("error", `Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
+                        LOG.error(`Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
                         return undefined;
                     }
                 }
@@ -82,39 +83,39 @@ export class RevalidationService {
 
 
         if (typeof res === "string") {
-            return {roleName: res, valid: true}
+            return {roleName: res, valid: true};
         } else if (typeof res === "boolean") {
-            return {valid: false}
-        } else return undefined
+            return {valid: false};
+        } else return undefined;
     }
 
     private static readonly LOG_TYPE_DEAUTHORIZE: string = "unauth";
 
 
     private async handle(registration: Registration, authResult: { roleName?: string; valid: boolean }) {
-        let guild: discord.Guild | null = await this.client.guilds.fetch(registration.guild);
+        const guild: discord.Guild | null = await this.client.guilds.fetch(registration.guild);
 
 
         // filter out users for which we encountered errors
         if (!guild) {
-            log("error", `Could not find a guild ${registration.guild}. Have I been kicked?`)
+            LOG.error(`Could not find a guild ${registration.guild}. Have I been kicked?`);
         } else {
             const member: discord.GuildMember | undefined = await guild.members.fetch(registration.user)
                 .catch(ex => {
-                    log("error", `Could not restrieve user ${registration.user}: ${ex.message}`);
+                    LOG.error(`Could not restrieve user ${registration.user}: ${ex.message}`);
                     return undefined;
                 });
             const registeredWithRole = registration.registration_role;
             if (!member) {
-                log("info", `${registration.user} is no longer part of the discord guild. Deleting their key.`);
+                LOG.info(`${registration.user} is no longer part of the discord guild. Deleting their key.`);
                 this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 return;
             }
             if (!authResult.valid) {
                 // user should be pruned: user has either transed (false) or deleted their key (invalid key)
-                log("info", "Unauthing {0}.".formatUnicorn(member.user.username));
-                await this.client.validationService.setMemberRolesByString(member, [], "Api Key invalid or not authorized Server")
+                LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
+                await this.client.validationService.setMemberRolesByString(member, [], "Api Key invalid or not authorized Server");
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
                 await member.send(L.get("KEY_INVALIDATED"));
@@ -122,19 +123,19 @@ export class RevalidationService {
                 if (authResult.roleName !== undefined) {
                     if (registration.registration_role != authResult.roleName) {
                         //db update required ?
-                        await this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName)
+                        await this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
                     }
                 }
                 const admittedRoleName = authResult.roleName;
-                let admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === admittedRoleName);
+                const admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === admittedRoleName);
                 if (!admittedRole) { // false -> no role should be assigned assigned at all
-                    log("error", `Can not find the role "${admittedRoleName}" that should be currently used.`);
-                    throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`)
+                    LOG.error(`Can not find the role "${admittedRoleName}" that should be currently used.`);
+                    throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`);
 
                 } else {
                     // user transferred to another admitted server -> update role
                     // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
-                    await this.client.validationService.setMemberRolesByString(member, [admittedRole.name], "ReAuthentication")
+                    await this.client.validationService.setMemberRolesByString(member, [admittedRole.name], "ReAuthentication");
                     //assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
                 }
             }

@@ -2,10 +2,10 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Fishing System
-*/
+ * Fishing System
+ */
 export class Patch10 extends DBPatch {
-   constructor(db: Database) {
+    constructor(db: Database) {
         super(db);
     }
 
@@ -41,7 +41,7 @@ export class Patch10 extends DBPatch {
         this.connection.prepare(`DROP TABLE reset_leaders`).run();
         this.connection.prepare(`ALTER TABLE new_reset_leaders RENAME TO reset_leaders`).run();
         this.connection.pragma("foreign_keys = ON");
-      }
+    }
 
     public async revert(): Promise<void> {
         this.dbbegin();

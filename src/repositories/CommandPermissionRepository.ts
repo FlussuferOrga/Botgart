@@ -1,11 +1,11 @@
 import { PermissionTypes } from "../BotgartCommand";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class CommandPermissionRepository extends AbstractDbRepository{
-    public checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean,number] {
+export class CommandPermissionRepository extends AbstractDbRepository {
+    public checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean, number] {
         roles.push(uid);
         const params = '?,'.repeat(roles.length).slice(0, -1);
-        let permission = this.execute(db =>
+        const permission = this.execute(db =>
             db.prepare(`
                 SELECT 
                   TOTAL(value) AS permission -- total() returns 0.0 for the sum of [null]
@@ -20,7 +20,7 @@ export class CommandPermissionRepository extends AbstractDbRepository{
         return [permission > 0, permission];
     }
 
-    public setPermission(command: string, receiver: string, type: PermissionTypes, value: number, gid?: string): number|undefined {
+    public setPermission(command: string, receiver: string, type: PermissionTypes, value: number, gid?: string): number | undefined {
         return this.execute(db => {
             let perm = undefined;
             db.transaction((_) => {

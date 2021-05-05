@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
-export class FishingRepository extends AbstractDbRepository{
+export class FishingRepository extends AbstractDbRepository {
     /**
      * Randomly selects a Fish.
      * Weight is already randomly selected.
@@ -24,7 +24,7 @@ export class FishingRepository extends AbstractDbRepository{
                     ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC         
                 LIMIT 
                     1
-        `).get())
+        `).get());
     }
 
     /**
@@ -44,7 +44,7 @@ export class FishingRepository extends AbstractDbRepository{
      * @param length: the number of ladder enties that should be retrieved.
      * @returns the ladder
      */
-    public fishLadder(length: number = 10): FishLadderEntry[] {
+    public fishLadder(length = 10): FishLadderEntry[] {
         return this.execute(db => db.prepare(`
             SELECT 
                 user,

@@ -4,7 +4,9 @@ import { getConfig } from "../config/Config";
 import * as L from "../Locale";
 import { Registration } from "../repositories/RegistrationRepository";
 import { Commander } from "../TS3Connection";
-import { log } from "../Util";
+import { logger } from "../util/Logging";
+
+const LOG = logger();
 
 export class TagBroadcastService {
     private readonly ZERO_WIDTH_SPACE = "\u200B";
@@ -32,7 +34,7 @@ export class TagBroadcastService {
         // broadcast the message
         const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c.type == "text");
         if (!dchan) {
-            log("warning", `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
+            LOG.warn(`I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
             const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
             const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
@@ -49,9 +51,9 @@ export class TagBroadcastService {
                 const userMention = discordUser!.user!.toString();
                 // replace message with version that links the user after it hast been sent initially.
                 // Editing does not trigger a notification.
-                return sendPromise.then(value => value.edit(this.createMessage(userMention, role, pingRoleMention), embed))
+                return sendPromise.then(value => value.edit(this.createMessage(userMention, role, pingRoleMention), embed));
             }
-            return sendPromise
+            return sendPromise;
         }
     }
 
@@ -59,12 +61,13 @@ export class TagBroadcastService {
         const embed = new MessageEmbed();
         let text = channelPath + " ❯ " + commander.getTS3DisplayName();
         if (includeLink && commander.getTs3joinUrl()) {
-            let linkText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT", [], " | ", false);
-            let linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], "\n\n", false);
-            text += `\n\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`
+            const linkText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT", [], " | ", false);
+            const linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], "\n\n", false);
+            text += `\n\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`;
         }
-        embed.addField("🔊 TeamSpeak 3", text, false)
-        embed.setColor(color)
+        embed.addField("🔊 TeamSpeak 3", text, false);
+        embed.setColor(color);
+        embed.setTimestamp(new Date());
         return embed;
     }
 
@@ -73,9 +76,9 @@ export class TagBroadcastService {
     }
 
     async tagDownBroadcast(commander: Commander) {
-        let message = await TagBroadcastService.fetchMessageOrNull(commander);
+        const message = await TagBroadcastService.fetchMessageOrNull(commander);
         if (message !== undefined) {
-            await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_INACTIVE);
+            await TagBroadcastService.updateEmbedTagDown(message, this.COLOR_INACTIVE);
         }
     }
 
@@ -83,7 +86,7 @@ export class TagBroadcastService {
         try {
             return await commander.getBroadcastMessage()?.fetch();
         } catch (e) {
-            log("warn", `Cannot tag down, message not found. ${e}`);
+            LOG.warn(`Cannot tag down, message not found. ${e}`);
         }
         return undefined;
     }
@@ -92,32 +95,32 @@ export class TagBroadcastService {
         for (const commander of this.client.commanders.getAllCommanders()) {
             const message = await TagBroadcastService.fetchMessageOrNull(commander); // better refetch...
             if (message !== undefined) {
-                log("info", `Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
-                await TagBroadcastService.updateEmbedTagdown(message, this.COLOR_UNKNOWN)
+                LOG.info(`Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
+                await TagBroadcastService.updateEmbedTagDown(message, this.COLOR_UNKNOWN);
             }
         }
     }
 
-    private static async updateEmbedTagdown(message: Message, color: number) {
+    private static async updateEmbedTagDown(message: Message, color: number) {
         const embed = message.embeds[0];
         if (embed) {
-            let toUpdate = false
+            let toUpdate = false;
             if (embed.color != color) {
-                toUpdate = true
-                embed.setColor(color)
+                toUpdate = true;
+                embed.setColor(color);
             }
             if (embed.fields.length == 1) {
                 const field = embed.fields[0];
                 const textLines = field.value.split('\n');
                 if (textLines.length > 1) {
-                    toUpdate = true
+                    toUpdate = true;
                     const newName = field.name.replace("🔊", "🔈"); // nobody will probably ever notice that :D
                     const newField = {name: newName, value: textLines[0], inline: field.inline};
                     embed.spliceFields(0, 1, newField);
                 }
             }
             if (toUpdate) {
-                await message.edit(embed)
+                await message.edit(embed);
             }
         }
     }

@@ -1,8 +1,13 @@
 import * as discord from "discord.js";
 import { Achievement } from "../../achievements/Achievement";
 import { BotgartCommand } from "../../BotgartCommand";
+import { getConfig } from "../../config/Config";
 import * as L from "../../Locale";
-import * as Util from "../../Util";
+import { logger } from "../../util/Logging";
+
+const LOG = logger();
+
+type AchievementArg = number | Achievement<unknown> | undefined;
 
 /**
  Testcases:
@@ -16,8 +21,8 @@ export class RevokeAchievement extends BotgartCommand {
                 args: [
                     {
                         id: "achievement",
-                        type: (message: discord.Message, phrase: string): number | Achievement<any> | undefined => {
-                            let achievement: number | Achievement<any> | undefined = parseInt(phrase);
+                        type: (message: discord.Message, phrase: string): AchievementArg => {
+                            let achievement: AchievementArg = parseInt(phrase);
                             if (isNaN(achievement)) {
                                 achievement = this.getBotgartClient().achievementRegistry.getAchievement(phrase);
                             }
@@ -30,6 +35,9 @@ export class RevokeAchievement extends BotgartCommand {
                     },
 
                 ]
+            },
+            {
+                enabled: getConfig().get().achievements.enabled,
             }
         );
     }
@@ -45,8 +53,8 @@ export class RevokeAchievement extends BotgartCommand {
             : L.get(this.helptextKey());
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: any, player?: discord.GuildMember }): Promise<void> {
-        // note that args.achievement is not typed Achievement|number on purpose, as it would prevent stuff like 
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: AchievementArg, player?: discord.GuildMember }): Promise<void> {
+        // note that args.achievement is not typed Achievement|number on purpose, as it would prevent stuff like
         // Number.isInteger(args.achievement) (which only takes number as argument) and would make the code a whole lot more clunky
         // for very little benefit.
         const repo = this.getBotgartClient().achievementRepository;
@@ -63,7 +71,7 @@ export class RevokeAchievement extends BotgartCommand {
                 if (achievementData !== undefined) {
                     revokedCount = 1; // else stays at default 0
                     const registry = this.getBotgartClient().achievementRegistry;
-                    const aobj: Achievement<any> | undefined = registry.getAchievement(achievementData.achievement_name);
+                    const aobj: Achievement<never> | undefined = registry.getAchievement(achievementData.achievement_name);
                     if (aobj !== undefined && achievementData && repo.checkAchievement(achievementData.achievement_name, achievementData.gw2account).length == 0) {
                         // user lost their last instance of this achievement -> remove role
                         // since removing an entry from the DB does not require a player to be passed,
@@ -78,15 +86,16 @@ export class RevokeAchievement extends BotgartCommand {
                         }
                     }
                 }
-            } else {
+            } else if (typeof args.achievement !== "undefined" && typeof args.achievement !== "number") {
+                const achievement = args.achievement;
                 // revoke all instances
                 // assert args.achievement instanceof Achievement
                 if (userdata === undefined) {
-                    Util.log("error", `Should have revoked Achievement instance ${args.achievement.name} from a user which was not successfully determined.`);
+                    LOG.error(`Should have revoked Achievement instance ${achievement.name} from a user which was not successfully determined.`);
                     message.reply(L.get("REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
                 } else {
                     revokedCount = repo.revokePlayerAchievements(args.achievement.name, userdata.gw2account);
-                    const role: discord.Role | undefined = guild.roles.cache.find(r => r.name === args.achievement.getRoleName());
+                    const role: discord.Role | undefined = guild.roles.cache.find(r => r.name === achievement.getRoleName());
                     if (role !== undefined) {
                         args.player?.roles.remove(role);
                     }

@@ -10,16 +10,17 @@ chai.use(chaiDateTime);
 chai.use(chaiMoment);
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/no-namespace
     namespace Chai {
         interface AssertStatic {
             exactMoment(val: Moment, exp: Moment, msg?: string): void;
         }
     }
 }
-assert["exactMoment"] = function (actual: any, expected: any) {
-    this.sameMoment(actual, expected)
-    this.equal(actual.format(), expected.format()) //this also checks the stored timezone to be equal
-}
+assert["exactMoment"] = function (actual: Moment, expected: Moment) {
+    this.sameMoment(actual, expected);
+    this.equal(actual.format(), expected.format()); //this also checks the stored timezone to be equal
+};
 
 describe("ResetUtil", function () {
 
@@ -33,30 +34,30 @@ describe("ResetUtil", function () {
 
     it("upcoming reset before Friday (EU) Moment", () => {
         const actual = ResetUtils.getNextResetDateMoment(moment.tz("2019-11-12", "UTC"));
-        const expected = moment.tz("2019-11-15 18:00:00", "UTC")
+        const expected = moment.tz("2019-11-15 18:00:00", "UTC");
         assert.exactMoment(actual, expected);
     });
 
     it("upcoming reset before at Friday (EU) Moment", () => {
         const actual = ResetUtils.getNextResetDateMoment(moment.tz("2019-11-15", "UTC"));
-        const expected = moment.tz("2019-11-15 18:00:00", "UTC")
+        const expected = moment.tz("2019-11-15 18:00:00", "UTC");
         assert.exactMoment(actual, expected);
     });
 
     it("upcoming reset before at Friday right before reset (EU) Moment", () => {
         const actual = ResetUtils.getNextResetDateMoment(moment.tz("2019-11-15 17:55:00", "UTC"));
-        const expected = moment.tz("2019-11-15 18:00:00", "UTC")
+        const expected = moment.tz("2019-11-15 18:00:00", "UTC");
         assert.exactMoment(actual, expected);
     });
 
     it("upcoming reset at Friday right on reset (EU) Moment", () => {
         const actual = ResetUtils.getNextResetDateMoment(moment.tz("2019-11-15 18:00:00", "UTC"));
-        const expected = moment.tz("2019-11-22 18:00:00", "UTC") //expecting next
+        const expected = moment.tz("2019-11-22 18:00:00", "UTC"); //expecting next
         assert.exactMoment(actual, expected);
     });
     it("upcoming reset before at Friday right after reset (EU) Moment", () => {
         const actual = ResetUtils.getNextResetDateMoment(moment.tz("2019-11-15 18:00:01", "UTC"));
-        const expected = moment.tz("2019-11-22 18:00:00", "UTC")
+        const expected = moment.tz("2019-11-22 18:00:00", "UTC");
         assert.exactMoment(actual, expected);
     });
 
@@ -97,15 +98,15 @@ describe("ResetUtil", function () {
             let now = moment();
 
             //generate the next 400 Reset Dates
-            let resets: string[] = []
+            const resets: string[] = [];
             for (let i = 0; i < 20; i++) {
-                resets.push(ResetUtils.getNextResetDateMoment(now).format())
-                now = now.add(1, "week")
+                resets.push(ResetUtils.getNextResetDateMoment(now).format());
+                now = now.add(1, "week");
             }
 
             //Make sure there are no duplicates
             const distinct = [...new Set(resets)];
-            assert.sameMembers(distinct, resets)
+            assert.sameMembers(distinct, resets);
         }
     );
 

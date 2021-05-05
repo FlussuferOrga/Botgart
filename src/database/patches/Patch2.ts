@@ -2,8 +2,8 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds the permanent_roles table.
-*/
+ * Adds the permanent_roles table.
+ */
 export class Patch2 extends DBPatch {
     constructor(db: Database) {
         super(db);

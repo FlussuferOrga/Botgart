@@ -1,5 +1,5 @@
 import gw2client from "gw2api-client";
-import { log } from "./Util";
+import { logger } from "./util/Logging";
 
 
 export function createApiInstance() {
@@ -8,12 +8,14 @@ export function createApiInstance() {
     api.language('en');
 
     // retry some times and be polite about it
-    api.fetch.retry(tries => tries <= 5)
-    api.fetch.retryWait(tries => tries * 3000)
+    api.fetch.retry(tries => tries <= 5);
+    api.fetch.retryWait(tries => tries * 3000);
     return api;
 }
 
 const api = createApiInstance();
+
+const LOG = logger();
 
 /**
  * Tries to validate the passed API key.
@@ -28,11 +30,11 @@ const api = createApiInstance();
  *                   (c) the key is structurally valid, but not known to the API (invalid key)
  */
 export function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string | boolean | number> {
-    let api = createApiInstance();
+    const api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
         acc => new Promise((resolve, reject) => {
-            let match = worldAssignments.filter(a => a.world_id === acc.world);
+            const match = worldAssignments.filter(a => a.world_id === acc.world);
             if (match.length > 1) {
                 // config broken
                 return reject(exports.validateWorld.ERRORS.config_world_duplicate);
@@ -45,7 +47,7 @@ export function validateWorld(apikey: string, worldAssignments: { world_id: numb
             }
         }),
         err => new Promise((resolve, reject) => {
-            log("error", "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
+            LOG.error("Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
             if (err.content.text === "invalid key") {
                 return reject(exports.validateWorld.ERRORS.invalid_key);
             } else {
@@ -62,7 +64,7 @@ validateWorld.ERRORS = {
 };
 
 export function getAccountGUID(apikey: string): Promise<number | boolean> {
-    let api = createApiInstance();
+    const api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.id)),
@@ -71,7 +73,7 @@ export function getAccountGUID(apikey: string): Promise<number | boolean> {
 }
 
 export function getAccountName(apikey: string): Promise<string | boolean> {
-    let api = createApiInstance();
+    const api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
         res => new Promise((resolve, reject) => resolve(res.name)),

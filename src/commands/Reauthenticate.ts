@@ -2,7 +2,9 @@ import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
-import { log } from "../Util";
+import { logger } from "../util/Logging";
+
+const LOG = logger();
 
 /**
  Testcases:
@@ -29,11 +31,11 @@ export class Reauthenticate extends BotgartCommand {
     command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
         const cl: BotgartClient = this.getBotgartClient();
         cl.revalidationService.revalidateKeys();
-        log("info", "Reauthentication started.");
+        LOG.info("Reauthentication started.");
     }
 
-    postExecHook(message, args, result) {
-        return message.util.send(L.get("PRUNING_COMPLETE"));
+    postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<discord.Message> | undefined {
+        return message.util?.send(L.get("PRUNING_COMPLETE"));
     }
 }
 

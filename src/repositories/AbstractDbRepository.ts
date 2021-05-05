@@ -8,6 +8,6 @@ export abstract class AbstractDbRepository {
     }
 
     protected execute<T>(f: (sqlite3) => T): T | undefined {
-        return this.db.execute(f)
+        return this.db.execute(f);
     }
 }

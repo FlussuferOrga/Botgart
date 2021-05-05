@@ -4,7 +4,7 @@ import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import * as L from "./Locale";
-import * as U from "./Util";
+import { logger } from "./util/Logging";
 
 export enum PermissionTypes {
     user = "user",
@@ -15,19 +15,24 @@ export enum PermissionTypes {
 interface BotgartCommandOptionsNullable {
     availableAsDM?: boolean,
     cronable?: boolean,
-    everyonePermission?: number
+    everyonePermission?: number,
+    enabled?: boolean
 }
 
 interface BotgartCommandOptions {
     availableAsDM: boolean,
     cronable: boolean,
     everyonePermission: number
+    enabled: boolean
 }
+
+const LOG = logger();
 
 export class BotgartCommand extends Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
+    protected enabled: boolean;
     protected cmdargs: akairo.ArgumentOptions[] | akairo.ArgumentGenerator;
 
     /**
@@ -41,22 +46,18 @@ export class BotgartCommand extends Command {
      */
     constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
-        const defaults: BotgartCommandOptions = {availableAsDM: false, cronable: false, everyonePermission: 0};
+        const defaults: BotgartCommandOptions = {
+            availableAsDM: false,
+            cronable: false,
+            everyonePermission: 0,
+            enabled: true
+        };
         const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : Object.assign({}, defaults, botgartOptions);
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
         this.cmdargs = options.args === undefined ? [] : options.args;
-    }
-
-    /**
-     * Used to execute code after the client.ready event has been thrown.
-     * Especially useful if the referenced client object (parameter) must be used, which
-     * is not available within the constructor.
-     * @param client - the client after throwing the ready event.
-     */
-    public init(client: BotgartClient): void {
-
+        this.enabled = settings.enabled;
     }
 
     /**
@@ -114,7 +115,7 @@ export class BotgartCommand extends Command {
         const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
         //console.log(allowed, perm);
         //console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
-        return this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0;
+        return this.isEnabled() && (this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0);
     }
 
     /**
@@ -167,7 +168,7 @@ export class BotgartCommand extends Command {
      * @param {Object} args - arguments to the command.
      * @returns {String} error-string in case of malformed args, else undefined.
      */
-    public checkArgs(args: Object): string | undefined {
+    public checkArgs(args: Record<string, unknown>): string | undefined {
         let argsPresent: boolean = args !== undefined;
         let i = 0;
         while (argsPresent && i < this.cmdargs.length) {
@@ -176,7 +177,7 @@ export class BotgartCommand extends Command {
             i++;
         }
         if (!argsPresent) {
-            U.log("debug", `Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`)
+            LOG.debug(`Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`);
         }
         return argsPresent ? undefined : L.get(this.helptextKey());
     }
@@ -200,8 +201,8 @@ export class BotgartCommand extends Command {
      * @param {Guild} guild - the Guild on which to execute the command.
      * @param {map} args - arguments for the command. Each command specifies the format themselves.
      */
-    public command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Object): any {
-        throw "command() not implemented.";
+    public command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Record<string, unknown>): unknown {
+        throw new Error("command() not implemented.");
     }
 
     /**
@@ -215,17 +216,17 @@ export class BotgartCommand extends Command {
      * @param {Map} args - arguments to serialise to the DB.
      * @returns {string} - the serialised args
      */
-    public serialiseArgs(args: Map<any, any>): string {
+    public serialiseArgs(args: Record<string, unknown>): string {
         return JSON.stringify(args);
     }
 
     /*
     * Inverse to serialiseArgs. Has to revert everything that was done there.
-    * @param {string} jsonargs - serialised JSON arguments for the command. 
+    * @param {string} jsonargs - serialised JSON arguments for the command.
     *                 NOTE: deserialiseArgs may _not_ modify the arguments by reference!
     * @returns {Map} the deserialised arguments.
     */
-    public deserialiseArgs(jsonargs: string): Map<any, any> {
+    public deserialiseArgs(jsonargs: string): Record<string, unknown> {
         return JSON.parse(jsonargs);
     }
 
@@ -244,25 +245,25 @@ export class BotgartCommand extends Command {
      * @param {Message} message - message that triggered this command.
      * @param {Object} args - parameters.
      */
-    public exec(message: discord.Message, args: Object): void {
+    public exec(message: discord.Message, args: Record<string, unknown>): void {
         if (!this.availableAsDM && !message.member && message.util) {
             message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
 
-        let causer = message.member || message.author;
+        const causer = message.member || message.author;
         if (!this.isAllowed(causer)) {
             message.util?.send(L.get("NOT_PERMITTED"));
             return;
         }
 
-        let errorMessage = this.checkArgs(args);
+        const errorMessage = this.checkArgs(args);
         if (errorMessage && message.util) {
-            message.util.send(errorMessage)
+            message.util.send(errorMessage);
             return;
         }
 
-        let res = this.command(message, message.author, message.guild, args);
+        const res = this.command(message, message.author, message.guild, args);
         return this.postExecHook(message, args, res);
     }
 
@@ -275,7 +276,7 @@ export class BotgartCommand extends Command {
      * @param {any} result - the result from command().
      * @returns {any} - is returned to the caller.
      */
-    public postExecHook(message: discord.Message, args: Object, result: any): any {
+    public postExecHook(message: discord.Message, args: Record<string, unknown>, result: unknown): void {
     }
 
     /*
@@ -287,7 +288,7 @@ export class BotgartCommand extends Command {
     * where a message to reply to is not available.
     * @param {Message} message - the message to reply to, may be null.
     * @param {User} responsible - the person responsible for the execution of the command.
-    * @param response - the message text to send to the user. 
+    * @param response - the message text to send to the user.
     * @returns {Promise} - the promise for whichever method was executed.
     */
     public reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
@@ -296,5 +297,9 @@ export class BotgartCommand extends Command {
         } else {
             return responsible.send(response);
         }
+    }
+
+    public isEnabled() {
+        return this.enabled;
     }
 }

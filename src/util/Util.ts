@@ -1,11 +1,7 @@
-import callsites from "callsites";
 import { Guild, Role } from "discord.js";
-
 import moment from "moment-timezone";
-import path from "path" // ^
-import * as winston from "winston";
 
-export const RESET_WEEKDAY: number = 5; // FRIDAY
+export const RESET_WEEKDAY = 5; // FRIDAY
 
 export function sqliteTimestampToMoment(str: string): moment.Moment {
     return moment(str, "YYYY-MM-DD HH:mm:ss");
@@ -38,7 +34,7 @@ export function escapeRegExp(text: string) {
 export function capitalise(word: string) {
     return word.length === 0
         ? word
-        : word.charAt(0).toUpperCase() + word.slice(1)
+        : word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 export function determineTier(yaksDelivered: number) {
@@ -55,7 +51,7 @@ export function determineTier(yaksDelivered: number) {
  or the input string, if it was parsed to a cron-like string,
  or false, if the input could not be parsed to either format.
  */
-export function parseCronDate(input: string, dateFomat: string = "DD.MM.YYYY H:m"): string | moment.Moment | boolean {
+export function parseCronDate(input: string, dateFomat = "DD.MM.YYYY H:m"): string | moment.Moment | boolean {
     if (input === "") { // empty strings are "valid dates"
         return false;
     }
@@ -79,7 +75,7 @@ export function parseCronDate(input: string, dateFomat: string = "DD.MM.YYYY H:m
 export function compareDatesWithoutTime(d1: Date, d2: Date) {
     return d1.getUTCDate() == d2.getUTCDate()
         && d1.getUTCMonth() == d2.getUTCMonth()
-        && d1.getUTCFullYear() == d2.getUTCFullYear()
+        && d1.getUTCFullYear() == d2.getUTCFullYear();
 }
 
 export function formatUserPing(uid: string) {
@@ -100,76 +96,6 @@ export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
-
-export function assertType(obj: any, t: string): void {
-    let p = obj;
-    while (p && p.constructor.name !== t) {
-        p = p.__proto__;
-    }
-    // if we walked the inheritence up and obj IS a t, then  we must have stopped before we hit NULL.
-    // -> p being null implies that obj IS NOT a t.
-    //assert(p != null, "Expected object to be of type {0}, but it is of type {1}.".formatUnicorn(t, obj ? obj.constructor.name : obj));
-}
-
-export const logger = winston.createLogger({
-    levels: winston.config.syslog.levels,
-    format: winston.format.combine(
-        winston.format.timestamp(),
-        winston.format.splat(),
-        winston.format.simple(),
-        winston.format.printf(({level, label, message, timestamp}) => {
-            return `${timestamp} ${level} [${label}]: ${message}`;
-        })
-    ),
-    transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({
-            filename: 'log/bot_combined.log',
-            level: 'info'
-        }),
-        new winston.transports.File({
-            filename: 'log/bot_errors.log',
-            level: 'error'
-        }),
-        new winston.transports.File({
-            filename: '/tmp/botgart_debug.log',
-            level: 'debug'
-        })
-    ]
-});
-
-export function log(level: string, message: string): winston.Logger {
-    const callFile: string[] = callsites()[1].getFileName()?.split(path.sep) ?? ["UNKNOWN"];
-    const file = callFile[callFile.length - 1];
-    return logger.log({
-        "label": file, // label,
-        "level": level,
-        "message": message
-    });
-}
-
-declare global {
-    interface String {
-        formatUnicorn(...fnargs: any[]): string;
-    }
-}
-
-// taken from https://stackoverflow.com/a/18234317
-String.prototype.formatUnicorn = function (...fnargs: any[]): string {
-    var str = this.toString();
-    if (fnargs.length) {
-        var t = typeof fnargs[0];
-        var key;
-        var args = ("string" === t || "number" === t) ?
-            Array.prototype.slice.call(fnargs)
-            : fnargs[0];
-        for (key in args) {
-            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-        }
-    }
-    return str;
-};
-
 export interface Equalable<T> {
     equals: (other: T) => boolean;
 }
@@ -190,7 +116,7 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
     }
 
     public find(item: T): number {
-        let i: number = 0;
+        let i = 0;
         while (i < this.elements.length && !this.elements[i].equals(item)) {
             i++;
         }
@@ -202,7 +128,7 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
     }
 
     public add(item: T): boolean {
-        let added: boolean = false;
+        let added = false;
         if (!this.has(item)) {
             this.elements.push(item);
             added = true;

@@ -2,8 +2,8 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Fishing System
-*/
+ * Fishing System
+ */
 export class Patch9 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -12,7 +12,7 @@ export class Patch9 extends DBPatch {
     protected async satisfied(): Promise<boolean> {
         return this.tableExists("fish")
             && this.tableExists("caught_fish")
-            && this.viewExists("fishing_leaderboard")
+            && this.viewExists("fishing_leaderboard");
     }
 
     protected async apply(): Promise<void> {
@@ -87,6 +87,6 @@ export class Patch9 extends DBPatch {
         this.connection.prepare(`DROP VIEW IF EXISTS fishing_leaderboard`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS caught_fish`).run();
         this.connection.prepare(`DROP TABLE IF EXISTS fish`).run();
-        this.dbcommit()
+        this.dbcommit();
     }
 }

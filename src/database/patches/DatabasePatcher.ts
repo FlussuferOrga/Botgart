@@ -1,6 +1,8 @@
+import { logger } from "../../util/Logging";
 import { Database } from "../Database";
-import { log } from "../../Util";
 import { DBPatch } from "./DBPatch";
+
+const LOG = logger();
 
 export class DatabasePatcher {
     private readonly database: Database;
@@ -9,35 +11,35 @@ export class DatabasePatcher {
         this.database = database;
     }
 
-    public createPatch<T extends DBPatch>(type: { new(db: Database): T ;}, db :Database): T {
+    public createPatch<T extends DBPatch>(type: { new(db: Database): T; }, db: Database): T {
         return new type(db);
     }
 
-    async applyPatch(patchName: typeof DBPatch, revert: boolean = false) {
+    async applyPatch(patchName: typeof DBPatch, revert = false) {
         let patch: DBPatch | undefined = undefined;
         try {
             patch = this.createPatch(patchName, this.database);
             if (patch) {
                 if (revert) {
-                    log("info", `Reverting patch '${patchName.name}'.`)
+                    LOG.info(`Reverting patch '${patchName.name}'.`);
                     await patch.revert();
-                    log("info", "Patch reversion done.")
+                    LOG.info("Patch reversion done.");
                 } else {
-                    log("info", `Applying patch '${patchName.name}'.`)
+                    LOG.info(`Applying patch '${patchName.name}'.`);
                     await patch.execute();
-                    log("info", "Patch application done.")
+                    LOG.info("Patch application done.");
                 }
             }
         } finally {
-            if(patch !== undefined) {
-                patch.close() // free database after applying/reverting the patch    
+            if (patch !== undefined) {
+                patch.close(); // free database after applying/reverting the patch
             }
         }
     }
 
-    async applyPatches(patches: typeof DBPatch[], revert: boolean = false) {
+    async applyPatches(patches: typeof DBPatch[], revert = false) {
         const ps = revert === true ? patches.reverse() : patches;
-        for (let p of ps) {
+        for (const p of ps) {
             await this.applyPatch(p, revert === true);
         }
     }

@@ -1,6 +1,8 @@
-import * as U from "./Util";
+import { logger as logger1 } from "./util/Logging";
 
-let EN : {[key:string]: string} = {
+const logger = logger1();
+
+let EN: { [key: string]: string } = {
     "HELPTEXT_PREFIX": "Please use the command with the following parameters:\n"
 };
 
@@ -49,7 +51,7 @@ EN = {
         "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
         "CRONJOB_DELETED": "The cronjob has been deleted.",
         "CRONJOB_NOT_DELETED": "The cronjob could not be deleted.",
-        
+
         "FAQ_STORED": "The FAQ entry has been created.",
         "FAQ_NOT_STORED": "The FAQ-entry could not be created.",
         "FAQ_DELETED": "The FAQ entry for '{0}' has been deleted.",
@@ -282,7 +284,7 @@ EN = {
 
         "ACHIEVEMENT_NAME_INFINITESTAMINA": "Infinite Stamina",
         "ACHIEVEMENT_DESC_INFINITESTAMINA": "Lead for ten hours straight.",
-        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "It's easy. Just brew your coffee with Red Bull.",        
+        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "It's easy. Just brew your coffee with Red Bull.",
 
         "FISHING_IDLE_TITLE": "Fishing",
         "FISHING_IDLE_DESCRIPTION": "Sit back and relax. But watch for your blinker! Click :fishing_pole_and_fish: once it pops up!",
@@ -297,7 +299,7 @@ EN = {
     }
 };
 
-let DE : {[key:string]: string} = {
+let DE: { [key: string]: string } = {
     "HELPTEXT_PREFIX": "Bitte benutze den Befehle mit folgenden Parametern:\n"
 };
 
@@ -346,7 +348,7 @@ DE = {
         "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
         "CRONJOB_DELETED": "Der Cronjob wurde gelöscht.",
         "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden.",
-        
+
         "FAQ_STORED": "Der FAQ-Eintrag wurde erstellt.",
         "FAQ_NOT_STORED": "Der FAQ-Eintrag konnte nicht erstellt werden.",
         "FAQ_DELETED": "Der FAQ-Eintrag für '{0}' wurde gelöscht.",
@@ -491,7 +493,7 @@ DE = {
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Frühschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens eine Stunde an.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! ",
-        
+
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
         "ACHIEVEMENT_DESC_ANNIHILATOR": "Der Server erreicht unter deiner Leitung eine gesamte KDR von 2.",
         "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
@@ -593,7 +595,7 @@ DE = {
     }
 };
 
-let DE_SWG : {[key:string]: string} = {
+let DE_SWG: { [key: string]: string } = {
     "HELPTEXT_PREFIX": "Des machsch so:\n"
 };
 
@@ -642,7 +644,7 @@ DE_SWG = {
         "CRONJOB_NOT_STORED": "Den Cronjob konnt ich net erstellen. Befehl für Cronjobs nicht möglich oder du hasch die Zeitangabe verkackt. Schausch mal auf https://crontab.guru/ .",
         "CRONJOB_DELETED": "Cronjob hats verrisse.",
         "CRONJOB_NOT_DELETED": "Den Cronjob kann i net lösche.",
-        
+
         "FAQ_STORED": "Den FAQ-Eintrag han ich erstellt.",
         "FAQ_NOT_STORED": "Den FAQ-Eintrag konntmer net erstellen.",
         "FAQ_DELETED": "Den FAQ-Eintrag für '{0}' han ich glöscht.",
@@ -787,7 +789,7 @@ DE_SWG = {
         "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
         "ACHIEVEMENT_DESC_EARLYBIRD": "Leitsch e Frühschicht. Dann musch aber dei Lamp zwische 6:00 Uhr und 10:00 Uhr anschalte und e ganze Stund mache.",
         "ACHIEVEMENT_FLAV_EARLYBIRD": "Schaffe, Schaffe, Früh Uffstande",
-        
+
         "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
         "ACHIEVEMENT_DESC_ANNIHILATOR": "Du führsch de Server zu erre KDR von 2.",
         "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit dem Blut der Badenser..",
@@ -890,24 +892,24 @@ DE_SWG = {
 class Language {
     public readonly abbreviation: string;
     public readonly flag: string;
-    public readonly strings: {[key: string]: string};
+    public readonly strings: { [key: string]: string };
 
-    public constructor(abbreviation: string, flag: string, strings: {[key: string]: string}) {
+    public constructor(abbreviation: string, flag: string, strings: { [key: string]: string }) {
         this.abbreviation = abbreviation;
         this.flag = flag;
-        this.strings = strings
+        this.strings = strings;
     }
 
-    public get(key: string, args: string[] = [], options: {[option: string]: boolean} = {}): string {
+    public get(key: string, args: string[] = [], options: { [option: string]: boolean } = {}): string {
         let str: string = key in this.strings ? this.strings[key].formatUnicorn(args) : key;
-        if("italic" in options && options["italic"] === true) {
+        if ("italic" in options && options["italic"] === true) {
             str = `_${str}_`;
         }
-        if("bold" in options && options["bold"] === true) {
+        if ("bold" in options && options["bold"] === true) {
             str = `**${str}**`;
         }
         // checking flags must be the final addition!
-        if("flags" in options && options["flags"] === true) {
+        if ("flags" in options && options["flags"] === true) {
             str = `${this.flag} ${str}`;
         }
         return str;
@@ -921,35 +923,36 @@ export const swabian = new Language("DE_SWG", "<:flag_de_swg:826915488658751519>
 export const availableLanguages = [german, english, swabian];
 const currentLanguages: Language[] = [];
 
+
 /**
-* Sets the used locale to the passed languages. Unknown languages will be skipped. 
-* 
-* @param abbreviations - a list of abbreviations for the languages to use. E.g. ["DE", "EN"] uses German and English (in that order). 
-*                        Available abbreviations can be retrieved from the exported constant availableLanguages.
-*/
+ * Sets the used locale to the passed languages. Unknown languages will be skipped.
+ *
+ * @param abbreviations - a list of abbreviations for the languages to use. E.g. ["DE", "EN"] uses German and English (in that order).
+ *                        Available abbreviations can be retrieved from the exported constant availableLanguages.
+ */
 export function setLanguages(abbreviations: string[]) {
     currentLanguages.length = 0; // wouldn't you know it, this is actually the way to empty an array in JS...
-    for(const abbreviation of abbreviations) {
+    for (const abbreviation of abbreviations) {
         const language = availableLanguages.find(l => l.abbreviation === abbreviation);
-        if(language === undefined) {
-            U.logger.warn(`Skipping unknown language ${language}`);
+        if (language === undefined) {
+            logger.warn(`Skipping unknown language ${language}`);
         } else {
             currentLanguages.push(language);
         }
     }
-    U.logger.info(`Locales are now set to ${currentLanguages.map(l => l.abbreviation)}.`);
+    logger.info(`Locales are now set to ${currentLanguages.map(l => l.abbreviation)}.`);
 }
 
 /**
-* Tries to resolve the passed key into a locale string. 
-* 
-* @param key - the key to get the locale string for
-* @param args - optional, the arguments that are to be formatted into the resolved string
-* @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders. 
-*          If no locale string could be found, the key is returned instead.
-*/
-export function get(key: string, args?: string[], separator: string = "\n\n", flags = true, options: {[option: string]: boolean} = {}): string {
+ * Tries to resolve the passed key into a locale string.
+ *
+ * @param key - the key to get the locale string for
+ * @param args - optional, the arguments that are to be formatted into the resolved string
+ * @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders.
+ *          If no locale string could be found, the key is returned instead.
+ */
+export function get(key: string, args?: string[], separator = "\n\n", flags = true, options: { [option: string]: boolean } = {}): string {
     options.flags = flags; // flags was a separate parameter for historical reasons. Monkey-patching this into a proper option-dictionary now~
     return currentLanguages.map(l => l.get(key, args, options)).join(separator);
-};
+}
 

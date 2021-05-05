@@ -10,7 +10,9 @@
     "run": "npm run build && node ./built/index.js",
     "run-debug": "npm run build && node --trace-warnings ./built/index.js",
     "run-patchall": "npm run build && node ./built/index.js --patchall",
-    "outdated": "npm outdated"
+    "outdated": "npm outdated",
+    "lint": "eslint . --ext .ts",
+    "lint-fix": "eslint . --ext .ts --fix"
   },
   "author": "Daniel O'Grady",
   "license": "ISC",
@@ -59,9 +61,12 @@
     "@types/nodemon": "^1.19.0",
     "@types/source-map-support": "^0.5.3",
     "@types/string-similarity": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
     "chai": "^4.3.4",
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
+    "eslint": "^7.25.0",
     "mocha": "^8.3.2",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",

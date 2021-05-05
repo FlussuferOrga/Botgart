@@ -2,8 +2,8 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds the discord_log_channels table.
-*/
+ * Adds the discord_log_channels table.
+ */
 export class Patch5 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -22,7 +22,7 @@ export class Patch5 extends DBPatch {
               type TEXT NOT NULL,
               channel TEXT NOT NULL
             )`).run();
-      }
+    }
 
     public async revert(): Promise<void> {
         this.dbbegin();

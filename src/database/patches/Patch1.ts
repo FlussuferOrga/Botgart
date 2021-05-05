@@ -2,9 +2,9 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds registration_role column to registrations table
-* and uses 'Flussufer' as default value for all entries.
-*/
+ * Adds registration_role column to registrations table
+ * and uses 'Flussufer' as default value for all entries.
+ */
 export class Patch1 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -14,7 +14,9 @@ export class Patch1 extends DBPatch {
         return this.columnExists("registrations", "registration_role");
     }
 
-    protected async checkPreconditions(): Promise<boolean> { return this.tableExists("registrations"); }
+    protected async checkPreconditions(): Promise<boolean> {
+        return this.tableExists("registrations");
+    }
 
     protected async apply(): Promise<void> {
         this.dbbegin();

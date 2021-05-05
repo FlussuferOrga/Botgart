@@ -1,22 +1,38 @@
 # This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+name: CI
 
-name: Node.js CI
-
-on: [push, pull_request]
+on: [ push, pull_request ]
 jobs:
-  build:
+  pre_job:
+    runs-on: ubuntu-latest
+    # Map a step output to a job output
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - name: Skip Duplicate Actions
+        id: skip_check
+        uses: fkirc/skip-duplicate-actions@v3.4.0
+        with:
+          github_token: ${{ github.token }}
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
+          concurrent_skipping: same_content
+  ci:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        node-version: [14.x] #15.x not yet supported
+        node-version: [ 14.x ] #15.x not yet supported
     steps:
       - uses: actions/checkout@v2
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: Cache node modules
         uses: actions/cache@v2.1.5
         env:
@@ -24,12 +40,23 @@ jobs:
         with:
           path: ./node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
-      - run: npm install
+
+      - name: "Install"
+        run: npm install
         env:
           CI: true
-      - run: npm run build
+
+      - name: "Build"
+        run: npm run build
         env:
           CI: true
-      - run: npm test
+
+      - name: "Test"
+        run: npm run test
+        env:
+          CI: true
+
+      - name: "Lint"
+        run: npm run lint
         env:
           CI: true

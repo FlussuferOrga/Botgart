@@ -1,0 +1,71 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-empty-function": [
+      "warn",
+      {
+        "allow": [
+          "arrowFunctions",
+          // sometimes () => {} is more descriptive than passing undefined
+          "methods",
+          // sometimes you want to provide a default behaviour (nothing) in a base class
+          "asyncMethods"
+          // same as above
+        ]
+      }
+    ],
+    "yoda": "error",
+    "lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
+    ],
+    "no-console": "error",
+    "no-unreachable-loop": "error",
+    "no-alert": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-extend-native": "warn",
+    "no-extra-bind": "warn",
+    "no-extra-label": "warn",
+    "no-eq-null": "warn",
+    "no-floating-decimal": "error",
+    "no-invalid-this": "error",
+    "no-iterator": "error",
+    "no-lone-blocks": "warn",
+    "no-multi-spaces": "error",
+    "no-new": "error",
+    "no-new-func": "error",
+    "no-new-wrappers": "error",
+    "no-nonoctal-decimal-escape": "error",
+    "no-param-reassign": "warn",
+    "no-proto": "error",
+    "no-return-await": "warn",
+    "no-self-compare": "error",
+    "no-throw-literal": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-unused-expressions": "warn",
+    "no-useless-call": "warn",
+    "no-useless-concat": "warn",
+    "no-useless-return": "error",
+    "no-void": "warn",
+    "no-warning-comments": "warn",
+    "prefer-promise-reject-errors": "warn",
+    "prefer-regex-literals": "warn",
+    "no-trailing-spaces": "warn"
+  }
+}

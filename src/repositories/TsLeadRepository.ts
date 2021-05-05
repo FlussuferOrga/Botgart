@@ -1,9 +1,9 @@
 import * as moment from "moment";
-import * as Util from "../Util";
+import * as Util from "../util/Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 import { Registration } from "./RegistrationRepository";
 
-export class TsLeadRepository extends AbstractDbRepository{
+export class TsLeadRepository extends AbstractDbRepository {
     /**
      * Adds the duration of a TS lead to the database.
      * gw2account: player to add the lead to.
@@ -32,7 +32,7 @@ export class TsLeadRepository extends AbstractDbRepository{
                 ts_leads
             WHERE 
                 gw2account = ?
-        `).get(gw2account).total)
+        `).get(gw2account).total);
     }
 
     /**
@@ -52,11 +52,11 @@ export class TsLeadRepository extends AbstractDbRepository{
                 ts_lead_id DESC 
             LIMIT 
                 1
-        `).get(gw2account).duration)
+        `).get(gw2account).duration);
     }
 
     public getCommandersDuring(start: moment.Moment, end: moment.Moment): Lead[] {
-        return this.execute(db =>db.prepare(`
+        return this.execute(db => db.prepare(`
                     SELECT
                         r.id, 
                         r.user,

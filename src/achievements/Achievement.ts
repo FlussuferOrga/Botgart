@@ -6,7 +6,8 @@ import * as gw2api from "../emitters/APIEmitter";
 import * as L from "../Locale";
 import { Matchup } from "../repositories/MatchupRepository";
 import * as ts3 from "../TS3Connection";
-import * as U from "../Util";
+import { logger } from "../util/Logging";
+import * as U from "../util/Util";
 
 export enum AchievementAwardResult {
     AWARDED_FIRST_TIME,
@@ -15,6 +16,8 @@ export enum AchievementAwardResult {
     USER_NOT_FOUND,
     HIDDEN // users hides achievements
 }
+
+const LOG = logger();
 
 /**
  * Abstract achievement class.
@@ -49,7 +52,7 @@ export abstract class Achievement<C> {
         return this.roleName;
     }
 
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string = "BLUE", repeatable: boolean = false, announceRepetitions: boolean = false) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour = "BLUE", repeatable = false, announceRepetitions = false) {
         this.client = client;
         this.name = this.constructor.name;
         this.imageURL = imageURL;
@@ -57,6 +60,10 @@ export abstract class Achievement<C> {
         this.roleColour = roleColour;
         this.repeatable = repeatable;
         this.announceRepetitions = announceRepetitions;
+
+        if (getConfig().get().achievements.enabled) {
+            this.registerListeners();
+        }
     }
 
     /**
@@ -72,13 +79,11 @@ export abstract class Achievement<C> {
      *          and [1] whether this achievement was awarded for the first time, which will be relevant to determine whether to post something to Discord.
      */
     award(gw2account: string, by?: string, timestamp?: moment.Moment): [number, boolean] {
-        timestamp = timestamp || moment.utc();
-        by = by ?? "";
         const repo = this.client.achievementRepository;
         const has: boolean = repo.checkAchievement(this.name, gw2account).length > 0;
-        let rowId: number = -1;
+        let rowId = -1;
         if (this.repeatable || !has) {
-            rowId = repo.awardAchievement(this.name, gw2account, by, timestamp);
+            rowId = repo.awardAchievement(this.name, gw2account, by ?? "", timestamp || moment.utc());
         }
         return [rowId, !has];
     }
@@ -95,7 +100,7 @@ export abstract class Achievement<C> {
 
         const userdata = this.client.registrationRepository.getUserByDiscordId(discordUser.user);
         if (userdata === undefined) {
-            U.log("warning", `Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
+            LOG.warn(`Tried to award achievement '${this.name}' to player ${discordUser.displayName}, but could not find a linked gw2account.`);
             result = AchievementAwardResult.USER_NOT_FOUND;
         } else {
             const gw2account: string = userdata.gw2account;
@@ -120,16 +125,16 @@ export abstract class Achievement<C> {
 
                         }
                     } else {
-                        U.log("warning", `Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+                        LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
                     }
 
-                    const role = this.getRole(guild)
+                    const role = this.getRole(guild);
                     if (role !== undefined) {
                         discordUser.roles.add(role);
                     } else {
                         this.createRole(guild)
                             .then(r => discordUser.roles.add(r))
-                            .catch(e => U.log("error", `Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
+                            .catch(e => LOG.error(`Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
                     }
                 }
             }
@@ -145,16 +150,20 @@ export abstract class Achievement<C> {
      * Checks, if the user is elligble for the achievement.
      * If so, they will be awarded, if not, nothing happens.
      */
-    tryAward(discordUser: discord.GuildMember, context: C) {
-        if (getConfig().get().achievements.enabled) {
-            U.log("debug", `Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`)
+    async tryAward(discordUser: discord.GuildMember, context: C) {
+        LOG.debug(`Checking condition for achievement ${this.name} for player ${discordUser.displayName}...`);
+        const profiler = LOG.startTimer();
+        try {
             if (this.checkCondition(discordUser, context)) {
-                U.log("debug", `Success! Awarding achievement to user.`);
+                LOG.debug(`Success! Awarding achievement to user.`);
                 this.awardIn(discordUser.guild, discordUser);
             } else {
-                U.log("debug", `User did not pass condition.`)
+                LOG.debug(`User did not pass condition.`);
             }
+        } finally {
+            profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`});
         }
+
     }
 
     createEmbed(discordUser: discord.GuildMember, dbId: number) {
@@ -179,7 +188,7 @@ export abstract class Achievement<C> {
      */
     giveRole(discordUser: discord.GuildMember): boolean {
         let given = false;
-        const role = this.getRole(discordUser.guild)
+        const role = this.getRole(discordUser.guild);
         if (role) {
             discordUser.roles.add(role);
             given = true;
@@ -208,17 +217,22 @@ export abstract class Achievement<C> {
     }
 
     abstract checkCondition(discordUser: discord.GuildMember, context: C): boolean;
+
+    protected registerListeners() {
+    }
 }
 
 export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
 
-        client.ts3listener.on("tagup", (x: ts3.TagUpEvent) => {
+    protected registerListeners() {
+        this.client.ts3listener.on("tagup", async (x: ts3.TagUpEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
-                U.log("warning", `Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
+                LOG.warn(`Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
             }
         });
     }
@@ -227,12 +241,14 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
 export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
 
-        client.ts3listener.on("tagdown", (x: ts3.TagDownEvent) => {
+    protected registerListeners() {
+        this.client.ts3listener.on("tagdown", async (x: ts3.TagDownEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
             } else {
-                U.log("warning", `Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
+                LOG.warn(`Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
             }
         });
     }
@@ -241,16 +257,18 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
 export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander, "objectives": gw2api.WvWMatches }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
 
-        client.gw2apiemitter.on("wvw-matches",
+    protected registerListeners() {
+        this.client.gw2apiemitter.on("wvw-matches",
             async (prom) => {
                 const objs = await prom;
-                this.client
+                await Promise.all(this.client
                     .commanders
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
-                    .map(c => this.tryAward(<discord.GuildMember>c.getDiscordMember(),
-                        {"commander": c, "objectives": objs}))
+                    .map(async c => this.tryAward(<discord.GuildMember>c.getDiscordMember(),
+                        {"commander": c, "objectives": objs})));
             });
     }
 }
@@ -258,20 +276,24 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
 export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup, newMatchup: Matchup }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
+    }
+
+    protected registerListeners() {
+        const client = this.client;
         client.wvwWatcher.on("new-matchup",
             mu => {
                 if (mu.lastMatchup === undefined) return; // ignore for very first matchup that is stored
                 Promise.all(
-                    this.client.tsLeadRepository
+                    client.tsLeadRepository
                         .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
                             , U.sqliteTimestampToMoment(mu.lastMatchup.end))
                         .map(async r => {
                             const guild: discord.Guild | undefined = client.guilds.cache.get(r.guild);
-                            return guild !== undefined ? await guild.members.fetch(r.user) : undefined // .cache.get(r.user) : undefined;
+                            return guild !== undefined ? guild.members.fetch(r.user) : undefined; // .cache.get(r.user) : undefined;
                         })
                 ).then(gm =>
                     gm.filter(c => c !== undefined)
-                        .map((c: discord.GuildMember) => this.tryAward(c, mu))
+                        .map(async (c: discord.GuildMember) => this.tryAward(c, mu))
                 );
             });
     }

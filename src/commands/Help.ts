@@ -28,7 +28,7 @@ export class Help extends BotgartCommand {
         );
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: any): Promise<void> {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         // if this command is issued on a server, only the commands the user can execute
         // are listed.
         // Issuing this command through DMs give the full list. This is not a security issue,

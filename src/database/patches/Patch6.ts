@@ -2,8 +2,8 @@ import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
 
 /**
-* Adds the tables for reset lead rostering
-*/
+ * Adds the tables for reset lead rostering
+ */
 export class Patch6 extends DBPatch {
     constructor(db: Database) {
         super(db);
@@ -34,7 +34,7 @@ export class Patch6 extends DBPatch {
                 ON UPDATE CASCADE
                 ON DELETE CASCADE
             )`).run();
-      }
+    }
 
     public async revert(): Promise<void> {
         this.dbbegin();

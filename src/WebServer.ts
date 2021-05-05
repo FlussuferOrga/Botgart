@@ -1,12 +1,14 @@
 import express, { Express } from "express";
 import * as http from "http";
 import { getConfig } from "./config/Config";
-import { log } from "./Util";
+import { logger } from "./util/Logging";
 
 // Create a new express app instance
 
+const LOG = logger();
+
 export class WebServer {
-    private app: Express
+    private app: Express;
     private server: http.Server;
 
     constructor() {
@@ -21,9 +23,9 @@ export class WebServer {
     }
 
     public start() {
-        let httpConfig = getConfig().get().http;
+        const httpConfig = getConfig().get().http;
         this.server = this.app.listen(parseInt(httpConfig.port), httpConfig.host, function () {
-            log("info", `Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
+            LOG.info(`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
         });
     }
 
