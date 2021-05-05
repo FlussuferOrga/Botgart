@@ -3,10 +3,10 @@ import { DBPatch } from "./DBPatch";
 
 /**
  * Manual Patch Order. Tried implementing it but was not working via sqlite libary.
- * Use https://sqlitestudio.pl/ to change columns to strftime('%Y-%m-%dT%H:%M:%SZ', 'now')
+ * Use https://sqlitestudio.pl/ to change columns to strftime('%Y-%m-%dT%H:%M:%SZ','now')
  */
 export class Patch12 extends DBPatch {
-    private static COLUMN_DEFAULT = 'strftime(\'%Y-%m-%dT%H:%M:%SZ\', \'now\')';
+    private static COLUMN_DEFAULT = 'strftime(\'%Y-%m-%dT%H:%M:%SZ\',\'now\')';
     private static TABLE_COLUMNS = [
         ['command_permissions', 'timestamp'],
         ['cronjobs', 'created'],
