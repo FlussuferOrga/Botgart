@@ -92,7 +92,7 @@ export class Patch8 extends DBPatch {
             achievement_name TEXT NOT NULL,
             gw2account TEXT NOT NULL,
             awarded_by TEXT,
-            timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
+            timestamp TIMESTAMP DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
           )`).run();
 
         this.connection.prepare(`
@@ -133,14 +133,14 @@ export class Patch8 extends DBPatch {
         this.connection.prepare(`
             CREATE TABLE objectives_snapshots(
               objectives_snapshot_id INTEGER PRIMARY KEY,
-              timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
+              timestamp TIMESTAMP DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
             )
             `).run();
 
         this.connection.prepare(`
             CREATE TABLE stats_snapshots(
               stats_snapshot_id INTEGER PRIMARY KEY,
-              timestamp TIMESTAMP DEFAULT (datetime('now','localtime'))
+              timestamp TIMESTAMP DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now'))
             )
             `).run();
 

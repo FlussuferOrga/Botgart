@@ -7,7 +7,7 @@ export type FactionColour = "Red" | "Blue" | "Green";
 export class MatchupRepository extends AbstractDbRepository {
     public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
         return this.execute(db =>
-            db.prepare("SELECT matchup_id, tier, start, end FROM matchups WHERE datetime(?, 'localtime') BETWEEN start AND end").get(Util.momentToLocalSqliteTimestamp(now)));
+            db.prepare("SELECT matchup_id, tier, start, end FROM matchups WHERE ? BETWEEN start AND end").get(Util.momentToIsoString(now)));
     }
 
     public getLatestMatchup(): Matchup | undefined {
@@ -20,14 +20,12 @@ export class MatchupRepository extends AbstractDbRepository {
 
     public addMatchup(tier: number, start: moment.Moment, end: moment.Moment, reds: number[], greens: number[], blues: number[]) {
         return this.execute(db => {
-            const existingMatch = db.prepare("SELECT matchup_id AS id FROM matchups WHERE start = datetime(?, 'localtime')")
-                .get(Util.momentToLocalSqliteTimestamp(start));
+            const existingMatch = db.prepare("SELECT matchup_id AS id FROM matchups WHERE start = ?")
+                .get(Util.momentToIsoString(start));
             let matchId: number = existingMatch ? existingMatch.id : undefined;
             if (matchId === undefined) {
-                db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
-                    .run(tier,
-                        Util.momentToLocalSqliteTimestamp(start),
-                        Util.momentToLocalSqliteTimestamp(end));
+                db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, ?, ?)")
+                    .run(tier, Util.momentToIsoString(start), Util.momentToIsoString(end));
                 matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
                 for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
                     for (const worldId of worlds) {
@@ -49,10 +47,10 @@ export class MatchupRepository extends AbstractDbRepository {
                     FROM matchup_factions AS mf
                              JOIN matchups AS m
                                   ON mf.matchup_id = m.matchup_id
-                    WHERE datetime(?, 'localtime') BETWEEN m.start AND m.end
+                    WHERE ? BETWEEN m.start AND m.end
                       AND mf.world_id = ?
 
-            `).get(Util.momentToLocalSqliteTimestamp(now), serverId)
+            `).get(Util.momentToIsoString(now), serverId)
         );
         return row ? row.colour : undefined;
     }
@@ -64,7 +62,7 @@ export class MatchupRepository extends AbstractDbRepository {
 
             FROM captured_objectives AS co
                      JOIN ts_leads AS tl
-                          ON datetime(new_last_flipped, 'localtime') BETWEEN datetime(tl.start, 'localtime') AND datetime(tl.end, 'localtime')
+                          ON new_last_flipped BETWEEN tl.start AND tl.end
                      JOIN matchup_factions AS mf
                           ON co.matchup_id = mf.matchup_id
                               AND co.new_owner = mf.colour
@@ -82,17 +80,17 @@ export class MatchupRepository extends AbstractDbRepository {
             FROM captured_objectives
             WHERE objective_id = ?
               AND new_owner = ?
-              AND datetime(new_last_flipped, 'localtime') BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
+              AND new_last_flipped BETWEEN ? AND ?
             LIMIT 1
-        `).get(objectiveId, colour, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))) !== undefined;
+        `).get(objectiveId, colour, Util.momentToIsoString(start), Util.momentToIsoString(end))) !== undefined;
     }
 
     public capturedBetween(start: moment.Moment, end: moment.Moment): Capture[] {
         return this.execute(db => db.prepare(`
             SELECT *
             FROM captured_objectives
-            WHERE new_last_flipped BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime')
-        `).all(Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end)));
+            WHERE new_last_flipped BETWEEN ? AND ?
+        `).all(Util.momentToIsoString(start), Util.momentToIsoString(end)));
     }
 
     public addStatsSnapshot(): number {
@@ -125,7 +123,7 @@ export class MatchupRepository extends AbstractDbRepository {
      * @returns a FactionColour, if it can be determined, or undefined
      */
     public getColourOf(worldId: number, now: moment.Moment | undefined = undefined): FactionColour | undefined {
-        const timestamp: moment.Moment = now ?? moment.utc().local();
+        const timestamp: moment.Moment = now ?? moment.utc();
         const res = this.execute(db => db.prepare(`
             SELECT mf.colour
             FROM matchup_factions AS mf
@@ -134,7 +132,7 @@ export class MatchupRepository extends AbstractDbRepository {
             WHERE mf.world_id = ?
               AND ? BETWEEN m.start AND m.end
 
-        `).get(worldId, Util.momentToLocalSqliteTimestamp(timestamp)));
+        `).get(worldId, Util.momentToIsoString(timestamp)));
         return res !== undefined ? res.colour : undefined;
     }
 
@@ -163,18 +161,18 @@ export class MatchupRepository extends AbstractDbRepository {
     }[] {
         let timestamp: moment.Moment | undefined;
         if (!now) {
-            timestamp = moment.utc().local();
+            timestamp = moment.utc();
         } else {
             timestamp = now;
         }
-        const ts = Util.momentToLocalSqliteTimestamp(timestamp);
+        const ts = Util.momentToIsoString(timestamp);
 
         return this.execute(db => db.prepare(`
             WITH surrounding AS (
                 SELECT *
                 FROM (SELECT *
                       FROM objectives_snapshots
-                      WHERE datetime(?, 'localtime') >= timestamp
+                      WHERE ? >= timestamp
                       ORDER BY timestamp DESC
                       LIMIT 1
                      ) before
@@ -182,7 +180,7 @@ export class MatchupRepository extends AbstractDbRepository {
                 SELECT *
                 FROM (SELECT *
                       FROM objectives_snapshots
-                      WHERE datetime(?, 'localtime') < timestamp
+                      WHERE ? < timestamp
                       ORDER BY timestamp ASC
                       LIMIT 1
                      ) after
@@ -235,17 +233,17 @@ export class MatchupRepository extends AbstractDbRepository {
     }[] {
         let timestamp: moment.Moment | undefined;
         if (!now) {
-            timestamp = moment.utc().local();
+            timestamp = moment.utc();
         } else {
             timestamp = now;
         }
-        const ts = Util.momentToLocalSqliteTimestamp(timestamp);
+        const ts = Util.momentToIsoString(timestamp);
         return this.execute(db => db.prepare(`
             WITH surrounding AS (
                 SELECT *
                 FROM (SELECT *
                       FROM stats_snapshots
-                      WHERE datetime(?, 'localtime') >= timestamp
+                      WHERE ? >= timestamp
                       ORDER BY timestamp DESC
                       LIMIT 1
                      ) before
@@ -253,7 +251,7 @@ export class MatchupRepository extends AbstractDbRepository {
                 SELECT *
                 FROM (SELECT *
                       FROM stats_snapshots
-                      WHERE datetime(?, 'localtime') < timestamp
+                      WHERE ? < timestamp
                       ORDER BY timestamp ASC
                       LIMIT 1
                      ) after

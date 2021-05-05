@@ -284,9 +284,8 @@ export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: M
             mu => {
                 if (mu.lastMatchup === undefined) return; // ignore for very first matchup that is stored
                 Promise.all(
-                    client.tsLeadRepository
-                        .getCommandersDuring(U.sqliteTimestampToMoment(mu.lastMatchup.start)
-                            , U.sqliteTimestampToMoment(mu.lastMatchup.end))
+                    client.tsLeadRepository.getCommandersDuring(U.isoStringToMoment(mu.lastMatchup.start)
+                            , U.isoStringToMoment(mu.lastMatchup.end))
                         .map(async r => {
                             const guild: discord.Guild | undefined = client.guilds.cache.get(r.guild);
                             return guild !== undefined ? guild.members.fetch(r.user) : undefined; // .cache.get(r.user) : undefined;

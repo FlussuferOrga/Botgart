@@ -41,7 +41,7 @@ export class Patch9 extends DBPatch {
                 fish_id INTEGER,
                 weight INTEGER,
                 user TEXT NOT NULL,
-                timestamp TIMESTAMP NOT NULL DEFAULT (datetime('now','localtime')),
+                timestamp TIMESTAMP NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
                 FOREIGN KEY(fish_id) REFERENCES fish(fish_id)
                 ON DELETE CASCADE
             )

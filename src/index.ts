@@ -8,34 +8,23 @@ import { DatabasePatcher } from "./database/patches/DatabasePatcher";
 import { DBPatch } from "./database/patches/DBPatch";
 import { allPatches, getPatch } from "./database/patches/PatchRegistry";
 import * as L from "./Locale";
-import { logger } from "./util/Logging";
+import { logger, registerUnhandledRejection } from "./util/Logging";
 import "./util/string.extensions";
 import { WebServer } from "./WebServer";
 
+const LOG = logger();
+registerUnhandledRejection();
+
 // bit weird but works only this way...
 const args = CommandLineArgs.default([
-    {name: "verbose", alias: "v", type: Boolean},
     {name: "patch", type: String, multiple: true},
     {name: "patchall", type: Boolean},
-    {name: "revert", type: Boolean}
+    {name: "revert", type: Boolean},
 ]);
 
-const LOG = logger();
+const config = getConfig();
 
-process.on("unhandledRejection", (reason, p) => {
-    LOG.error(`Unhandled Rejection!`);
-    // JSON.stringify does not handle errors and especially not Promises:
-    // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
-    // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
-    /* eslint-disable no-console */
-    console.error("Promise", p);
-    console.error("Reason", reason);
-    /* eslint-enable no-console */
-});
-
-// this is an in-order list of all patches
-
-const database = Database.getInstance("./db/database.db");
+const database = Database.getInstance(config.get("db_location"));
 
 if (args.patchall || args.patch) {
     const patcher = new DatabasePatcher(database);
@@ -53,8 +42,6 @@ if (args.patchall || args.patch) {
         }
     }
 } else {
-    const config = getConfig();
-
     LOG.info("Starting Botgart...");
 
     const intents = new Intents(Intents.NON_PRIVILEGED); // default intents

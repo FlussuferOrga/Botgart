@@ -2,6 +2,7 @@ import chai, { assert, expect } from "chai";
 import chaiDateTime from "chai-datetime";
 import moment from "moment";
 import * as U from "../util/Util";
+import "../util/string.extensions";
 
 chai.use(chaiDateTime);
 
@@ -12,16 +13,29 @@ describe("Util - Date", function () {
             new Date(Date.UTC(2019, 1, 1)))));
 
     it("convert twice", () => {
-        const orig = "2019-12-12 00:00:00";
-        const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
-        return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
+        const orig = "2019-12-12T00:00:00.000+05:00";
+        const mom: moment.Moment = U.isoStringToMoment(orig);
+        return assert.equal(U.momentToIsoString(mom), orig);
     });
 
     it("convert twice with time", () => {
-        const orig = "2019-12-12 12:15:51";
-        const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
-        return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
+        const orig = "2019-12-12T12:15:51.000+03:00";
+        const mom: moment.Moment = U.isoStringToMoment(orig);
+        return assert.equal(U.momentToIsoString(mom), orig);
     });
+
+    it("convert time excpects utc if unknown", () => {
+        const orig = "2019-12-12T12:15:51.000";
+        const mom: moment.Moment = U.isoStringToMoment(orig);
+        return assert.equal(U.momentToIsoString(mom), "2019-12-12T12:15:51.000+00:00");
+    });
+
+    it("convert with Z", () => {
+        const orig = "2019-12-12T12:15:51Z";
+        const mom: moment.Moment = U.isoStringToMoment(orig);
+        return assert.equal(U.momentToIsoString(mom), "2019-12-12T12:15:51.000+00:00");
+    });
+
 
     //it("reset date2", function() {
     //  expect(false).equal(false);

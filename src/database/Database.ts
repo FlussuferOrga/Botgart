@@ -6,8 +6,7 @@ const LOG = logger();
 export class Database {
     public static getInstance(databaseFilePath) {
         const database = new Database(databaseFilePath);
-        database.initSchema();
-        LOG.info("Database initialised.");
+        LOG.info(`Database: "${databaseFilePath}".`);
         return database;
     }
 
@@ -17,69 +16,13 @@ export class Database {
         this.file = file;
     }
 
-    // NOTE: https://github.com/orlandov/node-sqlite/issues/17
-    // sqlite3 and node don't work well together in terms of large integers.
-    // Therefore, all big numbers are stored as strings.
-    // As a consequence, === can't be used, when checking them.
-    /**
-     * Initial schema. All patches should be applied after
-     * creating the init.
-     */
-    public initSchema(): void {
-        const sqls = [
-            `CREATE TABLE IF NOT EXISTS registrations
-             (
-                 id                INTEGER PRIMARY KEY AUTOINCREMENT,
-                 user              TEXT NOT NULL,
-                 guild             TEXT NOT NULL,
-                 api_key           TEXT NOT NULL,
-                 gw2account        TEXT NOT NULL,
-                 registration_role TEXT,
-                 created           TIMESTAMP DEFAULT (datetime('now', 'localtime')),
-                 UNIQUE (user, guild) ON CONFLICT REPLACE,
-                 UNIQUE (guild, api_key)
-             )`, // no ON CONFLICT for second unique, that's an actual error
-            `CREATE TABLE IF NOT EXISTS cronjobs
-             (
-                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                 schedule   TEXT NOT NULL,
-                 command    TEXT NOT NULL,
-                 arguments  TEXT,
-                 created_by TEXT NOT NULL,
-                 guild      TEXT NOT NULL,
-                 created    TIMESTAMP DEFAULT (datetime('now', 'localtime'))
-             )`,
-            `CREATE TABLE IF NOT EXISTS faqs
-             (
-                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                 text       TEXT,
-                 created_by TEXT NOT NULL,
-                 guild      TEXT NOT NULL,
-                 created    TIMESTAMP DEFAULT (datetime('now', 'localtime'))
-             )`,
-            `CREATE TABLE IF NOT EXISTS faq_keys
-             (
-                 id         INTEGER PRIMARY KEY AUTOINCREMENT,
-                 key        TEXT NOT NULL,
-                 faq_id     INTEGER,
-                 created_by TEXT NOT NULL,
-                 guild      TEXT NOT NULL,
-                 created    TIMESTAMP DEFAULT (datetime('now', 'localtime')),
-                 UNIQUE (key) ON CONFLICT REPLACE,
-                 FOREIGN KEY (faq_id) REFERENCES faqs (id)
-                     ON UPDATE CASCADE
-                     ON DELETE CASCADE
-             )`,
-            `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)`
-        ];
-        sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
-    }
-
-    private openConnection(state: string[]): sqlite.Database {
+    public openConnection(state: string[] | null): sqlite.Database {
         const options = {
             verbose: (message, additionalArgs) => {
-                state.push(message);
-                // LOG.debug("Sqlite Query:\n" + message, additionalArgs)
+                if (state !== null) {
+                    state.push(message);
+                }
+                LOG.debug(`Sqlite Query: ${message}`,additionalArgs);
             }
         };
         const db = sqlite(this.file, options);
@@ -119,8 +62,8 @@ export class Database {
 
     private static closeConnection(db: sqlite.Database) {
         //optimize https://www.sqlite.org/lang_analyze.html
-        db.pragma("analysis_limit=400")
-        db.pragma("optimize")
+        db.pragma("analysis_limit=400");
+        db.pragma("optimize");
 
         db.close();
     }

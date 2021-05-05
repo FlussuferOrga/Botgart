@@ -12,11 +12,8 @@ export class TsLeadRepository extends AbstractDbRepository {
      * tsChannel: channel in which they did their lead.
      */
     public addLead(gw2account: string, start: moment.Moment, end: moment.Moment, tsChannel: string): void {
-        return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
-            .run(gw2account,
-                tsChannel,
-                Util.momentToLocalSqliteTimestamp(start),
-                Util.momentToLocalSqliteTimestamp(end)));
+        return this.execute(db => db.prepare("INSERT INTO ts_leads(gw2account, ts_channel, start, end) VALUES(?, ?, ?,?)")
+            .run(gw2account, tsChannel, Util.momentToIsoString(start), Util.momentToIsoString(end)));
     }
 
     /**
@@ -26,12 +23,9 @@ export class TsLeadRepository extends AbstractDbRepository {
      */
     public getTotalLeadTime(gw2account: string): number {
         return this.execute(db => db.prepare(`
-            SELECT 
-                COALESCE(SUM(strftime('%s',end) - strftime('%s',start)), 0) AS total
-            FROM 
-                ts_leads
-            WHERE 
-                gw2account = ?
+            SELECT COALESCE(SUM(strftime('%s', end) - strftime('%s', start)), 0) AS total
+            FROM ts_leads
+            WHERE gw2account = ?
         `).get(gw2account).total);
     }
 
@@ -42,40 +36,31 @@ export class TsLeadRepository extends AbstractDbRepository {
      */
     public getLastLeadDuration(gw2account: string): number {
         return this.execute(db => db.prepare(`
-            SELECT 
-                COALESCE(strftime('%s',end) - strftime('%s',start), 0) AS duration 
-            FROM 
-                ts_leads 
-            WHERE 
-                gw2account = ?
-            ORDER BY 
-                ts_lead_id DESC 
-            LIMIT 
-                1
+            SELECT COALESCE(strftime('%s', end) - strftime('%s', start), 0) AS duration
+            FROM ts_leads
+            WHERE gw2account = ?
+            ORDER BY ts_lead_id DESC
+            LIMIT 1
         `).get(gw2account).duration);
     }
 
     public getCommandersDuring(start: moment.Moment, end: moment.Moment): Lead[] {
         return this.execute(db => db.prepare(`
-                    SELECT
-                        r.id, 
-                        r.user,
-                        r.guild,
-                        r.api_key,
-                        r.gw2account,
-                        r.registration_role,
-                        r.account_name,
-                        r.created,
-                        tl.ts_channel,
-                        tl.start,
-                        tl.end
-                    FROM
-                        ts_leads AS tl
-                        JOIN registrations AS r 
-                          ON tl.gw2account = r.gw2account
-                    WHERE
-                        tl.start BETWEEN datetime(?, 'localtime') AND datetime(?, 'localtime') `)
-            .all(Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end)));
+            SELECT r.id,
+                   r.user,
+                   r.guild,
+                   r.api_key,
+                   r.gw2account,
+                   r.registration_role,
+                   r.account_name,
+                   r.created,
+                   tl.ts_channel,
+                   tl.start,
+                   tl.end
+            FROM ts_leads AS tl
+                     JOIN registrations AS r ON tl.gw2account = r.gw2account
+            WHERE tl.start BETWEEN ? AND ?
+        `).all(Util.momentToIsoString(start), Util.momentToIsoString(end)));
     }
 }
 

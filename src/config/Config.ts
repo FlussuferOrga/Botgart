@@ -9,6 +9,13 @@ import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 const LOG = logger();
 
 const configSchema = {
+    db_location: {
+        doc: 'database file to use',
+        format: String,
+        default: "./db/database.db",
+        arg: "db-location",
+        env: 'db-location'
+    },
     prefix: {
         doc: 'Prefix to use in discord',
         format: val => {

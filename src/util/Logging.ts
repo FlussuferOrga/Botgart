@@ -52,3 +52,17 @@ export function logger(options: Record<string, unknown> = {}): winston.Logger {
         "file": file
     });
 }
+
+export function registerUnhandledRejection() {
+    const log = createLogger();
+    process.on("unhandledRejection", (reason, p) => {
+        log.error(`Unhandled Rejection!`);
+        // JSON.stringify does not handle errors and especially not Promises:
+        // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
+        // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
+        /* eslint-disable no-console */
+        console.error("Promise", p);
+        console.error("Reason", reason);
+        /* eslint-enable no-console */
+    });
+}

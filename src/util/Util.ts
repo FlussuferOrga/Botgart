@@ -3,8 +3,12 @@ import moment from "moment-timezone";
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
-export function sqliteTimestampToMoment(str: string): moment.Moment {
-    return moment(str, "YYYY-MM-DD HH:mm:ss");
+export function isoStringToMoment(str: string): moment.Moment {
+    return moment.parseZone(str);
+}
+
+export function momentToIsoString(mom: moment.Moment): string {
+    return mom.toISOString(true); // true = prevent conversion to UTC, keep offset in string
 }
 
 export function isBetweenTime(m: moment.Moment, t1: string, t2: string): boolean {
@@ -12,11 +16,7 @@ export function isBetweenTime(m: moment.Moment, t1: string, t2: string): boolean
 }
 
 export function getResetTime(): moment.Moment {
-    return moment("18:00:00 +0000", "HH:mm:ss Z").local();
-}
-
-export function momentToLocalSqliteTimestamp(mom: moment.Moment): string {
-    return mom.local().format("YYYY-MM-DD HH:mm:ss");
+    return moment("18:00:00 +0000", "HH:mm:ss Z");
 }
 
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Guide/Regular_Expressions
@@ -96,6 +96,7 @@ export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
+
 export interface Equalable<T> {
     equals: (other: T) => boolean;
 }

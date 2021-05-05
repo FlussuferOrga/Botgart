@@ -104,7 +104,7 @@ export class Trailblazer extends TagDownAchievement {
         const min: number = U.getResetTime().minute();
         const before: moment.Moment = U.getResetTime().minute(min - 20);
         const after: moment.Moment = U.getResetTime().minute(min + 20);
-        return rs !== undefined && rs.weekday() === U.RESET_WEEKDAY && rs.isBetween(before, after) && context.commander.getRaidTime() > 3600;
+        return rs !== undefined && rs.utc().weekday() === U.RESET_WEEKDAY && rs.utc().isBetween(before, after) && context.commander.getRaidTime() > 3600;
     }
 }
 
@@ -187,10 +187,11 @@ export class NeverSurrender extends TagUpAchievement {
         if (holds) {
             const stats = this.client.matchupRepository.getStatsAround(context.commander.getRaidStart());
             if (stats) {
-                const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
+                const homeWorldId = getConfig().get().home_id;
+                const ourColour = this.client.matchupRepository.getColourOf(homeWorldId, context.commander.getRaidStart());
                 if (ourColour === undefined) {
-                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";
-                    LOG.warn(`Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
+                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToIsoString(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";
+                    LOG.warn(`Unable to find our colour with world ID ${homeWorldId} in a matchup around ${ts}.`);
                 } else {
                     const ourStats = stats.find(s => s.faction === ourColour);
                     holds = ourStats
@@ -271,7 +272,7 @@ export class AgileDefender extends TagDownAchievement {
                 .filter(obj => obj.owner === ourColour && obj.tier === 3)
                 .map(obj => obj.objective_id);
             if (t3AtStart.length >= 3) { // we held at least three t3 objectives when they started
-                const lost = this.client.matchupRepository.capturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc().local())
+                const lost = this.client.matchupRepository.capturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc())
                     .filter(c => c.old_owner === ourColour && c.old_tier === 3);
                 holds = lost.length === 0; // we lost none of the t3 structures
             }

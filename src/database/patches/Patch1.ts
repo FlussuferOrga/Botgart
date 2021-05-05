@@ -32,7 +32,7 @@ export class Patch1 extends DBPatch {
             api_key TEXT NOT NULL,
             gw2account TEXT NOT NULL,
             registration_role TEXT,
-            created TIMESTAMP DEFAULT (datetime('now','localtime')),
+            created TIMESTAMP DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
             UNIQUE(user, guild) ON CONFLICT REPLACE,
             UNIQUE(guild, api_key)
         )`).run();
@@ -61,7 +61,7 @@ export class Patch1 extends DBPatch {
             guild TEXT NOT NULL,
             api_key TEXT NOT NULL,
             gw2account TEXT NOT NULL,
-            created TIMESTAMP DEFAULT (datetime('now','localtime')),
+            created TIMESTAMP DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
             UNIQUE(user, guild) ON CONFLICT REPLACE,
             UNIQUE(guild, api_key)
         )`).run();

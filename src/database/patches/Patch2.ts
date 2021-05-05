@@ -21,7 +21,7 @@ export class Patch2 extends DBPatch {
                 guild TEXT NOT NULL,
                 user TEXT NOT NULL,
                 role TEXT NOT NULL,
-                created TIMESTAMP DEFAULT (datetime('now','localtime')),
+                created TIMESTAMP DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ','now')),
                 UNIQUE(guild, user, role)
         )`).run();
     }
