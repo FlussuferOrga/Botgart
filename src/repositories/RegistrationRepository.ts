@@ -75,7 +75,7 @@ export class RegistrationRepository extends AbstractDbRepository {
 
     public whois(searchString: string, discordUserIds: string[]): { discord_id: string; account_name: string }[] {
         return this.execute(db => {
-            db.prepare(`CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)`).run();
+            db.prepare("CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)").run();
             const stmt = db.prepare(`INSERT INTO whois(discord_id)
                                      VALUES (?)`);
             discordUserIds.forEach(id => stmt.run(id));
@@ -116,7 +116,7 @@ export class RegistrationRepository extends AbstractDbRepository {
     }
 
     public loadRegistrationsFromDb(): Registration[] {
-        LOG.info(`Loading all registrations from DB.`);
+        LOG.info("Loading all registrations from DB.");
         const execute = this.execute(db => {
             return db.prepare(`SELECT id, api_key, guild, user, registration_role, account_name
                                FROM registrations
@@ -147,7 +147,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                 db.prepare(`DELETE
                             FROM registrations
                             WHERE api_key = ?`).run(key);
-                changes = db.prepare(`SELECT changes() AS changes`).get().changes;
+                changes = db.prepare("SELECT changes() AS changes").get().changes;
             })(null);
             return changes > 0;
         });

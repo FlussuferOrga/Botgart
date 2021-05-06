@@ -111,7 +111,7 @@ export class TagBroadcastService {
             }
             if (embed.fields.length == 1) {
                 const field = embed.fields[0];
-                const textLines = field.value.split('\n');
+                const textLines = field.value.split("\n");
                 if (textLines.length > 1) {
                     toUpdate = true;
                     const newName = field.name.replace("🔊", "🔈"); // nobody will probably ever notice that :D

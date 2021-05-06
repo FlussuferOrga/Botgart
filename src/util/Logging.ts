@@ -20,23 +20,23 @@ function createLogger() {
         format: defaultFormat,
         transports: [
             new winston.transports.Console({
-                level: 'debug',
+                level: "debug",
                 format: winston.format.combine(
                     winston.format.colorize(),
                     defaultFormat
                 )
             }),
             new winston.transports.File({
-                filename: 'log/bot_combined.log',
-                level: 'info'
+                filename: "log/bot_combined.log",
+                level: "info"
             }),
             new winston.transports.File({
-                filename: 'log/bot_errors.log',
-                level: 'error'
+                filename: "log/bot_errors.log",
+                level: "error"
             }),
             new winston.transports.File({
-                filename: '/tmp/botgart_debug.log',
-                level: 'debug'
+                filename: "/tmp/botgart_debug.log",
+                level: "debug"
             })
         ]
     });

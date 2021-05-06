@@ -28,7 +28,7 @@ export class MatchupRepository extends AbstractDbRepository {
                     .run(tier,
                         Util.momentToLocalSqliteTimestamp(start),
                         Util.momentToLocalSqliteTimestamp(end));
-                matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                matchId = db.prepare("SELECT last_insert_rowid() AS id").get().id;
                 for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
                     for (const worldId of worlds) {
                         this.addMatchupFaction(matchId, worldId, colour);
@@ -99,7 +99,7 @@ export class MatchupRepository extends AbstractDbRepository {
         return this.execute(db =>
             db.transaction((_) => {
                 db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES").run();
-                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                return db.prepare("SELECT last_insert_rowid() AS id").get().id;
             })(null)
         );
     }
@@ -108,7 +108,7 @@ export class MatchupRepository extends AbstractDbRepository {
         return this.execute(db =>
             db.transaction((_) => {
                 db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES").run();
-                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                return db.prepare("SELECT last_insert_rowid() AS id").get().id;
             })(null)
         );
     }

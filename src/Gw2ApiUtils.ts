@@ -4,8 +4,8 @@ import { logger } from "./util/Logging";
 
 export function createApiInstance() {
     const api = gw2client();
-    api.schema('2019-03-26T00:00:00Z');
-    api.language('en');
+    api.schema("2019-03-26T00:00:00Z");
+    api.language("en");
 
     // retry some times and be polite about it
     api.fetch.retry(tries => tries <= 5);

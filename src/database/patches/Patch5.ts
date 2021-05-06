@@ -26,7 +26,7 @@ export class Patch5 extends DBPatch {
 
     public async revert(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`DROP TABLE IF EXISTS discord_log_channels`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS discord_log_channels").run();
         this.dbcommit();
     }
 }

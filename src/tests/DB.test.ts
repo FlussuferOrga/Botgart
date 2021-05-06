@@ -13,12 +13,12 @@ describe("DB", function () {
     let db: Database;
     let repo: EnvironmentVariablesRepository;
 
-    before('setupDatabase', function (done) {
+    before("setupDatabase", function (done) {
         db = Database.getInstance(databaseFilePath);
         repo = new EnvironmentVariablesRepository(db);
         done();
     });
-    before('patchDatabase', async function () {
+    before("patchDatabase", async function () {
         await new DatabasePatcher(db).applyPatches(allPatches, false);
     });
 

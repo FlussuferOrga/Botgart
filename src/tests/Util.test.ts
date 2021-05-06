@@ -94,9 +94,9 @@ describe("Util - Sets", function () {
 
     it("unequal sets", () => assert(!U.setEqual(new Set([1, 2]), new Set([3, 4]))));
 
-    it("unequal sets unicode", () => assert(!U.setEqual(new Set(['⭐']), new Set(['hello world']))));
+    it("unequal sets unicode", () => assert(!U.setEqual(new Set(["⭐"]), new Set(["hello world"]))));
 
-    it("equal sets unicode", () => assert(U.setEqual(new Set(['⭐']), new Set(['⭐', '⭐']))));
+    it("equal sets unicode", () => assert(U.setEqual(new Set(["⭐"]), new Set(["⭐", "⭐"]))));
 
     it("overlapping sets", () => assert(!U.setEqual(new Set([1, 2]), new Set([2, 3]))));
 

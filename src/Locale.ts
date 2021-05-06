@@ -91,7 +91,7 @@ EN = {
         "HELPTEXT_GO_FISH": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_REACTION_SNAPSHOT": EN["HELPTEXT_PREFIX"] + "`<URL to the post that should be snapshoted (bot must have access to the guild, channel and post!)>`",
-        "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + '"`<name of the guild>`" "`<accounts of the contact persons, comma separated, must follow the format foo.1234>`" "`<TS group (optional, default is the guild tag)>`"',
+        "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + "\"`<name of the guild>`\" \"`<accounts of the contact persons, comma separated, must follow the format foo.1234>`\" \"`<TS group (optional, default is the guild tag)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": EN["HELPTEXT_PREFIX"] + "`<name of the guild>`",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
@@ -388,7 +388,7 @@ DE = {
         "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_REACTION_SNAPSHOT": DE["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
-        "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
+        "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" \"`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`\" \"`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
@@ -684,7 +684,7 @@ DE_SWG = {
         "HELPTEXT_GO_FISH": DE_SWG["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": DE_SWG["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_REACTION_SNAPSHOT": DE_SWG["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
-        "HELPTEXT_TS_GUILD_ADD": DE_SWG["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
+        "HELPTEXT_TS_GUILD_ADD": DE_SWG["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" \"`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`\" \"`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",

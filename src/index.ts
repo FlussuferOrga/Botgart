@@ -23,7 +23,7 @@ const args = CommandLineArgs.default([
 const LOG = logger();
 
 process.on("unhandledRejection", (reason, p) => {
-    LOG.error(`Unhandled Rejection!`);
+    LOG.error("Unhandled Rejection!");
     // JSON.stringify does not handle errors and especially not Promises:
     // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
     // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
@@ -68,7 +68,7 @@ if (args.patchall || args.patch) {
     const webServer = new WebServer();
 
     //shutdown listener
-    ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal: NodeJS.Signals) =>
+    ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal: NodeJS.Signals) =>
         process.on(signal, () => {
             LOG.info("Shutting down...");
             client.prepareShutdown()

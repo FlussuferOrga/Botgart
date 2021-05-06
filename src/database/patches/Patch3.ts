@@ -64,7 +64,7 @@ export class Patch3 extends DBPatch {
         await this.resolveAccountNames(con.prepare(`SELECT *
                                                     FROM registrations`).all());
         // delete old table and rename new one
-        con.prepare(`DROP TABLE registrations`).run();
+        con.prepare("DROP TABLE registrations").run();
         con.prepare(`ALTER TABLE new_registrations
             RENAME TO registrations`).run();
         con.pragma("foreign_keys = ON");
@@ -108,7 +108,7 @@ export class Patch3 extends DBPatch {
         `).run();
 
         // delete old table and rename new one
-        con.prepare(`DROP TABLE registrations`).run();
+        con.prepare("DROP TABLE registrations").run();
         con.prepare(`ALTER TABLE new_registrations
             RENAME TO registrations`).run();
         con.pragma("foreign_keys = ON");

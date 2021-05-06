@@ -163,7 +163,7 @@ export class Roster extends events.EventEmitter {
             re.addField(`${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`, leads.size() === 0 ? "-" : Array.from(leads)
                 .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
                 .join(", "))
-                .addField('\u200b', '\u200b'); // discord.js v12 version of addBlankField()
+                .addField("\u200b", "\u200b"); // discord.js v12 version of addBlankField()
         }
         return re;
     }

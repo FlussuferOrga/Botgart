@@ -4,7 +4,7 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 export class CommandPermissionRepository extends AbstractDbRepository {
     public checkPermission(command: string, uid: string, roles: string[], gid?: string): [boolean, number] {
         roles.push(uid);
-        const params = '?,'.repeat(roles.length).slice(0, -1);
+        const params = "?,".repeat(roles.length).slice(0, -1);
         const permission = this.execute(db =>
             db.prepare(`
                 SELECT 

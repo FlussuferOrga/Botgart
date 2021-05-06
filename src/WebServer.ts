@@ -17,8 +17,8 @@ export class WebServer {
     }
 
     private registerRoutes() {
-        this.app.get('/health', function (req, res) {
-            res.send('OK');
+        this.app.get("/health", function (req, res) {
+            res.send("OK");
         });
     }
 

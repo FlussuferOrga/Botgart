@@ -20,7 +20,7 @@ export class EnvironmentVariablesRepository extends AbstractDbRepository {
      */
     public _getEnvironmentVariable(guildId: string, name: string): [string, string, (boolean | number | string | null)] {
         return this.execute(db => {
-                const res = db.prepare(`SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?`)
+                const res = db.prepare("SELECT value, type FROM environment_variables WHERE guild = ? AND name = ?")
                     .get(guildId, name);
                 let casted: string | number | boolean | null = null;
                 switch (res.type) {

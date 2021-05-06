@@ -29,17 +29,17 @@ export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwR
         nextResetMoment = _startingPoint.isoWeekday(resetWeekDay);
     } else if (_startingPoint.isoWeekday() > resetWeekDay) {
         // reset already happened this week
-        nextResetMoment = _startingPoint.add(1, 'weeks').isoWeekday(resetWeekDay);
+        nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
     } else if (_startingPoint.isoWeekday() == resetWeekDay) {
         // reset day is today
         if (_startingPoint.hour() >= resetTimeUTC) {
             // reset is happening or happened today
-            nextResetMoment = _startingPoint.add(1, 'weeks').isoWeekday(resetWeekDay);
+            nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
         } else {
             nextResetMoment = _startingPoint; //starting point IS reset day but before reset time
         }
     }
     // reset time
-    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf('hour');
+    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf("hour");
     return nextResetMoment;
 }

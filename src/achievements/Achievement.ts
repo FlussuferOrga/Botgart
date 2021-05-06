@@ -155,10 +155,10 @@ export abstract class Achievement<C> {
         const profiler = LOG.startTimer();
         try {
             if (this.checkCondition(discordUser, context)) {
-                LOG.debug(`Success! Awarding achievement to user.`);
+                LOG.debug("Success! Awarding achievement to user.");
                 this.awardIn(discordUser.guild, discordUser);
             } else {
-                LOG.debug(`User did not pass condition.`);
+                LOG.debug("User did not pass condition.");
             }
         } finally {
             profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`});

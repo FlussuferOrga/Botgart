@@ -92,7 +92,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         const prefix = getConfig().get().prefix;
         this.commandHandler = new akairo.CommandHandler(this, {
-            directory: __dirname + '/commands/',
+            directory: __dirname + "/commands/",
             prefix: prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
@@ -109,12 +109,12 @@ export class BotgartClient extends akairo.AkairoClient {
         });
 
         this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: __dirname + '/listeners/'
+            directory: __dirname + "/listeners/"
         });
         this.listenerHandler.loadAll();
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: __dirname + '/inhibitors/'
+            directory: __dirname + "/inhibitors/"
         });
         this.inhibitorHandler.loadAll();
 
@@ -208,7 +208,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
     public async prepareShutdown() {
         if (this.token !== null) { //is logged in
-            LOG.info(`Preparing Shutdown`);
+            LOG.info("Preparing Shutdown");
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }
     }

@@ -11,7 +11,7 @@ const LOG = logger();
 
 export class RosterRepository extends AbstractDbRepository {
     public getActiveRosters(guild: discord.Guild): Promise<[Roster, discord.TextChannel, discord.Message]>[] {
-        return this.execute(db => db.prepare(`SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?`)
+        return this.execute(db => db.prepare("SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?")
             .all(ResetUtil.currentWeek(), moment().utc().year(), guild.id)
             .map(row => this.getRosterPost(guild, row.wn, row.year)))
             .filter((roster) => roster !== undefined);
@@ -28,18 +28,18 @@ export class RosterRepository extends AbstractDbRepository {
     public upsertRosterPost(guild: discord.Guild, roster: Roster, message: discord.Message): void {
         return this.execute(db => {
             db.transaction((_) => {
-                const current = db.prepare(`SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?`).get(guild.id, roster.weekNumber, roster.year);
+                const current = db.prepare("SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?").get(guild.id, roster.weekNumber, roster.year);
                 let rosterId = current ? current.rrid : undefined;
                 if (rosterId === undefined) {
                     // completely new roster -> create new roster and store ID
-                    db.prepare(`INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)`)
+                    db.prepare("INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)")
                         .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id);
-                    rosterId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                    rosterId = db.prepare("SELECT last_insert_rowid() AS id").get().id;
                 } else {
                     // there is already a roster entry -> drop all leaders and insert the current state
-                    db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(rosterId);
+                    db.prepare("DELETE FROM reset_leaders WHERE reset_roster_id = ?").run(rosterId);
                 }
-                const stmt = db.prepare(`INSERT INTO reset_leaders(reset_roster_id, player, map, visible) VALUES(?,?,?,?)`);
+                const stmt = db.prepare("INSERT INTO reset_leaders(reset_roster_id, player, map, visible) VALUES(?,?,?,?)");
                 roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader.name, map.name, 0));
             })(null);
         });
@@ -86,8 +86,8 @@ export class RosterRepository extends AbstractDbRepository {
             }
             if (!postExists) {
                 // there was a roster in the DB to which there is no accessible roster-post left -> delete from db!
-                this.execute(db => db.prepare(`DELETE FROM reset_leaders WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
-                this.execute(db => db.prepare(`DELETE FROM reset_rosters WHERE reset_roster_id = ?`).run(entries[0].reset_roster_id));
+                this.execute(db => db.prepare("DELETE FROM reset_leaders WHERE reset_roster_id = ?").run(entries[0].reset_roster_id));
+                this.execute(db => db.prepare("DELETE FROM reset_rosters WHERE reset_roster_id = ?").run(entries[0].reset_roster_id));
             }
         }
 

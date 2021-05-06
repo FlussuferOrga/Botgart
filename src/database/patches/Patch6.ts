@@ -38,8 +38,8 @@ export class Patch6 extends DBPatch {
 
     public async revert(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`DROP TABLE IF EXISTS reset_leaders`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS reset_rosters`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS reset_leaders").run();
+        this.connection.prepare("DROP TABLE IF EXISTS reset_rosters").run();
         this.dbcommit();
     }
 }

@@ -15,7 +15,7 @@ export class AchievementRepository extends AbstractDbRepository {
         return this.execute(db => {
             db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'localtime'))")
                 .run(achievementName, gw2account, awardedBy, Util.momentToLocalSqliteTimestamp(timestamp));
-            return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+            return db.prepare("SELECT last_insert_rowid() AS id").get().id;
         });
     }
 
@@ -124,7 +124,7 @@ export class AchievementRepository extends AbstractDbRepository {
                         achievement_name = ?
                         AND gw2account = ?
                 `).run(achievementName, gw2account);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
     }
 
@@ -142,7 +142,7 @@ export class AchievementRepository extends AbstractDbRepository {
                                         WHERE
                                             gw2account = ?
                                     `).run(gw2account);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
         const revokedAchievements: number = this.execute(db =>
             db.transaction((_) => {
@@ -152,7 +152,7 @@ export class AchievementRepository extends AbstractDbRepository {
                                             WHERE
                                                 gw2account = ?
                                         `).run(gw2account);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
         return [removedLeads, revokedAchievements];
 
