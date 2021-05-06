@@ -66,6 +66,13 @@
     "no-warning-comments": "warn",
     "prefer-promise-reject-errors": "warn",
     "prefer-regex-literals": "warn",
-    "no-trailing-spaces": "warn"
+    "no-trailing-spaces": "warn",
+    "quotes": [
+      "error",
+      "double",
+      {
+        "avoidEscape": false
+      }
+    ]
   }
 }
