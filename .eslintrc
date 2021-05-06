@@ -27,13 +27,7 @@
       }
     ],
     "yoda": "error",
-    "lines-between-class-members": [
-      "error",
-      "always",
-      {
-        "exceptAfterSingleLine": true
-      }
-    ],
+    "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
     "no-console": "error",
     "no-unreachable-loop": "error",
     "no-alert": "error",
@@ -67,12 +61,24 @@
     "prefer-promise-reject-errors": "warn",
     "prefer-regex-literals": "warn",
     "no-trailing-spaces": "warn",
-    "quotes": [
-      "error",
-      "double",
-      {
-        "avoidEscape": false
+    "quotes": ["error", "double", {"avoidEscape": false}],
+    "array-bracket-newline": ["warn", "consistent"],
+    "array-bracket-spacing": ["warn", "never"],
+    "block-spacing": ["warn", "never"],
+    "brace-style": ["error", "1tbs", {"allowSingleLine": true}],
+    //    "camelcase": "warn"
+    "comma-dangle": [
+      "error", {
+        "arrays": "only-multiline",
+        "objects": "only-multiline",
+        "imports": "never",
+        "exports": "never",
+        "functions": "never"
       }
-    ]
+    ],
+    "comma-spacing": ["error", {"before": false, "after": true}],
+    "comma-style": ["error", "last"],
+    "computed-property-spacing": ["error", "never"],
+    "eol-last": ["error", "never"]
   }
 }

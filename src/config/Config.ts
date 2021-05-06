@@ -276,4 +276,3 @@ function logConfig(config) {
     configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
     LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
-

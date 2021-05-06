@@ -39,4 +39,3 @@ export class FishingLadder extends BotgartCommand {
 }
 
 module.exports = FishingLadder;
-

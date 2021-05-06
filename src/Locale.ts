@@ -955,4 +955,3 @@ export function get(key: string, args?: string[], separator = "\n\n", flags = tr
     options.flags = flags; // flags was a separate parameter for historical reasons. Monkey-patching this into a proper option-dictionary now~
     return currentLanguages.map(l => l.get(key, args, options)).join(separator);
 }
-

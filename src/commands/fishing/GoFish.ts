@@ -144,4 +144,3 @@ export class GoFish extends BotgartCommand {
 }
 
 module.exports = GoFish;
-

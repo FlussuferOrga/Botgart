@@ -54,7 +54,7 @@ export class Help extends BotgartCommand {
                     : m.id
                 ).join(separator));
 
-        message.reply(descs, {split: {prepend: "_ _\n"},});
+        message.reply(descs, {split: {prepend: "_ _\n"}});
     }
 }
 
