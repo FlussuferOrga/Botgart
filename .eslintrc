@@ -92,7 +92,8 @@
         }
       }
     ],
-//    "keyword-spacing": ["error"],
-    "linebreak-style": ["error", "windows"]
+    "keyword-spacing": ["error"],
+    // "linebreak-style": ["error", "windows"] deactiveated due to git
+    "@typescript-eslint/consistent-type-assertions": ["error"]
   }
 }

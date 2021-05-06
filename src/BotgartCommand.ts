@@ -64,7 +64,7 @@ export class BotgartCommand extends Command {
      * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
      */
     protected getBotgartClient(): BotgartClient {
-        return <BotgartClient>this.client;
+        return this.client as BotgartClient;
     }
 
     /**

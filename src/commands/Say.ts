@@ -43,7 +43,8 @@ export class Say extends BotgartCommand {
             LOG.error("I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
-            const c: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
+            const c: discord.TextChannel = g.channels.cache
+                .find(c => c.id == args.channel.id && c instanceof discord.TextChannel) as discord.TextChannel;
             if (!c) {
                 LOG.error("Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;

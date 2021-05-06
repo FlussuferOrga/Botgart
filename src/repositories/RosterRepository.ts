@@ -1,3 +1,4 @@
+import { TextChannel } from "discord.js";
 import * as discord from "discord.js";
 import moment from "moment-timezone";
 import { ResetLeader } from "../commands/resetlead/ResetLeader";
@@ -74,10 +75,10 @@ export class RosterRepository extends AbstractDbRepository {
         let channel: discord.TextChannel | undefined = undefined;
         let message: discord.Message | undefined = undefined;
         if (entries.length > 0) {
-            channel = await <discord.TextChannel>guild.channels.cache.find(c => c.id === entries[0].channel);
+            channel = await guild.channels.cache.find(c => c.id === entries[0].channel) as TextChannel;
             if (channel) {
                 try {
-                    message = await (<discord.TextChannel>channel).messages.fetch(entries[0].message);
+                    message = await channel.messages.fetch(entries[0].message);
                     postExists = true;
                 } catch (e) {
                     LOG.error(`Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`);
@@ -91,7 +92,7 @@ export class RosterRepository extends AbstractDbRepository {
             }
         }
 
-        return entries && postExists ? [<Roster>roster, <discord.TextChannel>channel, <discord.Message>message] : undefined;
+        return entries && postExists ? [roster as Roster, channel as TextChannel, message as discord.Message] : undefined;
     }
 
 }

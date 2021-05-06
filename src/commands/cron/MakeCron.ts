@@ -75,7 +75,7 @@ export class MakeCron extends BotgartCommand {
     }
 
     private scheduleAndSave(schedule, message: Message, mod, parsedArgs) {
-        const cl = <BotgartClient>this.client;
+        const cl = this.client as BotgartClient;
         const job = cl.cronJobService.scheduleCronJob(schedule, message.member!.user, message!.guild!, mod, parsedArgs);
         if (!job) {
             return message.util!.send(L.get("CRONJOB_NOT_STORED"));

@@ -1,5 +1,4 @@
 import * as discord from "discord.js";
-import { TextChannel } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import { logger } from "../util/Logging";
 
@@ -41,7 +40,9 @@ export class RemoveDiscordLog extends BotgartCommand {
         cl.logChannelRepository.removeLogChannel(guild, args.type, textChannel);
         LOG.info("Removed log channel '{0}' for event type '{1}' in guild '{2}'."
             .formatUnicorn(textChannel.name, args.type, guild.name));
-        (<discord.Message>message).react("✅"); // that's a white checkmark, even if not rendered properly...
+        if (message) {
+            message.react("✅"); // that's a white checkmark, even if not rendered properly...
+        }
         const types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
         const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name).concat(types.join("\n"));
         message.reply(desc);

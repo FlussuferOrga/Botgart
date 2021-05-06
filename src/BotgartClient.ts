@@ -129,7 +129,7 @@ export class BotgartClient extends akairo.AkairoClient {
                     LOG.error("Could not produce a proper matchup. API might be down.");
                 } else {
                     const snapshotId = this.matchupRepository.addStatsSnapshot();
-                    for await(const mapData of stats.maps) {
+                    for await (const mapData of stats.maps) {
                         for (const faction in mapData.scores) { // keys of the dict, aka red, blue, green
                             this.matchupRepository.addMatchupStats(
                                 match.matchup_id,
@@ -200,7 +200,7 @@ export class BotgartClient extends akairo.AkairoClient {
                 } else if (!(channel instanceof discord.TextChannel)) {
                     LOG.error(`Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
                 } else {
-                    (<discord.TextChannel>channel).send(message);
+                    (channel as discord.TextChannel).send(message);
                 }
             });
         }

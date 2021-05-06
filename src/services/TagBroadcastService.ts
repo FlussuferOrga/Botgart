@@ -32,7 +32,8 @@ export class TagBroadcastService {
                              discordUser: discord.GuildMember | undefined,
                              registration: undefined | Registration) {
         // broadcast the message
-        const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c.type == "text");
+        const dchan: discord.TextChannel = g.channels.cache
+            .find(c => c.name === this.broadcastChannel && c.type == "text") as discord.TextChannel;
         if (!dchan) {
             LOG.warn(`I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {

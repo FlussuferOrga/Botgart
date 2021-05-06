@@ -49,7 +49,7 @@ if (args.patchall || args.patch) {
         if (p === undefined) {
             LOG.warn(`No patch ${args.patch} could be found to apply/revert.`);
         } else {
-            patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));
+            patcher.applyPatch(p as (typeof DBPatch), args.revert === true).then(_ => process.exit(0));
         }
     }
 } else {

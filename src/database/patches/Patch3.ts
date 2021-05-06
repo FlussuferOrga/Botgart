@@ -22,7 +22,7 @@ export class Patch3 extends DBPatch {
 
     private async resolveAccountNames(rows) {
         const semaphore = new Semaphore(10);
-        for await(const r of rows) {
+        for await (const r of rows) {
             const release = await semaphore.acquire();
             let accname = await getAccountName(r.api_key);
             if (accname === false) {

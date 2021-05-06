@@ -66,7 +66,7 @@ export class RevokeAchievement extends BotgartCommand {
             let revokedCount = 0;
             if (Number.isInteger(args.achievement)) {
                 // revoke specific instance
-                const achievementId: number = <number>args.achievement;
+                const achievementId: number = args.achievement as number;
                 const achievementData = repo.deletePlayerAchievement(achievementId);
                 if (achievementData !== undefined) {
                     revokedCount = 1; // else stays at default 0

@@ -230,7 +230,7 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
     protected registerListeners() {
         this.client.ts3listener.on("tagup", async (x: ts3.TagUpEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(x.commander.getDiscordMember() as discord.GuildMember, x);
             } else {
                 LOG.warn(`Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
             }
@@ -246,7 +246,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     protected registerListeners() {
         this.client.ts3listener.on("tagdown", async (x: ts3.TagDownEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(x.commander.getDiscordMember() as discord.GuildMember, x);
             } else {
                 LOG.warn(`Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
             }
@@ -267,7 +267,7 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
                     .commanders
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
-                    .map(async c => this.tryAward(<discord.GuildMember>c.getDiscordMember(),
+                    .map(async c => this.tryAward(c.getDiscordMember() as discord.GuildMember,
                         {"commander": c, "objectives": objs})));
             });
     }

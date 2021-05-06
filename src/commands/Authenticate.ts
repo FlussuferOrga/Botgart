@@ -112,7 +112,13 @@ export class Authenticate extends BotgartCommand {
                                         }
 
                                     }
-                                    const unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
+                                    const unique = cl.registrationRepository.storeAPIKey(
+                                        m.member.user.id,
+                                        m.guild.id,
+                                        args.key,
+                                        guid.toString(),
+                                        accountName as string,
+                                        r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if (unique) {
                                         LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // Beware! This is not 100% fail safe and users have figured out the weirdest ways and configurations which are just too wild to cover entirely:
@@ -132,7 +138,10 @@ export class Authenticate extends BotgartCommand {
                                         for (const achievement of achievements) {
                                             achievement?.giveRole(m.member);
                                         }
-                                        cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);
+                                        cl.discordLog(m.guild,
+                                            Authenticate.LOG_TYPE_AUTH,
+                                            L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName as string, r.name]),
+                                            false);
                                         reply = L.get("KEY_ACCEPTED");
                                     } else {
                                         LOG.info("Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));

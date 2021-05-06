@@ -46,7 +46,7 @@ export class Help extends BotgartCommand {
                         return true;
                     }
                 })
-                .map(m => <BotgartCommand>m)
+                .map(m => m as BotgartCommand)
                 .filter(m => m.isAllowed(user))
                 .sort((m1, m2) => m1.id < m2.id ? -1 : 1)
                 .map(m => m.desc

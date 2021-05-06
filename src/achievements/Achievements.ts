@@ -121,7 +121,7 @@ export class Owl extends TagDownAchievement {
 
     checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
         return context.commander.getRaidStart() !== undefined
-            && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "23:00:00", "06:00:00")
+            && U.isBetweenTime(context.commander.getRaidStart() as moment.Moment, "23:00:00", "06:00:00")
             && context.commander.getRaidTime() > 3600;
     }
 }
@@ -139,7 +139,7 @@ export class Earlybird extends TagDownAchievement {
 
     checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
         return context.commander.getRaidStart() !== undefined
-            && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "06:00:00", "10:00:00")
+            && U.isBetweenTime(context.commander.getRaidStart() as moment.Moment, "06:00:00", "10:00:00")
             && context.commander.getRaidTime() > 3600;
     }
 }
@@ -189,7 +189,7 @@ export class NeverSurrender extends TagUpAchievement {
             if (stats) {
                 const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
                 if (ourColour === undefined) {
-                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";
+                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(context.commander.getRaidStart() as moment.Moment) : "UNDEFINED";
                     LOG.warn(`Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
                 } else {
                     const ourStats = stats.find(s => s.faction === ourColour);
@@ -263,7 +263,7 @@ export class AgileDefender extends TagDownAchievement {
 
     checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
         let holds: boolean = context.commander.getRaidStart() !== undefined
-            && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "18:00:00", "21:00:00")
+            && U.isBetweenTime(context.commander.getRaidStart() as moment.Moment, "18:00:00", "21:00:00")
             && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if (holds) {
             const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
@@ -271,7 +271,7 @@ export class AgileDefender extends TagDownAchievement {
                 .filter(obj => obj.owner === ourColour && obj.tier === 3)
                 .map(obj => obj.objective_id);
             if (t3AtStart.length >= 3) { // we held at least three t3 objectives when they started
-                const lost = this.client.matchupRepository.capturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc().local())
+                const lost = this.client.matchupRepository.capturedBetween(context.commander.getRaidStart() as moment.Moment, moment.utc().local())
                     .filter(c => c.old_owner === ourColour && c.old_tier === 3);
                 holds = lost.length === 0; // we lost none of the t3 structures
             }
@@ -347,7 +347,7 @@ export class Princess extends ObjectiveAchievement {
         const colour: FactionColour | undefined = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
         return colour !== undefined
             && context.commander.getRaidStart() !== undefined
-            && this.client.matchupRepository.wasCapturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc(), palaceID, colour);
+            && this.client.matchupRepository.wasCapturedBetween(context.commander.getRaidStart() as moment.Moment, moment.utc(), palaceID, colour);
     }
 }
 

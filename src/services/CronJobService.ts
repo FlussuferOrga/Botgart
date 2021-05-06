@@ -26,7 +26,7 @@ export class CronJobService {
     public rescheduleCronJobs() {
         let cronCount = 0;
         this.client.cronJobRepository.getCronJobs().forEach(async cron => {
-            const mod: BotgartCommand = <BotgartCommand>this.client.commandHandler.modules.get(cron.command);
+            const mod: BotgartCommand = this.client.commandHandler.modules.get(cron.command) as BotgartCommand;
             const args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             const guild = this.client.guilds.cache.find(g => g.id == cron.guild);
             if (!guild) {

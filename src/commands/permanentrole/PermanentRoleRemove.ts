@@ -37,7 +37,7 @@ export class RemovePermanentRole extends BotgartCommand {
             return;
         }
 
-        const cl = <BotgartClient>this.client;
+        const cl = this.client as BotgartClient;
         const success = cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
 
         if (success) {

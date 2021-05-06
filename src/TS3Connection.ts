@@ -254,7 +254,7 @@ export class Commander {
      */
     public getRaidTime(): number {
         // this cast is save, since we checked beforehand in the condition of the ternary...
-        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (<moment.Moment>this.getRaidStart()).valueOf()) / 1000 : 0;
+        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (this.getRaidStart() as moment.Moment).valueOf()) / 1000 : 0;
     }
 
     public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string, ts3channelPath: string[], ts3joinUrl: string) {
@@ -529,7 +529,7 @@ export class TS3Listener extends events.EventEmitter {
             } else {
                 this.botgartClient.tsLeadRepository.addLead(
                     registration.gw2account,
-                    <moment.Moment>commander.getRaidStart(),
+                    commander.getRaidStart() as moment.Moment,
                     moment.utc(),
                     commander.getTS3Channel());
             }
@@ -542,7 +542,7 @@ export class TS3Listener extends events.EventEmitter {
         if (crole && commander.getDiscordMember()) {
             await commander.getDiscordMember()?.roles.add(crole)
                 .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from ` +
-                    `user '${(<discord.GuildMember>commander.getDiscordMember()).displayName}'`, e));
+                    `user '${(commander.getDiscordMember() as discord.GuildMember).displayName}'`, e));
         }
     }
 
@@ -556,7 +556,7 @@ export class TS3Listener extends events.EventEmitter {
             LOG.info(`Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
             await dmember.roles.remove(crole)
                 .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user ` +
-                    `'${(<discord.GuildMember>dmember).displayName}' which was expected to be there.` +
+                    `'${(dmember as discord.GuildMember).displayName}' which was expected to be there.` +
                     ` Maybe someone else already removed it. ${e}`));
 
             LOG.debug("Done managing roles for former commander.");

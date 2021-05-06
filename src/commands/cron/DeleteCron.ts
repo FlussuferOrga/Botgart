@@ -35,7 +35,7 @@ export class DeleteCron extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Args): boolean {
-        return this.deleteCronjob(<number>args.id);
+        return this.deleteCronjob(args.id as number);
     }
 
     exec(message: discord.Message, args: Args): void {
@@ -51,7 +51,7 @@ export class DeleteCron extends BotgartCommand {
         }
 
         // not cronable, can be casted
-        const mes = this.command(message, message.author, <discord.Guild>message.guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
+        const mes = this.command(message, message.author, message.guild as discord.Guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
         message.util?.send(mes);
     }
 
