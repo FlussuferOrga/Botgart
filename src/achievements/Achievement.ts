@@ -109,34 +109,37 @@ export abstract class Achievement<C> {
                 result = AchievementAwardResult.HIDDEN;
             } else {
                 // actually award
-                const [rowId, isNew] = this.award(gw2account, by, timestamp);
+                result = this.actuallyAward(gw2account, by, timestamp, guild, discordUser);
+            }
+        }
+        return result;
+    }
 
-                if (rowId > -1 && (isNew || this.repeatable)) {
-                    result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
-                    const achievementChannel: discord.Channel | undefined = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
+    private actuallyAward(gw2account: string, by: string | undefined, timestamp: moment.Moment | undefined, guild: discord.Guild, discordUser: discord.GuildMember) {
+        let result: AchievementAwardResult = AchievementAwardResult.NOT_AWARDED;
 
-                    if (achievementChannel !== undefined) {
-                        if (isNew || this.announceRepetitions) {
-                            // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
-                            (achievementChannel as discord.TextChannel).send("🏆", {
-                                reply: discordUser,
-                                embed: this.createEmbed(discordUser, rowId)
-                            });
+        const [rowId, isNew] = this.award(gw2account, by, timestamp);
+        if (rowId > -1 && (isNew || this.repeatable)) {
+            result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
+            const achievementChannel: discord.Channel | undefined = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
 
-                        }
-                    } else {
-                        LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
-                    }
-
-                    const role = this.getRole(guild);
-                    if (role !== undefined) {
-                        discordUser.roles.add(role);
-                    } else {
-                        this.createRole(guild)
-                            .then(r => discordUser.roles.add(r))
-                            .catch(e => LOG.error(`Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
-                    }
+            if (achievementChannel !== undefined) {
+                if (isNew || this.announceRepetitions) {
+                    // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
+                    (achievementChannel as discord.TextChannel)
+                        .send("🏆", {reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
                 }
+            } else {
+                LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+            }
+
+            const role = this.getRole(guild);
+            if (role !== undefined) {
+                discordUser.roles.add(role);
+            } else {
+                this.createRole(guild)
+                    .then(r => discordUser.roles.add(r))
+                    .catch(e => LOG.error(`Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
             }
         }
         return result;

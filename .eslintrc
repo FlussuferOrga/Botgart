@@ -27,7 +27,6 @@
       }
     ],
     "yoda": "error",
-    "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
     "no-console": "error",
     "no-unreachable-loop": "error",
     "no-alert": "error",
@@ -94,6 +93,8 @@
     ],
     "keyword-spacing": ["error"],
     // "linebreak-style": ["error", "windows"] deactiveated due to git
-    "@typescript-eslint/consistent-type-assertions": ["error"]
+    "@typescript-eslint/consistent-type-assertions": ["error"],
+    "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
+    "max-depth": ["error", 4]
   }
 }
