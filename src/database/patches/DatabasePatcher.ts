@@ -11,8 +11,8 @@ export class DatabasePatcher {
         this.database = database;
     }
 
-    public createPatch<T extends DBPatch>(type: { new(db: Database): T; }, db: Database): T {
-        return new type(db);
+    public createPatch<T extends DBPatch>(Type: { new(db: Database): T; }, db: Database): T {
+        return new Type(db);
     }
 
     async applyPatch(patchName: typeof DBPatch, revert = false) {

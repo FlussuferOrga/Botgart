@@ -292,7 +292,14 @@ export class MatchupRepository extends AbstractDbRepository {
         `).all(ts, ts, ts));
     }
 
-    public addMatchupStats(matchId: number, snapshotId: number, map: string, faction: string, deaths: number, kills: number, victoryPoints: number) {
+    // eslint-disable-next-line max-params
+    public addMatchupStats(matchId: number,
+                           snapshotId: number,
+                           map: string,
+                           faction: string,
+                           deaths: number,
+                           kills: number,
+                           victoryPoints: number) {
         return this.execute(db => db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES(?,?,?,?,?,?,?)")
             .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
     }

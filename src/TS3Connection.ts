@@ -1,4 +1,3 @@
-import CircularBuffer from "circular-buffer";
 import * as discord from "discord.js";
 import * as events from "events";
 import * as http from "http";
@@ -53,14 +52,10 @@ interface HTTPRequestOptions {
 
 export class TS3Connection {
     private static CONNECTION_COUNTER = 1;
-    private static CIRCULAR_BUFFER_SIZE = 4;
-
-    private static MESSAGE_ID = 1;
 
     private host: string;
     private port: number;
     private name: string;
-    private buffer: CircularBuffer<string>;
 
     private request(data: unknown, options: HTTPRequestOptions): Promise<string> {
         const dataString: string = JSON.stringify(data);
@@ -111,7 +106,6 @@ export class TS3Connection {
         this.host = ts3host;
         this.port = ts3port;
         this.name = name !== undefined ? name : `TS3Connection[${TS3Connection.CONNECTION_COUNTER++}]`;
-        this.buffer = CircularBuffer<string>(TS3Connection.CIRCULAR_BUFFER_SIZE);
     }
 }
 

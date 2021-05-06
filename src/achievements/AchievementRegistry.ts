@@ -37,7 +37,7 @@ export class AchievementRegistry {
     }
 
     public static create(client: BotgartClient) {
-        const achievements = achievementCreators.map(type => new type(client));
+        const achievements = achievementCreators.map(Type => new Type(client));
         return new AchievementRegistry(achievements);
     }
 

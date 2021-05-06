@@ -106,6 +106,10 @@
         "ignoreRegExpLiterals": true
       }
     ],
-    "max-lines": ["error", {"max": 500, "skipComments": true}]
+    "max-lines": ["error", {"max": 500, "skipComments": true}],
+    "max-nested-callbacks": ["error"],
+    "max-params": ["error", 6],
+    "max-statements-per-line": ["error"],
+    "new-cap": ["error"]
   }
 }
