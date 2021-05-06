@@ -14,8 +14,7 @@ export class ListFaqs extends BotgartCommand {
     constructor() {
         super("listfaqs", {
                 aliases: ["listfaqs", "lsfaqs", "lsrtfms"]
-            },
-            {
+            }, {
                 everyonePermission: 1
             }
         );

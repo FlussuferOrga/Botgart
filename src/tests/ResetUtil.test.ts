@@ -66,8 +66,10 @@ describe("ResetUtil", function () {
             moment.tz("2019-11-16 02:00:00", "UTC")));
 
     it("upcoming reset after Friday", () =>
-        assert.exactMoment(ResetUtils.getNextResetDateMoment(moment.tz("2019-11-16", "UTC")),
-            moment.tz("2019-11-22 18:00:00", "UTC")));
+        assert.exactMoment(
+            ResetUtils.getNextResetDateMoment(moment.tz("2019-11-16", "UTC")),
+            moment.tz("2019-11-22 18:00:00", "UTC")
+        ));
 
     it("upcoming reset after Friday (Summertime)", () => {
         assert.sameMoment(

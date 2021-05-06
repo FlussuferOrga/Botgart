@@ -14,7 +14,7 @@ export class Disabler extends Listener {
     }
 
     exec() {
-        const disabler = function (x, xs) {
+        function disabler(x, xs) {
             let d = 0;
             const mod = xs.modules.get(x);
             if (mod === undefined) {
@@ -24,7 +24,7 @@ export class Disabler extends Listener {
                 LOG.info("Disabled module '{0}'.".formatUnicorn(x));
             }
             return d;
-        };
+        }
 
         const cl: BotgartClient = <BotgartClient>this.client;
         let disabled = 0;

@@ -79,6 +79,20 @@
     "comma-spacing": ["error", {"before": false, "after": true}],
     "comma-style": ["error", "last"],
     "computed-property-spacing": ["error", "never"],
-    "eol-last": ["error", "never"]
+    "eol-last": ["error", "never"],
+    "func-call-spacing": ["error", "never"],
+    "func-style": ["error", "declaration", {"allowArrowFunctions": true}],
+    // "function-call-argument-newline": ["error","consistent"],
+    // "function-paren-newline": ["error", "multiline-arguments"]
+    "key-spacing": [
+      "error", {
+        "multiLine": {
+          "beforeColon": false,
+          "afterColon": true
+        }
+      }
+    ],
+//    "keyword-spacing": ["error"],
+    "linebreak-style": ["error", "windows"]
   }
 }

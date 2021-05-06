@@ -181,6 +181,8 @@ export class RosterService {
     private async syncToTS3(guild: discord.Guild, roster: Roster): Promise<void> {
         // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command.
         // Resolve if possible.
+
+
         const resolveUser: (string) => Promise<string> = async sid => {
             const idregxp = /<[@!](\d+)>/;
             const match = idregxp.exec(sid);
