@@ -66,7 +66,7 @@ export class ResetRoster extends BotgartCommand {
     }
 
     serialiseArgs(args) {
-        const clone = Object.assign({}, args);
+        const clone = { ...args };
         clone.channel = { guild: args.channel.guild.id, channel: args.channel.id };
         return JSON.stringify(clone);
     }

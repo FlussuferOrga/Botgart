@@ -29,7 +29,7 @@ export class Permit extends BotgartCommand {
                                 if (message.guild) {
                                     // either group or guildmember
                                     receiver = message.guild.roles.cache.find(r => r.id == snowflakeId)
-                                        || await message.guild.members.fetch(snowflakeId); //cache.find(m => m.id == snowflakeId);
+                                        || await message.guild.members.fetch(snowflakeId); // cache.find(m => m.id == snowflakeId);
                                 } else {
                                     // direct message -> user
                                     receiver = this.client.users.cache.find(u => u.id == snowflakeId);
@@ -47,7 +47,7 @@ export class Permit extends BotgartCommand {
                         type: "integer",
                     }
                 ]
-                //userPermissions: ["ADMINISTRATOR"]
+                // userPermissions: ["ADMINISTRATOR"]
             }
         );
     }

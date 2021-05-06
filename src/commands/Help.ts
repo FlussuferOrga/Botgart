@@ -35,8 +35,8 @@ export class Help extends BotgartCommand {
         // since the restricted listing is just a convenience for users to present them with a
         // more compact help text.
         const separator = "\n";
-        const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; //cache.find(m => m.id == responsible.id) : responsible;
-        //let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
+        const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; // cache.find(m => m.id == responsible.id) : responsible;
+        // let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         const descs = "**COMMANDS:**\n\n"
             .concat(Array.from(this.getBotgartClient().commandHandler.modules.values())
                 .filter(value => {

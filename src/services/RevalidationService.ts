@@ -122,7 +122,7 @@ export class RevalidationService {
             } else if (authResult.valid) {
                 if (authResult.roleName !== undefined) {
                     if (registration.registration_role != authResult.roleName) {
-                        //db update required ?
+                        // db update required ?
                         await this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
                     }
                 }
@@ -135,7 +135,7 @@ export class RevalidationService {
                     // user transferred to another admitted server -> update role
                     // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
                     await this.client.validationService.setMemberRolesByString(member, [admittedRole.name], "ReAuthentication");
-                    //assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
+                    // assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
                 }
             }
         }

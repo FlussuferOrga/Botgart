@@ -27,7 +27,7 @@ const configSchema = {
                 throw new Error(`World id '${val}' is not a valid world id`);
             }
         },
-        default: 2202, //Riverside FTW
+        default: 2202, // Riverside FTW
         arg: "home-id",
         env: "HOME_ID"
     },
@@ -272,7 +272,7 @@ function loadConfiguration() {
 function logConfig(config) {
     let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
 
-    //probably we shouldn't log a token.
+    // probably we shouldn't log a token.
     configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
     LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }

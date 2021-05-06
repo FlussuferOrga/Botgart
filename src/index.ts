@@ -67,7 +67,7 @@ if (args.patchall || args.patch) {
         database);
     const webServer = new WebServer();
 
-    //shutdown listener
+    // shutdown listener
     ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal: NodeJS.Signals) =>
         process.on(signal, () => {
             LOG.info("Shutting down...");

@@ -22,7 +22,7 @@ export class PipeGuildLog extends BotgartCommand {
                     },
                     {
                         id: "apikey",
-                        type: "string" //"commandAlias"
+                        type: "string" // "commandAlias"
                     },
                     {
                         id: "channel",

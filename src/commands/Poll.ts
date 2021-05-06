@@ -30,7 +30,7 @@ export class Poll extends BotgartCommand {
                     },
                     {
                         id: "emotes",
-                        //type: "string"
+                        // type: "string"
                         type: (message: discord.Message, emotes: string) => emotes ? emotes.split(" ") : []
                     }
                 ]
@@ -46,7 +46,7 @@ export class Poll extends BotgartCommand {
     }
 
     serialiseArgs(args) {
-        const clone = Object.assign({}, args);
+        const clone = { ...args };
         clone.channel = { guild: args.channel.guild.id, channel: args.channel.id };
         return JSON.stringify(clone);
     }

@@ -36,7 +36,7 @@ export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwR
             // reset is happening or happened today
             nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
         } else {
-            nextResetMoment = _startingPoint; //starting point IS reset day but before reset time
+            nextResetMoment = _startingPoint; // starting point IS reset day but before reset time
         }
     }
     // reset time

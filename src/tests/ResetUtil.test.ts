@@ -19,7 +19,7 @@ declare global {
 }
 assert["exactMoment"] = function (actual: Moment, expected: Moment) {
     this.sameMoment(actual, expected);
-    this.equal(actual.format(), expected.format()); //this also checks the stored timezone to be equal
+    this.equal(actual.format(), expected.format()); // this also checks the stored timezone to be equal
 };
 
 describe("ResetUtil", function () {
@@ -50,7 +50,7 @@ describe("ResetUtil", function () {
 
     it("upcoming reset at Friday right on reset (EU) Moment", () => {
         const actual = ResetUtils.getNextResetDateMoment(moment.tz("2019-11-15 18:00:00", "UTC"));
-        const expected = moment.tz("2019-11-22 18:00:00", "UTC"); //expecting next
+        const expected = moment.tz("2019-11-22 18:00:00", "UTC"); // expecting next
         assert.exactMoment(actual, expected);
     });
     it("upcoming reset before at Friday right after reset (EU) Moment", () => {
@@ -97,14 +97,14 @@ describe("ResetUtil", function () {
     it("No duplicate reset dates", () => {
             let now = moment();
 
-            //generate the next 400 Reset Dates
+            // generate the next 400 Reset Dates
             const resets: string[] = [];
             for (let i = 0; i < 20; i++) {
                 resets.push(ResetUtils.getNextResetDateMoment(now).format());
                 now = now.add(1, "week");
             }
 
-            //Make sure there are no duplicates
+            // Make sure there are no duplicates
             const distinct = [...new Set(resets)];
             assert.sameMembers(distinct, resets);
         }

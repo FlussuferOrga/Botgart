@@ -135,6 +135,21 @@
         }
       }
     ],
-    "padded-blocks": ["error", "never", { "allowSingleLineBlocks": true }]
+    "padded-blocks": ["error", "never", {"allowSingleLineBlocks": true}],
+    "prefer-object-spread": "error",
+    "quote-props": ["error", "consistent"],
+    "semi": ["error", "always"],
+    "semi-spacing": ["error", {"before": false, "after": true}],
+    "semi-style": ["error", "last"],
+    "space-before-blocks": "error",
+    "space-before-function-paren": ["error",  {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "always"
+    }],
+    "space-in-parens":  ["error", "never"],
+    "space-infix-ops": "error",
+    "space-unary-ops": "error",
+    "spaced-comment":  "error"
   }
 }

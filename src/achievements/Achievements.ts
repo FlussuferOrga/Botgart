@@ -18,9 +18,9 @@ import {
 import { registrableAchievement } from "./AchievementRegistry";
 
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // ACHIEVEMENTS
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 @registrableAchievement
 export class Glimmer extends TagDownAchievement {
     public constructor(client: BotgartClient) {

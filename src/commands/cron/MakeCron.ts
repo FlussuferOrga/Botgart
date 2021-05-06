@@ -25,7 +25,7 @@ export class MakeCron extends BotgartCommand {
                     },
                     {
                         id: "cmd",
-                        type: "string" //"commandAlias"
+                        type: "string" // "commandAlias"
                     },
                     {
                         id: "args",

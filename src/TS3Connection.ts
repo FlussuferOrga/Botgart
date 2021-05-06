@@ -68,7 +68,7 @@ export class TS3Connection {
                 "Content-Length": Buffer.byteLength(dataString)
             }
         };
-        const settings: HTTPRequestOptions = options === undefined ? defaults : Object.assign({}, defaults, options);
+        const settings: HTTPRequestOptions = options === undefined ? defaults : ({ ...defaults, ...options });
         return new Promise<string>((resolve, reject) => {
             const req = http.request(settings, (response) => {
                 let body = "";

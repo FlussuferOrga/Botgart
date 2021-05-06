@@ -2,7 +2,7 @@ import { BotgartClient } from "../BotgartClient";
 import { logger } from "../util/Logging";
 import { Achievement } from "./Achievement";
 
-//basically the type of the constructor function
+// basically the type of the constructor function
 type AchievementType = new (client: BotgartClient) => Achievement<never>
 
 const achievementCreators: AchievementType[] = [];
@@ -11,7 +11,7 @@ export function registrableAchievement(target: AchievementType) {
     achievementCreators.push(target);
 }
 
-//this triggers loading the achievements, which are then collected by the decorator.
+// this triggers loading the achievements, which are then collected by the decorator.
 export * as allAchievements from "./Achievements";
 
 // ---- AchievementRegistry ----

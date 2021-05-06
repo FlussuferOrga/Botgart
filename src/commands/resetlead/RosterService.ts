@@ -197,7 +197,7 @@ export class RosterService {
         };
         const resetDateTime = roster.getResetMoment().tz(getConfig().get().timeZone);
         await this.client.getTS3Connection().post("resetroster", {
-            "date": resetDateTime.format("DD.MM.YYYY HH:mm z"), //TODO: remove
+            "date": resetDateTime.format("DD.MM.YYYY HH:mm z"), // TODO: remove
             "datetime": resetDateTime.format(),
             "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map(l => resolveUser(l.name))),
             "gbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map(l => resolveUser(l.name))),

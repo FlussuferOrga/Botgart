@@ -23,9 +23,9 @@ describe("Util - Date", function () {
         return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
     });
 
-    //it("reset date2", function() {
+    // it("reset date2", function() {
     //  expect(false).equal(false);
-    //});
+    // });
 });
 
 describe("Util - WvW", function () {
@@ -63,7 +63,7 @@ describe("Util - Is Between", function () {
 describe("Util - Crons", function () {
     it("empty string", () => expect(!U.parseCronDate("")));
 
-    //it("undefined", () => expect(!Utils.parseCronDate(undefined)));
+    // it("undefined", () => expect(!Utils.parseCronDate(undefined)));
 
     it("cron valid string 1", () => expect(U.parseCronDate("0 * 32 * 3")).equal("0 * 32 * 3"));
 

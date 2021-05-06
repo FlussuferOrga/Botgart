@@ -62,8 +62,8 @@ export class APIEmitter extends events.EventEmitter {
     public constructor() {
         super();
 
-        //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
-        //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
+        // this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
+        // this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
         const homeId = getConfig().get().home_id;
         this.schedule("wvw-stats",
             // eslint-disable-next-line newline-per-chained-call
@@ -77,7 +77,7 @@ export class APIEmitter extends events.EventEmitter {
     }
 
     public schedule(name: string, endpoint: (gw2) => Promise<unknown>, interval: number): void {
-        //endpoint(api).then(r => console.log(name, r));
+        // endpoint(api).then(r => console.log(name, r));
         const gw = createApiInstance();
         setInterval(() => this.emit(name, endpoint(gw)), interval);
     }

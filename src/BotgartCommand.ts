@@ -52,7 +52,7 @@ export class BotgartCommand extends Command {
             everyonePermission: 0,
             enabled: true
         };
-        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : Object.assign({}, defaults, botgartOptions);
+        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({ ...defaults, ...botgartOptions });
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
@@ -113,8 +113,8 @@ export class BotgartCommand extends Command {
         const gid = user instanceof discord.GuildMember ? user.guild.id : undefined;
         const roles = user instanceof discord.GuildMember ? user.roles.cache.map(r => r.id) : [];
         const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
-        //console.log(allowed, perm);
-        //console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
+        // console.log(allowed, perm);
+        // console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
         return this.isEnabled() && (this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0);
     }
 

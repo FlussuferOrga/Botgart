@@ -58,14 +58,14 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
 
-    //public readonly options;
+    // public readonly options;
 
     constructor(options: (akairo.AkairoOptions & discord.ClientOptions) | undefined,
                 clientOptions: discord.ClientOptions | undefined,
                 db: Database) {
         super(options, clientOptions);
 
-        //Repositories
+        // Repositories
         this.fishingRepository = new FishingRepository(db);
         this.registrationRepository = new RegistrationRepository(db);
         this.achievementRepository = new AchievementRepository(db);
@@ -157,7 +157,7 @@ export class BotgartClient extends akairo.AkairoClient {
                     const snapshotId = this.matchupRepository.addObjectivesSnapshot();
                     const objs = match.maps
                         .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
-                        //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+                        // .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                         .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                     this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
                 }
@@ -206,7 +206,7 @@ export class BotgartClient extends akairo.AkairoClient {
     }
 
     public async prepareShutdown() {
-        if (this.token !== null) { //is logged in
+        if (this.token !== null) { // is logged in
             LOG.info("Preparing Shutdown");
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }
