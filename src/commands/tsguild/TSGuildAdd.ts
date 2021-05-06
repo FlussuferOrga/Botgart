@@ -24,7 +24,7 @@ export class TsGuildAdd extends BotgartCommand {
         );
     }
 
-    * args(message) {
+    *args(message) {
         const guildName = yield { type: (m: discord.Message, p: string) => p.trim() };
         const contacts = yield {
             type: (m: discord.Message, p: string) => {

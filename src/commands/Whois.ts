@@ -114,11 +114,10 @@ export class Whois extends BotgartCommand {
 
     private sort(enhancedResult: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[]) {
         // sort and return
-        return enhancedResult.sort((a, b) => {
-            return Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
-                || Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag)
-                || Whois.compareStringSafe(a.account_name, b.account_name);
-        });
+        return enhancedResult.sort((a, b) =>
+            Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
+            || Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag)
+            || Whois.compareStringSafe(a.account_name, b.account_name));
     }
 
     private static compareStringSafe(a: string | null | undefined, b: string | null | undefined) {
