@@ -27,7 +27,7 @@ export class RevalidationService {
         this.worldAssignments = getConfig().get().world_assignments;
     }
 
-    private readonly worldAssignments: { world_id: number; role: string; }[];
+    private readonly worldAssignments: { world_id: number; role: string }[];
 
     /**
      * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
@@ -54,7 +54,7 @@ export class RevalidationService {
 
 
     private async checkRegistration(worldAssignments: { world_id: number; role: string }[],
-                                    r: Registration): Promise<undefined | { roleName?: string, valid: boolean }> {
+                                    r: Registration): Promise<undefined | { roleName?: string; valid: boolean }> {
         const release = await RevalidationService.SEM.acquire();
         LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
         const res: (string | boolean) | undefined = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments)

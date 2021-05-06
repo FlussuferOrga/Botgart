@@ -158,7 +158,7 @@ export class Annihilator extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         let holds = false;
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
@@ -217,7 +217,7 @@ export class Conqueror extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         let holds = false;
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
@@ -343,7 +343,7 @@ export class Princess extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         const palaceID = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
         const colour: FactionColour | undefined = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
         return colour !== undefined
@@ -380,7 +380,7 @@ export class Ettin extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length >= 2;
     }
 }
@@ -396,7 +396,7 @@ export class Hydra extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length >= 3;
     }
 }
@@ -461,7 +461,7 @@ export class FromAshes extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 5 && context.newMatchup.tier === 4;
     }
 }
@@ -477,7 +477,7 @@ export class ThePresident extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
     }
 }
@@ -493,7 +493,7 @@ export class MountainIsCalling extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 3 && context.newMatchup.tier === 2;
     }
 }
@@ -509,7 +509,7 @@ export class ThePeak extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 2 && context.newMatchup.tier === 1;
     }
 }
@@ -525,7 +525,7 @@ export class TierSolidifier extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === context.newMatchup.tier;
     }
 }

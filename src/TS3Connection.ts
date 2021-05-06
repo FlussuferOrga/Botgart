@@ -20,14 +20,14 @@ const RECONNECT_PATIENCE = 10;
 
 export interface TagDown {
     readonly guild: discord.Guild;
-    readonly commander: Commander,
-    readonly dbRegistration: Registration
+    readonly commander: Commander;
+    readonly dbRegistration: Registration;
 }
 
 export interface TagUp {
-    readonly guild: discord.Guild,
-    readonly commander: Commander,
-    readonly dbRegistration: Registration
+    readonly guild: discord.Guild;
+    readonly commander: Commander;
+    readonly dbRegistration: Registration;
 }
 
 export interface TS3Commander {
@@ -43,11 +43,11 @@ interface HTTPRequestOptions {
     readonly hostname?: string;
     readonly port?: number;
     readonly path?: string;
-    readonly method?: "GET" | "POST" | "PUT" | "DELETE"
+    readonly method?: "GET" | "POST" | "PUT" | "DELETE";
     readonly headers?: {
-        "Content-Type": "application/json",
-        "Content-Length": number
-    }
+        "Content-Type": "application/json";
+        "Content-Length": number;
+    };
 }
 
 export class TS3Connection {

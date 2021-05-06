@@ -5,16 +5,16 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 export type FactionColour = "Red" | "Blue" | "Green";
 
 type Objective = {
-    id: number,
-    owner: string,
-    type: string,
-    points_tick: number,
-    points_capture: number,
-    last_flipped: Date,
-    claimed_by: null,
-    claimed_at: Date,
-    yaks_delivered: number,
-    guild_upgrade: number[]
+    id: number;
+    owner: string;
+    type: string;
+    points_tick: number;
+    points_capture: number;
+    last_flipped: Date;
+    claimed_by: null;
+    claimed_at: Date;
+    yaks_delivered: number;
+    guild_upgrade: number[];
 };
 
 export class MatchupRepository extends AbstractDbRepository {
@@ -161,18 +161,18 @@ export class MatchupRepository extends AbstractDbRepository {
      * @returns: information about the state of all objectives
      */
     public getObjectivesAround(now: moment.Moment | undefined = undefined): {
-        snapshot_id: number,
-        timestamp: string,
-        matchup_objective_id: number,
-        matchup_id: number,
-        objective_id: number
-        map: string, owner: string,
-        type: string,
-        points_tick: number,
-        points_capture: number,
-        last_flipped: string,
-        yaks_delivered: number,
-        tier: number
+        snapshot_id: number;
+        timestamp: string;
+        matchup_objective_id: number;
+        matchup_id: number;
+        objective_id: number;
+        map: string; owner: string;
+        type: string;
+        points_tick: number;
+        points_capture: number;
+        last_flipped: string;
+        yaks_delivered: number;
+        tier: number;
     }[] {
         let timestamp: moment.Moment | undefined;
         if (!now) {
@@ -236,15 +236,15 @@ export class MatchupRepository extends AbstractDbRepository {
      */
     public getStatsAround(now: moment.Moment | undefined = undefined)
         : {
-        snapshot_id: number,
-        timestamp: string,
-        matchup_stats_id: number,
-        matchup_id: number,
-        map: string,
-        faction: string,
-        deaths: number,
-        kills: number,
-        victory_points: number
+        snapshot_id: number;
+        timestamp: string;
+        matchup_stats_id: number;
+        matchup_id: number;
+        map: string;
+        faction: string;
+        deaths: number;
+        kills: number;
+        victory_points: number;
     }[] {
         let timestamp: moment.Moment | undefined;
         if (!now) {
@@ -332,28 +332,28 @@ export class MatchupRepository extends AbstractDbRepository {
 export type StructureType = "Spawn" | "Ruins" | "Mercenary" | "Sentry" | "Camp" | "Tower" | "Keep" | "Castle";
 
 export interface Capture {
-    readonly matchup_objective_id: number,
-    readonly matchup_id: number,
-    readonly objective_id: number,
-    readonly map: string,
-    readonly type: StructureType,
-    readonly new_snapshot_id: number,
-    readonly new_owner: FactionColour,
-    readonly new_points_tick: number,
-    readonly new_points_capture: number,
-    readonly new_last_flipped: string,
-    readonly old_snapshot_id: number,
-    readonly old_owner: FactionColour,
-    readonly old_points_tick: number,
-    readonly old_points_capture: number,
-    readonly old_last_flipped: string,
-    readonly old_yaks: number,
-    readonly old_tier: number
+    readonly matchup_objective_id: number;
+    readonly matchup_id: number;
+    readonly objective_id: number;
+    readonly map: string;
+    readonly type: StructureType;
+    readonly new_snapshot_id: number;
+    readonly new_owner: FactionColour;
+    readonly new_points_tick: number;
+    readonly new_points_capture: number;
+    readonly new_last_flipped: string;
+    readonly old_snapshot_id: number;
+    readonly old_owner: FactionColour;
+    readonly old_points_tick: number;
+    readonly old_points_capture: number;
+    readonly old_last_flipped: string;
+    readonly old_yaks: number;
+    readonly old_tier: number;
 }
 
 export interface Matchup {
-    readonly matchup_id: number,
-    readonly tier: number,
-    readonly start: string,
-    readonly end: string
+    readonly matchup_id: number;
+    readonly tier: number;
+    readonly start: string;
+    readonly end: string;
 }

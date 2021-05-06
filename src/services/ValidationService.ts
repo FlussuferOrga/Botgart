@@ -15,7 +15,7 @@ export class ValidationService {
         this.worldAssignments = getConfig().get().world_assignments;
     }
 
-    private readonly worldAssignments: { world_id: number; role: string; }[];
+    private readonly worldAssignments: { world_id: number; role: string }[];
 
     public async setMemberRolesByString(member: GuildMember, wantedServerRoleNames: string[], reason?: string) {
         const wantedRoles = wantedServerRoleNames

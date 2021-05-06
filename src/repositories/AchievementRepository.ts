@@ -27,11 +27,11 @@ export class AchievementRepository extends AbstractDbRepository {
      */
     public checkAchievement(achievementName: string, gw2account: string)
         : {
-        awarded_by: string,
-        timestamp: string,
-        guild: string,
-        channel: string,
-        message: string
+        awarded_by: string;
+        timestamp: string;
+        guild: string;
+        channel: string;
+        message: string;
     }[] {
         return this.execute(db => db.prepare(`
             SELECT 
@@ -57,7 +57,7 @@ export class AchievementRepository extends AbstractDbRepository {
      * returns: array of achievement, group by the achievemet name with the count included.
      */
     public getPlayerAchievements(gw2account: string)
-        : { times_awarded: number, achievement_name: string }[] {
+        : { times_awarded: number; achievement_name: string }[] {
         return this.execute(db => db.prepare(`
                 SELECT 
                     COUNT(*) AS times_awarded,
@@ -78,11 +78,11 @@ export class AchievementRepository extends AbstractDbRepository {
      */
     public deletePlayerAchievement(playerAchievementID: number)
         : {
-        player_achievement_id: number,
-        achievement_name: string,
-        gw2account: string,
-        awarded_by: string,
-        timestamp: string
+        player_achievement_id: number;
+        achievement_name: string;
+        gw2account: string;
+        awarded_by: string;
+        timestamp: string;
     } {
         return this.execute(db =>
             db.transaction((_) => {

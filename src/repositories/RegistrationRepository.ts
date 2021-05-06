@@ -174,12 +174,12 @@ export class RegistrationRepository extends AbstractDbRepository {
 export interface Registration {
     readonly id: string;
     readonly user: string;
-    readonly guild: string,
-    readonly api_key: string,
-    readonly gw2account: string,
-    readonly registration_role: string,
-    readonly account_name: string,
-    readonly created: string
+    readonly guild: string;
+    readonly api_key: string;
+    readonly gw2account: string;
+    readonly registration_role: string;
+    readonly account_name: string;
+    readonly created: string;
 }
 
 export interface DesignatedRole {

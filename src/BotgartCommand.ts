@@ -12,17 +12,17 @@ export enum PermissionTypes {
 }
 
 interface BotgartCommandOptionsNullable {
-    availableAsDM?: boolean,
-    cronable?: boolean,
-    everyonePermission?: number,
-    enabled?: boolean
+    availableAsDM?: boolean;
+    cronable?: boolean;
+    everyonePermission?: number;
+    enabled?: boolean;
 }
 
 interface BotgartCommandOptions {
-    availableAsDM: boolean,
-    cronable: boolean,
-    everyonePermission: number
-    enabled: boolean
+    availableAsDM: boolean;
+    cronable: boolean;
+    everyonePermission: number;
+    enabled: boolean;
 }
 
 const LOG = logger();

@@ -64,18 +64,18 @@ export class FishingRepository extends AbstractDbRepository {
 }
 
 export interface Fish {
-    readonly fish_id: number,
-    readonly name: string,
-    readonly image: string,
-    readonly rarity: number,
-    readonly weight: number,
-    readonly points_per_gramm: number,
-    readonly reel_time_factor: number
+    readonly fish_id: number;
+    readonly name: string;
+    readonly image: string;
+    readonly rarity: number;
+    readonly weight: number;
+    readonly points_per_gramm: number;
+    readonly reel_time_factor: number;
 }
 
 export interface FishLadderEntry {
-    readonly user: string,
-    readonly rank: number,
-    readonly total_weight: number,
-    readonly number_of_fish: number
+    readonly user: string;
+    readonly rank: number;
+    readonly total_weight: number;
+    readonly number_of_fish: number;
 }

@@ -49,7 +49,7 @@ export class Authenticate extends BotgartCommand {
             return;
         }
 
-        const members: { guild: discord.Guild, member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
+        const members: { guild: discord.Guild; member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
         let reply = "";
         // this snippet allows users to authenticate themselves
         // through a DM and is dedicated to Jey, who is a fucking
@@ -84,7 +84,7 @@ export class Authenticate extends BotgartCommand {
                         responsible.send(reply);
                     } else {
                         getAccountGUID(args.key).then(async guid => {
-                            await Util.asyncForEach(members, async (m: { guild: discord.Guild, member: discord.GuildMember }) => {
+                            await Util.asyncForEach(members, async (m: { guild: discord.Guild; member: discord.GuildMember }) => {
                                 const r: discord.Role | undefined = (await m.guild.roles.fetch()).cache.find(r => r.name === role);
                                 if (r === undefined) {
                                     LOG.error(`Role '${role}' not found on server '${m.guild.name}'. Skipping.`);

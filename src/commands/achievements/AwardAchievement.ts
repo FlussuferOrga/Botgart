@@ -37,7 +37,7 @@ export class AwardAchievement extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<unknown>, player: discord.GuildMember, timestamp?: moment.Moment }): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<unknown>; player: discord.GuildMember; timestamp?: moment.Moment }): void {
         if (args.achievement === undefined) {
             message.reply(L.get("NO_SUCH_ACHIEVEMENT"));
         } else {

@@ -256,7 +256,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     }
 }
 
-export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander, "objectives": gw2api.WvWMatches }> {
+export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander; "objectives": gw2api.WvWMatches }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }
@@ -275,7 +275,7 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
     }
 }
 
-export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup, newMatchup: Matchup }> {
+export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup; newMatchup: Matchup }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }

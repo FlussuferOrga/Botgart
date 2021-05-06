@@ -2,7 +2,7 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export type Faq = {
     key: string;
-    text: string,
+    text: string;
 }
 
 export class FaqRepository extends AbstractDbRepository {
