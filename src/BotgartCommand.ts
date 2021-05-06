@@ -1,5 +1,4 @@
 import * as akairo from "discord-akairo";
-import { Command, CommandOptions } from "discord-akairo";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
@@ -28,7 +27,7 @@ interface BotgartCommandOptions {
 
 const LOG = logger();
 
-export class BotgartCommand extends Command {
+export class BotgartCommand extends akairo.Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
@@ -44,7 +43,7 @@ export class BotgartCommand extends Command {
      *                        cronable: false
      *                        everyonePermission: 0
      */
-    constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
+    constructor(id: string, options:akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
         const defaults: BotgartCommandOptions = {
             availableAsDM: false,

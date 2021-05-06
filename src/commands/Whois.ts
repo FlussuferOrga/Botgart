@@ -1,6 +1,5 @@
 import { Argument } from "discord-akairo";
 import * as discord from "discord.js";
-import { GuildMember } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
 import * as U from "../util/Util";
@@ -30,7 +29,7 @@ export class Whois extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         let res: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[];
 
-        if (args?.name instanceof GuildMember) {
+        if (args?.name instanceof discord.GuildMember) {
             res = await this.queryUser(args.name);
         } else {
             const name = args.name.toLowerCase(); // JS string#search allows RegExps, so we need to escape the popular "[]" for guild tags and so on
@@ -72,7 +71,7 @@ export class Whois extends BotgartCommand {
         }
     }
 
-    private static matches(m: GuildMember, needle: string): boolean {
+    private static matches(m: discord.GuildMember, needle: string): boolean {
         function nicknameMatches() {
             return (m.nickname ? m.nickname?.toLowerCase() : "").search(needle) > -1;
         }

@@ -158,6 +158,7 @@
     // "arrow-parens": ["error","as-needed"],
     "arrow-spacing": "error",
     "constructor-super": "error",
-    "generator-star-spacing": ["error", {"before": true, "after": false}]
+    "generator-star-spacing": ["error", {"before": true, "after": false}],
+    "no-duplicate-imports": "error"
   }
 }

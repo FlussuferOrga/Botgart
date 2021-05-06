@@ -1,4 +1,3 @@
-import { TextChannel } from "discord.js";
 import * as discord from "discord.js";
 import moment from "moment-timezone";
 import { ResetLeader } from "../commands/resetlead/ResetLeader";
@@ -75,7 +74,7 @@ export class RosterRepository extends AbstractDbRepository {
         let channel: discord.TextChannel | undefined = undefined;
         let message: discord.Message | undefined = undefined;
         if (entries.length > 0) {
-            channel = await guild.channels.cache.find(c => c.id === entries[0].channel) as TextChannel;
+            channel = await guild.channels.cache.find(c => c.id === entries[0].channel) as discord.TextChannel;
             if (channel) {
                 try {
                     message = await channel.messages.fetch(entries[0].message);
@@ -92,6 +91,6 @@ export class RosterRepository extends AbstractDbRepository {
             }
         }
 
-        return entries && postExists ? [roster as Roster, channel as TextChannel, message as discord.Message] : undefined;
+        return entries && postExists ? [roster as Roster, channel as discord.TextChannel, message as discord.Message] : undefined;
     }
 }

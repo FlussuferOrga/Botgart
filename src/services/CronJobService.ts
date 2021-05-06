@@ -1,6 +1,5 @@
 import discord from "discord.js";
 import * as schedule from "node-schedule";
-import { Job } from "node-schedule";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import { CronJobRepository } from "../repositories/CronJobRepository";
@@ -11,7 +10,7 @@ const LOG = logger();
 export class CronJobService {
     private repository: CronJobRepository;
     private client: BotgartClient;
-    public scheduledJobs: Map<number, Job> = new Map<number, Job>();
+    public scheduledJobs: Map<number, schedule.Job> = new Map<number, schedule.Job>();
 
 
     constructor(repository: CronJobRepository, client: BotgartClient) {
