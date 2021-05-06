@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import * as discord from "discord.js";
 import * as moment from "moment";
 import { BotgartClient } from "../BotgartClient";

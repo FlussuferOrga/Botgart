@@ -4,6 +4,19 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export type FactionColour = "Red" | "Blue" | "Green";
 
+type Objective = {
+    id: number,
+    owner: string,
+    type: string,
+    points_tick: number,
+    points_capture: number,
+    last_flipped: Date,
+    claimed_by: null,
+    claimed_at: Date,
+    yaks_delivered: number,
+    guild_upgrade: number[]
+};
+
 export class MatchupRepository extends AbstractDbRepository {
     public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
         return this.execute(db =>
@@ -284,7 +297,7 @@ export class MatchupRepository extends AbstractDbRepository {
             .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
     }
 
-    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, { id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[] }, number][]) {
+    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, Objective, number][]) {
         return this.execute(db => {
             const stmt = db.prepare(`INSERT INTO matchup_objectives
                                      (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick,
