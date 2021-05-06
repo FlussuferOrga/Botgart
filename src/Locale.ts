@@ -903,14 +903,14 @@ class Language {
 
     public get(key: string, args: string[] = [], options: { [option: string]: boolean } = {}): string {
         let str: string = key in this.strings ? this.strings[key].formatUnicorn(args) : key;
-        if ("italic" in options && options["italic"] === true) {
+        if ("italic" in options && options["italic"]) {
             str = `_${str}_`;
         }
-        if ("bold" in options && options["bold"] === true) {
+        if ("bold" in options && options["bold"]) {
             str = `**${str}**`;
         }
         // checking flags must be the final addition!
-        if ("flags" in options && options["flags"] === true) {
+        if ("flags" in options && options["flags"]) {
             str = `${this.flag} ${str}`;
         }
         return str;

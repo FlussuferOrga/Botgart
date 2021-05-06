@@ -33,7 +33,7 @@ export class Say extends BotgartCommand {
         );
     }
 
-    command(message, responsible, guild, args) {
+    async command(message, responsible, guild, args) {
         // Note that this callback could take place long after the cron was scheduled.
         // So the bot could no longer be there. We therefore need to find() the guild
         // again to make sure the bot is still on there.

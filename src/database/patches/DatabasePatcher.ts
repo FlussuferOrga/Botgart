@@ -38,9 +38,9 @@ export class DatabasePatcher {
     }
 
     async applyPatches(patches: typeof DBPatch[], revert = false) {
-        const ps = revert === true ? patches.reverse() : patches;
+        const ps = revert ? patches.reverse() : patches;
         for (const p of ps) {
-            await this.applyPatch(p, revert === true);
+            await this.applyPatch(p, revert);
         }
     }
 }

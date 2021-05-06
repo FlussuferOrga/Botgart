@@ -57,7 +57,7 @@ export class TS3Connection {
     private port: number;
     private name: string;
 
-    private request(data: unknown, options: HTTPRequestOptions): Promise<string> {
+    private async request(data: unknown, options: HTTPRequestOptions): Promise<string> {
         const dataString: string = JSON.stringify(data);
         const defaults: HTTPRequestOptions = {
             hostname: this.host,
@@ -81,21 +81,21 @@ export class TS3Connection {
         });
     }
 
-    public get(command: string, args: unknown = {}): Promise<string> {
+    public async get(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "GET"
         });
     }
 
-    public post(command: string, args: unknown = {}): Promise<string> {
+    public async post(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "POST"
         });
     }
 
-    public delete(command: string, args: unknown = {}): Promise<string> {
+    public async delete(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "DELETE"
@@ -513,7 +513,7 @@ export class TS3Listener extends events.EventEmitter {
 
     private tagDownWriteToDb(dmember: discord.GuildMember, commander: Commander, registration: Registration) {
         // do not write leads of members which hide their roles
-        const writeToDB = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
+        const writeToDB = !(dmember?.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
         if (writeToDB) {
             LOG.debug("Writing raid information to database.");
             if (commander.getRaidStart() === undefined) {

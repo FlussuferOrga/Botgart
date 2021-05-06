@@ -145,7 +145,7 @@ export abstract class Achievement<C> {
         return result;
     }
 
-    private createRole(guild: discord.Guild) {
+    private async createRole(guild: discord.Guild) {
         return guild.roles.create({ data: { name: this.roleName, color: this.roleColour }, reason: "Achievement" });
     }
 

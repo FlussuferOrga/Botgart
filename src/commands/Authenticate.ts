@@ -67,7 +67,7 @@ export class Authenticate extends BotgartCommand {
         const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key);
         if (validFormat) {
             // try to delete the message for privacy reasons if it is not a direct message
-            if (message && message.member) {
+            if (message?.member) {
                 if (message.deletable) {
                     message.delete();
                 } else {

@@ -290,7 +290,7 @@ export class BotgartCommand extends akairo.Command {
     * @param response - the message text to send to the user.
     * @returns {Promise} - the promise for whichever method was executed.
     */
-    public reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
+    public async reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
         if (message) {
             return message.channel.send(response);
         } else {

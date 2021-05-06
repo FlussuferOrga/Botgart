@@ -16,7 +16,7 @@ const REEL_BASE_TIME = 5000;
 const WAIT_MIN_SECONDS = 10;
 const WAIT_MAX_SECONDS = 150;
 
-function gets(url: string, options = {}): Promise<string> {
+async function gets(url: string, options = {}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         https.get(url, options, (response) => {
             let body = "";

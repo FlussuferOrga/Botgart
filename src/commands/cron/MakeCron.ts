@@ -37,7 +37,7 @@ export class MakeCron extends BotgartCommand {
         );
     }
 
-    command(message, responsible, guild, args) {
+    async command(message, responsible, guild, args) {
         if (message.member === null || !message.member) {
             return message.author.send(L.get("NOT_AVAILABLE_AS_DM"));
         }
@@ -74,7 +74,7 @@ export class MakeCron extends BotgartCommand {
         });
     }
 
-    private scheduleAndSave(schedule, message: Message, mod, parsedArgs) {
+    private async scheduleAndSave(schedule, message: Message, mod, parsedArgs) {
         const cl = this.client as BotgartClient;
         const job = cl.cronJobService.scheduleCronJob(schedule, message.member!.user, message!.guild!, mod, parsedArgs);
         if (!job) {

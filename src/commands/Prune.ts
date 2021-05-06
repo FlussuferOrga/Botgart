@@ -37,7 +37,7 @@ export class Prune extends BotgartCommand {
         return !args || args.days === undefined || args.days < 1 || args.days > 30 ? L.get(this.helptextKey()) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<string | void> {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<string | void> {
         return guild.members.prune({ days: args.days, dry: false, reason: args.message })
             .then(pruned => {
                 const mes: string = "{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days);
@@ -50,7 +50,7 @@ export class Prune extends BotgartCommand {
             });
     }
 
-    postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<string | void> {
+    async postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<string | void> {
         return result.then(m => message.util?.send(m)).catch(LOG.error);
     }
 }

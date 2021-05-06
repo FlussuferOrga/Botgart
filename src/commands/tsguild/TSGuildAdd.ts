@@ -76,7 +76,7 @@ export class TsGuildAdd extends BotgartCommand {
             if (!(await gw2u.guildExists(args.guildName))) {
                 message.reply(L.get("MK_GUILD_UNKNOWN_GUILD", [args.guildName]));
             } else {
-                this.getBotgartClient().getTS3Connection().post("guild",
+                await this.getBotgartClient().getTS3Connection().post("guild",
                     {
                         name: args.guildName,
                         tsgroup: args.guildTSGroup,
