@@ -65,8 +65,8 @@ export class DeleteCron extends BotgartCommand {
         let deletedFromDB = false;
         const cl = this.getBotgartClient();
         if (id in cl.cronJobService.scheduledJobs) {
-            cl.cronJobService.scheduledJobs[id].cancel();
-            delete cl.cronJobService.scheduledJobs[id];
+            cl.cronJobService.scheduledJobs.get(id)?.cancel();
+            cl.cronJobService.scheduledJobs.delete(id);
             canceled = true;
             LOG.info("Canceled cronjob with ID {0}.".formatUnicorn(id));
         }
