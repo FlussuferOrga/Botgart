@@ -6,23 +6,23 @@ import { allPatches } from "../database/patches/PatchRegistry";
 import { EnvironmentVariablesRepository } from "../repositories/EnvironmentVariablesRepository";
 import "../util/string.extensions";
 
-describe("DB", function () {
+describe("DB", () => {
     const testGuild = "00000";
     const databaseFilePath = "./db/test-database.db";
 
     let db: Database;
     let repo: EnvironmentVariablesRepository;
 
-    before("setupDatabase", function (done) {
+    before("setupDatabase", done => {
         db = Database.getInstance(databaseFilePath);
         repo = new EnvironmentVariablesRepository(db);
         done();
     });
-    before("patchDatabase", async function () {
+    before("patchDatabase", async () => {
         await new DatabasePatcher(db).applyPatches(allPatches, false);
     });
 
-    after("cleanup", function (done) {
+    after("cleanup", (done) => {
         fs.unlink(databaseFilePath, done);
     });
 

@@ -159,6 +159,21 @@
     "arrow-spacing": "error",
     "constructor-super": "error",
     "generator-star-spacing": ["error", {"before": true, "after": false}],
-    "no-duplicate-imports": "error"
+    "no-duplicate-imports": "error",
+    "no-new-symbol": "error",
+    "no-useless-computed-key": "error",
+    //    "no-useless-constructor": "error",
+    "no-useless-rename": "error",
+    "no-var": "error",
+    "object-shorthand": ["error", "consistent"],
+    "prefer-arrow-callback": ["warn"],
+    "prefer-const": "error",
+    //    "prefer-destructuring": ["error", {"object": true, "array": true}],
+    "prefer-numeric-literals": "error",
+    "prefer-rest-params": "error",
+    "prefer-spread": "error",
+    "rest-spread-spacing": ["error", "never"],
+    "template-curly-spacing": ["error", "never"],
+    "yield-star-spacing": ["error", "before"]
   }
 }

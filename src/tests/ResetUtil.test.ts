@@ -22,7 +22,7 @@ assert["exactMoment"] = function (actual: Moment, expected: Moment) {
     this.equal(actual.format(), expected.format()); // this also checks the stored timezone to be equal
 };
 
-describe("ResetUtil", function () {
+describe("ResetUtil", () => {
     it("upcoming reset before Friday (EU)", () => {
         assert.exactMoment(
             ResetUtils.getNextResetDateMoment(moment.tz("2019-11-12", "UTC")),
