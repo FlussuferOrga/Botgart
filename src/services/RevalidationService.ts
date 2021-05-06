@@ -123,7 +123,7 @@ export class RevalidationService {
                 if (authResult.roleName !== undefined) {
                     if (registration.registration_role != authResult.roleName) {
                         // db update required ?
-                        await this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
+                        this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
                     }
                 }
                 const admittedRoleName = authResult.roleName;

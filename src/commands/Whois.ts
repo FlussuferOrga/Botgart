@@ -105,7 +105,7 @@ export class Whois extends BotgartCommand {
 
         // map members
         const enhancedResult = await Promise.all(res.map(async value => ({
-            ...value, member: await guild.members.cache.get(value.discord_id)
+            ...value, member: guild.members.cache.get(value.discord_id)
         })));
 
         return this.sort(enhancedResult);
