@@ -4,7 +4,6 @@ import { BotgartCommand } from "../BotgartCommand";
 import { getConfig } from "../config/Config";
 
 export class FindUnregistered extends BotgartCommand {
-
     constructor() {
         super("findunregistered", {
                 aliases: ["findunreg"],

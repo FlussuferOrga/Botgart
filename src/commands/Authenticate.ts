@@ -110,7 +110,6 @@ export class Authenticate extends BotgartCommand {
                                             currentRole = (await m.guild.roles.fetch()).cache.find(r => r.name === reg.registration_role) || null;
                                             LOG.info(`User '${responsible.username}' was already registered with role '${currentRole}' which will be removed.`);
                                         }
-
                                     }
                                     const unique = cl.registrationRepository.storeAPIKey(
                                         m.member.user.id,

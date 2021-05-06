@@ -28,7 +28,6 @@ export class Whois extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-
         let res: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[];
 
         if (args?.name instanceof GuildMember) {

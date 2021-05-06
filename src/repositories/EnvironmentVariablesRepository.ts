@@ -2,7 +2,6 @@ import * as discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export class EnvironmentVariablesRepository extends AbstractDbRepository {
-
     /**
      * Convenience method for _getEnvironmentVariable.
      */

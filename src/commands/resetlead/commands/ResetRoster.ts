@@ -14,7 +14,6 @@ const LOG = logger();
 
 
 export class ResetRoster extends BotgartCommand {
-
     constructor() {
         super("resetroster", {
                 aliases: ["resetroster"],
@@ -64,7 +63,6 @@ export class ResetRoster extends BotgartCommand {
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
-
     }
 
     serialiseArgs(args) {
@@ -84,7 +82,6 @@ export class ResetRoster extends BotgartCommand {
         }
         return args;
     }
-
 }
 
 module.exports = ResetRoster;

@@ -74,7 +74,6 @@ export class APIEmitter extends events.EventEmitter {
             api => api.wvw().matches().live().world(homeId)
                 .catch(err => LOG.warn(`Error while fetching match details: ${err}`)),
             getConfig().get().gw2api.delays.wvw_matches);
-
     }
 
     public schedule(name: string, endpoint: (gw2) => Promise<unknown>, interval: number): void {

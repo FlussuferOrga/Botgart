@@ -80,7 +80,6 @@ describe("Util - Crons", function () {
     it("cron valid Moment 1", () => assert(U.parseCronDate("12.12.2019 15:15").constructor.name === "Moment"));
 
     it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
-
 });
 
 describe("Util - Sets", function () {

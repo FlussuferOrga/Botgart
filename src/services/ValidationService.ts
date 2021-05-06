@@ -18,7 +18,6 @@ export class ValidationService {
     private readonly worldAssignments: { world_id: number; role: string; }[];
 
     public async setMemberRolesByString(member: GuildMember, wantedServerRoleNames: string[], reason?: string) {
-
         const wantedRoles = wantedServerRoleNames
             .map(roleName => findRole(member.guild, roleName))
             .filter(value => value !== undefined) as Role[];

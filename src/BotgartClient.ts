@@ -140,7 +140,6 @@ export class BotgartClient extends akairo.AkairoClient {
                                 mapData.kills[faction],
                                 mapData.scores[faction]);
                         }
-
                     }
                 }
                 LOG.debug("Done writing WvWStats.");

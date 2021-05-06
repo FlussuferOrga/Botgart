@@ -114,5 +114,4 @@ export class Database {
         db.close();
         return res;
     }
-
 }

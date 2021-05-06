@@ -75,8 +75,8 @@ export class Patch3 extends DBPatch {
                                                   FROM registrations`).get().c;
         const post = this.oldCount === newCount;
         if (!post) {
-            LOG.error("Expected equal number of entries for old and new table. But old table had {0} entries " +
-                "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
+            LOG.error("Expected equal number of entries for old and new table. But old table had {0} entries "
+                + "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
         }
         return post;
     }
@@ -114,6 +114,4 @@ export class Patch3 extends DBPatch {
         con.pragma("foreign_keys = ON");
         this.dbcommit();
     }
-
-
 }

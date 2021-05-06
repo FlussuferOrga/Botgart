@@ -440,7 +440,6 @@ export class TS3Listener extends events.EventEmitter {
                     .filter(commander => commander.getDiscordMember() !== undefined)
                     .map(commander => this.botgartClient.guilds.cache.map(g => this.tagDown(g, commander)));
             }
-
         }
     }
 
@@ -518,8 +517,8 @@ export class TS3Listener extends events.EventEmitter {
         if (writeToDB) {
             LOG.debug("Writing raid information to database.");
             if (commander.getRaidStart() === undefined) {
-                LOG.error(`Wanted to write raid for commander ${dmember.displayName} ` +
-                    "during tag-down, but no raid start was stored.");
+                LOG.error(`Wanted to write raid for commander ${dmember.displayName} `
+                    + "during tag-down, but no raid start was stored.");
             } else {
                 this.botgartClient.tsLeadRepository.addLead(
                     registration.gw2account,
@@ -535,8 +534,8 @@ export class TS3Listener extends events.EventEmitter {
         const crole = g.roles.cache.find(r => r.name === this.commanderRole);
         if (crole && commander.getDiscordMember()) {
             await commander.getDiscordMember()?.roles.add(crole)
-                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from ` +
-                    `user '${(commander.getDiscordMember() as discord.GuildMember).displayName}'`, e));
+                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from `
+                    + `user '${(commander.getDiscordMember() as discord.GuildMember).displayName}'`, e));
         }
     }
 
@@ -549,9 +548,9 @@ export class TS3Listener extends events.EventEmitter {
         if (crole && dmember) {
             LOG.info(`Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
             await dmember.roles.remove(crole)
-                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user ` +
-                    `'${(dmember as discord.GuildMember).displayName}' which was expected to be there.` +
-                    ` Maybe someone else already removed it. ${e}`));
+                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user `
+                    + `'${(dmember as discord.GuildMember).displayName}' which was expected to be there.`
+                    + ` Maybe someone else already removed it. ${e}`));
 
             LOG.debug("Done managing roles for former commander.");
         }

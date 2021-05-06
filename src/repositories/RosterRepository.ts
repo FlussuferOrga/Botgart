@@ -94,5 +94,4 @@ export class RosterRepository extends AbstractDbRepository {
 
         return entries && postExists ? [roster as Roster, channel as TextChannel, message as discord.Message] : undefined;
     }
-
 }

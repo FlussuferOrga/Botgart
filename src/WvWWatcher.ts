@@ -45,7 +45,6 @@ export class WvWWatcher extends EventEmitter {
             } else {
                 this.emit("new-matchup", { lastMatchup: latestDbMatchup, newMatchup: dbMatchup });
             }
-
         }
         return dbMatchup;
     }

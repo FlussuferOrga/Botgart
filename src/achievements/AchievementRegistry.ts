@@ -40,5 +40,4 @@ export class AchievementRegistry {
         const achievements = achievementCreators.map(Type => new Type(client));
         return new AchievementRegistry(achievements);
     }
-
 }

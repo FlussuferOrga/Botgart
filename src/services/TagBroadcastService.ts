@@ -24,7 +24,6 @@ export class TagBroadcastService {
 
         this.broadcastChannel = config.ts_listener.broadcast_channel;
         this.pingRole = config.ts_listener.ping_role;
-
     }
 
     async sendTagUpBroadcast(g: discord.Guild,

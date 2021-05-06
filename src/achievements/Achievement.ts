@@ -166,7 +166,6 @@ export abstract class Achievement<C> {
         } finally {
             profiler.done({ message: `Check - ${this.name} -  ${discordUser.displayName}` });
         }
-
     }
 
     createEmbed(discordUser: discord.GuildMember, dbId: number) {

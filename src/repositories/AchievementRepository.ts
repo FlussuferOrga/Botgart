@@ -155,6 +155,5 @@ export class AchievementRepository extends AbstractDbRepository {
                 return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
         return [removedLeads, revokedAchievements];
-
     }
 }

@@ -23,8 +23,6 @@ assert["exactMoment"] = function (actual: Moment, expected: Moment) {
 };
 
 describe("ResetUtil", function () {
-
-
     it("upcoming reset before Friday (EU)", () => {
         assert.exactMoment(
             ResetUtils.getNextResetDateMoment(moment.tz("2019-11-12", "UTC")),
@@ -111,5 +109,4 @@ describe("ResetUtil", function () {
             assert.sameMembers(distinct, resets);
         }
     );
-
 });

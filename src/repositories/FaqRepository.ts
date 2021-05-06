@@ -6,7 +6,6 @@ export type Faq = {
 }
 
 export class FaqRepository extends AbstractDbRepository {
-
     public storeFAQ(user: string, guild: string, keys: [string], text: string): number | undefined {
         return this.execute(db => {
             let lastId = undefined;

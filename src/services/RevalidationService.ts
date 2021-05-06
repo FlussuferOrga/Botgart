@@ -131,7 +131,6 @@ export class RevalidationService {
                 if (!admittedRole) { // false -> no role should be assigned assigned at all
                     LOG.error(`Can not find the role "${admittedRoleName}" that should be currently used.`);
                     throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`);
-
                 } else {
                     // user transferred to another admitted server -> update role
                     // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);

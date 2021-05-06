@@ -50,7 +50,6 @@ export class RepairRoles extends BotgartCommand {
                     await this.getBotgartClient().validationService.setMemberRoles(m, [r], "Role Repair");
                 }
             }
-
         });
     }
 }

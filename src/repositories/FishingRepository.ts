@@ -61,7 +61,6 @@ export class FishingRepository extends AbstractDbRepository {
                 ?
         `).all(length));
     }
-
 }
 
 export interface Fish {
