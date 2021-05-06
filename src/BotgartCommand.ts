@@ -43,7 +43,7 @@ export class BotgartCommand extends akairo.Command {
      *                        cronable: false
      *                        everyonePermission: 0
      */
-    constructor(id: string, options:akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
+    constructor(id: string, options: akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
         const defaults: BotgartCommandOptions = {
             availableAsDM: false,

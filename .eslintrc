@@ -209,6 +209,7 @@
         "checkFunctionExpressions": true,
         "checkMethodDeclarations": true
       }
-    ]
+    ],
+    "@typescript-eslint/type-annotation-spacing": "error"
   }
 }

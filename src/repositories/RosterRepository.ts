@@ -9,8 +9,10 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 const LOG = logger();
 
+type RosterPost = [Roster, discord.TextChannel, discord.Message];
+
 export class RosterRepository extends AbstractDbRepository {
-    public getActiveRosters(guild: discord.Guild): Promise<[Roster, discord.TextChannel, discord.Message]>[] {
+    public getActiveRosters(guild: discord.Guild): Promise<RosterPost>[] {
         return this.execute(db => db.prepare("SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?")
             .all(ResetUtil.currentWeek(), moment().utc().year(), guild.id)
             .map(row => this.getRosterPost(guild, row.wn, row.year)))
@@ -45,8 +47,7 @@ export class RosterRepository extends AbstractDbRepository {
         });
     }
 
-    async getRosterPost(guild: discord.Guild, weekNumber: number, year: number)
-        : Promise<undefined | [Roster, discord.TextChannel, discord.Message]> {
+    async getRosterPost(guild: discord.Guild, weekNumber: number, year: number): Promise<undefined | RosterPost> {
         let postExists = false;
         const roster = new Roster(weekNumber, year);
         const entries = this.execute(db => db.prepare(`

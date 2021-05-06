@@ -25,8 +25,7 @@ export class AchievementRepository extends AbstractDbRepository {
      * or in other words: an empty result implies the player having not unlocked the achievement yet.
      * returns: the info about each instance (NOTE: the pap fields are not in use yet.)
      */
-    public checkAchievement(achievementName: string, gw2account: string)
-        : {
+    public checkAchievement(achievementName: string, gw2account: string): {
         awarded_by: string;
         timestamp: string;
         guild: string;
@@ -56,8 +55,7 @@ export class AchievementRepository extends AbstractDbRepository {
      * gw2account: player to retrieve the achievements for.
      * returns: array of achievement, group by the achievemet name with the count included.
      */
-    public getPlayerAchievements(gw2account: string)
-        : { times_awarded: number; achievement_name: string }[] {
+    public getPlayerAchievements(gw2account: string): { times_awarded: number; achievement_name: string }[] {
         return this.execute(db => db.prepare(`
                 SELECT 
                     COUNT(*) AS times_awarded,
@@ -76,8 +74,7 @@ export class AchievementRepository extends AbstractDbRepository {
      * playerAchievementID: the ID of the row to delete.
      * returns: if the passed ID was valid, the deleted row is returned.
      */
-    public deletePlayerAchievement(playerAchievementID: number)
-        : {
+    public deletePlayerAchievement(playerAchievementID: number): {
         player_achievement_id: number;
         achievement_name: string;
         gw2account: string;

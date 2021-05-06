@@ -234,8 +234,7 @@ export class MatchupRepository extends AbstractDbRepository {
      * now: the moment around which the stats should be determined
      * returns: information about the stats (not aggregated)
      */
-    public getStatsAround(now: moment.Moment | undefined = undefined)
-        : {
+    public getStatsAround(now: moment.Moment | undefined = undefined): {
         snapshot_id: number;
         timestamp: string;
         matchup_stats_id: number;
