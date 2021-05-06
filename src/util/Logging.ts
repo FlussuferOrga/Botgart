@@ -7,7 +7,7 @@ function createLogger() {
         winston.format.timestamp(),
         winston.format.splat(),
         winston.format.simple(),
-        winston.format.printf(({level, file, message, timestamp, ...rest}) => {
+        winston.format.printf(({ level, file, message, timestamp, ...rest }) => {
             let restString = "";
             if (Object.getOwnPropertyNames(rest).length > 0) {
                 restString = " " + JSON.stringify(rest);

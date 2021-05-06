@@ -14,10 +14,10 @@ import { WebServer } from "./WebServer";
 
 // bit weird but works only this way...
 const args = CommandLineArgs.default([
-    {name: "verbose", alias: "v", type: Boolean},
-    {name: "patch", type: String, multiple: true},
-    {name: "patchall", type: Boolean},
-    {name: "revert", type: Boolean}
+    { name: "verbose", alias: "v", type: Boolean },
+    { name: "patch", type: String, multiple: true },
+    { name: "patchall", type: Boolean },
+    { name: "revert", type: Boolean }
 ]);
 
 const LOG = logger();
@@ -62,8 +62,8 @@ if (args.patchall || args.patch) {
 
     L.setLanguages(config.get("locales"));
     const client = new BotgartClient(
-        {ownerID: config.get("owner_ids")},
-        {ws: {intents: intents}},
+        { ownerID: config.get("owner_ids") },
+        { ws: { intents: intents } },
         database);
     const webServer = new WebServer();
 

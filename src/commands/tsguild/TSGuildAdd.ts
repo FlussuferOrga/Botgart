@@ -25,7 +25,7 @@ export class TsGuildAdd extends BotgartCommand {
     }
 
     * args(message) {
-        const guildName = yield {type: (m: discord.Message, p: string) => p.trim()};
+        const guildName = yield { type: (m: discord.Message, p: string) => p.trim() };
         const contacts = yield {
             type: (m: discord.Message, p: string) => {
                 const cs = p.split(",")
@@ -35,7 +35,7 @@ export class TsGuildAdd extends BotgartCommand {
                 return cs.length > 0 ? cs : undefined;
             }
         };
-        const guildTSGroup = yield {type: (m: discord.Message, p: string) => p ? p : null};
+        const guildTSGroup = yield { type: (m: discord.Message, p: string) => p ? p : null };
 
         // [1] the args-method expects all arguments to be set before forwarding them to the command-method.
         // That encompasses the confirmation prompt, which yields the unwanted behaviour of issuing the
@@ -64,9 +64,9 @@ export class TsGuildAdd extends BotgartCommand {
                     timeout: "\n" + L.get("MK_EVENT_TIMEOUT")
                 }
             }
-            : yield {type: (m: discord.Message, p: string) => undefined};
+            : yield { type: (m: discord.Message, p: string) => undefined };
 
-        return {guildName, contacts, guildTSGroup, confirm};
+        return { guildName, contacts, guildTSGroup, confirm };
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: ArgType): Promise<void> {

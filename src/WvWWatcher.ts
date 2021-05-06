@@ -43,7 +43,7 @@ export class WvWWatcher extends EventEmitter {
             if (dbMatchup == undefined) {
                 LOG.error("Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
             } else {
-                this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
+                this.emit("new-matchup", { lastMatchup: latestDbMatchup, newMatchup: dbMatchup });
             }
 
         }

@@ -26,7 +26,7 @@ export class FindUnregistered extends BotgartCommand {
                 .sort())
             .then(async value => {
                 const result = `Found ${value.size}:\n` + value.map(value1 => value1.toString()).join("\n");
-                await message.channel.send(result, {split: true});
+                await message.channel.send(result, { split: true });
             });
     }
 }

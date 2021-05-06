@@ -47,7 +47,7 @@ export class Poll extends BotgartCommand {
 
     serialiseArgs(args) {
         const clone = Object.assign({}, args);
-        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
+        clone.channel = { guild: args.channel.guild.id, channel: args.channel.id };
         return JSON.stringify(clone);
     }
 

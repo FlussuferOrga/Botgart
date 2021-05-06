@@ -37,9 +37,7 @@ export class RevokeAchievement extends BotgartCommand {
 
                 ]
             },
-            {
-                enabled: getConfig().get().achievements.enabled,
-            }
+            { enabled: getConfig().get().achievements.enabled }
         );
     }
 

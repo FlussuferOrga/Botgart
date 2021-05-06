@@ -66,6 +66,7 @@ export class APIEmitter extends events.EventEmitter {
         //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
         const homeId = getConfig().get().home_id;
         this.schedule("wvw-stats",
+            // eslint-disable-next-line newline-per-chained-call
             api => api.wvw().matches().live().stats().world(homeId)
                 .catch(err => LOG.warn(`Error while fetching match stats: ${err}`)),
             getConfig().get().gw2api.delays.wvw_stats);

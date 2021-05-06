@@ -34,12 +34,10 @@ export class Permit extends BotgartCommand {
                                     // direct message -> user
                                     receiver = this.client.users.cache.find(u => u.id == snowflakeId);
                                 }
-                            } else {
+                            } else if (message.guild) {
                                 // plaintext name -> try to resolve among guild members and roles as fallback
-                                if (message.guild) {
-                                    receiver = message.guild.members.cache.find(m => m.displayName === phrase) // might fail!
-                                        || message.guild.roles.cache.find(r => r.name === phrase);
-                                }
+                                receiver = message.guild.members.cache.find(m => m.displayName === phrase) // might fail!
+                                    || message.guild.roles.cache.find(r => r.name === phrase);
                             }
                             return receiver;
                         }

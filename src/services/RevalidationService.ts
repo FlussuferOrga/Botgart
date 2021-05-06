@@ -83,9 +83,9 @@ export class RevalidationService {
 
 
         if (typeof res === "string") {
-            return {roleName: res, valid: true};
+            return { roleName: res, valid: true };
         } else if (typeof res === "boolean") {
-            return {valid: false};
+            return { valid: false };
         } else return undefined;
     }
 

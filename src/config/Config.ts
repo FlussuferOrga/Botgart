@@ -63,7 +63,7 @@ const configSchema = {
                 }
             }
         },
-        default: [{"world_id": 2202, "role": "rolename (must exist!)"}],
+        default: [{ "world_id": 2202, "role": "rolename (must exist!)" }],
         arg: "world-assignments",
         env: "WORLD_ASSIGNMENTS"
     },
@@ -78,7 +78,7 @@ const configSchema = {
                 }
             }
         },
-        default: new Array<string>(),
+        default: [] as string[],
         arg: "owner-ids",
         env: "OWNER_IDS"
     },
@@ -113,7 +113,7 @@ const configSchema = {
                 }
             }
         },
-        default: new Array<string>(),
+        default: [] as string[],
         arg: "ts-unregister-protection",
         env: "TS_UNREGISTER_PROTECTION"
     },
@@ -226,19 +226,19 @@ const configSchema = {
     disabled: {
         listeners: {
             format: Array,
-            default: new Array<string>(),
+            default: [] as string[],
             arg: "disabled-listeners",
             env: "DISABLED_LISTENERS"
         },
         commands: {
             format: Array,
-            default: new Array<string>(),
+            default: [] as string[],
             arg: "disabled-commands",
             env: "DISABLED_COMMANDS"
         },
         inhibitors: {
             format: Array,
-            default: new Array<string>(),
+            default: [] as string[],
             arg: "disabled-inhibitors",
             env: "DISABLED_INHIBITORS"
         },
@@ -260,7 +260,7 @@ function loadConfiguration() {
         }
 
         logConfig(config);
-        config.validate({allowed: "strict"});// throws error if config does not conform to schema
+        config.validate({ allowed: "strict" });// throws error if config does not conform to schema
 
         return config;
     } catch (e) {

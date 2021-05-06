@@ -44,12 +44,10 @@ export class RepairRoles extends BotgartCommand {
                 m = await g.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
                 if (r === undefined) {
                     LOG.error(`Was supposed to assign role '${d.registration_role}' to user, but could not find it.`);
+                } else if (!m) {
+                    LOG.error(`User ${d.user} is not present in this guild.`);
                 } else {
-                    if (!m) {
-                        LOG.error(`User ${d.user} is not present in this guild.`);
-                    } else {
-                        await this.getBotgartClient().validationService.setMemberRoles(m, [r], "Role Repair");
-                    }
+                    await this.getBotgartClient().validationService.setMemberRoles(m, [r], "Role Repair");
                 }
             }
 

@@ -47,7 +47,7 @@ export class ReactionSnapshot extends BotgartCommand {
             const users = await reaction.users.fetch();
             listings.push(`**${reaction.emoji.name} (${reaction.count})**\n${users.map(u => `${u.username} (<@${u.id}>) `).join("\n")}`);
         }
-        message.reply("\n" + listings.join("\n\n"), {split: true});
+        message.reply("\n" + listings.join("\n\n"), { split: true });
     }
 }
 

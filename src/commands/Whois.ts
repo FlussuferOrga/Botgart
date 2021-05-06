@@ -123,6 +123,7 @@ export class Whois extends BotgartCommand {
     }
 
     private static compareStringSafe(a: string | null | undefined, b: string | null | undefined) {
+        // eslint-disable-next-line no-nested-ternary
         return (a || b) ? (!a ? -1 : !b ? 1 : a.localeCompare(b)) : 0;
     }
 

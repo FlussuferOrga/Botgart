@@ -58,7 +58,7 @@ export class Authenticate extends BotgartCommand {
         this.client.guilds.cache.forEach(async g => {
             const m: discord.GuildMember = await g.members.fetch(message.author.id); // cache.find(m => m.id == message.author.id);
             if (m) {
-                members.push({guild: g, member: m});
+                members.push({ guild: g, member: m });
             }
         });
 

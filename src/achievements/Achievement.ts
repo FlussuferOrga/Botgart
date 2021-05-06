@@ -45,7 +45,7 @@ export abstract class Achievement<C> {
     }
 
     getFlavourText(): string {
-        return L.get(`ACHIEVEMENT_FLAV_${this.name.toUpperCase()}`, [], "\n", true, {"italic": true});
+        return L.get(`ACHIEVEMENT_FLAV_${this.name.toUpperCase()}`, [], "\n", true, { "italic": true });
     }
 
     getRoleName(): string {
@@ -127,7 +127,7 @@ export abstract class Achievement<C> {
                 if (isNew || this.announceRepetitions) {
                     // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
                     (achievementChannel as discord.TextChannel)
-                        .send("🏆", {reply: discordUser, embed: this.createEmbed(discordUser, rowId)});
+                        .send("🏆", { reply: discordUser, embed: this.createEmbed(discordUser, rowId) });
                 }
             } else {
                 LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
@@ -146,7 +146,7 @@ export abstract class Achievement<C> {
     }
 
     private createRole(guild: discord.Guild) {
-        return guild.roles.create({data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"});
+        return guild.roles.create({ data: { name: this.roleName, color: this.roleColour }, reason: "Achievement" });
     }
 
     /**
@@ -164,7 +164,7 @@ export abstract class Achievement<C> {
                 LOG.debug("User did not pass condition.");
             }
         } finally {
-            profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`});
+            profiler.done({ message: `Check - ${this.name} -  ${discordUser.displayName}` });
         }
 
     }
@@ -271,7 +271,7 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
                     .map(async c => this.tryAward(c.getDiscordMember() as discord.GuildMember,
-                        {"commander": c, "objectives": objs})));
+                        { "commander": c, "objectives": objs })));
             });
     }
 }

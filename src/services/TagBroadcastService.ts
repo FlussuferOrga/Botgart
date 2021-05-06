@@ -116,7 +116,7 @@ export class TagBroadcastService {
                 if (textLines.length > 1) {
                     toUpdate = true;
                     const newName = field.name.replace("🔊", "🔈"); // nobody will probably ever notice that :D
-                    const newField = {name: newName, value: textLines[0], inline: field.inline};
+                    const newField = { name: newName, value: textLines[0], inline: field.inline };
                     embed.spliceFields(0, 1, newField);
                 }
             }

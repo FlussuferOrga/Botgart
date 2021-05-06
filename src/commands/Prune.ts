@@ -38,7 +38,7 @@ export class Prune extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<string | void> {
-        return guild.members.prune({days: args.days, dry: false, reason: args.message})
+        return guild.members.prune({ days: args.days, dry: false, reason: args.message })
             .then(pruned => {
                 const mes: string = "{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days);
                 LOG.info("{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days));

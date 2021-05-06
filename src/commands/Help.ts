@@ -52,9 +52,10 @@ export class Help extends BotgartCommand {
                 .map(m => m.desc
                     ? `**${m.id}** (${m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}):\n${m.desc()}\n_ _`
                     : m.id
-                ).join(separator));
+                )
+                .join(separator));
 
-        message.reply(descs, {split: {prepend: "_ _\n"}});
+        message.reply(descs, { split: { prepend: "_ _\n" } });
     }
 }
 

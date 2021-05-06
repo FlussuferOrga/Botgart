@@ -129,8 +129,6 @@ let mapAliasesPairs : [string, string[]][] = [
     ["homes",    ["home", "homes", "heimat"]]
 ];
 
-
-
 let mapAliases = mapAliasesPairs
     .reduce((acc, [k,vs]) => { vs.map(v => acc[v] = k); return acc; }, {});
 
