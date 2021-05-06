@@ -27,24 +27,32 @@ export class Patch12 extends DBPatch {
         ['matchup_objectives', 'last_flipped'],
     ];
 
+    private state: [string, string, boolean][] = [];
+
     constructor(db: Database) {
         super(db);
     }
 
     protected async satisfied(): Promise<boolean> {
-        const result = Patch12.TABLE_COLUMNS.map(value => {
+        this.readState();
+        return this.state.find(value => value[2]) !== undefined;
+    }
+
+    private readState() {
+        this.state = Patch12.TABLE_COLUMNS.map(value => {
             const [tbl, col] = value;
             return [tbl, col, this.columnHasDefault(tbl, col, Patch12.COLUMN_DEFAULT)];
         });
-        return result.find(value => value[2]) !== undefined;
     }
 
     protected async apply(): Promise<void> {
-        const result = Patch12.TABLE_COLUMNS.filter(value => {
-            const [tbl, col] = value;
-            return !this.columnHasDefault(tbl, col, Patch12.COLUMN_DEFAULT);
+        if (this.state.length == 0) {
+            this.readState();
+        }
+        const result = this.state.filter(value => {
+            return !value[2];
         });
         throw Error("Please manually change the following column defaults to: " + Patch12.COLUMN_DEFAULT + " :\n"
-            + result.map(value => value.join(".")).join("\n"));
+            + result.map(value => value[0] + "." + value[1]).join("\n"));
     }
 }
