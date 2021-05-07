@@ -12,11 +12,9 @@ export class AchievementRepository extends AbstractDbRepository {
      * returns: ID of the newly created row. Note that this row is autoincrementally, so no ID will be repeated over the lifespan of the DB.
      */
     public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
-        return this.execute(db => {
-            return db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'localtime'))")
+        return this.execute(db => db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,datetime(?, 'localtime'))")
                 .run(achievementName, gw2account, awardedBy, Util.momentToLocalSqliteTimestamp(timestamp))
-                .lastInsertRowid;
-        });
+                .lastInsertRowid);
     }
 
     /**

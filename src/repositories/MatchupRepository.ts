@@ -108,17 +108,17 @@ export class MatchupRepository extends AbstractDbRepository {
 
     public addStatsSnapshot(): number {
         return this.execute(db =>
-            db.transaction((_) => {
-                return db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES").run().lastInsertRowid;
-            })(null)
+            db.transaction((_) => db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES")
+                .run()
+                .lastInsertRowid)(null)
         );
     }
 
     public addObjectivesSnapshot(): number {
         return this.execute(db =>
-            db.transaction((_) => {
-                return db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES").run().lastInsertRowid;
-            })(null)
+            db.transaction((_) => db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES")
+                .run()
+                .lastInsertRowid)(null)
         );
     }
 
