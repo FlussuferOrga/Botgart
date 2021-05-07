@@ -18,13 +18,13 @@
     "no-unreachable-loop": "error",
     "no-alert": "error",
     "no-eval": "error",
-    "no-implied-eval": "error",
+    "no-implied-eval": "off", "@typescript-eslint/no-implied-eval": "error",
     "no-extend-native": "warn",
     "no-extra-bind": "warn",
     "no-extra-label": "warn",
     "no-eq-null": "warn",
     "no-floating-decimal": "error",
-    "no-invalid-this": "error",
+    "no-invalid-this": "off", "@typescript-eslint/no-invalid-this": "error",
     "no-iterator": "error",
     "no-lone-blocks": "warn",
     "no-multi-spaces": "error",
@@ -34,11 +34,12 @@
     "no-nonoctal-decimal-escape": "error",
     "no-param-reassign": "warn",
     "no-proto": "error",
-    "no-return-await": "warn",
+    "no-return-await": "off",
+    "@typescript-eslint/return-await": "error",
     "no-self-compare": "error",
-    "no-throw-literal": "error",
+    "no-throw-literal": "off", "@typescript-eslint/no-throw-literal": "error",
     "no-unmodified-loop-condition": "error",
-    "no-unused-expressions": "warn",
+    "no-unused-expressions": "off", "@typescript-eslint/no-unused-expressions": "warn",
     "no-useless-call": "warn",
     "no-useless-concat": "warn",
     "no-useless-return": "error",
@@ -46,13 +47,12 @@
     "no-warning-comments": "warn",
     "prefer-promise-reject-errors": "warn",
     "prefer-regex-literals": "warn",
-    "quotes": ["error", "double", {"avoidEscape": false}],
+    "quotes": "off", "@typescript-eslint/quotes": ["error", "double", {"avoidEscape": false}],
     "array-bracket-newline": ["warn", "consistent"],
     "array-bracket-spacing": ["warn", "never"],
     "block-spacing": ["warn", "never"],
-    "brace-style": ["error", "1tbs", {"allowSingleLine": true}],
-    //    "camelcase": "warn"
-    "comma-dangle": [
+    "brace-style": "off", "@typescript-eslint/brace-style": ["error", "1tbs", {"allowSingleLine": true}],
+    "comma-dangle": "off", "@typescript-eslint/comma-dangle": [
       "error", {
         "arrays": "only-multiline",
         "objects": "only-multiline",
@@ -61,11 +61,11 @@
         "functions": "never"
       }
     ],
-    "comma-spacing": ["error", {"before": false, "after": true}],
+    "comma-spacing": "off", "@typescript-eslint/comma-spacing": ["error", {"before": false, "after": true}],
     "comma-style": ["error", "last"],
     "computed-property-spacing": ["error", "never"],
     "eol-last": ["error", "never"],
-    "func-call-spacing": ["error", "never"],
+    "func-call-spacing": "off", "@typescript-eslint/func-call-spacing": ["error", "never"],
     "func-style": ["error", "declaration", {"allowArrowFunctions": true}],
     // "function-call-argument-newline": ["error","consistent"],
     // "function-paren-newline": ["error", "multiline-arguments"]
@@ -77,9 +77,10 @@
         }
       }
     ],
-    "keyword-spacing": ["error"],
+    "keyword-spacing": "off", "@typescript-eslint/keyword-spacing": ["error"],
     // "linebreak-style": ["error", "windows"] deactiveated due to git
-    "lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
+    "lines-between-class-members": "off",
+    "@typescript-eslint/lines-between-class-members": ["error", "always", {"exceptAfterSingleLine": true}],
     "max-depth": ["error", 4],
     "max-len": [
       "error",
@@ -98,7 +99,7 @@
     "new-cap": ["error"],
     "new-parens": ["error"],
     "newline-per-chained-call": ["error", {"ignoreChainWithDepth": 4}],
-    "no-array-constructor": ["error"],
+    "no-array-constructor": "off", "@typescript-eslint/no-array-constructor": ["error"],
     "no-lonely-if": ["error"],
     "no-mixed-spaces-and-tabs": ["error"],
     "no-multi-assign": ["error"],
@@ -110,7 +111,7 @@
     "no-unneeded-ternary": "error",
     "no-whitespace-before-property": "error",
     "object-curly-newline": ["error", {"consistent": true}],
-    "object-curly-spacing": ["error", "always"],
+    "object-curly-spacing": "off", "@typescript-eslint/object-curly-spacing": ["error", "always"],
     "object-property-newline": ["error", {"allowAllPropertiesOnSameLine": true}],
     "one-var": ["error", "never"],
     "operator-linebreak": [
@@ -124,11 +125,11 @@
     "padded-blocks": ["error", "never", {"allowSingleLineBlocks": true}],
     "prefer-object-spread": "error",
     "quote-props": ["error", "consistent"],
-    "semi": ["error", "always"],
+    "semi": "off", "@typescript-eslint/semi": ["error", "always"],
     "semi-spacing": ["error", {"before": false, "after": true}],
     "semi-style": ["error", "last"],
     "space-before-blocks": "error",
-    "space-before-function-paren": [
+    "space-before-function-paren": "off", "@typescript-eslint/space-before-function-paren": [
       "error", {
         "anonymous": "always",
         "named": "never",
@@ -136,7 +137,7 @@
       }
     ],
     "space-in-parens": ["error", "never"],
-    "space-infix-ops": "error",
+    "space-infix-ops": "off", "@typescript-eslint/space-infix-ops": "error",
     "space-unary-ops": "error",
     "spaced-comment": "error",
     "switch-colon-spacing": ["error"],
@@ -145,10 +146,10 @@
     "arrow-spacing": "error",
     "constructor-super": "error",
     "generator-star-spacing": ["error", {"before": true, "after": false}],
-    "no-duplicate-imports": "error",
+    "no-duplicate-imports": "off", "@typescript-eslint/no-duplicate-imports": "error",
     "no-new-symbol": "error",
     "no-useless-computed-key": "error",
-    //    "no-useless-constructor": "error",
+    //    "no-useless-constructor": "off","@typescript-eslint/no-useless-constructor": ["error"],
     "no-useless-rename": "error",
     "no-var": "error",
     "object-shorthand": ["error", "consistent"],
@@ -169,6 +170,7 @@
       {
         "allow": [
           "arrowFunctions",
+          // sometimes () => {} is more descriptive than passing undefined
           // sometimes () => {} is more descriptive than passing undefined
           "methods",
           // sometimes you want to provide a default behaviour (nothing) in a base class
@@ -210,6 +212,10 @@
         "checkMethodDeclarations": true
       }
     ],
-    "@typescript-eslint/type-annotation-spacing": "error"
+    "@typescript-eslint/type-annotation-spacing": "error",
+    "@typescript-eslint/unified-signatures": "error",
+    "@typescript-eslint/no-extra-semi": ["error"],
+    "@typescript-eslint/no-use-before-define": ["error"],
+    "@typescript-eslint/require-await": "off"
   }
 }

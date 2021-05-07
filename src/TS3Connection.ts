@@ -347,7 +347,7 @@ export class TS3Listener extends events.EventEmitter {
         this.channels = {};
         this.patience = RECONNECT_PATIENCE;
         this.setMaxListeners(24);
-        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);
+        setInterval(() => this.checkCommanders(), config.ts_commander_check_interval);
     }
 
     private async checkCommanders(): Promise<void> {

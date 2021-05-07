@@ -6,8 +6,9 @@ export class CronJobRepository extends AbstractDbRepository {
         return this.execute(db => {
             let lastId = undefined;
             db.transaction((_) => {
-                db.prepare(sql).run(job.schedule, job.command, job.arguments, job.created_by, job.guild);
-                lastId = db.prepare("SELECT last_insert_rowid() AS id").get().id;
+                lastId = db.prepare(sql)
+                    .run(job.schedule, job.command, job.arguments, job.created_by, job.guild)
+                    .lastInsertRowid;
             })(null);
             return lastId;
         });

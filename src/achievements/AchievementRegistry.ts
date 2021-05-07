@@ -3,7 +3,7 @@ import { logger } from "../util/Logging";
 import { Achievement } from "./Achievement";
 
 // basically the type of the constructor function
-type AchievementType = new (client: BotgartClient) => Achievement<never>
+type AchievementType = new (client: BotgartClient) => Achievement<never>;
 
 const achievementCreators: AchievementType[] = [];
 

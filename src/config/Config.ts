@@ -245,11 +245,12 @@ const configSchema = {
     }
 };
 
+function logConfig(config) {
+    let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
 
-const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
-
-export function getConfig() {
-    return getConfigInternal();
+    // probably we shouldn't log a token.
+    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
+    LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
 
 function loadConfiguration() {
@@ -269,10 +270,8 @@ function loadConfiguration() {
     }
 }
 
-function logConfig(config) {
-    let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
+const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
 
-    // probably we shouldn't log a token.
-    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
-    LOG.debug(`Resolved Configuration:\n${configJsonString}`);
+export function getConfig() {
+    return getConfigInternal();
 }

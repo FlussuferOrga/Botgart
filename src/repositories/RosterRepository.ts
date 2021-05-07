@@ -34,9 +34,9 @@ export class RosterRepository extends AbstractDbRepository {
                 let rosterId = current ? current.rrid : undefined;
                 if (rosterId === undefined) {
                     // completely new roster -> create new roster and store ID
-                    db.prepare("INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)")
-                        .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id);
-                    rosterId = db.prepare("SELECT last_insert_rowid() AS id").get().id;
+                    rosterId = db.prepare("INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)")
+                        .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id)
+                        .lastInsertRowid;
                 } else {
                     // there is already a roster entry -> drop all leaders and insert the current state
                     db.prepare("DELETE FROM reset_leaders WHERE reset_roster_id = ?").run(rosterId);
@@ -51,24 +51,21 @@ export class RosterRepository extends AbstractDbRepository {
         let postExists = false;
         const roster = new Roster(weekNumber, year);
         const entries = this.execute(db => db.prepare(`
-            SELECT 
-                rr.reset_roster_id,
-                rr.week_number,
-                rr.year,
-                rr.guild,
-                rr.channel,
-                rr.message,
-                rl.player,
-                rl.map,
-                rl.visible
-            FROM 
-                reset_rosters AS rr 
-                LEFT JOIN reset_leaders AS rl 
-                  ON rr.reset_roster_id = rl.reset_roster_id
-            WHERE 
-                rr.guild = ?
-                AND rr.week_number = ?
-                AND rr.year = ?`)
+            SELECT rr.reset_roster_id,
+                   rr.week_number,
+                   rr.year,
+                   rr.guild,
+                   rr.channel,
+                   rr.message,
+                   rl.player,
+                   rl.map,
+                   rl.visible
+            FROM reset_rosters AS rr
+                     LEFT JOIN reset_leaders AS rl
+                               ON rr.reset_roster_id = rl.reset_roster_id
+            WHERE rr.guild = ?
+              AND rr.week_number = ?
+              AND rr.year = ?`)
             .all(guild.id, weekNumber, year));
         entries.forEach(r => roster.addLead(WvwMap.getMapByName(r.map), new ResetLeader(r.player, r.visible == 1))); // '1' and '0' used in sqlite -> typefree compare
 

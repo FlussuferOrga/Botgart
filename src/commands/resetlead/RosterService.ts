@@ -64,6 +64,7 @@ export class RosterService {
                 service.refreshGuarded(guild, roster, message);
             }.bind(null, this, eventRoster);
 
+            // eslint-disable-next-line @typescript-eslint/no-implied-eval
             setTimeout(onDelayReached, RosterService.UPDATE_DELAY);
         };
         roster.on("addleader", refreshDelayedFn);

@@ -37,11 +37,9 @@ export class MatchupRepository extends AbstractDbRepository {
                 .get(Util.momentToLocalSqliteTimestamp(start));
             let matchId: number = existingMatch ? existingMatch.id : undefined;
             if (matchId === undefined) {
-                db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
-                    .run(tier,
-                        Util.momentToLocalSqliteTimestamp(start),
-                        Util.momentToLocalSqliteTimestamp(end));
-                matchId = db.prepare("SELECT last_insert_rowid() AS id").get().id;
+                matchId = db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
+                    .run(tier, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))
+                    .lastInsertRowid;
                 for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
                     for (const worldId of worlds) {
                         this.addMatchupFaction(matchId, worldId, colour);
@@ -111,8 +109,7 @@ export class MatchupRepository extends AbstractDbRepository {
     public addStatsSnapshot(): number {
         return this.execute(db =>
             db.transaction((_) => {
-                db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES").run();
-                return db.prepare("SELECT last_insert_rowid() AS id").get().id;
+                return db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES").run().lastInsertRowid;
             })(null)
         );
     }
@@ -120,8 +117,7 @@ export class MatchupRepository extends AbstractDbRepository {
     public addObjectivesSnapshot(): number {
         return this.execute(db =>
             db.transaction((_) => {
-                db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES").run();
-                return db.prepare("SELECT last_insert_rowid() AS id").get().id;
+                return db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES").run().lastInsertRowid;
             })(null)
         );
     }
