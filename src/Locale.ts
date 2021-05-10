@@ -11,7 +11,7 @@ EN = {
     ...{
         "INTERNAL_ERROR": "An internal error occured. Please contact an administrator about this.",
 
-        "HTTP_REQUEST_RETURNED": "The response to your request has returned: {0}",
+        "HTTP_REQUEST_RETURNED": "The response to your request has returned: `{0}`",
 
         "NOT_PERMITTED": "You do not have the required permissions to execute this command.",
         "PERMISSION_SET_TO": "Permission for `{0}` for command `{1}` set to **{2}**.",
@@ -308,7 +308,7 @@ DE = {
     ...{
         "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
 
-        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen. Es wurden **{0}",
+        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen. `{0}`",
 
         "NOT_PERMITTED": "Du hast nicht die nötigen Berechtigungen um diesen Befehl auszuführen.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf Befehl `{1}` ist jetzt **{2}**.",
@@ -604,7 +604,7 @@ DE_SWG = {
     ...{
         "INTERNAL_ERROR": "Mir hend en interne Fehler. Sagsch em Admin bscheid.",
 
-        "HTTP_REQUEST_RETURNED": "Die Antwort auf dei Frog isch: {0}",
+        "HTTP_REQUEST_RETURNED": "Die Antwort auf dei Frog isch: `{0}`",
 
         "NOT_PERMITTED": "Des derfsch net.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf de Befehl `{1}` isch jetzt **{2}**.",
