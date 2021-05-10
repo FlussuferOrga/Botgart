@@ -40,7 +40,7 @@
     "node-teamspeak-api": "^1.0.0",
     "nodemon": "^2.0.7",
     "singly-linked-list": "^1.4.1",
-    "sqlite": "^4.0.21",
+    "sqlite": "^4.0.22",
     "string-similarity": "^4.0.4",
     "validate.js": "^0.13.01",
     "winston": "^3.3.3"
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@types/await-timeout": "^0.3.1",
     "@types/better-sqlite3": "^5.4.1",
-    "@types/chai": "^4.2.17",
+    "@types/chai": "^4.2.18",
     "@types/chai-datetime": "^0.0.37",
     "@types/chai-moment": "^0.1.1",
     "@types/command-line-args": "^5.0.0",
