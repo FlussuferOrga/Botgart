@@ -67,7 +67,7 @@
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
     "eslint": "^7.25.0",
-    "mocha": "^8.3.2",
+    "mocha": "^8.4.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
