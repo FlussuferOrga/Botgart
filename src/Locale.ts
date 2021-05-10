@@ -11,7 +11,7 @@ EN = {
     ...{
         "INTERNAL_ERROR": "An internal error occured. Please contact an administrator about this.",
 
-        "HTTP_REQUEST_RETURNED": "The response to your request has returned: {0}",
+        "HTTP_REQUEST_RETURNED": "The response to your request has returned: `{0}`",
 
         "NOT_PERMITTED": "You do not have the required permissions to execute this command.",
         "PERMISSION_SET_TO": "Permission for `{0}` for command `{1}` set to **{2}**.",
@@ -47,7 +47,7 @@ EN = {
         "REVOKE_ACHIEVEMENT_SUCCESS": "{0} achievement(s) revoked.",
         "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "No GW2 account found to revoke this achievement from.",
 
-        "CRONJOB_STORED": "Your cronjob has been saved with ID {0}. Next execution: {1}.",
+        "CRONJOB_STORED": "Your cronjob has been saved with ID `{0}`. Next execution: `{1}`.",
         "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
         "CRONJOB_DELETED": "The cronjob has been deleted.",
         "CRONJOB_NOT_DELETED": "The cronjob could not be deleted.",
@@ -308,7 +308,7 @@ DE = {
     ...{
         "INTERNAL_ERROR": "Ein interner Fehler ist aufgetreten. Bitte benachrichtige einen Administrator, damit dieser sich des Problems annehmen kann.",
 
-        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen. Es wurden **{0}",
+        "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen. `{0}`",
 
         "NOT_PERMITTED": "Du hast nicht die nötigen Berechtigungen um diesen Befehl auszuführen.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf Befehl `{1}` ist jetzt **{2}**.",
@@ -344,7 +344,7 @@ DE = {
         "REVOKE_ACHIEVEMENT_SUCCESS": "{0} Errungenschaft(en) entzogen.",
         "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Es wurde kein zugehöriger GW2-Account gefunden, dem die Errungenschaft entzogen werden könnte.",
 
-        "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID {0}. Nächste Ausführung: {1}.",
+        "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID `{0}`. Nächste Ausführung: `{1}`.",
         "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
         "CRONJOB_DELETED": "Der Cronjob wurde gelöscht.",
         "CRONJOB_NOT_DELETED": "Der Cronjob konnte nicht gelöscht werden.",
@@ -604,7 +604,7 @@ DE_SWG = {
     ...{
         "INTERNAL_ERROR": "Mir hend en interne Fehler. Sagsch em Admin bscheid.",
 
-        "HTTP_REQUEST_RETURNED": "Die Antwort auf dei Frog isch: {0}",
+        "HTTP_REQUEST_RETURNED": "Die Antwort auf dei Frog isch: `{0}`",
 
         "NOT_PERMITTED": "Des derfsch net.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf de Befehl `{1}` isch jetzt **{2}**.",
@@ -640,7 +640,7 @@ DE_SWG = {
         "REVOKE_ACHIEVEMENT_SUCCESS": "{0} Errungenschaft(en) entzogen.",
         "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Dafür han ich keinen GW2-Account gefunden, um ihm des wegzunehmen.",
 
-        "CRONJOB_STORED": "Deinen Cronjob han ich mir gemerkt mit der ID {0}. Snächscht mal: {1}.",
+        "CRONJOB_STORED": "Deinen Cronjob han ich mir gemerkt mit der ID `{0}`. Snächscht mal: `{1}`.",
         "CRONJOB_NOT_STORED": "Den Cronjob konnt ich net erstellen. Befehl für Cronjobs nicht möglich oder du hasch die Zeitangabe verkackt. Schausch mal auf https://crontab.guru/ .",
         "CRONJOB_DELETED": "Cronjob hats verrisse.",
         "CRONJOB_NOT_DELETED": "Den Cronjob kann i net lösche.",
