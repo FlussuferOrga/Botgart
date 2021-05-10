@@ -40,7 +40,7 @@
     "node-teamspeak-api": "^1.0.0",
     "nodemon": "^2.0.7",
     "singly-linked-list": "^1.4.1",
-    "sqlite": "^4.0.21",
+    "sqlite": "^4.0.22",
     "string-similarity": "^4.0.4",
     "validate.js": "^0.13.01",
     "winston": "^3.3.3"
@@ -67,7 +67,7 @@
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
     "eslint": "^7.25.0",
-    "mocha": "^8.3.2",
+    "mocha": "^8.4.0",
     "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
