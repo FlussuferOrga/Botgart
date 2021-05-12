@@ -62,7 +62,7 @@
     "@types/source-map-support": "^0.5.3",
     "@types/string-similarity": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
-    "@typescript-eslint/parser": "^4.22.0",
+    "@typescript-eslint/parser": "^4.23.0",
     "chai": "^4.3.4",
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
