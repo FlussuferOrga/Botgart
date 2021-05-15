@@ -92,7 +92,7 @@ const configSchema = {
         arg: 'token',
         env: 'TOKEN'
     },
-    timeZone: {
+        timeZone: {
         arg: 'timeZone',
         env: 'TIME_ZONE',
         format: val => {
@@ -242,9 +242,26 @@ const configSchema = {
             arg: 'disabled-inhibitors',
             env: 'DISABLED_INHIBITORS'
         },
-    }
+    },
+    google_calendars:  {
+        format: val => {
+            if (!Array.isArray(val)) {
+                throw new Error(`Google Calendars ids should be an array`);
+            }
+            for (const calendar of val) {
+                if (!("api_key" in calendar)) {
+                    throw new Error(`Entry for Google calendar is missing an API key`);
+                }
+                if (!("calendar_id" in calendar)) {
+                    throw new Error(`Entry for Google calendar is missing the Google calendar ID`);
+                }
+            }
+        },
+        default: new Array<GoogleCalendarConfigEntry>(),
+        arg: 'google-calendars',
+        env: 'GOOGLE_CALENDARS'
+    },
 };
-
 
 const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
 
@@ -277,3 +294,7 @@ function logConfig(config) {
     LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
 
+interface GoogleCalendarConfigEntry {
+    api_key: string;
+    calendar_id: string;
+}
