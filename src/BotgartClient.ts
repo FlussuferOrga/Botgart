@@ -21,6 +21,7 @@ import { CronJobService } from "./services/CronJobService";
 import { RevalidationService } from "./services/RevalidationService";
 import { TagBroadcastService } from "./services/TagBroadcastService";
 import { ValidationService } from "./services/ValidationService";
+import { CalendarService } from "./services/CalendarService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection";
 import { logger } from "./util/Logging";
 import * as Util from "./util/Util";
@@ -46,6 +47,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public tagBroadcastService: TagBroadcastService;
     public validationService: ValidationService;
     public revalidationService: RevalidationService;
+    public calendarServices: CalendarService[];
 
     private readonly ts3connection: TS3Connection;
     public readonly gw2apiemitter: APIEmitter;
@@ -83,6 +85,7 @@ export class BotgartClient extends akairo.AkairoClient {
         this.tagBroadcastService = new TagBroadcastService(this);
         this.validationService = new ValidationService(this);
         this.revalidationService = new RevalidationService(this);
+        this.calendarServices = getConfig().get().google_calendars.map(entry => new CalendarService(this, entry.api_key, entry.calendar_id));
 
         this.gw2apiemitter = new APIEmitter();
         this.commanders = new CommanderStorage();
