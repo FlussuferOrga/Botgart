@@ -1,5 +1,6 @@
 import { Guild, Role } from "discord.js";
 import moment from "moment-timezone";
+import * as https from "https";
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
@@ -22,6 +23,16 @@ export function momentToLocalSqliteTimestamp(mom: moment.Moment): string {
 // https://developer.mozilla.org/de/docs/Web/JavaScript/Guide/Regular_Expressions
 export function escapeRegExp(text: string) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // $& is the entired matched string
+}
+
+export function gets(url: string, options = {}): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        https.get(url, options, (response) => {
+            let body = "";
+            response.on("data", (chunk) => body += chunk);
+            response.on("end", () => resolve(body));
+        }).on("error", reject);
+    });
 }
 
 /**

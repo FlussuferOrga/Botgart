@@ -6,6 +6,7 @@ import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
 import { Fish } from "../../repositories/FishingRepository";
 import { logger } from "../../util/Logging";
+import * as U from "../../util/Util";
 
 /**
  Testcases:
@@ -16,23 +17,13 @@ const REEL_BASE_TIME = 5000;
 const WAIT_MIN_SECONDS = 10;
 const WAIT_MAX_SECONDS = 150;
 
-function gets(url: string, options = {}): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-        https.get(url, options, (response) => {
-            let body = "";
-            response.on("data", (chunk) => body += chunk);
-            response.on("end", () => resolve(body));
-        }).on("error", reject);
-    });
-}
-
 const LOG = logger();
 
 async function image(term: string): Promise<string> {
     let image = "";
 
     try {
-        const response = await gets(`https://results.dogpile.com/serp?qc=images&q=${term}`, {
+        const response = await U.gets(`https://results.dogpile.com/serp?qc=images&q=${term}`, {
             headers: {
                 "Accept": "text/html",
                 "User-Agent": "Chrome"
