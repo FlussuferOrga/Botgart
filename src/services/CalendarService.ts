@@ -9,18 +9,20 @@ const LOG = logger();
 
 type DateTime = string; // RFC3339 timestamp 2021-04-15T05:27:47.000Z
 
+//
 enum CalendarEventType {
     NEW, EDITED, DELETED
 }
 
+// calendar event as retrieved from Google API (plus one custom field)
 export interface CalendarEvent {
    kind: string;
    etag: string;
    id: string;
    status: string; // confirmed, cancelled
    htmlLink: string; // url
-   created: DateTime; 
-   updated: DateTime; 
+   created: DateTime;
+   updated: DateTime;
    summary: string;
    description: string;
    creator: { email: string };
@@ -30,16 +32,16 @@ export interface CalendarEvent {
        self: boolean
    };
    start: {
-       dateTime: DateTime; 
+       dateTime: DateTime;
    };
    end: {
-       dateTime: DateTime; 
+       dateTime: DateTime;
    },
    iCalUID: string;
    sequence: number;
-   eventType: string
+   eventType: string;
    type: CalendarEventType; // custom field
-};
+}
 
 export class CalendarService {
     private static addImage = new discord.MessageAttachment("./rsc/calendar-plus.png", "calendar-plus.png");
@@ -61,7 +63,7 @@ export class CalendarService {
     *                    it would be: "i3q7a4qqictbi5dfu64mf0vub0@group.calendar.google.com".
     */
     constructor(client: BotgartClient, apiKey: string, calendarId: string) {
-        this.client = client;        
+        this.client = client;
         this.apiKey = apiKey;
         this.calendarId = calendarId;
         this.lastSync = moment()
@@ -112,7 +114,7 @@ export class CalendarService {
                 }
                 else if(moment(event.created) < this.lastSync) {
                     event.type = CalendarEventType.EDITED;
-                } 
+                }
                 else {
                     event.type = CalendarEventType.NEW;
                 }
