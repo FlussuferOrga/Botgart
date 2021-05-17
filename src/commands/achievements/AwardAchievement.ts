@@ -37,11 +37,11 @@ export class AwardAchievement extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<unknown>, player: discord.GuildMember, timestamp?: moment.Moment }): void {
+    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<unknown>; player: discord.GuildMember; timestamp?: moment.Moment }): void {
         if (args.achievement === undefined) {
             message.reply(L.get("NO_SUCH_ACHIEVEMENT"));
         } else {
-            const res = args.achievement.awardIn(<discord.Guild>message.guild, args.player, responsible.id);
+            const res = args.achievement.awardIn(message.guild as discord.Guild, args.player, responsible.id);
             switch (res) {
                 case AchievementAwardResult.AWARDED_FIRST_TIME:
                     message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME"));

@@ -45,8 +45,8 @@ export class Patch4 extends DBPatch {
 
     public async revert(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`DROP VIEW IF EXISTS command_permissions_agg`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS command_permissions`).run();
+        this.connection.prepare("DROP VIEW IF EXISTS command_permissions_agg").run();
+        this.connection.prepare("DROP TABLE IF EXISTS command_permissions").run();
         this.dbcommit();
     }
 }

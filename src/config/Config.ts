@@ -1,5 +1,5 @@
 import convict from "convict";
-import fs from 'fs';
+import fs from "fs";
 import { Memoizer } from "memoizer-ts";
 import moment from "moment-timezone";
 import * as Locale from "../Locale";
@@ -10,32 +10,32 @@ const LOG = logger();
 
 const configSchema = {
     prefix: {
-        doc: 'Prefix to use in discord',
+        doc: "Prefix to use in discord",
         format: val => {
             if (!/.+$/.test(val)) {
                 throw new Error(`Prefix '${val.first_name}' is not a valid discord prefix`);
             }
         },
-        default: ',',
-        arg: 'prefix',
-        env: 'command_prefix'
+        default: ",",
+        arg: "prefix",
+        env: "command_prefix"
     },
     home_id: {
-        doc: 'HomeWorld ID',
+        doc: "HomeWorld ID",
         format: val => {
             if (!isValidWorldId(val)) {
                 throw new Error(`World id '${val}' is not a valid world id`);
             }
         },
-        default: 2202, //Riverside FTW
-        arg: 'home-id',
-        env: 'HOME_ID'
+        default: 2202, // Riverside FTW
+        arg: "home-id",
+        env: "HOME_ID"
     },
     locales: {
-        doc: 'Language',
+        doc: "Language",
         format: val => {
             if (!Array.isArray(val)) {
-                throw new Error(`Languages should be an array`);
+                throw new Error("Languages should be an array");
             }
             const availableLanguages = Locale.availableLanguages.map(language => language.abbreviation);
             for (const language of val) {
@@ -49,28 +49,28 @@ const configSchema = {
         env: "LOCALES"
     },
     world_assignments: {
-        doc: 'World Role Mapping',
+        doc: "World Role Mapping",
         format: function (values) {
             if (!Array.isArray(values)) {
-                throw new Error('must be of type Array');
+                throw new Error("must be of type Array");
             }
             for (const value of values) {
                 if (value.role !== null && !isValidWorldId(value.world_id)) {
-                    throw new Error('World id is not valid');
+                    throw new Error("World id is not valid");
                 }
-                if (value.role === null && value.role === '') {
-                    throw new Error('Role is not valid');
+                if (value.role === null && value.role === "") {
+                    throw new Error("Role is not valid");
                 }
             }
         },
-        default: [{"world_id": 2202, "role": "rolename (must exist!)"}],
-        arg: 'world-assignments',
-        env: 'WORLD_ASSIGNMENTS'
+        default: [{ "world_id": 2202, "role": "rolename (must exist!)" }],
+        arg: "world-assignments",
+        env: "WORLD_ASSIGNMENTS"
     },
     owner_ids: {
         format: val => {
             if (!Array.isArray(val)) {
-                throw new Error(`Owner ids should be an array`);
+                throw new Error("Owner ids should be an array");
             }
             for (const singleOwnerId of val) {
                 if (!/\d+$/.test(singleOwnerId)) {
@@ -78,9 +78,9 @@ const configSchema = {
                 }
             }
         },
-        default: new Array<string>(),
-        arg: 'owner-ids',
-        env: 'OWNER_IDS'
+        default: [] as string[],
+        arg: "owner-ids",
+        env: "OWNER_IDS"
     },
     token: {
         format: val => {
@@ -88,13 +88,13 @@ const configSchema = {
                 throw new Error(`Token '${val.first_name}' is not a valid discord token`);
             }
         },
-        default: '',
-        arg: 'token',
-        env: 'TOKEN'
+        default: "",
+        arg: "token",
+        env: "TOKEN"
     },
     timeZone: {
-        arg: 'timeZone',
-        env: 'TIME_ZONE',
+        arg: "timeZone",
+        env: "TIME_ZONE",
         format: val => {
             if (moment.tz.zone(val) == undefined) {
                 throw new Error(`'${val}' is not a valid time zone`);
@@ -105,7 +105,7 @@ const configSchema = {
     ts_unregister_protection: {
         format: values => {
             if (!Array.isArray(values)) {
-                throw new Error(`ts_unregister_protection should be an array`);
+                throw new Error("ts_unregister_protection should be an array");
             }
             for (const value of values) {
                 if (!isValidGuildWars2AccountHandle(value)) {
@@ -113,143 +113,144 @@ const configSchema = {
                 }
             }
         },
-        default: new Array<string>(),
-        arg: 'ts-unregister-protection',
-        env: 'TS_UNREGISTER_PROTECTION'
+        default: [] as string[],
+        arg: "ts-unregister-protection",
+        env: "TS_UNREGISTER_PROTECTION"
     },
     ts_commander_check_interval: {
-        format: 'nat',
+        format: "nat",
         default: 300000,
-        arg: 'ts-commander-check-interval',
-        env: 'TS_COMMANDER_CHECK_INTERVAL'
+        arg: "ts-commander-check-interval",
+        env: "TS_COMMANDER_CHECK_INTERVAL"
     },
     ts_listener: {
         ip: {
             format: String,
-            default: 'localhost',
-            arg: 'ts-listener-ip',
-            env: 'TS_LISTENER_IP'
+            default: "localhost",
+            arg: "ts-listener-ip",
+            env: "TS_LISTENER_IP"
         },
         port: {
-            format: 'port',
+            format: "port",
             default: 10137,
-            arg: 'ts-listener-port',
-            env: 'TS_LISTENER_PORT'
+            arg: "ts-listener-port",
+            env: "TS_LISTENER_PORT"
         },
         channel_delay: {
-            format: 'nat',
+            format: "nat",
             default: 300,
-            arg: 'ts-listener-channel-delay',
-            env: 'TS_LISTENER_CHANNEL_DELAY'
+            arg: "ts-listener-channel-delay",
+            env: "TS_LISTENER_CHANNEL_DELAY"
         },
         user_delay: {
-            format: 'nat',
+            format: "nat",
             default: 300,
-            arg: 'ts-listener-user-delay',
-            env: 'TS_LISTENER_USER_DELAY'
+            arg: "ts-listener-user-delay",
+            env: "TS_LISTENER_USER_DELAY"
         },
         grace_period: {
             format: Number,
             default: 60,
-            arg: 'ts-listener-grace-delay',
-            env: 'TS_LISTENER_GRACE_DELAY'
+            arg: "ts-listener-grace-delay",
+            env: "TS_LISTENER_GRACE_DELAY"
         },
         broadcast_channel: {
             format: String,
-            default: 'raid announcements',
-            arg: 'ts-listener-broadcast_channel',
-            env: 'TS_LISTENER_BROADCAST_CHANNEL'
+            default: "raid announcements",
+            arg: "ts-listener-broadcast_channel",
+            env: "TS_LISTENER_BROADCAST_CHANNEL"
         },
         ping_role: {
             format: String,
-            default: 'Raiders',
-            arg: 'ts-listener-ping-role',
-            env: 'TS_LISTENER_PING_ROLE'
+            default: "Raiders",
+            arg: "ts-listener-ping-role",
+            env: "TS_LISTENER_PING_ROLE"
         },
         commander_role: {
             format: String,
-            default: 'Commander',
-            arg: 'ts-listener-commander-role',
-            env: 'TS_LISTENER_COMMANDER_ROLE'
+            default: "Commander",
+            arg: "ts-listener-commander-role",
+            env: "TS_LISTENER_COMMANDER_ROLE"
         },
     },
     http: {
         host: {
             format: String,
-            default: 'localhost',
-            arg: 'http-host',
-            env: 'HTTP_HOST'
+            default: "localhost",
+            arg: "http-host",
+            env: "HTTP_HOST"
         },
         port: {
-            format: 'port',
-            default: '3000',
-            arg: 'http-port',
-            env: 'HTTP_PORT'
+            format: "port",
+            default: "3000",
+            arg: "http-port",
+            env: "HTTP_PORT"
         },
     },
     achievements: {
         enabled: {
             format: Boolean,
             default: true,
-            arg: 'achievements-enabled',
-            env: 'ACHIEVEMENTS_ENABLED'
+            arg: "achievements-enabled",
+            env: "ACHIEVEMENTS_ENABLED"
         },
         channel: {
             format: String,
-            default: 'achievements',
-            arg: 'achievements-channel',
-            env: 'ACHIEVEMENTS_CHANNEL'
+            default: "achievements",
+            arg: "achievements-channel",
+            env: "ACHIEVEMENTS_CHANNEL"
         },
         ignoring_roles: {
             format: Array,
-            default: ['covert'],
-            arg: 'achievements-ignoring_roles',
-            env: 'ACHIEVEMENTS_IGNORING_ROLES'
+            default: ["covert"],
+            arg: "achievements-ignoring_roles",
+            env: "ACHIEVEMENTS_IGNORING_ROLES"
         },
     },
     gw2api: {
         delays: {
             wvw_stats: {
-                format: 'nat',
+                format: "nat",
                 default: 10000,
-                arg: 'gw2api-delays-wvw-stats',
-                env: 'GW2API_DELAYS_WVW_STATS'
+                arg: "gw2api-delays-wvw-stats",
+                env: "GW2API_DELAYS_WVW_STATS"
             },
             wvw_matches: {
-                format: 'nat',
+                format: "nat",
                 default: 10000,
-                arg: 'gw2api-delays-wvw-matches',
-                env: 'GW2API_DELAYS_WVW_MATCHES'
+                arg: "gw2api-delays-wvw-matches",
+                env: "GW2API_DELAYS_WVW_MATCHES"
             },
         }
     },
     disabled: {
         listeners: {
             format: Array,
-            default: new Array<string>(),
-            arg: 'disabled-listeners',
-            env: 'DISABLED_LISTENERS'
+            default: [] as string[],
+            arg: "disabled-listeners",
+            env: "DISABLED_LISTENERS"
         },
         commands: {
             format: Array,
-            default: new Array<string>(),
-            arg: 'disabled-commands',
-            env: 'DISABLED_COMMANDS'
+            default: [] as string[],
+            arg: "disabled-commands",
+            env: "DISABLED_COMMANDS"
         },
         inhibitors: {
             format: Array,
-            default: new Array<string>(),
-            arg: 'disabled-inhibitors',
-            env: 'DISABLED_INHIBITORS'
+            default: [] as string[],
+            arg: "disabled-inhibitors",
+            env: "DISABLED_INHIBITORS"
         },
     }
 };
 
+function logConfig(config) {
+    let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
 
-const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
-
-export function getConfig() {
-    return getConfigInternal();
+    // probably we shouldn't log a token.
+    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
+    LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
 
 function loadConfiguration() {
@@ -260,7 +261,7 @@ function loadConfiguration() {
         }
 
         logConfig(config);
-        config.validate({allowed: 'strict'});// throws error if config does not conform to schema
+        config.validate({ allowed: "strict" });// throws error if config does not conform to schema
 
         return config;
     } catch (e) {
@@ -269,11 +270,8 @@ function loadConfiguration() {
     }
 }
 
-function logConfig(config) {
-    let configJsonString = `${JSON.stringify(config.getProperties(), null, 2)}`;
+const getConfigInternal = Memoizer.makeMemoized(loadConfiguration);
 
-    //probably we shouldn't log a token.
-    configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
-    LOG.debug(`Resolved Configuration:\n${configJsonString}`);
+export function getConfig() {
+    return getConfigInternal();
 }
-

@@ -103,5 +103,4 @@ export class Patch {
             await this.rollback();
         }
     }
-
 }

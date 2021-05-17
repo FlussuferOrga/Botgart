@@ -70,7 +70,7 @@ export class Database {
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
              )`,
-            `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)`
+            "CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)"
         ];
         sqls.forEach(sql => this.execute(db => db.prepare(sql).run()));
     }
@@ -114,5 +114,4 @@ export class Database {
         db.close();
         return res;
     }
-
 }

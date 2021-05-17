@@ -17,14 +17,14 @@ export class WebServer {
     }
 
     private registerRoutes() {
-        this.app.get('/health', function (req, res) {
-            res.send('OK');
+        this.app.get("/health", (req, res) => {
+            res.send("OK");
         });
     }
 
     public start() {
         const httpConfig = getConfig().get().http;
-        this.server = this.app.listen(parseInt(httpConfig.port), httpConfig.host, function () {
+        this.server = this.app.listen(parseInt(httpConfig.port), httpConfig.host, () => {
             LOG.info(`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
         });
     }

@@ -1,3 +1,4 @@
+/* eslint-disable max-lines */
 import * as discord from "discord.js";
 import * as moment from "moment";
 import { BotgartClient } from "../BotgartClient";
@@ -17,9 +18,9 @@ import {
 import { registrableAchievement } from "./AchievementRegistry";
 
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // ACHIEVEMENTS
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 @registrableAchievement
 export class Glimmer extends TagDownAchievement {
     public constructor(client: BotgartClient) {
@@ -121,7 +122,7 @@ export class Owl extends TagDownAchievement {
 
     checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
         return context.commander.getRaidStart() !== undefined
-            && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "23:00:00", "06:00:00")
+            && U.isBetweenTime(context.commander.getRaidStart() as moment.Moment, "23:00:00", "06:00:00")
             && context.commander.getRaidTime() > 3600;
     }
 }
@@ -139,7 +140,7 @@ export class Earlybird extends TagDownAchievement {
 
     checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
         return context.commander.getRaidStart() !== undefined
-            && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "06:00:00", "10:00:00")
+            && U.isBetweenTime(context.commander.getRaidStart() as moment.Moment, "06:00:00", "10:00:00")
             && context.commander.getRaidTime() > 3600;
     }
 }
@@ -157,7 +158,7 @@ export class Annihilator extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         let holds = false;
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
@@ -189,7 +190,7 @@ export class NeverSurrender extends TagUpAchievement {
             if (stats) {
                 const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
                 if (ourColour === undefined) {
-                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(<moment.Moment>context.commander.getRaidStart()) : "UNDEFINED";
+                    const ts = context.commander.getRaidStart() !== undefined ? U.momentToLocalSqliteTimestamp(context.commander.getRaidStart() as moment.Moment) : "UNDEFINED";
                     LOG.warn(`Unable to find our colour with world ID ${getConfig().get().home_id} in a matchup around ${ts}.`);
                 } else {
                     const ourStats = stats.find(s => s.faction === ourColour);
@@ -216,7 +217,7 @@ export class Conqueror extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         let holds = false;
         const obj = context.objectives;
         const ourTeam: [string, number[]] | undefined = Object.entries(obj.all_worlds).find(([key, value]) => value.includes(getConfig().get().home_id));
@@ -263,7 +264,7 @@ export class AgileDefender extends TagDownAchievement {
 
     checkCondition(discordUser: discord.GuildMember, context: ts3.TagDown): boolean {
         let holds: boolean = context.commander.getRaidStart() !== undefined
-            && U.isBetweenTime(<moment.Moment>context.commander.getRaidStart(), "18:00:00", "21:00:00")
+            && U.isBetweenTime(context.commander.getRaidStart() as moment.Moment, "18:00:00", "21:00:00")
             && context.commander.getRaidTime() > 3600; // raid was during prime time and went for at least an hour
         if (holds) {
             const ourColour = this.client.matchupRepository.getColourOf(getConfig().get().home_id, context.commander.getRaidStart());
@@ -271,7 +272,7 @@ export class AgileDefender extends TagDownAchievement {
                 .filter(obj => obj.owner === ourColour && obj.tier === 3)
                 .map(obj => obj.objective_id);
             if (t3AtStart.length >= 3) { // we held at least three t3 objectives when they started
-                const lost = this.client.matchupRepository.capturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc().local())
+                const lost = this.client.matchupRepository.capturedBetween(context.commander.getRaidStart() as moment.Moment, moment.utc().local())
                     .filter(c => c.old_owner === ourColour && c.old_tier === 3);
                 holds = lost.length === 0; // we lost none of the t3 structures
             }
@@ -342,12 +343,12 @@ export class Princess extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         const palaceID = "1099-114"; // https://api.guildwars2.com/v2/wvw/objectives?ids=1099-114
         const colour: FactionColour | undefined = this.client.matchupRepository.getFactionColour(moment.utc(), getConfig().get().home_id);
         return colour !== undefined
             && context.commander.getRaidStart() !== undefined
-            && this.client.matchupRepository.wasCapturedBetween(<moment.Moment>context.commander.getRaidStart(), moment.utc(), palaceID, colour);
+            && this.client.matchupRepository.wasCapturedBetween(context.commander.getRaidStart() as moment.Moment, moment.utc(), palaceID, colour);
     }
 }
 
@@ -379,7 +380,7 @@ export class Ettin extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length >= 2;
     }
 }
@@ -395,7 +396,7 @@ export class Hydra extends ObjectiveAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander, "objectives": gw2api.WvWMatches }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { "commander": ts3.Commander; "objectives": gw2api.WvWMatches }): boolean {
         return this.client.commanders.getActiveCommanders().filter(c => c.getRaidTime() > 3600).length >= 3;
     }
 }
@@ -460,7 +461,7 @@ export class FromAshes extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 5 && context.newMatchup.tier === 4;
     }
 }
@@ -476,7 +477,7 @@ export class ThePresident extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 4 && context.newMatchup.tier === 3;
     }
 }
@@ -492,7 +493,7 @@ export class MountainIsCalling extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 3 && context.newMatchup.tier === 2;
     }
 }
@@ -508,7 +509,7 @@ export class ThePeak extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === 2 && context.newMatchup.tier === 1;
     }
 }
@@ -524,7 +525,7 @@ export class TierSolidifier extends NewMatchupAchievement {
         );
     }
 
-    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup, newMatchup: Matchup }): boolean {
+    checkCondition(discordUser: discord.GuildMember, context: { lastMatchup: Matchup; newMatchup: Matchup }): boolean {
         return context.lastMatchup !== undefined && context.lastMatchup.tier === context.newMatchup.tier;
     }
 }

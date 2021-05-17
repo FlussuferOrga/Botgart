@@ -4,6 +4,19 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export type FactionColour = "Red" | "Blue" | "Green";
 
+type Objective = {
+    id: number;
+    owner: string;
+    type: string;
+    points_tick: number;
+    points_capture: number;
+    last_flipped: Date;
+    claimed_by: null;
+    claimed_at: Date;
+    yaks_delivered: number;
+    guild_upgrade: number[];
+};
+
 export class MatchupRepository extends AbstractDbRepository {
     public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
         return this.execute(db =>
@@ -24,11 +37,9 @@ export class MatchupRepository extends AbstractDbRepository {
                 .get(Util.momentToLocalSqliteTimestamp(start));
             let matchId: number = existingMatch ? existingMatch.id : undefined;
             if (matchId === undefined) {
-                db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
-                    .run(tier,
-                        Util.momentToLocalSqliteTimestamp(start),
-                        Util.momentToLocalSqliteTimestamp(end));
-                matchId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
+                matchId = db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, datetime(?, 'localtime'), datetime(?, 'localtime'))")
+                    .run(tier, Util.momentToLocalSqliteTimestamp(start), Util.momentToLocalSqliteTimestamp(end))
+                    .lastInsertRowid;
                 for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
                     for (const worldId of worlds) {
                         this.addMatchupFaction(matchId, worldId, colour);
@@ -97,19 +108,17 @@ export class MatchupRepository extends AbstractDbRepository {
 
     public addStatsSnapshot(): number {
         return this.execute(db =>
-            db.transaction((_) => {
-                db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES").run();
-                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-            })(null)
+            db.transaction((_) => db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES")
+                .run()
+                .lastInsertRowid)(null)
         );
     }
 
     public addObjectivesSnapshot(): number {
         return this.execute(db =>
-            db.transaction((_) => {
-                db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES").run();
-                return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-            })(null)
+            db.transaction((_) => db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES")
+                .run()
+                .lastInsertRowid)(null)
         );
     }
 
@@ -148,18 +157,18 @@ export class MatchupRepository extends AbstractDbRepository {
      * @returns: information about the state of all objectives
      */
     public getObjectivesAround(now: moment.Moment | undefined = undefined): {
-        snapshot_id: number,
-        timestamp: string,
-        matchup_objective_id: number,
-        matchup_id: number,
-        objective_id: number
-        map: string, owner: string,
-        type: string,
-        points_tick: number,
-        points_capture: number,
-        last_flipped: string,
-        yaks_delivered: number,
-        tier: number
+        snapshot_id: number;
+        timestamp: string;
+        matchup_objective_id: number;
+        matchup_id: number;
+        objective_id: number;
+        map: string; owner: string;
+        type: string;
+        points_tick: number;
+        points_capture: number;
+        last_flipped: string;
+        yaks_delivered: number;
+        tier: number;
     }[] {
         let timestamp: moment.Moment | undefined;
         if (!now) {
@@ -221,17 +230,16 @@ export class MatchupRepository extends AbstractDbRepository {
      * now: the moment around which the stats should be determined
      * returns: information about the stats (not aggregated)
      */
-    public getStatsAround(now: moment.Moment | undefined = undefined)
-        : {
-        snapshot_id: number,
-        timestamp: string,
-        matchup_stats_id: number,
-        matchup_id: number,
-        map: string,
-        faction: string,
-        deaths: number,
-        kills: number,
-        victory_points: number
+    public getStatsAround(now: moment.Moment | undefined = undefined): {
+        snapshot_id: number;
+        timestamp: string;
+        matchup_stats_id: number;
+        matchup_id: number;
+        map: string;
+        faction: string;
+        deaths: number;
+        kills: number;
+        victory_points: number;
     }[] {
         let timestamp: moment.Moment | undefined;
         if (!now) {
@@ -279,12 +287,19 @@ export class MatchupRepository extends AbstractDbRepository {
         `).all(ts, ts, ts));
     }
 
-    public addMatchupStats(matchId: number, snapshotId: number, map: string, faction: string, deaths: number, kills: number, victoryPoints: number) {
+    // eslint-disable-next-line max-params
+    public addMatchupStats(matchId: number,
+                           snapshotId: number,
+                           map: string,
+                           faction: string,
+                           deaths: number,
+                           kills: number,
+                           victoryPoints: number) {
         return this.execute(db => db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES(?,?,?,?,?,?,?)")
             .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
     }
 
-    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, { id: number, owner: string, type: string, points_tick: number, points_capture: number, last_flipped: Date, claimed_by: null, claimed_at: Date, yaks_delivered: number, guild_upgrade: number[] }, number][]) {
+    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, Objective, number][]) {
         return this.execute(db => {
             const stmt = db.prepare(`INSERT INTO matchup_objectives
                                      (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick,
@@ -312,28 +327,28 @@ export class MatchupRepository extends AbstractDbRepository {
 export type StructureType = "Spawn" | "Ruins" | "Mercenary" | "Sentry" | "Camp" | "Tower" | "Keep" | "Castle";
 
 export interface Capture {
-    readonly matchup_objective_id: number,
-    readonly matchup_id: number,
-    readonly objective_id: number,
-    readonly map: string,
-    readonly type: StructureType,
-    readonly new_snapshot_id: number,
-    readonly new_owner: FactionColour,
-    readonly new_points_tick: number,
-    readonly new_points_capture: number,
-    readonly new_last_flipped: string,
-    readonly old_snapshot_id: number,
-    readonly old_owner: FactionColour,
-    readonly old_points_tick: number,
-    readonly old_points_capture: number,
-    readonly old_last_flipped: string,
-    readonly old_yaks: number,
-    readonly old_tier: number
+    readonly matchup_objective_id: number;
+    readonly matchup_id: number;
+    readonly objective_id: number;
+    readonly map: string;
+    readonly type: StructureType;
+    readonly new_snapshot_id: number;
+    readonly new_owner: FactionColour;
+    readonly new_points_tick: number;
+    readonly new_points_capture: number;
+    readonly new_last_flipped: string;
+    readonly old_snapshot_id: number;
+    readonly old_owner: FactionColour;
+    readonly old_points_tick: number;
+    readonly old_points_capture: number;
+    readonly old_last_flipped: string;
+    readonly old_yaks: number;
+    readonly old_tier: number;
 }
 
 export interface Matchup {
-    readonly matchup_id: number,
-    readonly tier: number,
-    readonly start: string,
-    readonly end: string
+    readonly matchup_id: number;
+    readonly tier: number;
+    readonly start: string;
+    readonly end: string;
 }

@@ -22,7 +22,8 @@ export class ReactionSnapshot extends BotgartCommand {
 
                                 const guild: discord.Guild | undefined = cl.guilds.cache.find(g => g.id === guildId);
                                 if (guild !== undefined) {
-                                    const channel: discord.TextChannel | undefined = <discord.TextChannel>guild.channels.cache.find(c => c instanceof discord.TextChannel && c.id === channelId);
+                                    const channel: discord.TextChannel | undefined = guild.channels.cache
+                                        .find(c => c instanceof discord.TextChannel && c.id === channelId) as discord.TextChannel;
                                     if (channel !== undefined) {
                                         return channel.messages.fetch(messageId).catch(er => null);
                                     }
@@ -42,11 +43,11 @@ export class ReactionSnapshot extends BotgartCommand {
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const listings: string[] = [];
-        for (const [, reaction] of (<discord.Message>args.message).reactions.cache.sort((r1, r2) => (r2.count ?? 0) - (r1.count ?? 0))) {
+        for (const [, reaction] of (args.message as discord.Message).reactions.cache.sort((r1, r2) => (r2.count ?? 0) - (r1.count ?? 0))) {
             const users = await reaction.users.fetch();
             listings.push(`**${reaction.emoji.name} (${reaction.count})**\n${users.map(u => `${u.username} (<@${u.id}>) `).join("\n")}`);
         }
-        message.reply("\n" + listings.join("\n\n"), {split: true});
+        message.reply("\n" + listings.join("\n\n"), { split: true });
     }
 }
 

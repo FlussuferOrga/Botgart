@@ -49,7 +49,7 @@ export class Authenticate extends BotgartCommand {
             return;
         }
 
-        const members: { guild: discord.Guild, member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
+        const members: { guild: discord.Guild; member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
         let reply = "";
         // this snippet allows users to authenticate themselves
         // through a DM and is dedicated to Jey, who is a fucking
@@ -58,7 +58,7 @@ export class Authenticate extends BotgartCommand {
         this.client.guilds.cache.forEach(async g => {
             const m: discord.GuildMember = await g.members.fetch(message.author.id); // cache.find(m => m.id == message.author.id);
             if (m) {
-                members.push({guild: g, member: m});
+                members.push({ guild: g, member: m });
             }
         });
 
@@ -67,7 +67,7 @@ export class Authenticate extends BotgartCommand {
         const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key);
         if (validFormat) {
             // try to delete the message for privacy reasons if it is not a direct message
-            if (message && message.member) {
+            if (message?.member) {
                 if (message.deletable) {
                     message.delete();
                 } else {
@@ -84,7 +84,7 @@ export class Authenticate extends BotgartCommand {
                         responsible.send(reply);
                     } else {
                         getAccountGUID(args.key).then(async guid => {
-                            await Util.asyncForEach(members, async (m: { guild: discord.Guild, member: discord.GuildMember }) => {
+                            await Util.asyncForEach(members, async (m: { guild: discord.Guild; member: discord.GuildMember }) => {
                                 const r: discord.Role | undefined = (await m.guild.roles.fetch()).cache.find(r => r.name === role);
                                 if (r === undefined) {
                                     LOG.error(`Role '${role}' not found on server '${m.guild.name}'. Skipping.`);
@@ -110,9 +110,14 @@ export class Authenticate extends BotgartCommand {
                                             currentRole = (await m.guild.roles.fetch()).cache.find(r => r.name === reg.registration_role) || null;
                                             LOG.info(`User '${responsible.username}' was already registered with role '${currentRole}' which will be removed.`);
                                         }
-
                                     }
-                                    const unique = cl.registrationRepository.storeAPIKey(m.member.user.id, m.guild.id, args.key, guid.toString(), <string>accountName, r.name); // this cast should pass, since we either resolved by now or fell back to NULL
+                                    const unique = cl.registrationRepository.storeAPIKey(
+                                        m.member.user.id,
+                                        m.guild.id,
+                                        args.key,
+                                        guid.toString(),
+                                        accountName as string,
+                                        r.name); // this cast should pass, since we either resolved by now or fell back to NULL
                                     if (unique) {
                                         LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(args.key, m.member.user.username, m.guild.name, m.guild.id));
                                         // Beware! This is not 100% fail safe and users have figured out the weirdest ways and configurations which are just too wild to cover entirely:
@@ -132,7 +137,10 @@ export class Authenticate extends BotgartCommand {
                                         for (const achievement of achievements) {
                                             achievement?.giveRole(m.member);
                                         }
-                                        cl.discordLog(m.guild, Authenticate.LOG_TYPE_AUTH, L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), <string>accountName, r.name]), false);
+                                        cl.discordLog(m.guild,
+                                            Authenticate.LOG_TYPE_AUTH,
+                                            L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), accountName as string, r.name]),
+                                            false);
                                         reply = L.get("KEY_ACCEPTED");
                                     } else {
                                         LOG.info("Duplicate API key {0} on server {1}.".formatUnicorn(args.key, m.guild.name));

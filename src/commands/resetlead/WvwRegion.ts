@@ -20,6 +20,6 @@ export namespace WvwRegion {
             default:
                 throw Error("Unmapped WvW Region");
         }
-        return {resetWeekDay, resetTimeUTC};
+        return { resetWeekDay, resetTimeUTC };
     }
 }

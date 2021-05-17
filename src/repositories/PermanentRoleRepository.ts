@@ -5,7 +5,7 @@ const LOG = logger();
 
 export class PermanentRoleRepository extends AbstractDbRepository {
     public storePermanentRole(user: string, guild: string, role: string): boolean {
-        const sql = `INSERT INTO permanent_roles(guild, user, role) VALUES(?,?,?)`;
+        const sql = "INSERT INTO permanent_roles(guild, user, role) VALUES(?,?,?)";
         return this.execute(db => {
             try {
                 db.prepare(sql).run(guild, user, role);
@@ -18,11 +18,11 @@ export class PermanentRoleRepository extends AbstractDbRepository {
     }
 
     public getPermanentRoles(user: string, guild: string): string[] {
-        return this.execute(db => db.prepare(`SELECT role FROM permanent_roles WHERE guild = ? AND user = ?`).all(guild, user).map(r => r.role));
+        return this.execute(db => db.prepare("SELECT role FROM permanent_roles WHERE guild = ? AND user = ?").all(guild, user).map(r => r.role));
     }
 
     public deletePermanentRole(user: string, guild: string, role: string): boolean {
-        const sql = `DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?`;
+        const sql = "DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?";
         return this.execute(db => {
             try {
                 db.prepare(sql).run(guild, user, role);

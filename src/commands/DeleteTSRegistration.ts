@@ -28,7 +28,7 @@ export class DeleteTsRegistration extends BotgartCommand {
         if (getConfig().get().ts_unregister_protection.includes(gw2account)) {
             this.reply(message, responsible, L.get("TS_UNREGISTER_PROTECTION"));
         } else {
-            this.getBotgartClient().getTS3Connection().delete("registration", {"gw2account": gw2account})
+            this.getBotgartClient().getTS3Connection().delete("registration", { "gw2account": gw2account })
                 .then(res => {
                     const data: { changes?: number } = JSON.parse(res);
                     const changes: number = data?.changes ? data.changes : 0;

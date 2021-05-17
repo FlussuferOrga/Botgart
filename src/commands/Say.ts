@@ -33,7 +33,7 @@ export class Say extends BotgartCommand {
         );
     }
 
-    command(message, responsible, guild, args) {
+    async command(message, responsible, guild, args) {
         // Note that this callback could take place long after the cron was scheduled.
         // So the bot could no longer be there. We therefore need to find() the guild
         // again to make sure the bot is still on there.
@@ -43,7 +43,8 @@ export class Say extends BotgartCommand {
             LOG.error("I am not a member of guild {0}.".formatUnicorn(guild.id));
             result = false;
         } else {
-            const c: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.id == args.channel.id && c instanceof discord.TextChannel);
+            const c: discord.TextChannel = g.channels.cache
+                .find(c => c.id == args.channel.id && c instanceof discord.TextChannel) as discord.TextChannel;
             if (!c) {
                 LOG.error("Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
@@ -57,8 +58,8 @@ export class Say extends BotgartCommand {
     }
 
     serialiseArgs(args) {
-        const clone = Object.assign({}, args);
-        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
+        const clone = { ...args };
+        clone.channel = { guild: args.channel.guild.id, channel: args.channel.id };
         return JSON.stringify(clone);
     }
 

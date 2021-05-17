@@ -22,7 +22,7 @@ export class Patch3 extends DBPatch {
 
     private async resolveAccountNames(rows) {
         const semaphore = new Semaphore(10);
-        for await(const r of rows) {
+        for await (const r of rows) {
             const release = await semaphore.acquire();
             let accname = await getAccountName(r.api_key);
             if (accname === false) {
@@ -64,7 +64,7 @@ export class Patch3 extends DBPatch {
         await this.resolveAccountNames(con.prepare(`SELECT *
                                                     FROM registrations`).all());
         // delete old table and rename new one
-        con.prepare(`DROP TABLE registrations`).run();
+        con.prepare("DROP TABLE registrations").run();
         con.prepare(`ALTER TABLE new_registrations
             RENAME TO registrations`).run();
         con.pragma("foreign_keys = ON");
@@ -75,8 +75,8 @@ export class Patch3 extends DBPatch {
                                                   FROM registrations`).get().c;
         const post = this.oldCount === newCount;
         if (!post) {
-            LOG.error("Expected equal number of entries for old and new table. But old table had {0} entries " +
-                "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
+            LOG.error("Expected equal number of entries for old and new table. But old table had {0} entries "
+                + "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
         }
         return post;
     }
@@ -108,12 +108,10 @@ export class Patch3 extends DBPatch {
         `).run();
 
         // delete old table and rename new one
-        con.prepare(`DROP TABLE registrations`).run();
+        con.prepare("DROP TABLE registrations").run();
         con.prepare(`ALTER TABLE new_registrations
             RENAME TO registrations`).run();
         con.pragma("foreign_keys = ON");
         this.dbcommit();
     }
-
-
 }

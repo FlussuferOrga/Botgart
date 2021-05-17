@@ -301,31 +301,31 @@ export class Patch8 extends DBPatch {
     public async revert(): Promise<void> {
         this.dbbegin();
 
-        this.connection.prepare(`DROP VIEW IF EXISTS captured_objectives`).run();
-        this.connection.prepare(`DROP VIEW IF EXISTS map_ticks`).run();
-        this.connection.prepare(`DROP VIEW IF EXISTS total_ticks`).run();
-        this.connection.prepare(`DROP VIEW IF EXISTS total_stats`).run();
-        this.connection.prepare(`DROP INDEX IF EXISTS stats_snapshots_timestamp_index`).run();
-        this.connection.prepare(`DROP INDEX IF EXISTS objectives_snapshots_timestamp_index`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS achievement_progress`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS player_achievement_posts`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS player_achievements`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS ts_leads`).run();
+        this.connection.prepare("DROP VIEW IF EXISTS captured_objectives").run();
+        this.connection.prepare("DROP VIEW IF EXISTS map_ticks").run();
+        this.connection.prepare("DROP VIEW IF EXISTS total_ticks").run();
+        this.connection.prepare("DROP VIEW IF EXISTS total_stats").run();
+        this.connection.prepare("DROP INDEX IF EXISTS stats_snapshots_timestamp_index").run();
+        this.connection.prepare("DROP INDEX IF EXISTS objectives_snapshots_timestamp_index").run();
+        this.connection.prepare("DROP TABLE IF EXISTS achievement_progress").run();
+        this.connection.prepare("DROP TABLE IF EXISTS player_achievement_posts").run();
+        this.connection.prepare("DROP TABLE IF EXISTS player_achievements").run();
+        this.connection.prepare("DROP TABLE IF EXISTS ts_leads").run();
 
-        this.connection.prepare(`DROP TABLE IF EXISTS matchup_objectives`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS matchup_stats`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS matchup_factions`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS stats_snapshots`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS objectives_snapshots`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS matchup_objectives").run();
+        this.connection.prepare("DROP TABLE IF EXISTS matchup_stats").run();
+        this.connection.prepare("DROP TABLE IF EXISTS matchup_factions").run();
+        this.connection.prepare("DROP TABLE IF EXISTS stats_snapshots").run();
+        this.connection.prepare("DROP TABLE IF EXISTS objectives_snapshots").run();
 
-        this.connection.prepare(`DROP TABLE IF EXISTS matchups`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS matchups").run();
 
-        this.connection.prepare(`DROP TABLE IF EXISTS player_activities`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS player_activities").run();
 
-        this.connection.prepare(`DROP TABLE IF EXISTS wvw_factions`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS wvw_maps`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS wvw_factions").run();
+        this.connection.prepare("DROP TABLE IF EXISTS wvw_maps").run();
 
-        this.connection.prepare(`DROP TABLE IF EXISTS environment_variables`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS environment_variables").run();
         this.dbcommit();
     }
 }

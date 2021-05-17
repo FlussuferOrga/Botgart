@@ -13,32 +13,32 @@ enum WvWMapNames {
 }
 
 interface Objective {
-    "id": string
-    "type": string
-    "owner": string
-    "last_flipped": string
-    "claimed_by": string | null
-    "claimed_at": string | null
-    "points_tick": number,
-    "points_capture": number,
-    "guild_upgrades": number[],
-    "yaks_delivered?": number
+    "id": string;
+    "type": string;
+    "owner": string;
+    "last_flipped": string;
+    "claimed_by": string | null;
+    "claimed_at": string | null;
+    "points_tick": number;
+    "points_capture": number;
+    "guild_upgrades": number[];
+    "yaks_delivered?": number;
 }
 
 interface RGBNumbers {
     readonly red: number;
     readonly blue: number;
-    readonly green: number
+    readonly green: number;
 }
 
 interface MapStats {
     readonly id: number;
-    readonly type: WvWMapNames,
-    readonly scores: RGBNumbers[],
-    readonly bonues: string[],
-    readonly objectives: Objective[],
-    readonly deaths: RGBNumbers[],
-    readonly kills: RGBNumbers[]
+    readonly type: WvWMapNames;
+    readonly scores: RGBNumbers[];
+    readonly bonues: string[];
+    readonly objectives: Objective[];
+    readonly deaths: RGBNumbers[];
+    readonly kills: RGBNumbers[];
 }
 
 export interface WvWMatches {
@@ -47,12 +47,12 @@ export interface WvWMatches {
     readonly end_time: string;
     readonly scores: RGBNumbers;
     readonly worlds: RGBNumbers;
-    readonly all_worlds: { red: number[], blue: number[], green: number[] };
+    readonly all_worlds: { red: number[]; blue: number[]; green: number[] };
     readonly deaths: RGBNumbers;
     readonly kills: RGBNumbers;
     readonly victory_points: RGBNumbers;
-    readonly skirmishes: { id: number, scores: RGBNumbers, map_scores: unknown[] }[]
-    readonly maps: MapStats[]
+    readonly skirmishes: { id: number; scores: RGBNumbers; map_scores: unknown[] }[];
+    readonly maps: MapStats[];
 }
 
 export class APIEmitter extends events.EventEmitter {
@@ -62,10 +62,11 @@ export class APIEmitter extends events.EventEmitter {
     public constructor() {
         super();
 
-        //this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
-        //this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
+        // this.schedule("wvw-objectives", api => api.wvw().objectives(), 60000);
+        // this.schedule("wvw-upgrades", api => api.wvw().upgrades(), 1000);
         const homeId = getConfig().get().home_id;
         this.schedule("wvw-stats",
+            // eslint-disable-next-line newline-per-chained-call
             api => api.wvw().matches().live().stats().world(homeId)
                 .catch(err => LOG.warn(`Error while fetching match stats: ${err}`)),
             getConfig().get().gw2api.delays.wvw_stats);
@@ -73,11 +74,10 @@ export class APIEmitter extends events.EventEmitter {
             api => api.wvw().matches().live().world(homeId)
                 .catch(err => LOG.warn(`Error while fetching match details: ${err}`)),
             getConfig().get().gw2api.delays.wvw_matches);
-
     }
 
     public schedule(name: string, endpoint: (gw2) => Promise<unknown>, interval: number): void {
-        //endpoint(api).then(r => console.log(name, r));
+        // endpoint(api).then(r => console.log(name, r));
         const gw = createApiInstance();
         setInterval(() => this.emit(name, endpoint(gw)), interval);
     }

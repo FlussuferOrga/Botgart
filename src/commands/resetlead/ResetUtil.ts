@@ -10,7 +10,7 @@ export function currentYear(): number {
 }
 
 export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
-    const {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion);
+    const { resetWeekDay, resetTimeUTC } = WvwRegion.getProperties(wvwRegion);
     return moment().tz("UTC")
         .year(year)
         .isoWeek(isoWeek)
@@ -21,7 +21,7 @@ export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().ye
 
 export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
     const _startingPoint = startingPoint.clone().tz("UTC");
-    const {resetWeekDay, resetTimeUTC} = WvwRegion.getProperties(wvwRegion);
+    const { resetWeekDay, resetTimeUTC } = WvwRegion.getProperties(wvwRegion);
 
     let nextResetMoment;
     if (_startingPoint.isoWeekday() < resetWeekDay) {
@@ -29,17 +29,17 @@ export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwR
         nextResetMoment = _startingPoint.isoWeekday(resetWeekDay);
     } else if (_startingPoint.isoWeekday() > resetWeekDay) {
         // reset already happened this week
-        nextResetMoment = _startingPoint.add(1, 'weeks').isoWeekday(resetWeekDay);
+        nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
     } else if (_startingPoint.isoWeekday() == resetWeekDay) {
         // reset day is today
         if (_startingPoint.hour() >= resetTimeUTC) {
             // reset is happening or happened today
-            nextResetMoment = _startingPoint.add(1, 'weeks').isoWeekday(resetWeekDay);
+            nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
         } else {
-            nextResetMoment = _startingPoint; //starting point IS reset day but before reset time
+            nextResetMoment = _startingPoint; // starting point IS reset day but before reset time
         }
     }
     // reset time
-    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf('hour');
+    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf("hour");
     return nextResetMoment;
 }

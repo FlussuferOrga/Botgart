@@ -84,9 +84,9 @@ export class Patch9 extends DBPatch {
 
     public async revert(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`DROP VIEW IF EXISTS fishing_leaderboard`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS caught_fish`).run();
-        this.connection.prepare(`DROP TABLE IF EXISTS fish`).run();
+        this.connection.prepare("DROP VIEW IF EXISTS fishing_leaderboard").run();
+        this.connection.prepare("DROP TABLE IF EXISTS caught_fish").run();
+        this.connection.prepare("DROP TABLE IF EXISTS fish").run();
         this.dbcommit();
     }
 }

@@ -38,14 +38,18 @@ export class AddPermanentRole extends BotgartCommand {
         }
 
         // command not available as DM, so we can safely cast message.guild to discord.Guild everywhere.
-        const cl = <BotgartClient>this.client;
-        const success = cl.permanentRoleRepository.storePermanentRole(args.member.user.id, (<discord.Guild>message.guild).id, args.role.name);
+        const cl = this.client as BotgartClient;
+        const roleName = args.role.name;
+        const user = args.member.user;
+        const messageGuild = message.guild as discord.Guild;
+        const success = cl.permanentRoleRepository.storePermanentRole(user.id, messageGuild.id, roleName);
 
+        const guildName = messageGuild.name;
         if (success) {
-            LOG.info("Successfully added role {0} to user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, (<discord.Guild>message.guild).name));
+            LOG.info("Successfully added role {0} to user {0} in guild {0}.".formatUnicorn(roleName, user.username, guildName));
             message.util?.send(L.get("PERMANENT_ROLE_ADD_SUCC"));
         } else {
-            LOG.info("Could not add role {0} to user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, (<discord.Guild>message.guild).name));
+            LOG.info("Could not add role {0} to user {0} in guild {0}.".formatUnicorn(roleName, user.username, guildName));
             message.util?.send(L.get("PERMANENT_ROLE_ADD_FAIL"));
         }
     }

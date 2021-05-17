@@ -6,7 +6,7 @@ import * as U from "../util/Util";
 chai.use(chaiDateTime);
 
 
-describe("Util - Date", function () {
+describe("Util - Date", () => {
     it("compare dates without time", () =>
         assert.isTrue(U.compareDatesWithoutTime(new Date(Date.UTC(2019, 1, 1, 23, 59, 59)),
             new Date(Date.UTC(2019, 1, 1)))));
@@ -23,12 +23,12 @@ describe("Util - Date", function () {
         return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
     });
 
-    //it("reset date2", function() {
+    // it("reset date2", function() {
     //  expect(false).equal(false);
-    //});
+    // });
 });
 
-describe("Util - WvW", function () {
+describe("Util - WvW", () => {
     it("determine tier", () => {
         for (let i = 0; i < 100; i++) {
             const tier = U.determineTier(i);
@@ -45,7 +45,7 @@ describe("Util - WvW", function () {
     });
 });
 
-describe("Util - Is Between", function () {
+describe("Util - Is Between", () => {
     it("is between", () => expect(U.isBetweenTime(moment("2010-10-20 4:30", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
 
     it("is at start", () => expect(U.isBetweenTime(moment("2010-10-20 23:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
@@ -60,10 +60,10 @@ describe("Util - Is Between", function () {
 });
 
 
-describe("Util - Crons", function () {
+describe("Util - Crons", () => {
     it("empty string", () => expect(!U.parseCronDate("")));
 
-    //it("undefined", () => expect(!Utils.parseCronDate(undefined)));
+    // it("undefined", () => expect(!Utils.parseCronDate(undefined)));
 
     it("cron valid string 1", () => expect(U.parseCronDate("0 * 32 * 3")).equal("0 * 32 * 3"));
 
@@ -80,10 +80,9 @@ describe("Util - Crons", function () {
     it("cron valid Moment 1", () => assert(U.parseCronDate("12.12.2019 15:15").constructor.name === "Moment"));
 
     it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
-
 });
 
-describe("Util - Sets", function () {
+describe("Util - Sets", () => {
     it("empty equal", () => assert(U.setEqual(new Set([]), new Set([]))));
 
     it("equal sets 1", () => assert(U.setEqual(new Set([1, 2]), new Set([1, 2]))));
@@ -94,9 +93,9 @@ describe("Util - Sets", function () {
 
     it("unequal sets", () => assert(!U.setEqual(new Set([1, 2]), new Set([3, 4]))));
 
-    it("unequal sets unicode", () => assert(!U.setEqual(new Set(['⭐']), new Set(['hello world']))));
+    it("unequal sets unicode", () => assert(!U.setEqual(new Set(["⭐"]), new Set(["hello world"]))));
 
-    it("equal sets unicode", () => assert(U.setEqual(new Set(['⭐']), new Set(['⭐', '⭐']))));
+    it("equal sets unicode", () => assert(U.setEqual(new Set(["⭐"]), new Set(["⭐", "⭐"]))));
 
     it("overlapping sets", () => assert(!U.setEqual(new Set([1, 2]), new Set([2, 3]))));
 

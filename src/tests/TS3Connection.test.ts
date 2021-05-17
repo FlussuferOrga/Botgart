@@ -27,10 +27,10 @@ const dataFromTS3: { "commanders": ts3.TS3Commander[] } = {
         }
     ]
 };
-const dataFromTS3Empty: { "commanders": ts3.TS3Commander[] } = {"commanders": []};
+const dataFromTS3Empty: { "commanders": ts3.TS3Commander[] } = { "commanders": [] };
 
 
-describe("TS3Connection", function () {
+describe("TS3Connection", () => {
     it("Set minus empty - {}", () => {
         expect(emptyStorage.setMinus(new Set<string>())).deep.equal([]);
     });

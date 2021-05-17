@@ -14,7 +14,6 @@ const LOG = logger();
 
 
 export class ResetRoster extends BotgartCommand {
-
     constructor() {
         super("resetroster", {
                 aliases: ["resetroster"],
@@ -64,12 +63,11 @@ export class ResetRoster extends BotgartCommand {
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
-
     }
 
     serialiseArgs(args) {
-        const clone = Object.assign({}, args);
-        clone.channel = {guild: args.channel.guild.id, channel: args.channel.id};
+        const clone = { ...args };
+        clone.channel = { guild: args.channel.guild.id, channel: args.channel.id };
         return JSON.stringify(clone);
     }
 
@@ -84,7 +82,6 @@ export class ResetRoster extends BotgartCommand {
         }
         return args;
     }
-
 }
 
 module.exports = ResetRoster;

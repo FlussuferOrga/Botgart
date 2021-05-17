@@ -24,7 +24,7 @@ export class ListAchievements extends BotgartCommand {
         message.reply(this.getBotgartClient().achievementRegistry.getAchievements()
                 .map(a => `\`${a.name}\`: ${a.getDescription()}`)
                 .join("\n")
-            , {"split": true});
+            , { "split": true });
     }
 }
 

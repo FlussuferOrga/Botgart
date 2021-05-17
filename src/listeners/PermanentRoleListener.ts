@@ -1,5 +1,6 @@
 import { Listener } from "discord-akairo";
 import { BotgartClient } from "../BotgartClient";
+import { BotgartCommand } from "../BotgartCommand";
 import { logger } from "../util/Logging";
 
 const LOG = logger();
@@ -13,7 +14,7 @@ export class PermanentRoleListener extends Listener {
     }
 
     exec(member) {
-        const cl = <BotgartClient>this.client;
+        const cl = this.client as BotgartClient;
         const g = member.guild;
         cl.permanentRoleRepository.getPermanentRoles(member.user.id, g.id).forEach(roleName => {
             const role = g.roles.find(r => r.name === roleName);
