@@ -6,25 +6,25 @@ import { DBPatch } from "./DBPatch";
  * Use https://sqlitestudio.pl/ to change columns to strftime('%Y-%m-%dT%H:%M:%SZ','now')
  */
 export class Patch12 extends DBPatch {
-    private static COLUMN_DEFAULT = 'strftime(\'%Y-%m-%dT%H:%M:%SZ\',\'now\')';
+    private static COLUMN_DEFAULT = "strftime('%Y-%m-%dT%H:%M:%SZ','now')";
     private static TABLE_COLUMNS = [
-        ['command_permissions', 'timestamp'],
-        ['cronjobs', 'created'],
-        ['faqs', 'created'],
-        ['faq_keys', 'created'],
-        ['caught_fish', 'timestamp'],
-        ['matchups', 'start'],
-        ['matchups', 'end'],
-        ['objectives_snapshots', 'timestamp'],
-        ['permanent_roles', 'created'],
-        ['player_achievements', 'timestamp'],
-        ['player_activities', 'start'],
-        ['player_activities', 'end'],
-        ['registrations', 'created'],
-        ['stats_snapshots', 'timestamp'],
-        ['ts_leads', 'start'],
-        ['ts_leads', 'end'],
-        ['matchup_objectives', 'last_flipped'],
+        ["command_permissions", "timestamp"],
+        ["cronjobs", "created"],
+        ["faqs", "created"],
+        ["faq_keys", "created"],
+        ["caught_fish", "timestamp"],
+        ["matchups", "start"],
+        ["matchups", "end"],
+        ["objectives_snapshots", "timestamp"],
+        ["permanent_roles", "created"],
+        ["player_achievements", "timestamp"],
+        ["player_activities", "start"],
+        ["player_activities", "end"],
+        ["registrations", "created"],
+        ["stats_snapshots", "timestamp"],
+        ["ts_leads", "start"],
+        ["ts_leads", "end"],
+        ["matchup_objectives", "last_flipped"],
     ];
 
     private state: [string, string, boolean][] = [];
@@ -49,9 +49,7 @@ export class Patch12 extends DBPatch {
         if (this.state.length == 0) {
             this.readState();
         }
-        const result = this.state.filter(value => {
-            return !value[2];
-        });
+        const result = this.state.filter(value => !value[2]);
         throw Error("Please manually change the following column defaults to: " + Patch12.COLUMN_DEFAULT + " :\n"
             + result.map(value => value[0] + "." + value[1]).join("\n"));
     }

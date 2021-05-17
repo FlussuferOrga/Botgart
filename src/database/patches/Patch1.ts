@@ -43,8 +43,8 @@ export class Patch1 extends DBPatch {
             FROM registrations AS r 
         `).run("Flussufer");
         // delete old table and rename new one
-        this.connection.prepare(`DROP TABLE registrations`).run();
-        this.connection.prepare(`ALTER TABLE new_registrations RENAME TO registrations`).run();
+        this.connection.prepare("DROP TABLE registrations").run();
+        this.connection.prepare("ALTER TABLE new_registrations RENAME TO registrations").run();
         this.connection.pragma("foreign_keys = ON");
     }
 
@@ -72,8 +72,8 @@ export class Patch1 extends DBPatch {
             FROM registrations AS r 
         `).run();
         // delete old table and rename new one
-        this.connection.prepare(`DROP TABLE registrations`).run();
-        this.connection.prepare(`ALTER TABLE new_registrations RENAME TO registrations`).run();
+        this.connection.prepare("DROP TABLE registrations").run();
+        this.connection.prepare("ALTER TABLE new_registrations RENAME TO registrations").run();
         this.connection.pragma("foreign_keys = ON");
         this.dbcommit();
     }

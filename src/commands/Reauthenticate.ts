@@ -15,7 +15,6 @@ const LOG = logger();
  - cron: all of the above -> reauth success
  */
 export class Reauthenticate extends BotgartCommand {
-
     constructor() {
         super("reauthenticate", {
                 aliases: ["reauthenticate", "reauth", "revalidate"],

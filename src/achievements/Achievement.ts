@@ -45,7 +45,7 @@ export abstract class Achievement<C> {
     }
 
     getFlavourText(): string {
-        return L.get(`ACHIEVEMENT_FLAV_${this.name.toUpperCase()}`, [], "\n", true, {"italic": true});
+        return L.get(`ACHIEVEMENT_FLAV_${this.name.toUpperCase()}`, [], "\n", true, { "italic": true });
     }
 
     getRoleName(): string {
@@ -109,41 +109,44 @@ export abstract class Achievement<C> {
                 result = AchievementAwardResult.HIDDEN;
             } else {
                 // actually award
-                const [rowId, isNew] = this.award(gw2account, by, timestamp);
-
-                if (rowId > -1 && (isNew || this.repeatable)) {
-                    result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
-                    const achievementChannel: discord.Channel | undefined = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
-
-                    if (achievementChannel !== undefined) {
-                        if (isNew || this.announceRepetitions) {
-                            // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
-                            (achievementChannel as discord.TextChannel).send("🏆", {
-                                reply: discordUser,
-                                embed: this.createEmbed(discordUser, rowId)
-                            });
-
-                        }
-                    } else {
-                        LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
-                    }
-
-                    const role = this.getRole(guild);
-                    if (role !== undefined) {
-                        discordUser.roles.add(role);
-                    } else {
-                        this.createRole(guild)
-                            .then(r => discordUser.roles.add(r))
-                            .catch(e => LOG.error(`Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
-                    }
-                }
+                result = this.actuallyAward(gw2account, by, timestamp, guild, discordUser);
             }
         }
         return result;
     }
 
-    private createRole(guild: discord.Guild) {
-        return guild.roles.create({data: {name: this.roleName, color: this.roleColour}, reason: "Achievement"});
+    private actuallyAward(gw2account: string, by: string | undefined, timestamp: moment.Moment | undefined, guild: discord.Guild, discordUser: discord.GuildMember) {
+        let result: AchievementAwardResult = AchievementAwardResult.NOT_AWARDED;
+
+        const [rowId, isNew] = this.award(gw2account, by, timestamp);
+        if (rowId > -1 && (isNew || this.repeatable)) {
+            result = isNew ? AchievementAwardResult.AWARDED_FIRST_TIME : AchievementAwardResult.AWARDED_AGAIN;
+            const achievementChannel: discord.Channel | undefined = guild.channels.cache.find(c => c instanceof discord.TextChannel && c.name === getConfig().get().achievements.channel);
+
+            if (achievementChannel !== undefined) {
+                if (isNew || this.announceRepetitions) {
+                    // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
+                    (achievementChannel as discord.TextChannel)
+                        .send("🏆", { reply: discordUser, embed: this.createEmbed(discordUser, rowId) });
+                }
+            } else {
+                LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
+            }
+
+            const role = this.getRole(guild);
+            if (role !== undefined) {
+                discordUser.roles.add(role);
+            } else {
+                this.createRole(guild)
+                    .then(r => discordUser.roles.add(r))
+                    .catch(e => LOG.error(`Tried to assign achievement role '${this.getRoleName()}', which was not found in guild '${guild.name}', and the bot does not have the required permissions to create this role.`));
+            }
+        }
+        return result;
+    }
+
+    private async createRole(guild: discord.Guild) {
+        return guild.roles.create({ data: { name: this.roleName, color: this.roleColour }, reason: "Achievement" });
     }
 
     /**
@@ -155,15 +158,14 @@ export abstract class Achievement<C> {
         const profiler = LOG.startTimer();
         try {
             if (this.checkCondition(discordUser, context)) {
-                LOG.debug(`Success! Awarding achievement to user.`);
+                LOG.debug("Success! Awarding achievement to user.");
                 this.awardIn(discordUser.guild, discordUser);
             } else {
-                LOG.debug(`User did not pass condition.`);
+                LOG.debug("User did not pass condition.");
             }
         } finally {
-            profiler.done({message: `Check - ${this.name} -  ${discordUser.displayName}`});
+            profiler.done({ message: `Check - ${this.name} -  ${discordUser.displayName}` });
         }
-
     }
 
     createEmbed(discordUser: discord.GuildMember, dbId: number) {
@@ -230,7 +232,7 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
     protected registerListeners() {
         this.client.ts3listener.on("tagup", async (x: ts3.TagUpEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(x.commander.getDiscordMember() as discord.GuildMember, x);
             } else {
                 LOG.warn(`Tries to check tagup-achievement for user without Discord account ${x.dbRegistration}!`);
             }
@@ -246,7 +248,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     protected registerListeners() {
         this.client.ts3listener.on("tagdown", async (x: ts3.TagDownEvent) => {
             if (x.commander.getDiscordMember() !== undefined) {
-                await this.tryAward(<discord.GuildMember>x.commander.getDiscordMember(), x);
+                await this.tryAward(x.commander.getDiscordMember() as discord.GuildMember, x);
             } else {
                 LOG.warn(`Tries to check tagdown-achievement for user without Discord account ${x.dbRegistration}!`);
             }
@@ -254,7 +256,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
     }
 }
 
-export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander, "objectives": gw2api.WvWMatches }> {
+export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander; "objectives": gw2api.WvWMatches }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }
@@ -267,13 +269,13 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
                     .commanders
                     .getActiveCommanders()
                     .filter(c => c.getDiscordMember() !== undefined)
-                    .map(async c => this.tryAward(<discord.GuildMember>c.getDiscordMember(),
-                        {"commander": c, "objectives": objs})));
+                    .map(async c => this.tryAward(c.getDiscordMember() as discord.GuildMember,
+                        { "commander": c, "objectives": objs })));
             });
     }
 }
 
-export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup, newMatchup: Matchup }> {
+export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup; newMatchup: Matchup }> {
     protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }

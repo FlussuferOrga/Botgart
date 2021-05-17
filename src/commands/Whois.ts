@@ -1,6 +1,5 @@
 import { Argument } from "discord-akairo";
 import * as discord from "discord.js";
-import { GuildMember } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";
 import * as U from "../util/Util";
@@ -28,10 +27,9 @@ export class Whois extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-
         let res: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[];
 
-        if (args?.name instanceof GuildMember) {
+        if (args?.name instanceof discord.GuildMember) {
             res = await this.queryUser(args.name);
         } else {
             const name = args.name.toLowerCase(); // JS string#search allows RegExps, so we need to escape the popular "[]" for guild tags and so on
@@ -73,7 +71,7 @@ export class Whois extends BotgartCommand {
         }
     }
 
-    private static matches(m: GuildMember, needle: string): boolean {
+    private static matches(m: discord.GuildMember, needle: string): boolean {
         function nicknameMatches() {
             return (m.nickname ? m.nickname?.toLowerCase() : "").search(needle) > -1;
         }
@@ -105,9 +103,9 @@ export class Whois extends BotgartCommand {
 
         const res = this.getBotgartClient().registrationRepository.whois(name, matchingDiscordMembers);
 
-        //map members
+        // map members
         const enhancedResult = await Promise.all(res.map(async value => ({
-            ...value, member: await guild.members.cache.get(value.discord_id)
+            ...value, member: guild.members.cache.get(value.discord_id)
         })));
 
         return this.sort(enhancedResult);
@@ -115,14 +113,14 @@ export class Whois extends BotgartCommand {
 
     private sort(enhancedResult: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[]) {
         // sort and return
-        return enhancedResult.sort((a, b) => {
-            return Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
-                || Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag)
-                || Whois.compareStringSafe(a.account_name, b.account_name);
-        });
+        return enhancedResult.sort((a, b) =>
+            Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
+            || Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag)
+            || Whois.compareStringSafe(a.account_name, b.account_name));
     }
 
     private static compareStringSafe(a: string | null | undefined, b: string | null | undefined) {
+        // eslint-disable-next-line no-nested-ternary
         return (a || b) ? (!a ? -1 : !b ? 1 : a.localeCompare(b)) : 0;
     }
 

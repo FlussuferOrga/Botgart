@@ -1,4 +1,3 @@
-import CircularBuffer from "circular-buffer";
 import * as discord from "discord.js";
 import * as events from "events";
 import * as http from "http";
@@ -21,14 +20,14 @@ const RECONNECT_PATIENCE = 10;
 
 export interface TagDown {
     readonly guild: discord.Guild;
-    readonly commander: Commander,
-    readonly dbRegistration: Registration
+    readonly commander: Commander;
+    readonly dbRegistration: Registration;
 }
 
 export interface TagUp {
-    readonly guild: discord.Guild,
-    readonly commander: Commander,
-    readonly dbRegistration: Registration
+    readonly guild: discord.Guild;
+    readonly commander: Commander;
+    readonly dbRegistration: Registration;
 }
 
 export interface TS3Commander {
@@ -44,25 +43,21 @@ interface HTTPRequestOptions {
     readonly hostname?: string;
     readonly port?: number;
     readonly path?: string;
-    readonly method?: "GET" | "POST" | "PUT" | "DELETE"
+    readonly method?: "GET" | "POST" | "PUT" | "DELETE";
     readonly headers?: {
-        "Content-Type": "application/json",
-        "Content-Length": number
-    }
+        "Content-Type": "application/json";
+        "Content-Length": number;
+    };
 }
 
 export class TS3Connection {
     private static CONNECTION_COUNTER = 1;
-    private static CIRCULAR_BUFFER_SIZE = 4;
-
-    private static MESSAGE_ID = 1;
 
     private host: string;
     private port: number;
     private name: string;
-    private buffer: CircularBuffer<string>;
 
-    private request(data: unknown, options: HTTPRequestOptions): Promise<string> {
+    private async request(data: unknown, options: HTTPRequestOptions): Promise<string> {
         const dataString: string = JSON.stringify(data);
         const defaults: HTTPRequestOptions = {
             hostname: this.host,
@@ -73,7 +68,7 @@ export class TS3Connection {
                 "Content-Length": Buffer.byteLength(dataString)
             }
         };
-        const settings: HTTPRequestOptions = options === undefined ? defaults : Object.assign({}, defaults, options);
+        const settings: HTTPRequestOptions = options === undefined ? defaults : ({ ...defaults, ...options });
         return new Promise<string>((resolve, reject) => {
             const req = http.request(settings, (response) => {
                 let body = "";
@@ -86,21 +81,21 @@ export class TS3Connection {
         });
     }
 
-    public get(command: string, args: unknown = {}): Promise<string> {
+    public async get(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "GET"
         });
     }
 
-    public post(command: string, args: unknown = {}): Promise<string> {
+    public async post(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "POST"
         });
     }
 
-    public delete(command: string, args: unknown = {}): Promise<string> {
+    public async delete(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
             method: "DELETE"
@@ -111,7 +106,6 @@ export class TS3Connection {
         this.host = ts3host;
         this.port = ts3port;
         this.name = name !== undefined ? name : `TS3Connection[${TS3Connection.CONNECTION_COUNTER++}]`;
-        this.buffer = CircularBuffer<string>(TS3Connection.CIRCULAR_BUFFER_SIZE);
     }
 }
 
@@ -254,7 +248,7 @@ export class Commander {
      */
     public getRaidTime(): number {
         // this cast is save, since we checked beforehand in the condition of the ternary...
-        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (<moment.Moment>this.getRaidStart()).valueOf()) / 1000 : 0;
+        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (this.getRaidStart() as moment.Moment).valueOf()) / 1000 : 0;
     }
 
     public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string, ts3channelPath: string[], ts3joinUrl: string) {
@@ -353,7 +347,7 @@ export class TS3Listener extends events.EventEmitter {
         this.channels = {};
         this.patience = RECONNECT_PATIENCE;
         this.setMaxListeners(24);
-        setInterval(this.checkCommanders.bind(this), config.ts_commander_check_interval);
+        setInterval(() => this.checkCommanders(), config.ts_commander_check_interval);
     }
 
     private async checkCommanders(): Promise<void> {
@@ -446,7 +440,6 @@ export class TS3Listener extends events.EventEmitter {
                     .filter(commander => commander.getDiscordMember() !== undefined)
                     .map(commander => this.botgartClient.guilds.cache.map(g => this.tagDown(g, commander)));
             }
-
         }
     }
 
@@ -520,16 +513,16 @@ export class TS3Listener extends events.EventEmitter {
 
     private tagDownWriteToDb(dmember: discord.GuildMember, commander: Commander, registration: Registration) {
         // do not write leads of members which hide their roles
-        const writeToDB = !(dmember && dmember.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
+        const writeToDB = !(dmember?.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
         if (writeToDB) {
             LOG.debug("Writing raid information to database.");
             if (commander.getRaidStart() === undefined) {
-                LOG.error(`Wanted to write raid for commander ${dmember.displayName} ` +
-                    "during tag-down, but no raid start was stored.");
+                LOG.error(`Wanted to write raid for commander ${dmember.displayName} `
+                    + "during tag-down, but no raid start was stored.");
             } else {
                 this.botgartClient.tsLeadRepository.addLead(
                     registration.gw2account,
-                    <moment.Moment>commander.getRaidStart(),
+                    commander.getRaidStart() as moment.Moment,
                     moment.utc(),
                     commander.getTS3Channel());
             }
@@ -541,8 +534,8 @@ export class TS3Listener extends events.EventEmitter {
         const crole = g.roles.cache.find(r => r.name === this.commanderRole);
         if (crole && commander.getDiscordMember()) {
             await commander.getDiscordMember()?.roles.add(crole)
-                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from ` +
-                    `user '${(<discord.GuildMember>commander.getDiscordMember()).displayName}'`, e));
+                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from `
+                    + `user '${(commander.getDiscordMember() as discord.GuildMember).displayName}'`, e));
         }
     }
 
@@ -555,9 +548,9 @@ export class TS3Listener extends events.EventEmitter {
         if (crole && dmember) {
             LOG.info(`Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
             await dmember.roles.remove(crole)
-                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user ` +
-                    `'${(<discord.GuildMember>dmember).displayName}' which was expected to be there.` +
-                    ` Maybe someone else already removed it. ${e}`));
+                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user `
+                    + `'${(dmember as discord.GuildMember).displayName}' which was expected to be there.`
+                    + ` Maybe someone else already removed it. ${e}`));
 
             LOG.debug("Done managing roles for former commander.");
         }

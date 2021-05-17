@@ -17,9 +17,9 @@ registerUnhandledRejection();
 
 // bit weird but works only this way...
 const args = CommandLineArgs.default([
-    {name: "patch", type: String, multiple: true},
-    {name: "patchall", type: Boolean},
-    {name: "revert", type: Boolean},
+    { name: "patch", type: String, multiple: true },
+    { name: "patchall", type: Boolean },
+    { name: "revert", type: Boolean },
 ]);
 
 const config = getConfig();
@@ -38,7 +38,7 @@ if (args.patchall || args.patch) {
         if (p === undefined) {
             LOG.warn(`No patch ${args.patch} could be found to apply/revert.`);
         } else {
-            patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));
+            patcher.applyPatch(p as (typeof DBPatch), args.revert === true).then(_ => process.exit(0));
         }
     }
 } else {
@@ -49,13 +49,13 @@ if (args.patchall || args.patch) {
 
     L.setLanguages(config.get("locales"));
     const client = new BotgartClient(
-        {ownerID: config.get("owner_ids")},
-        {ws: {intents: intents}},
+        { ownerID: config.get("owner_ids") },
+        { ws: { intents: intents } },
         database);
     const webServer = new WebServer();
 
-    //shutdown listener
-    ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal: NodeJS.Signals) =>
+    // shutdown listener
+    ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal: NodeJS.Signals) =>
         process.on(signal, () => {
             LOG.info("Shutting down...");
             client.prepareShutdown()

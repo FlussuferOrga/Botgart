@@ -64,6 +64,7 @@ export class RosterService {
                 service.refreshGuarded(guild, roster, message);
             }.bind(null, this, eventRoster);
 
+            // eslint-disable-next-line @typescript-eslint/no-implied-eval
             setTimeout(onDelayReached, RosterService.UPDATE_DELAY);
         };
         roster.on("addleader", refreshDelayedFn);
@@ -181,6 +182,8 @@ export class RosterService {
     private async syncToTS3(guild: discord.Guild, roster: Roster): Promise<void> {
         // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command.
         // Resolve if possible.
+
+
         const resolveUser: (string) => Promise<string> = async sid => {
             const idregxp = /<[@!](\d+)>/;
             const match = idregxp.exec(sid);
@@ -195,7 +198,7 @@ export class RosterService {
         };
         const resetDateTime = roster.getResetMoment().tz(getConfig().get().timeZone);
         await this.client.getTS3Connection().post("resetroster", {
-            "date": resetDateTime.format("DD.MM.YYYY HH:mm z"), //TODO: remove
+            "date": resetDateTime.format("DD.MM.YYYY HH:mm z"), // TODO: remove
             "datetime": resetDateTime.format(),
             "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map(l => resolveUser(l.name))),
             "gbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map(l => resolveUser(l.name))),

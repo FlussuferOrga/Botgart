@@ -27,7 +27,7 @@ export class RevalidationService {
         this.worldAssignments = getConfig().get().world_assignments;
     }
 
-    private readonly worldAssignments: { world_id: number; role: string; }[];
+    private readonly worldAssignments: { world_id: number; role: string }[];
 
     /**
      * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
@@ -54,7 +54,7 @@ export class RevalidationService {
 
 
     private async checkRegistration(worldAssignments: { world_id: number; role: string }[],
-                                    r: Registration): Promise<undefined | { roleName?: string, valid: boolean }> {
+                                    r: Registration): Promise<undefined | { roleName?: string; valid: boolean }> {
         const release = await RevalidationService.SEM.acquire();
         LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
         const res: (string | boolean) | undefined = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments)
@@ -83,9 +83,9 @@ export class RevalidationService {
 
 
         if (typeof res === "string") {
-            return {roleName: res, valid: true};
+            return { roleName: res, valid: true };
         } else if (typeof res === "boolean") {
-            return {valid: false};
+            return { valid: false };
         } else return undefined;
     }
 
@@ -122,8 +122,8 @@ export class RevalidationService {
             } else if (authResult.valid) {
                 if (authResult.roleName !== undefined) {
                     if (registration.registration_role != authResult.roleName) {
-                        //db update required ?
-                        await this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
+                        // db update required ?
+                        this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
                     }
                 }
                 const admittedRoleName = authResult.roleName;
@@ -131,12 +131,11 @@ export class RevalidationService {
                 if (!admittedRole) { // false -> no role should be assigned assigned at all
                     LOG.error(`Can not find the role "${admittedRoleName}" that should be currently used.`);
                     throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`);
-
                 } else {
                     // user transferred to another admitted server -> update role
                     // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
                     await this.client.validationService.setMemberRolesByString(member, [admittedRole.name], "ReAuthentication");
-                    //assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
+                    // assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
                 }
             }
         }

@@ -3,11 +3,11 @@ import * as Util from "../util/Util";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 
 type AchievementAward = {
-    awarded_by: string,
-    timestamp: string,
-    guild: string,
-    channel: string,
-    message: string
+    awarded_by: string;
+    timestamp: string;
+    guild: string;
+    channel: string;
+    message: string;
 };
 
 export class AchievementRepository extends AbstractDbRepository {
@@ -20,11 +20,9 @@ export class AchievementRepository extends AbstractDbRepository {
      * returns: ID of the newly created row. Note that this row is autoincrementally, so no ID will be repeated over the lifespan of the DB.
      */
     public awardAchievement(achievementName: string, gw2account: string, awardedBy: string, timestamp: moment.Moment): number {
-        return this.execute(db => {
-            db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,?)")
-                .run(achievementName, gw2account, awardedBy, Util.momentToIsoString(timestamp));
-            return db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-        });
+        return this.execute(db => db.prepare("INSERT INTO player_achievements(achievement_name, gw2account, awarded_by, timestamp) VALUES(?,?,?,?)")
+                .run(achievementName, gw2account, awardedBy, Util.momentToIsoString(timestamp))
+                .lastInsertRowid);
     }
 
     /**
@@ -54,8 +52,7 @@ export class AchievementRepository extends AbstractDbRepository {
      * gw2account: player to retrieve the achievements for.
      * returns: array of achievement, group by the achievemet name with the count included.
      */
-    public getPlayerAchievements(gw2account: string)
-        : { times_awarded: number, achievement_name: string }[] {
+    public getPlayerAchievements(gw2account: string): { times_awarded: number; achievement_name: string }[] {
         return this.execute(db => db.prepare(`
             SELECT COUNT(*) AS times_awarded,
                    achievement_name
@@ -70,13 +67,12 @@ export class AchievementRepository extends AbstractDbRepository {
      * playerAchievementID: the ID of the row to delete.
      * returns: if the passed ID was valid, the deleted row is returned.
      */
-    public deletePlayerAchievement(playerAchievementID: number)
-        : {
-        player_achievement_id: number,
-        achievement_name: string,
-        gw2account: string,
-        awarded_by: string,
-        timestamp: string
+    public deletePlayerAchievement(playerAchievementID: number): {
+        player_achievement_id: number;
+        achievement_name: string;
+        gw2account: string;
+        awarded_by: string;
+        timestamp: string;
     } {
         return this.execute(db =>
             db.transaction((_) => {
@@ -113,7 +109,7 @@ export class AchievementRepository extends AbstractDbRepository {
                     WHERE achievement_name = ?
                       AND gw2account = ?
                 `).run(achievementName, gw2account);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
     }
 
@@ -130,7 +126,7 @@ export class AchievementRepository extends AbstractDbRepository {
                     FROM ts_leads
                     WHERE gw2account = ?
                 `).run(gw2account);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
         const revokedAchievements: number = this.execute(db =>
             db.transaction((_) => {
@@ -139,9 +135,8 @@ export class AchievementRepository extends AbstractDbRepository {
                     FROM player_achievements
                     WHERE gw2account = ?
                 `).run(gw2account);
-                return db.prepare(`SELECT changes() AS changes`).get().changes;
+                return db.prepare("SELECT changes() AS changes").get().changes;
             })(null));
         return [removedLeads, revokedAchievements];
-
     }
 }

@@ -58,14 +58,14 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
 
-    //public readonly options;
+    // public readonly options;
 
     constructor(options: (akairo.AkairoOptions & discord.ClientOptions) | undefined,
                 clientOptions: discord.ClientOptions | undefined,
                 db: Database) {
         super(options, clientOptions);
 
-        //Repositories
+        // Repositories
         this.fishingRepository = new FishingRepository(db);
         this.registrationRepository = new RegistrationRepository(db);
         this.achievementRepository = new AchievementRepository(db);
@@ -92,7 +92,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         const prefix = getConfig().get().prefix;
         this.commandHandler = new akairo.CommandHandler(this, {
-            directory: __dirname + '/commands/',
+            directory: __dirname + "/commands/",
             prefix: prefix,
             commandUtil: true,
             commandUtilLifetime: 600000
@@ -109,12 +109,12 @@ export class BotgartClient extends akairo.AkairoClient {
         });
 
         this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: __dirname + '/listeners/'
+            directory: __dirname + "/listeners/"
         });
         this.listenerHandler.loadAll();
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: __dirname + '/inhibitors/'
+            directory: __dirname + "/inhibitors/"
         });
         this.inhibitorHandler.loadAll();
 
@@ -129,7 +129,7 @@ export class BotgartClient extends akairo.AkairoClient {
                     LOG.error("Could not produce a proper matchup. API might be down.");
                 } else {
                     const snapshotId = this.matchupRepository.addStatsSnapshot();
-                    for await(const mapData of stats.maps) {
+                    for await (const mapData of stats.maps) {
                         for (const faction in mapData.scores) { // keys of the dict, aka red, blue, green
                             this.matchupRepository.addMatchupStats(
                                 match.matchup_id,
@@ -140,7 +140,6 @@ export class BotgartClient extends akairo.AkairoClient {
                                 mapData.kills[faction],
                                 mapData.scores[faction]);
                         }
-
                     }
                 }
                 LOG.debug("Done writing WvWStats.");
@@ -158,7 +157,7 @@ export class BotgartClient extends akairo.AkairoClient {
                     const snapshotId = this.matchupRepository.addObjectivesSnapshot();
                     const objs = match.maps
                         .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
-                        //.filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+                        // .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
                         .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
                     this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
                 }
@@ -200,15 +199,15 @@ export class BotgartClient extends akairo.AkairoClient {
                 } else if (!(channel instanceof discord.TextChannel)) {
                     LOG.error(`Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
                 } else {
-                    (<discord.TextChannel>channel).send(message);
+                    (channel as discord.TextChannel).send(message);
                 }
             });
         }
     }
 
     public async prepareShutdown() {
-        if (this.token !== null) { //is logged in
-            LOG.info(`Preparing Shutdown`);
+        if (this.token !== null) { // is logged in
+            LOG.info("Preparing Shutdown");
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }
     }

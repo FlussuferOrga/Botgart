@@ -63,7 +63,7 @@ export class Patch0 extends DBPatch {
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
              )`,
-            `CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)`
+            "CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)"
         ];
         sqls.forEach(sql => this.connection.exec(sql));
     }

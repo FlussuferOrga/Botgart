@@ -65,7 +65,7 @@ export class TsLeadRepository extends AbstractDbRepository {
 }
 
 export interface Lead extends Registration {
-    readonly channel: string,
-    readonly start: string,
-    readonly end: string
+    readonly channel: string;
+    readonly start: string;
+    readonly end: string;
 }

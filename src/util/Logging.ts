@@ -7,7 +7,7 @@ function createLogger() {
         winston.format.timestamp(),
         winston.format.splat(),
         winston.format.simple(),
-        winston.format.printf(({level, file, message, timestamp, ...rest}) => {
+        winston.format.printf(({ level, file, message, timestamp, ...rest }) => {
             let restString = "";
             if (Object.getOwnPropertyNames(rest).length > 0) {
                 restString = " " + JSON.stringify(rest);
@@ -20,23 +20,23 @@ function createLogger() {
         format: defaultFormat,
         transports: [
             new winston.transports.Console({
-                level: 'debug',
+                level: "debug",
                 format: winston.format.combine(
                     winston.format.colorize(),
                     defaultFormat
                 )
             }),
             new winston.transports.File({
-                filename: 'log/bot_combined.log',
-                level: 'info'
+                filename: "log/bot_combined.log",
+                level: "info"
             }),
             new winston.transports.File({
-                filename: 'log/bot_errors.log',
-                level: 'error'
+                filename: "log/bot_errors.log",
+                level: "error"
             }),
             new winston.transports.File({
-                filename: '/tmp/botgart_debug.log',
-                level: 'debug'
+                filename: "/tmp/botgart_debug.log",
+                level: "debug"
             })
         ]
     });
@@ -56,7 +56,7 @@ export function logger(options: Record<string, unknown> = {}): winston.Logger {
 export function registerUnhandledRejection() {
     const log = createLogger();
     process.on("unhandledRejection", (reason, p) => {
-        log.error(`Unhandled Rejection!`);
+        log.error("Unhandled Rejection!");
         // JSON.stringify does not handle errors and especially not Promises:
         // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
         // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections

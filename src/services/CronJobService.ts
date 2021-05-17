@@ -1,6 +1,5 @@
 import discord from "discord.js";
 import * as schedule from "node-schedule";
-import { Job } from "node-schedule";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import { CronJobRepository } from "../repositories/CronJobRepository";
@@ -11,7 +10,7 @@ const LOG = logger();
 export class CronJobService {
     private repository: CronJobRepository;
     private client: BotgartClient;
-    public scheduledJobs: Map<number, Job> = new Map<number, Job>();
+    public scheduledJobs: Map<number, schedule.Job> = new Map<number, schedule.Job>();
 
 
     constructor(repository: CronJobRepository, client: BotgartClient) {
@@ -26,7 +25,7 @@ export class CronJobService {
     public rescheduleCronJobs() {
         let cronCount = 0;
         this.client.cronJobRepository.getCronJobs().forEach(async cron => {
-            const mod: BotgartCommand = <BotgartCommand>this.client.commandHandler.modules.get(cron.command);
+            const mod: BotgartCommand = this.client.commandHandler.modules.get(cron.command) as BotgartCommand;
             const args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             const guild = this.client.guilds.cache.find(g => g.id == cron.guild);
             if (!guild) {
@@ -67,8 +66,8 @@ export class CronJobService {
      * @returns {Job}
      */
     scheduleCronJob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: unknown) {
-        return schedule.scheduleJob(time, function (m, r, g, as) {
+        return schedule.scheduleJob(time, ((m, r, g, as) => {
             m.command(null, r, g, as);
-        }.bind(this, cmd, responsible, guild, args));
+        }).bind(this, cmd, responsible, guild, args));
     }
 }

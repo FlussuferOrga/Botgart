@@ -38,8 +38,8 @@ export class Patch10 extends DBPatch {
             FROM reset_leaders AS rl
         `).run();
         // delete old table and rename new one
-        this.connection.prepare(`DROP TABLE reset_leaders`).run();
-        this.connection.prepare(`ALTER TABLE new_reset_leaders RENAME TO reset_leaders`).run();
+        this.connection.prepare("DROP TABLE reset_leaders").run();
+        this.connection.prepare("ALTER TABLE new_reset_leaders RENAME TO reset_leaders").run();
         this.connection.pragma("foreign_keys = ON");
     }
 
@@ -67,8 +67,8 @@ export class Patch10 extends DBPatch {
             FROM reset_leaders AS rl
         `).run();
         // delete old table and rename new one
-        this.connection.prepare(`DROP TABLE reset_leaders`).run();
-        this.connection.prepare(`ALTER TABLE new_reset_leaders RENAME TO reset_leaders`).run();
+        this.connection.prepare("DROP TABLE reset_leaders").run();
+        this.connection.prepare("ALTER TABLE new_reset_leaders RENAME TO reset_leaders").run();
         this.connection.pragma("foreign_keys = ON");
         this.dbcommit();
     }

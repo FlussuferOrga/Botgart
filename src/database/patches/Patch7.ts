@@ -37,8 +37,8 @@ export class Patch7 extends DBPatch {
             FROM reset_rosters AS rr
         `).run(2019);
         // delete old table and rename new one
-        this.connection.prepare(`DROP TABLE reset_rosters`).run();
-        this.connection.prepare(`ALTER TABLE new_reset_rosters RENAME TO reset_rosters`).run();
+        this.connection.prepare("DROP TABLE reset_rosters").run();
+        this.connection.prepare("ALTER TABLE new_reset_rosters RENAME TO reset_rosters").run();
         this.connection.pragma("foreign_keys = ON");
     }
 
@@ -65,8 +65,8 @@ export class Patch7 extends DBPatch {
             FROM reset_rosters AS rr
         `).run();
         // delete old table and rename new one
-        this.connection.prepare(`DROP TABLE reset_rosters`).run();
-        this.connection.prepare(`ALTER TABLE new_reset_rosters RENAME TO reset_rosters`).run();
+        this.connection.prepare("DROP TABLE reset_rosters").run();
+        this.connection.prepare("ALTER TABLE new_reset_rosters RENAME TO reset_rosters").run();
         this.connection.pragma("foreign_keys = ON");
     }
 }

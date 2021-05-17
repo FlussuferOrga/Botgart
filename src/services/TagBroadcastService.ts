@@ -24,7 +24,6 @@ export class TagBroadcastService {
 
         this.broadcastChannel = config.ts_listener.broadcast_channel;
         this.pingRole = config.ts_listener.ping_role;
-
     }
 
     async sendTagUpBroadcast(g: discord.Guild,
@@ -32,7 +31,8 @@ export class TagBroadcastService {
                              discordUser: discord.GuildMember | undefined,
                              registration: undefined | Registration) {
         // broadcast the message
-        const dchan: discord.TextChannel = <discord.TextChannel>g.channels.cache.find(c => c.name === this.broadcastChannel && c.type == "text");
+        const dchan: discord.TextChannel = g.channels.cache
+            .find(c => c.name === this.broadcastChannel && c.type == "text") as discord.TextChannel;
         if (!dchan) {
             LOG.warn(`I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
@@ -111,11 +111,11 @@ export class TagBroadcastService {
             }
             if (embed.fields.length == 1) {
                 const field = embed.fields[0];
-                const textLines = field.value.split('\n');
+                const textLines = field.value.split("\n");
                 if (textLines.length > 1) {
                     toUpdate = true;
                     const newName = field.name.replace("🔊", "🔈"); // nobody will probably ever notice that :D
-                    const newField = {name: newName, value: textLines[0], inline: field.inline};
+                    const newField = { name: newName, value: textLines[0], inline: field.inline };
                     embed.spliceFields(0, 1, newField);
                 }
             }

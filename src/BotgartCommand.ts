@@ -1,5 +1,4 @@
 import * as akairo from "discord-akairo";
-import { Command, CommandOptions } from "discord-akairo";
 import * as discord from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
@@ -13,22 +12,22 @@ export enum PermissionTypes {
 }
 
 interface BotgartCommandOptionsNullable {
-    availableAsDM?: boolean,
-    cronable?: boolean,
-    everyonePermission?: number,
-    enabled?: boolean
+    availableAsDM?: boolean;
+    cronable?: boolean;
+    everyonePermission?: number;
+    enabled?: boolean;
 }
 
 interface BotgartCommandOptions {
-    availableAsDM: boolean,
-    cronable: boolean,
-    everyonePermission: number
-    enabled: boolean
+    availableAsDM: boolean;
+    cronable: boolean;
+    everyonePermission: number;
+    enabled: boolean;
 }
 
 const LOG = logger();
 
-export class BotgartCommand extends Command {
+export class BotgartCommand extends akairo.Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
@@ -44,7 +43,7 @@ export class BotgartCommand extends Command {
      *                        cronable: false
      *                        everyonePermission: 0
      */
-    constructor(id: string, options: CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
+    constructor(id: string, options: akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
         const defaults: BotgartCommandOptions = {
             availableAsDM: false,
@@ -52,7 +51,7 @@ export class BotgartCommand extends Command {
             everyonePermission: 0,
             enabled: true
         };
-        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : Object.assign({}, defaults, botgartOptions);
+        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({ ...defaults, ...botgartOptions });
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
@@ -64,7 +63,7 @@ export class BotgartCommand extends Command {
      * @returns the internal client, cast to BotgartClient, because that is needed in every other routine.
      */
     protected getBotgartClient(): BotgartClient {
-        return <BotgartClient>this.client;
+        return this.client as BotgartClient;
     }
 
     /**
@@ -113,8 +112,8 @@ export class BotgartCommand extends Command {
         const gid = user instanceof discord.GuildMember ? user.guild.id : undefined;
         const roles = user instanceof discord.GuildMember ? user.roles.cache.map(r => r.id) : [];
         const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
-        //console.log(allowed, perm);
-        //console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
+        // console.log(allowed, perm);
+        // console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
         return this.isEnabled() && (this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0);
     }
 
@@ -291,7 +290,7 @@ export class BotgartCommand extends Command {
     * @param response - the message text to send to the user.
     * @returns {Promise} - the promise for whichever method was executed.
     */
-    public reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
+    public async reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
         if (message) {
             return message.channel.send(response);
         } else {

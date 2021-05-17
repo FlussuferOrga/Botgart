@@ -14,7 +14,7 @@ export class Startup extends Listener {
 
     exec() {
         LOG.info("Bot started!");
-        const client: BotgartClient = <BotgartClient>this.client;
+        const client: BotgartClient = this.client as BotgartClient;
 
         LOG.info("Rescheduling cronjobs from database.");
         client.cronJobService.rescheduleCronJobs();

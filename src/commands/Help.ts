@@ -35,8 +35,8 @@ export class Help extends BotgartCommand {
         // since the restricted listing is just a convenience for users to present them with a
         // more compact help text.
         const separator = "\n";
-        const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; //cache.find(m => m.id == responsible.id) : responsible;
-        //let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
+        const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; // cache.find(m => m.id == responsible.id) : responsible;
+        // let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         const descs = "**COMMANDS:**\n\n"
             .concat(Array.from(this.getBotgartClient().commandHandler.modules.values())
                 .filter(value => {
@@ -46,15 +46,16 @@ export class Help extends BotgartCommand {
                         return true;
                     }
                 })
-                .map(m => <BotgartCommand>m)
+                .map(m => m as BotgartCommand)
                 .filter(m => m.isAllowed(user))
                 .sort((m1, m2) => m1.id < m2.id ? -1 : 1)
                 .map(m => m.desc
                     ? `**${m.id}** (${m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}):\n${m.desc()}\n_ _`
                     : m.id
-                ).join(separator));
+                )
+                .join(separator));
 
-        message.reply(descs, {split: {prepend: "_ _\n"},});
+        message.reply(descs, { split: { prepend: "_ _\n" } });
     }
 }
 

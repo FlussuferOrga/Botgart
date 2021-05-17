@@ -4,8 +4,8 @@ import { logger } from "./util/Logging";
 
 export function createApiInstance() {
     const api = gw2client();
-    api.schema('2019-03-26T00:00:00Z');
-    api.language('en');
+    api.schema("2019-03-26T00:00:00Z");
+    api.language("en");
 
     // retry some times and be polite about it
     api.fetch.retry(tries => tries <= 5);
@@ -29,7 +29,7 @@ const LOG = logger();
  *                   (b) a network error occured
  *                   (c) the key is structurally valid, but not known to the API (invalid key)
  */
-export function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string | boolean | number> {
+export async function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string | boolean | number> {
     const api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
@@ -63,7 +63,7 @@ validateWorld.ERRORS = {
     "invalid_key": 3
 };
 
-export function getAccountGUID(apikey: string): Promise<number | boolean> {
+export async function getAccountGUID(apikey: string): Promise<number | boolean> {
     const api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
@@ -72,7 +72,7 @@ export function getAccountGUID(apikey: string): Promise<number | boolean> {
     );
 }
 
-export function getAccountName(apikey: string): Promise<string | boolean> {
+export async function getAccountName(apikey: string): Promise<string | boolean> {
     const api = createApiInstance();
     api.authenticate(apikey);
     return api.account().get().then(
@@ -81,11 +81,7 @@ export function getAccountName(apikey: string): Promise<string | boolean> {
     );
 }
 
-export async function isValidWorld(id: number): Promise<boolean> {
-    return id in (await api.authenticate(false).worlds());
-}
-
-export function guildExists(guildname: string): Promise<boolean> {
+export async function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.
     return api.authenticate(false).guild().search().name(guildname)
@@ -128,8 +124,6 @@ let mapAliasesPairs : [string, string[]][] = [
     ["RedHome",  ["rote", "red", "rgl", "rbl", "wüste", "dessert"]],
     ["homes",    ["home", "homes", "heimat"]]
 ];
-
-
 
 let mapAliases = mapAliasesPairs
     .reduce((acc, [k,vs]) => { vs.map(v => acc[v] = k); return acc; }, {});

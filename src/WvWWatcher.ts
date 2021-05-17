@@ -29,7 +29,7 @@ export class WvWWatcher extends EventEmitter {
         let dbMatchup: Matchup | undefined = this.matchupRepository.getCurrentMatchup(now);
         if (dbMatchup === undefined) {
             const latestDbMatchup: Matchup | undefined = this.matchupRepository.getLatestMatchup();
-            const homeId = (await getConfig()).get().home_id;
+            const homeId = getConfig().get().home_id;
             const currentMatchupInfo = await this.api.wvw().matches().overview().world(homeId);
             const tier = currentMatchupInfo.id.split("-")[1]; // format is "x-y", x being 1 for NA, 2 for EU, y being the tier.
             this.matchupRepository.addMatchup(
@@ -43,9 +43,8 @@ export class WvWWatcher extends EventEmitter {
             if (dbMatchup == undefined) {
                 LOG.error("Should have produced a new matchup. But after retrieving the latest matchup thereafter, it is still undefined.");
             } else {
-                this.emit("new-matchup", {lastMatchup: latestDbMatchup, newMatchup: dbMatchup});
+                this.emit("new-matchup", { lastMatchup: latestDbMatchup, newMatchup: dbMatchup });
             }
-
         }
         return dbMatchup;
     }

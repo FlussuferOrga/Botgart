@@ -28,7 +28,7 @@ export class Patch2 extends DBPatch {
 
     public async revert(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`DROP TABLE IF EXISTS permanent_roles`).run();
+        this.connection.prepare("DROP TABLE IF EXISTS permanent_roles").run();
         this.dbcommit();
     }
 }

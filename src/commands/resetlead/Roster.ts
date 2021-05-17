@@ -31,7 +31,7 @@ export class Roster extends events.EventEmitter {
      * @returns the date for the reset this roster represents.
      */
     public getResetMoment(): Moment {
-        return this.resetMoment.clone(); //better hand out a close..
+        return this.resetMoment.clone(); // better hand out a close..
     }
 
     /**
@@ -156,14 +156,14 @@ export class Roster extends events.EventEmitter {
             .setColor(this.getEmbedColour())
             .setAuthor("Reset Commander Roster")
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${displayedDateTime})`)
-            //.setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
+            // .setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"));
         for (const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
             re.addField(`${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`, leads.size() === 0 ? "-" : Array.from(leads)
                 .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
                 .join(", "))
-                .addField('\u200b', '\u200b'); // discord.js v12 version of addBlankField()
+                .addField("\u200b", "\u200b"); // discord.js v12 version of addBlankField()
         }
         return re;
     }

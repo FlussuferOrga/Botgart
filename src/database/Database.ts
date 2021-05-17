@@ -22,7 +22,7 @@ export class Database {
                 if (state !== null) {
                     state.push(message);
                 }
-                LOG.debug(`Sqlite Query: ${message}`,additionalArgs);
+                LOG.debug(`Sqlite Query: ${message}`, additionalArgs);
             }
         };
         const db = sqlite(this.file, options);
@@ -61,7 +61,7 @@ export class Database {
     }
 
     private static closeConnection(db: sqlite.Database) {
-        //optimize https://www.sqlite.org/lang_analyze.html
+        // optimize https://www.sqlite.org/lang_analyze.html
         db.pragma("analysis_limit=400");
         db.pragma("optimize");
 

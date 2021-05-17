@@ -9,7 +9,7 @@ export class DBPatch extends Patch {
     constructor(db: Database) {
         super();
         this.db = db;
-        this.connection = db.openConnection(null)
+        this.connection = db.openConnection(null);
     }
 
     protected async commit(): Promise<void> {

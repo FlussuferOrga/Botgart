@@ -12,7 +12,7 @@ export class MessageListener extends Listener {
     }
 
     exec(message) {
-        LOG.info("Received Message: %s", message);
+        // LOG.info("Received Message: %s", message);
     }
 }
 

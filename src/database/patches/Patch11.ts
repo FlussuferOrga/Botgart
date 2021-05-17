@@ -15,7 +15,7 @@ export class Patch11 extends DBPatch {
     }
 
     protected async apply(): Promise<void> {
-        this.dbbegin()
+        this.dbbegin();
         this.connection.prepare(
             `CREATE INDEX IF NOT EXISTS matchup_objectives_last_flipped_index
                 ON matchup_objectives (last_flipped);`)
@@ -28,7 +28,7 @@ export class Patch11 extends DBPatch {
     }
 
     public async revert(): Promise<void> {
-        this.connection.prepare(`DROP INDEX matchup_objectives_last_flipped_index;`).run();
-        this.connection.prepare(`DROP INDEX matchup_objectives_oid_sid_mid_index;`).run();
+        this.connection.prepare("DROP INDEX matchup_objectives_last_flipped_index;").run();
+        this.connection.prepare("DROP INDEX matchup_objectives_oid_sid_mid_index;").run();
     }
 }

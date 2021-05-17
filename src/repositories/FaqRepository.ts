@@ -2,20 +2,18 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 
 export type Faq = {
     key: string;
-    text: string,
-}
+    text: string;
+};
 
 export class FaqRepository extends AbstractDbRepository {
-
     public storeFAQ(user: string, guild: string, keys: [string], text: string): number | undefined {
         return this.execute(db => {
             let lastId = undefined;
             db.transaction((_) => {
-                db.prepare(`INSERT INTO faqs(created_by, guild, text)
-                            VALUES (?, ?, ?)`).run(user, guild, text);
-                lastId = db.prepare(`SELECT last_insert_rowid() AS id`).get().id;
-                const stmt = db.prepare(`INSERT INTO faq_keys(created_by, guild, key, faq_id)
-                                         VALUES (?, ?, ?, ?)`);
+                lastId = db.prepare("INSERT INTO faqs(created_by, guild, text) VALUES (?, ?, ?)")
+                    .run(user, guild, text)
+                    .lastInsertRowid;
+                const stmt = db.prepare("INSERT INTO faq_keys(created_by, guild, key, faq_id) VALUES (?, ?, ?, ?)");
                 keys.forEach(k => stmt.run(user, guild, k, lastId));
             })(null);
             return lastId;
@@ -30,7 +28,7 @@ export class FaqRepository extends AbstractDbRepository {
                             FROM faq_keys
                             WHERE key = ?
                               AND guild = ?`).run(key, guild);
-                changes = db.prepare(`SELECT changes() AS changes`).get().changes;
+                changes = db.prepare("SELECT changes() AS changes").get().changes;
                 db.prepare(`DELETE
                             FROM faqs
                             WHERE id IN (SELECT f.id
