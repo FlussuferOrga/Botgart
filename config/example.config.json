@@ -1,0 +1,39 @@
+{
+  "owner_ids": ["1111111111111"],
+  "prefix": ",",
+  "token": "xxxxxxxxx",
+  "home_id": 2202,
+  "world_assignments": [
+    {
+      "world_id": 2202,
+      "role": "rolename (must exist!)"
+    }
+  ],
+  "ts_listener": {
+    "ip": "127.0.0.1",
+    "port": 10137,
+    "channel_delay": 300,
+    "user_delay": 300,
+    "grace_period": 60,
+    "broadcast_channel": "raid announcements",
+    "ping_role": "Raiders",
+    "commander_role": "Commander"
+  },
+  "disabled": {
+    "listeners": [],
+    "commands": [],
+    "inhibitors": []
+  },
+  "achievements": {
+    "channel": "achievements",
+    "ignoring_roles": ["covert"]
+  },
+  "gw2api": {
+    "delays": {
+      "wvw_stats": 10000,
+      "wvw_matches": 10000
+    }
+  },
+  "ts_unregister_protection": [],
+  "ts_commander_check_interval": 300000
+}

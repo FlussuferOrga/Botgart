@@ -23,7 +23,7 @@ Only ever edit the Typescript source in the `src/` directory, not the Javascript
 After making your changes, call `tsc` from the root directory to transpile your code into the `built/`-directory, which can be run as a Node project (see below).
 
 ### Config
-The root directory holds a `config.json.example`. Copy it to `config.json` and adjust the values inside to your needs.
+The root directory holds a `config/example.config.json`. Rename it to `config.json` and adjust the values inside to your needs.
 
 #### Token
 The bot token is how your app knows as which discord account it should connect.
@@ -73,7 +73,7 @@ services:
     volumes:
       - ./botgart/log:/app/log
       - ./botgart/db:/app/db
-      - ./botgart/config.json:/app/config.json
+      - ./botgart/config/config.json:/app/config.json
     deploy:
       restart_policy:
         condition: on-failure
