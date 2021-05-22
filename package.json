@@ -2,6 +2,26 @@
   "name": "riversidebot",
   "version": "1.0.0",
   "description": "Discord bot for Riverside Discord server",
+  "homepage": "https://github.com/FlussuferOrga/Botgart",
+  "license": "ISC",
+  "author": "Daniel O'Grady",
+  "contributors": [
+    {
+      "name": "Daniel O'Grady",
+      "url": "https://github.com/ogrady"
+    },
+    {
+      "name": "Tobias Günther",
+      "url": "https://github.com/Xyaren"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlussuferOrga/Botgart"
+  },
+  "bugs": {
+    "url": "https://github.com/FlussuferOrga/Botgart/issues"
+  },
   "main": "index.js",
   "scripts": {
     "typesync": "node ./node_modules/typesync/bin/typesync",
@@ -14,8 +34,6 @@
     "lint": "eslint . --ext .ts",
     "lint-fix": "eslint . --ext .ts --fix"
   },
-  "author": "Daniel O'Grady",
-  "license": "ISC",
   "dependencies": {
     "@supercharge/promise-pool": "^1.7.0",
     "await-semaphore": "^0.1.3",
@@ -53,6 +71,7 @@
     "@types/command-line-args": "^5.0.0",
     "@types/convict": "^6.0.2",
     "@types/dateformat": "^3.0.1",
+    "@types/eslint": "^7.2.11",
     "@types/express": "^4.17.11",
     "@types/lodash": "^4.14.169",
     "@types/mocha": "^8.2.2",
