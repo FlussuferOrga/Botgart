@@ -8,7 +8,7 @@ WORKDIR /app
 # ---- Dependencies ----
 FROM base AS dependencies
 
-RUN apk add --no-cache make gcc g++ python
+RUN apk add --no-cache make gcc g++ python3
 
 # install node packages
 RUN npm set progress=false && npm config set depth 0
