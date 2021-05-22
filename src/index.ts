@@ -1,6 +1,8 @@
 import * as CommandLineArgs from "command-line-args";
 
 import { Intents } from "discord.js";
+
+import "source-map-support/register"; // show .ts files in stacktraces if sourcemaps are present
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import { Database } from "./database/Database";
