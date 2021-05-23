@@ -269,7 +269,7 @@ export class MatchupRepository extends AbstractDbRepository {
     }
 
     // eslint-disable-next-line max-params
-    public addStats(stats, match: Matchup) {
+    public async addStats(stats, match: Matchup) {
         this.execute(db => {
                 const snapShotStatement = db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES");
                 const insertStatement = db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -291,7 +291,7 @@ export class MatchupRepository extends AbstractDbRepository {
         );
     }
 
-    public addObjectives(match, matchInfo: Matchup) {
+    public async addObjectives(match, matchInfo: Matchup) {
         const objs = match.maps
             .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
             // .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting

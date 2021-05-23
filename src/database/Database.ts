@@ -65,10 +65,21 @@ export class Database {
     }
 
     private static closeConnection(db: sqlite.Database) {
+        db.close();
+    }
+
+    private async optimize() {
+        LOG.debug("Optimizing database");
+        const db = sqlite(this.file);
         // optimize https://www.sqlite.org/lang_analyze.html
         db.pragma("analysis_limit=400");
         db.pragma("optimize");
-
         db.close();
+        LOG.debug("Done optimizing database");
+    }
+
+    public async scheduleOptimize(minutes = 60) {
+        LOG.info(`Scheduling database optimization every ${minutes} minutes.`);
+        setInterval(this.optimize, minutes * 60 * 1000);
     }
 }

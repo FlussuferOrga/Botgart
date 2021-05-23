@@ -21,8 +21,8 @@ export async function runApp(database: Database) {
         { ownerID: config.get("owner_ids") },
         { ws: { intents: intents } },
         database);
-    const webServer = new WebServer();
 
+    const webServer = new WebServer();
     // shutdown listener
     ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal: NodeJS.Signals) =>
         process.on(signal, () => {
@@ -47,6 +47,8 @@ export async function runApp(database: Database) {
             LOG.info("Starting web server...");
             await webServer.start();
             LOG.info("Started web server.");
+
+            await database.scheduleOptimize(15);
         });
     // .catch(reason => {
     //     LOG.error(`Error starting up bot: ${reason}`);

@@ -117,40 +117,23 @@ export class BotgartClient extends akairo.AkairoClient {
         });
         this.inhibitorHandler.loadAll();
 
-        // yes, both listeners listen to wvw-matches on purpose,
-        // as it contains the info on the stats as well as on the objectives!
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
                 if (stats === undefined) return;
-                LOG.debug("Starting to write WvWStats.");
+                LOG.debug("Starting to write WvW Statistics.");
                 const match = await this.wvwWatcher.getCurrentMatch();
                 if (match === undefined) {
                     LOG.error("Could not produce a proper matchup. API might be down.");
                 } else {
-                    this.matchupRepository.addStats(stats, match);
+                    await this.matchupRepository.addStats(stats, match);
+                    await this.matchupRepository.addObjectives(stats, match);
                 }
-                LOG.debug("Done writing WvWStats.");
-            });
-        });
-
-        this.gw2apiemitter.on("wvw-matches", (prom) => {
-            prom.then(async match => {
-                if (match === undefined) return;
-                LOG.debug("Starting to write WvWObjectives.");
-                const matchInfo = await this.wvwWatcher.getCurrentMatch();
-                if (matchInfo === undefined) {
-                    LOG.error("Current match should be available at this point, but getCurrentMatch created an empty result. Will not add objectives either.");
-                } else {
-                    this.matchupRepository.addObjectives(match, matchInfo);
-                }
-                LOG.debug("Done writing WvWObjectives.");
+                LOG.debug("Done writing WvW Statistics.");
             });
         });
 
         this.achievementRegistry = AchievementRegistry.create(this);
     }
-
-
 
     public getTS3Connection(): TS3Connection {
         return this.ts3connection;
