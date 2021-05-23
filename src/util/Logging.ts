@@ -15,8 +15,9 @@ function createLogger() {
             return `${timestamp} ${level} [${file}]: ${message}${restString}`;
         })
     );
-    return winston.createLogger({
+    const options = {
         levels: winston.config.cli.levels,
+        handleExceptions: true,
         format: defaultFormat,
         transports: [
             new winston.transports.Console({
@@ -39,7 +40,15 @@ function createLogger() {
                 level: "debug"
             })
         ]
-    });
+    };
+
+    // hack from https://github.com/winstonjs/winston/issues/1673
+    options.transports = options.transports.map(value => Object.assign(value, {
+        handleExceptions: true,
+        handleRejections: true
+    }));
+
+    return winston.createLogger(options);
 }
 
 const internalLogger = createLogger();
