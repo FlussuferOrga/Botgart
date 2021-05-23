@@ -11,4 +11,6 @@ Dockerfile
 .*ignore
 
 # do not pack the dev config.
+config/config.json
+# legacy
 config.json

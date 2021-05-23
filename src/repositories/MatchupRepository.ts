@@ -41,17 +41,13 @@ export class MatchupRepository extends AbstractDbRepository {
                     .run(tier, Util.momentToIsoString(start), Util.momentToIsoString(end))
                     .lastInsertRowid;
                 for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
+                    const statement = db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id) VALUES(?,?,?)");
                     for (const worldId of worlds) {
-                        this.addMatchupFaction(matchId, worldId, colour);
+                        statement.run(matchId, colour, worldId);
                     }
                 }
             }
         });
-    }
-
-    private addMatchupFaction(matchId: number, worldId: number, colour: string) {
-        return this.execute(db => db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id) VALUES(?,?,?)")
-            .run(matchId, colour, worldId));
     }
 
     public getFactionColour(now: moment.Moment, serverId: number): FactionColour | undefined {

@@ -2,47 +2,64 @@
   "name": "riversidebot",
   "version": "1.0.0",
   "description": "Discord bot for Riverside Discord server",
+  "homepage": "https://github.com/FlussuferOrga/Botgart",
+  "license": "ISC",
+  "author": "Daniel O'Grady",
+  "contributors": [
+    {
+      "name": "Daniel O'Grady",
+      "url": "https://github.com/ogrady"
+    },
+    {
+      "name": "Tobias Günther",
+      "url": "https://github.com/Xyaren"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlussuferOrga/Botgart"
+  },
+  "bugs": {
+    "url": "https://github.com/FlussuferOrga/Botgart/issues"
+  },
   "main": "index.js",
   "scripts": {
-    "typesync": "node ./node_modules/typesync/bin/typesync",
-    "test": "mocha -r ts-node/register src/tests/**/*.test.ts",
     "build": "node ./node_modules/typescript/bin/tsc",
-    "run": "npm run build && node ./built/index.js",
+    "run": "npm run build && node ./built/index.js --patchall=run",
     "run-debug": "npm run build && node --trace-warnings ./built/index.js",
     "run-patchall": "npm run build && node ./built/index.js --patchall",
-    "outdated": "npm outdated",
-    "lint": "eslint . --ext .ts",
-    "lint-fix": "eslint . --ext .ts --fix"
+    "test": "mocha",
+    "lint": "eslint . --ext .ts,.json",
+    "lint-fix": "run lint --fix",
+    "dep-outdated": "npm outdated",
+    "dep-typesync": "node ./node_modules/typesync/bin/typesync",
+    "dep-check-unused": "echo 'ignoring eslint until https://github.com/depcheck/depcheck/pull/641 is merged' && node ./node_modules/depcheck/bin/depcheck.js --ignores='eslint-plugin*,@typescript-eslint/*'"
   },
-  "author": "Daniel O'Grady",
-  "license": "ISC",
+  "typesync": {
+    "ignorePackages": [
+      "eslint"
+    ]
+  },
   "dependencies": {
     "@supercharge/promise-pool": "^1.7.0",
     "await-semaphore": "^0.1.3",
     "await-timeout": "^1.1.1",
     "better-sqlite3": "^7.4.0",
     "callsites": "^3.1.0",
-    "cheerio": "^1.0.0-rc.5",
+    "cheerio": "^1.0.0-rc.9",
     "command-line-args": "^5.1.1",
     "convict": "^6.1.0",
-    "dateformat": "^4.5.1",
-    "discord": "^0.8.2",
     "discord-akairo": "^8.1.0",
     "discord.js": "^12.5.3",
-    "express": "^4.17.1",
     "gw2api-client": "^7.4.2",
     "lodash": "^4.17.21",
     "memoizer-ts": "^1.0.1",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "node-schedule": "^2.0.0",
-    "node-teamspeak-api": "^1.0.0",
-    "nodemon": "^2.0.7",
-    "singly-linked-list": "^1.4.1",
-    "sqlite": "^4.0.22",
-    "string-similarity": "^4.0.4",
-    "validate.js": "^0.13.01",
-    "winston": "^3.3.3"
+    "server-health": "^5.0.1",
+    "winston": "^3.3.3",
+    "source-map-support": "^0.5.19"
   },
   "devDependencies": {
     "@types/await-timeout": "^0.3.1",
@@ -52,22 +69,19 @@
     "@types/chai-moment": "^0.1.1",
     "@types/command-line-args": "^5.0.0",
     "@types/convict": "^6.0.2",
-    "@types/dateformat": "^3.0.1",
-    "@types/express": "^4.17.11",
-    "@types/lodash": "^4.14.169",
+    "@types/lodash": "^4.14.170",
     "@types/mocha": "^8.2.2",
     "@types/node-schedule": "^1.3.1",
-    "@types/nodemon": "^1.19.0",
     "@types/source-map-support": "^0.5.3",
-    "@types/string-similarity": "^4.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.23.0",
-    "@typescript-eslint/parser": "^4.23.0",
+    "@typescript-eslint/eslint-plugin": "^4.24.0",
+    "@typescript-eslint/parser": "^4.24.0",
     "chai": "^4.3.4",
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
-    "eslint": "^7.26.0",
+    "depcheck": "^1.4.1",
+    "eslint": "^7.27.0",
+    "eslint-plugin-jsonc": "^1.2.1",
     "mocha": "^8.4.0",
-    "source-map-support": "^0.5.19",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
     "typesync": "^0.8.0"

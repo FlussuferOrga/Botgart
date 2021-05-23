@@ -260,11 +260,23 @@ function logConfig(config) {
     LOG.debug(`Resolved Configuration:\n${configJsonString}`);
 }
 
+function getConfigPath() {
+    if (fs.existsSync("./config/config.json")) {
+        return "./config/config.json";
+    } else if (fs.existsSync("./config.json")) {
+        return "./config.json";
+    }
+    return null;
+}
+
 function loadConfiguration() {
     try {
         const config = convict(configSchema);
-        if (fs.existsSync("./config.json")) {
-            config.loadFile("./config.json");
+
+        const configPath = getConfigPath();
+        if (configPath !== null) {
+            LOG.info(`Loading config file ${configPath}`);
+            config.loadFile(configPath);
         }
 
         logConfig(config);

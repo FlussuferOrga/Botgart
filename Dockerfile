@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:14-alpine AS base
+FROM node:16-alpine AS base
 
 # set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 # ---- Dependencies ----
 FROM base AS dependencies
 
-RUN apk add --no-cache make gcc g++ python
+RUN apk add --no-cache make gcc g++ python3
 
 # install node packages
 RUN npm set progress=false && npm config set depth 0
@@ -35,8 +35,6 @@ COPY --from=build /app/built /app/built
 
 
 # --- Entrypoint ---
-COPY docker-entrypoint.sh /usr/local/bin/
-
 ENV HTTP_PORT=3000
 EXPOSE 3000
 
@@ -47,5 +45,4 @@ VOLUME /app/db
 HEALTHCHECK --interval=1m --timeout=20s --start-period=2m \
    CMD curl -f --max-time 18 "http://127.0.0.1:${HTTP_PORT}/health" || exit 1
 
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD ["node","/app/built/index.js"]
+CMD ["node","--enable-source-maps","/app/built/index.js","--patchall=run"]

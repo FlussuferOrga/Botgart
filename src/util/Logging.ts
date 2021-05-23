@@ -15,8 +15,9 @@ function createLogger() {
             return `${timestamp} ${level} [${file}]: ${message}${restString}`;
         })
     );
-    return winston.createLogger({
+    const options = {
         levels: winston.config.cli.levels,
+        handleExceptions: true,
         format: defaultFormat,
         transports: [
             new winston.transports.Console({
@@ -39,7 +40,15 @@ function createLogger() {
                 level: "debug"
             })
         ]
-    });
+    };
+
+    // hack from https://github.com/winstonjs/winston/issues/1673
+    options.transports = options.transports.map(value => Object.assign(value, {
+        handleExceptions: true,
+        handleRejections: true
+    }));
+
+    return winston.createLogger(options);
 }
 
 const internalLogger = createLogger();
@@ -50,19 +59,5 @@ export function logger(options: Record<string, unknown> = {}): winston.Logger {
     return internalLogger.child({
         ...options,
         "file": file
-    });
-}
-
-export function registerUnhandledRejection() {
-    const log = createLogger();
-    process.on("unhandledRejection", (reason, p) => {
-        log.error("Unhandled Rejection!");
-        // JSON.stringify does not handle errors and especially not Promises:
-        // https://levelup.gitconnected.com/beware-of-using-json-stringify-for-logging-933f18626d51
-        // The suggested solution there produces ugly output, so I am falling back to this to find proper errors during rejections
-        /* eslint-disable no-console */
-        console.error("Promise", p);
-        console.error("Reason", reason);
-        /* eslint-enable no-console */
     });
 }
