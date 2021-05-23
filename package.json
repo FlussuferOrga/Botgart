@@ -33,7 +33,7 @@
     "lint-fix": "run lint --fix",
     "dep-outdated": "npm outdated",
     "dep-typesync": "node ./node_modules/typesync/bin/typesync",
-    "dep-check-unused": "node ./node_modules/depcheck/bin/depcheck.js"
+    "dep-check-unused": "echo 'ignoring eslint until https://github.com/depcheck/depcheck/pull/641 is merged' && node ./node_modules/depcheck/bin/depcheck.js --ignores='eslint-plugin*,@typescript-eslint/*'"
   },
   "typesync": {
     "ignorePackages": [

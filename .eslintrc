@@ -226,7 +226,6 @@
         "jsonc"
       ],
       "files": ["*.json"], // Specify the extension or pattern you want to parse as JSON.
-      "parser": "jsonc-eslint-parser", // Set this parser.
       "extends": [
         "plugin:jsonc/recommended-with-json"
       ],
