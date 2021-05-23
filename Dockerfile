@@ -48,3 +48,5 @@ VOLUME /app/db
 # Copy files at last to maximise caching potential
 COPY --from=dependencies /app/node_modules /app/node_modules
 COPY --from=build /app/built /app/built
+# For server-health endoint..
+COPY --from=build /app/package.json /app/package.json
