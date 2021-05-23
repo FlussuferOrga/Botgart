@@ -22,7 +22,6 @@ export class WebServer {
     public async start() {
         return new Promise((resolve, reject) => {
             const httpConfig = getConfig().get().http;
-            reject(new Error("meh"));
 
             const startupErrorListener = err => {
                 // not needed after it has been invoked
