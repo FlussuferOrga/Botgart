@@ -7,8 +7,8 @@
 ##do not copy over existing built files
 #built
 
-/*
-!/src
-!/package.json
-!/package-lock.json
-!/tsconfig.json
+*
+!src
+!package.json
+!package-lock.json
+!tsconfig.json
