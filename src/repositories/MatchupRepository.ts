@@ -20,7 +20,8 @@ type Objective = {
 export class MatchupRepository extends AbstractDbRepository {
     public getCurrentMatchup(now: moment.Moment): Matchup | undefined {
         return this.execute(db =>
-            db.prepare("SELECT matchup_id, tier, start, end FROM matchups WHERE ? BETWEEN start AND end").get(Util.momentToIsoString(now)));
+            db.prepare("SELECT matchup_id, tier, start, end FROM matchups WHERE ? BETWEEN start AND end")
+                .get(Util.momentToIsoString(now)));
     }
 
     public getLatestMatchup(): Matchup | undefined {
@@ -40,8 +41,8 @@ export class MatchupRepository extends AbstractDbRepository {
                 matchId = db.prepare("INSERT INTO matchups(tier, start, end) VALUES(?, ?, ?)")
                     .run(tier, Util.momentToIsoString(start), Util.momentToIsoString(end))
                     .lastInsertRowid;
+                const statement = db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id) VALUES(?,?,?)");
                 for (const [worlds, colour] of [[reds, "Red"], [greens, "Green"], [blues, "Blue"]] as const) {
-                    const statement = db.prepare("INSERT INTO matchup_factions(matchup_id, colour, world_id) VALUES(?,?,?)");
                     for (const worldId of worlds) {
                         statement.run(matchId, colour, worldId);
                     }
@@ -100,22 +101,6 @@ export class MatchupRepository extends AbstractDbRepository {
             FROM captured_objectives
             WHERE new_last_flipped BETWEEN ? AND ?
         `).all(Util.momentToIsoString(start), Util.momentToIsoString(end)));
-    }
-
-    public addStatsSnapshot(): number {
-        return this.execute(db =>
-            db.transaction((_) => db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES")
-                .run()
-                .lastInsertRowid)(null)
-        );
-    }
-
-    public addObjectivesSnapshot(): number {
-        return this.execute(db =>
-            db.transaction((_) => db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES")
-                .run()
-                .lastInsertRowid)(null)
-        );
     }
 
     /**
@@ -284,29 +269,46 @@ export class MatchupRepository extends AbstractDbRepository {
     }
 
     // eslint-disable-next-line max-params
-    public addMatchupStats(matchId: number,
-                           snapshotId: number,
-                           map: string,
-                           faction: string,
-                           deaths: number,
-                           kills: number,
-                           victoryPoints: number) {
-        return this.execute(db => db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES(?,?,?,?,?,?,?)")
-            .run(matchId, snapshotId, map, faction, deaths, kills, victoryPoints));
+    public addStats(stats, match: Matchup) {
+        this.execute(db => {
+                const snapShotStatement = db.prepare("INSERT INTO stats_snapshots DEFAULT VALUES");
+                const insertStatement = db.prepare("INSERT INTO matchup_stats(matchup_id, snapshot_id, map, faction, deaths, kills, victory_points) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                db.transaction(() => {
+                    const snapshotId = snapShotStatement.run().lastInsertRowid;
+                    for (const mapData of stats.maps) {
+                        for (const faction in mapData.scores) { // keys of the dict, aka red, blue, green
+                            insertStatement.run(match.matchup_id,
+                                snapshotId,
+                                mapData.type,
+                                Util.capitalise(faction),
+                                mapData.deaths[faction],
+                                mapData.kills[faction],
+                                mapData.scores[faction]);
+                        }
+                    }
+                })();
+            }
+        );
     }
 
-    public addMatchupObjectives(matchId: number, snapshotId: number, objectives: [string, Objective, number][]) {
-        return this.execute(db => {
-            const stmt = db.prepare(`INSERT INTO matchup_objectives
-                                     (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick,
-                                      points_capture, last_flipped, yaks_delivered, tier)
-                                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
-            db.transaction((matchId, objectives) => {
-                for (const [mapname, details, tier] of objectives) {
-                    stmt.run(matchId,
-                        snapshotId,
-                        details.id,
-                        mapname,
+    public addObjectives(match, matchInfo: Matchup) {
+        const objs = match.maps
+            .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
+            // .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
+            .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
+
+        this.execute(db => {
+            const insertStatement = db.prepare(`INSERT INTO matchup_objectives
+                                                (matchup_id, snapshot_id, objective_id, map, owner, type, points_tick,
+                                                 points_capture, last_flipped, yaks_delivered, tier)
+                                                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+
+            const statement = db.prepare("INSERT INTO objectives_snapshots DEFAULT VALUES");
+            db.transaction(() => {
+                const snapshotId = statement.run().lastInsertRowid;
+                for (const [mapname, details, tier] of objs) {
+                    insertStatement.run(matchInfo.matchup_id,
+                        snapshotId, details.id, mapname,
                         details.owner,
                         details.type,
                         details.points_tick,
@@ -315,7 +317,7 @@ export class MatchupRepository extends AbstractDbRepository {
                         details.yaks_delivered,
                         tier);
                 }
-            })(matchId, objectives);
+            })();
         });
     }
 }

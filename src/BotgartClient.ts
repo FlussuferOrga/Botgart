@@ -23,7 +23,6 @@ import { TagBroadcastService } from "./services/TagBroadcastService";
 import { ValidationService } from "./services/ValidationService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection";
 import { logger } from "./util/Logging";
-import * as Util from "./util/Util";
 import { WvWWatcher } from "./WvWWatcher";
 
 const LOG = logger();
@@ -128,19 +127,7 @@ export class BotgartClient extends akairo.AkairoClient {
                 if (match === undefined) {
                     LOG.error("Could not produce a proper matchup. API might be down.");
                 } else {
-                    const snapshotId = this.matchupRepository.addStatsSnapshot();
-                    for await (const mapData of stats.maps) {
-                        for (const faction in mapData.scores) { // keys of the dict, aka red, blue, green
-                            this.matchupRepository.addMatchupStats(
-                                match.matchup_id,
-                                snapshotId,
-                                mapData.type, // map
-                                Util.capitalise(faction), // keys are lowercase, DB constraint is capitalised
-                                mapData.deaths[faction],
-                                mapData.kills[faction],
-                                mapData.scores[faction]);
-                        }
-                    }
+                    this.matchupRepository.addStats(stats, match);
                 }
                 LOG.debug("Done writing WvWStats.");
             });
@@ -149,24 +136,21 @@ export class BotgartClient extends akairo.AkairoClient {
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
                 if (match === undefined) return;
-                LOG.debug("Starting to write WvWMatches.");
+                LOG.debug("Starting to write WvWObjectives.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 if (matchInfo === undefined) {
                     LOG.error("Current match should be available at this point, but getCurrentMatch created an empty result. Will not add objectives either.");
                 } else {
-                    const snapshotId = this.matchupRepository.addObjectivesSnapshot();
-                    const objs = match.maps
-                        .reduce((acc, m) => acc.concat(m.objectives.map(obj => [m.type, obj])), []) // put objectives from all maps into one array
-                        // .filter(([m, obj]) => obj.type !== "Spawn") // remove spawn - not interesting
-                        .map(([m, obj]) => [m, obj, Util.determineTier(obj.yaks_delivered)]); // add tier information
-                    this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
+                    this.matchupRepository.addObjectives(match, matchInfo);
                 }
-                LOG.debug("Done writing WvWMatches.");
+                LOG.debug("Done writing WvWObjectives.");
             });
         });
 
         this.achievementRegistry = AchievementRegistry.create(this);
     }
+
+
 
     public getTS3Connection(): TS3Connection {
         return this.ts3connection;

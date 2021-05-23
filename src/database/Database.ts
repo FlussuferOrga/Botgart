@@ -22,7 +22,9 @@ export class Database {
                 if (state !== null) {
                     state.push(message);
                 }
-                LOG.debug(`Sqlite Query: ${message}`, additionalArgs);
+                if (LOG.isVerboseEnabled()) {
+                    LOG.verbose(`Sqlite Query: ${message}`, additionalArgs);
+                }
             }
         };
         const db = sqlite(this.file, options);
@@ -48,10 +50,12 @@ export class Database {
                 res = undefined;
                 LOG.error(`DB execute: ${err["message"]} (stack: ${new Error().stack})`);
             } finally {
-                const end = new Date().getTime();
-                const time = end - start;
-                if (time > 5000) {
-                    LOG.debug(`Sqlite Execution took long: ${time}ms: \n` + queryList.join("\n---\n"));
+                if (LOG.isDebugEnabled()) {
+                    const end = new Date().getTime();
+                    const time = end - start;
+                    if (time >= 5000) {
+                        LOG.debug(`Database Execution took long (${time}ms): \n` + queryList.join("\n---\n"));
+                    }
                 }
             }
             return res;

@@ -48,7 +48,9 @@ export class DBPatch extends Patch {
     }
 
     protected dbcommit(): void {
-        this.connection.prepare("COMMIT").run();
+        if (this.connection.inTransaction) {
+            this.connection.prepare("COMMIT").run();
+        }
     }
 
     protected dbrollback(): void {
