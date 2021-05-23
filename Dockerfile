@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:14-alpine AS base
+FROM node:16-alpine AS base
 
 # set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 # ---- Dependencies ----
 FROM base AS dependencies
 
-RUN apk add --no-cache make gcc g++ python
+RUN apk add --no-cache make gcc g++ python3
 
 # install node packages
 RUN npm set progress=false && npm config set depth 0
