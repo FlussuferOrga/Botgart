@@ -1,16 +1,14 @@
-.idea
+#.git
+#.idea
+#
+## node modules will be pulled on build
+#node_modules
+#
+##do not copy over existing built files
+#built
 
-# node modules will be pulled on build
-node_modules
-
-db
-log
-*.md
-run_devel.sh
-Dockerfile
-.*ignore
-
-# do not pack the dev config.
-config/config.json
-# legacy
-config.json
+*
+!src
+!package.json
+!package-lock.json
+!tsconfig.json
