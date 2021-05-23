@@ -35,14 +35,15 @@ RUN apk add --no-cache curl
 ENV HTTP_PORT=3000
 EXPOSE 3000
 
-VOLUME /app/log
-VOLUME /app/db
-#VOLUME /app/conf #need some work to move the config file into a seperate folder
 
 HEALTHCHECK --interval=1m --timeout=20s --start-period=30s \
    CMD curl -f --max-time 18 "http://127.0.0.1:${HTTP_PORT}/health" || exit 1
 
 CMD ["node","--enable-source-maps","/app/built/index.js","--patchall=run"]
+
+VOLUME /app/log
+VOLUME /app/db
+#VOLUME /app/conf #need some work to move the config file into a seperate folder
 
 # Copy files at last to maximise caching potential
 COPY --from=dependencies /app/node_modules /app/node_modules
