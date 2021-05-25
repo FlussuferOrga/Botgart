@@ -122,7 +122,10 @@ export class BotgartClient extends akairo.AkairoClient {
         // as it contains the info on the stats as well as on the objectives!
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
-                if (stats === undefined) return;
+                if (stats === undefined || stats.maps == undefined) {
+                    LOG.info("Got a bad result from the WvW api. Skipping listener.");
+                    return;
+                }
                 LOG.debug("Starting to write WvWStats.");
                 const match = await this.wvwWatcher.getCurrentMatch();
                 if (match === undefined) {
@@ -143,12 +146,15 @@ export class BotgartClient extends akairo.AkairoClient {
                     }
                 }
                 LOG.debug("Done writing WvWStats.");
-            });
+            }).catch(reason => LOG.error("Error handling wvw-matches event: " + reason));
         });
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async match => {
-                if (match === undefined) return;
+                if (match === undefined || match.maps === undefined) {
+                    LOG.info("Got a bad result from the WvW api. Skipping listener.");
+                    return;
+                }
                 LOG.debug("Starting to write WvWMatches.");
                 const matchInfo = await this.wvwWatcher.getCurrentMatch();
                 if (matchInfo === undefined) {
@@ -162,7 +168,7 @@ export class BotgartClient extends akairo.AkairoClient {
                     this.matchupRepository.addMatchupObjectives(matchInfo.matchup_id, snapshotId, objs);
                 }
                 LOG.debug("Done writing WvWMatches.");
-            });
+            }).catch(reason => LOG.error("Error handling wvw-matches event: " + reason));
         });
 
         this.achievementRegistry = AchievementRegistry.create(this);
