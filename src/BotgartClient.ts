@@ -119,7 +119,10 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.gw2apiemitter.on("wvw-matches", (prom) => {
             prom.then(async stats => {
-                if (stats === undefined) return;
+                if (stats === undefined || stats.maps == undefined) {
+                    LOG.info("Got a bad result from the WvW api. Skipping listener.");
+                    return;
+                }
                 LOG.debug("Starting to write WvW Statistics.");
                 const match = await this.wvwWatcher.getCurrentMatch();
                 if (match === undefined) {
@@ -129,7 +132,7 @@ export class BotgartClient extends akairo.AkairoClient {
                     await this.matchupRepository.addObjectives(stats, match);
                 }
                 LOG.debug("Done writing WvW Statistics.");
-            });
+            }).catch(reason => LOG.error("Error handling wvw-matches event: " + reason));
         });
 
         this.achievementRegistry = AchievementRegistry.create(this);
