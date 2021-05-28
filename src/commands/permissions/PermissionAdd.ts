@@ -1,18 +1,14 @@
 import * as discord from "discord.js";
-import { BotgartCommand, PermissionTypes } from "../BotgartCommand";
-import * as L from "../Locale";
-import { logger } from "../util/Logging";
+import { BotgartCommand, PermissionTypes } from "../../BotgartCommand";
+import * as L from "../../Locale";
+import { logger } from "../../util/Logging";
 
 const LOG = logger();
 
-/**
- Testcases:
-
- */
-export class Permit extends BotgartCommand {
+export class PermissionAdd extends BotgartCommand {
     constructor() {
-        super("permit", {
-                aliases: ["permit", "allow", "permission"],
+        super("permissionadd", {
+                aliases: ["permissionadd", "permadd", "permit"],
                 quoted: true,
                 args: [
                     {
@@ -68,4 +64,4 @@ export class Permit extends BotgartCommand {
     }
 }
 
-module.exports = Permit;
+module.exports = PermissionAdd;

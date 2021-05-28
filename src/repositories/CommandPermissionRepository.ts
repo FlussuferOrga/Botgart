@@ -34,6 +34,14 @@ export class CommandPermissionRepository extends AbstractDbRepository {
         return [permission > 0, permission];
     }
 
+    public removePermission(permissionId: number, guildId: string): number {
+        return this.execute(db => db.prepare(`DELETE
+                                              FROM command_permissions
+                                              WHERE guild = :guildId
+                                                AND command_permissions_id = :permId`)
+            .run({ "guildId": guildId, "permId": permissionId }).changes);
+    }
+
     public setPermission(command: string, receiver: string, type: PermissionTypes, value: number, gid?: string): number | undefined {
         return this.execute(db => {
             let perm = undefined;

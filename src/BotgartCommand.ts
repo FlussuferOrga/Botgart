@@ -140,6 +140,14 @@ export class BotgartCommand extends akairo.Command {
     }
 
     /**
+     * Creates a usage for this command for help-listing.
+     * @returns - helptext of this command.
+     */
+    public usage() {
+        return L.get(this.helptextKey(), [], "\n");
+    }
+
+    /**
      * Creates a cooldown message for this command.
      * Note that since most commands have no cooldown,
      * creating a message for each command does not make sense.
@@ -178,7 +186,7 @@ export class BotgartCommand extends akairo.Command {
         if (!argsPresent) {
             LOG.debug(`Missing argument at position [${i - 1}] for command '${this.constructor.name}'.`);
         }
-        return argsPresent ? undefined : L.get(this.helptextKey());
+        return argsPresent ? undefined : this.usage();
     }
 
     /**

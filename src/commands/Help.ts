@@ -34,24 +34,34 @@ export class Help extends BotgartCommand {
         // Issuing this command through DMs give the full list. This is not a security issue,
         // since the restricted listing is just a convenience for users to present them with a
         // more compact help text.
+
+        let commandId: string | null = null;
+        if (args.command instanceof Command) {
+            commandId = args.command.id;
+        }
         const separator = "\n";
         const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; // cache.find(m => m.id == responsible.id) : responsible;
         // let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
         const descs = "**COMMANDS:**\n\n"
             .concat(Array.from(this.getBotgartClient().commandHandler.modules.values())
-                .filter(value => {
-                    if (args.command instanceof Command) {
-                        return value.id == args.command.id;
-                    } else {
-                        return true;
-                    }
-                })
+                .filter(value => commandId === null || value.id == commandId)
                 .map(m => m as BotgartCommand)
                 .filter(m => m.isAllowed(user))
                 .sort((m1, m2) => m1.id < m2.id ? -1 : 1)
-                .map(m => m.desc
-                    ? `**${m.id}** (${m.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}):\n${m.desc()}\n_ _`
-                    : m.id
+                .map(cmd => {
+                        let message = "";
+                        if (cmd.desc) {
+                            message += `**${cmd.id}** (${cmd.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}):\n${cmd.desc()}\n_ _`;
+                        } else {
+                            message += cmd.id;
+                        }
+
+                        // if querying for a single command, print usage.
+                        if (commandId !== null) {
+                            message += "\n" + cmd.usage();
+                        }
+                        return message;
+                    }
                 )
                 .join(separator));
 
