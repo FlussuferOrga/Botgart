@@ -1,5 +1,4 @@
-import { table } from "table";
-import { TableUserConfig } from "table/dist/types/api";
+import { table, TableUserConfig } from "table";
 
 const TABLE_CONFIG: TableUserConfig = {
     "drawHorizontalLine": function (index, size) {

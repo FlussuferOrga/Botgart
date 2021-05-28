@@ -5,10 +5,6 @@ import { logger } from "../../util/Logging";
 
 const LOG = logger();
 
-/**
- Testcases:
-
- */
 export class PermissionAdd extends BotgartCommand {
     constructor() {
         super("permissionadd", {

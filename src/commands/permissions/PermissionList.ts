@@ -1,5 +1,4 @@
 import * as discord from "discord.js";
-import { MessageAttachment } from "discord.js";
 import { BotgartCommand, PermissionTypes } from "../../BotgartCommand";
 import { Permission } from "../../repositories/CommandPermissionRepository";
 import { logger } from "../../util/Logging";
@@ -22,7 +21,7 @@ export class PermissionList extends BotgartCommand {
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         this.createTable(guild)
-            .then(value => new MessageAttachment(Buffer.from(value, CHARSET), ATTACHEMENT_NAME))
+            .then(value => new discord.MessageAttachment(Buffer.from(value, CHARSET), ATTACHEMENT_NAME))
             .then(attachement => message.reply(attachement))
             .catch(reason => LOG.error("Could not create markdown table " + reason));
     }

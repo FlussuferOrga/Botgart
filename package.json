@@ -37,7 +37,8 @@
   },
   "typesync": {
     "ignorePackages": [
-      "eslint"
+      "eslint",
+      "table"
     ]
   },
   "dependencies": {

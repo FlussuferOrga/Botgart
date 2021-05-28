@@ -5,14 +5,10 @@ import { logger } from "../../util/Logging";
 
 const LOG = logger();
 
-/**
- Testcases:
-
- */
 export class PermissionRemove extends BotgartCommand {
     constructor() {
         super("permissionremove", {
-                aliases: ["permissionremove","permremove"],
+                aliases: ["permissionremove", "permremove"],
                 quoted: true,
                 args: [
                     {
