@@ -16,6 +16,7 @@ EN = {
 
         "NOT_PERMITTED": "You do not have the required permissions to execute this command.",
         "PERMISSION_SET_TO": "Permission for `{0}` for command `{1}` set to **{2}**.",
+        "PERMISSION_REMOVED": "Permission removed.",
         "WELCOME": "Welcome to the Riverside-Discord. :)\n Much of this server isn't accessible to for guests. Please authenticate using an API-key:\n\n1. Visit https://account.arena.net/applications\n2. Click 'new key'\n3. Post `,auth` followed by your new key per direct message (this window) to me.\n\nEg: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
         "NO_SUCH_COMMAND": "I don't know the command '{0}' you gave me.",
         "NOT_AVAILABLE_AS_DM": "This command is not usable as direct message. Please try it again within a server.",
@@ -64,7 +65,9 @@ EN = {
         "GUILD_LOG_PERMISSION_FAIL": "I need the API-key of a guild leader to retrieve the guild log.",
 
         "HELPTEXT_AUTHENTICATE": EN["HELPTEXT_PREFIX"] + "GW2 API key with the permissions 'account' and 'characters', which you can retrieve from https://account.arena.net/applications",
-        "HELPTEXT_PERMIT": EN["HELPTEXT_PREFIX"] + "`\"<name or alias of a command>\" \"<snowflake or name of the player or role (MUST EXIST)>\" <numerical permission value, positive to allow, negative to disallow>`",
+        "HELPTEXT_PERMISSION_ADD": EN["HELPTEXT_PREFIX"] + "`\"<name or alias of a command>\" \"<snowflake or name of the player or role (MUST EXIST)>\" <numerical permission value, positive to allow, negative to disallow>`",
+        "HELPTEXT_PERMISSION_LIST": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_PERMISSION_REMOVE": EN["HELPTEXT_PREFIX"] + "`<id of permission>`",
         "HELPTEXT_SAY": EN["HELPTEXT_PREFIX"] + "`<Channel, in which the bot should speak> \"<Text to speak>\"`.",
         "HELPTEXT_MAKE_CRON": EN["HELPTEXT_PREFIX"] + "\"`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Command to execute>`\" `<Parameters for that command as specified by the help text>`.",
         "HELPTEXT_DELETE_CRON": EN["HELPTEXT_PREFIX"] + "`<ID of the cronjob to delete>`\nIDs of all cronjobs can be found with the `lscrons`-command.",
@@ -95,7 +98,6 @@ EN = {
         "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + "\"`<name of the guild>`\" \"`<accounts of the contact persons, comma separated, must follow the format foo.1234>`\" \"`<TS group (optional, default is the guild tag)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": EN["HELPTEXT_PREFIX"] + "`<name of the guild>`",
 
-        "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
         "DESC_LIST_CRONS": "Lists all cronjobs.",
         "DESC_MAKE_CRON": "Creates a new cronjob for the given timestamp.",
@@ -135,7 +137,9 @@ EN = {
         "DESC_TS_GUILD_ADD": "Creates a new Guild on the TS server.",
         "DESC_TS_GUILD_DELETE": "Deletes a guild from the TS server.",
         "DESC_FIND_UNREGISTERED": "Find users, that are assigned a server role, but are not found in the database.",
+        "DESC_PERMISSION_ADD": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_PERMISSION_LIST": "List all set permissions.",
+        "DESC_PERMISSION_REMOVE": "Removes a permission by it's Id",
 
 
         "MK_GUILD_CONFIRM": "Your request:\n**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\nIs this correct?",
@@ -313,6 +317,7 @@ DE = {
         "HTTP_REQUEST_RETURNED": "Deine Anfrage wurde abgeschlossen. `{0}`",
 
         "NOT_PERMITTED": "Du hast nicht die nötigen Berechtigungen um diesen Befehl auszuführen.",
+        "PERMISSION_REMOVED": "Berechtigung entfernt.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf Befehl `{1}` ist jetzt **{2}**.",
         "WELCOME": "Herzlich willkommen auf dem Flussufer-Discord! :)\nEin Großteil des Servers ist für Gäste nicht zugänglich. Bitte authentifiziere dich mittels eines API-Keys:\n\n1. Besuche dazu https://account.arena.net/applications\n2. Klicke auf \"Neuer Schlüssel\"\n3. Poste `,auth ` gefolgt von deinem neuen Schlüssel per Direktnachricht (dieses Fenster) an mich.\n\nZ.B: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
         "NO_SUCH_COMMAND": "Den von dir angegebenen Befehl '{0}' kenne ich nicht.",
@@ -362,7 +367,9 @@ DE = {
         "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 
         "HELPTEXT_AUTHENTICATE": DE["HELPTEXT_PREFIX"] + "GW2 API-Key mit den Berechtigungen 'account' und 'characters', den du unter https://account.arena.net/applications erhalten kannst.",
-        "HELPTEXT_PERMIT": DE["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
+        "HELPTEXT_PERMISSION_ADD": DE["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
+        "HELPTEXT_PERMISSION_LIST": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_PERMISSION_REMOVE": EN["HELPTEXT_PREFIX"] + "`<id der Berechtigung>`",
         "HELPTEXT_SAY": DE["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
         "HELPTEXT_MAKE_CRON": DE["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
         "HELPTEXT_DELETE_CRON": DE["HELPTEXT_PREFIX"] + "`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
@@ -393,7 +400,6 @@ DE = {
         "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" \"`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`\" \"`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
 
-        "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
         "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
         "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt.",
@@ -433,7 +439,10 @@ DE = {
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
         "DESC_FIND_UNREGISTERED": "Finde Nutzer, die eine Serverrolle haben, aber nicht in der Datenbank zu finden sind.",
+        "DESC_PERMISSION_ADD": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_PERMISSION_LIST": "Listet alle gesetzen Berechtigungen auf",
+        "DESC_PERMISSION_REMOVE": "Entfernt eine Berechtigung anhand ihrer Id.",
+
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
@@ -611,6 +620,7 @@ DE_SWG = {
 
         "NOT_PERMITTED": "Des derfsch net.",
         "PERMISSION_SET_TO": "Berechtigung für `{0}` auf de Befehl `{1}` isch jetzt **{2}**.",
+        "PERMISSION_REMOVED": "Berechtigung isch jetzt weg.",
         "WELCOME": "Grüß Gott aufm Flussufer-Discord! :)\nEs moischt hier kannsch als Gascht net sehe. Bitte authentifiziere dich mit erem API-Key:\n\n1. Bsuch dazu https://account.arena.net/applications\n2. Dann drücksch auf \"Neuer Schlüssel\"\n3. Na schreibsch `,auth ` gefolgt von deim neue Schlüssel per Direktnachricht (dieses Fenster) an mi.\n\nZ.B: `,auth 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111`.",
         "NO_SUCH_COMMAND": "'{0}' kenn i net.",
         "NOT_AVAILABLE_AS_DM": "Des kannsch net innere Privatnachricht mache. Probiersch nochamol aufm Server.",
@@ -659,7 +669,9 @@ DE_SWG = {
         "GUILD_LOG_PERMISSION_FAIL": "Für das Abrufen des Gilden-Logbuchs muss ein API-Key des Anführers hinterlegt sein.",
 
         "HELPTEXT_AUTHENTICATE": DE_SWG["HELPTEXT_PREFIX"] + "'en GW2 API-Key mit 'account' und 'characters', den kriegsch auf https://account.arena.net/applications",
-        "HELPTEXT_PERMIT": DE_SWG["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
+        "HELPTEXT_PERMISSION_ADD": DE_SWG["HELPTEXT_PREFIX"] + "`<Name oder Alias des Befehls> <Name des Spielers oder der Rolle oder Snowflake (MUSS EXISTIEREN)> <numerischer Berechtigungs-Wert, positiv um zu erlauben, negativ um zu verbieten>`",
+        "HELPTEXT_PERMISSION_LIST": EN["HELPTEXT_PREFIX"] + "",
+        "HELPTEXT_PERMISSION_REMOVE": EN["HELPTEXT_PREFIX"] + "`<id der Berechtigung>`",
         "HELPTEXT_SAY": DE_SWG["HELPTEXT_PREFIX"] + "`<Channel, in dem der Bot sprechen soll> \"<Text, den der Bot abschicken soll>\"`.",
         "HELPTEXT_MAKE_CRON": DE_SWG["HELPTEXT_PREFIX"] + "`<Cron-Scheduling-String (UNIX-Format)>`\" \"`<Befehl, der gescheduled werden soll>`\" `<Parameter für den vorausgehenden Befehl, entsprechend dessen Hilfetext>`.",
         "HELPTEXT_DELETE_CRON": DE_SWG["HELPTEXT_PREFIX"] + "`<ID des Cronjobs, der gelöscht werden soll>`\nIDs aller Cronjobs kannst du mit dem `lscrons`-Befehl anzeigen lassen.",
@@ -690,7 +702,6 @@ DE_SWG = {
         "HELPTEXT_TS_GUILD_ADD": DE_SWG["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" \"`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`\" \"`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
 
-        "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
         "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
         "DESC_MAKE_CRON": "Erstellt einen neuen Cronjob auf den angegebenen Zeitpunkt.",
@@ -730,7 +741,9 @@ DE_SWG = {
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
         "DESC_FIND_UNREGISTERED": "Findet en Spieler, der e Serverrolle het, aber net in der Datebank zu finde isch.",
-        "DESC_PERMISSION_LIST": "Listet all gsezte Bereschtigunge uf",
+        "DESC_PERMISSION_ADD": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
+        "DESC_PERMISSION_LIST": "Listet all gsezte Bereschtigunge uf.",
+        "DESC_PERMISSION_REMOVE": "Löscht die Berechtigung mit ihrer Id.",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nBasst des so?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nBasst des so?",

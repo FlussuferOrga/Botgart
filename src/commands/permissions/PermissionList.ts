@@ -1,31 +1,29 @@
 import * as discord from "discord.js";
-import { BotgartCommand, PermissionTypes } from "../BotgartCommand";
-import { Permission } from "../repositories/CommandPermissionRepository";
-import { logger } from "../util/Logging";
-import { createTable } from "../util/Table";
+import { MessageAttachment } from "discord.js";
+import { BotgartCommand, PermissionTypes } from "../../BotgartCommand";
+import { Permission } from "../../repositories/CommandPermissionRepository";
+import { logger } from "../../util/Logging";
+import { createTable } from "../../util/Table";
 
 const LOG = logger();
 
+const CHARSET = "utf-8";
+const ATTACHEMENT_NAME = "result.txt";
 
-/**
- Testcases:
-
- */
 export class PermissionList extends BotgartCommand {
     constructor() {
-        super("listpermissions", {
-                aliases: ["listpermissions", "listperm", "listallow"],
+        super("permissionlist", {
+                aliases: ["permissionlist", "permlist"],
                 quoted: true,
                 args: []
-                // userPermissions: ["ADMINISTRATOR"]
             }
         );
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
         this.createTable(guild)
-            .then(value => "```\n" + value + "\n```")
-            .then(tableAsString => this.reply(message, responsible, tableAsString))
+            .then(value => new MessageAttachment(Buffer.from(value, CHARSET), ATTACHEMENT_NAME))
+            .then(attachement => message.reply(attachement))
             .catch(reason => LOG.error("Could not create markdown table " + reason));
     }
 
