@@ -23,7 +23,6 @@ export class PermissionList extends BotgartCommand {
     }
 
     command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
-
         this.createTable(guild)
             .then(value => "```\n" + value + "\n```")
             .then(tableAsString => this.reply(message, responsible, tableAsString))
