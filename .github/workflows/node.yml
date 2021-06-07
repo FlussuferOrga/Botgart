@@ -34,7 +34,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Cache node modules
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         env:
           cache-name: cache-${{ matrix.node-version }}-node-modules
         with:
