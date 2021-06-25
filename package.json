@@ -33,7 +33,7 @@
     "lint-fix": "run lint --fix",
     "dep-outdated": "npm outdated",
     "dep-typesync": "node ./node_modules/typesync/bin/typesync",
-    "dep-check-unused": "echo 'ignoring eslint until https://github.com/depcheck/depcheck/pull/641 is merged' && node ./node_modules/depcheck/bin/depcheck.js --ignores='eslint-plugin*,@typescript-eslint/*'"
+    "dep-check-unused": "node ./node_modules/depcheck/bin/depcheck.js"
   },
   "typesync": {
     "ignorePackages": [
@@ -80,7 +80,7 @@
     "chai": "^4.3.4",
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
-    "depcheck": "^1.4.1",
+    "depcheck": "^1.4.2",
     "eslint": "^7.29.0",
     "eslint-plugin-jsonc": "^1.3.1",
     "mocha": "^9.0.1",
