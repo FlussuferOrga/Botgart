@@ -12,6 +12,8 @@ import { logger } from "./util/Logging";
 import "./util/string.extensions";
 import { WebServer } from "./WebServer";
 
+import * as discord from "discord";
+
 // bit weird but works only this way...
 const args = CommandLineArgs.default([
     {name: "verbose", alias: "v", type: Boolean},
@@ -33,62 +35,71 @@ process.on("unhandledRejection", (reason, p) => {
     /* eslint-enable no-console */
 });
 
-// this is an in-order list of all patches
+function main() {
+    const database = Database.getInstance("./db/database.db");
 
-const database = Database.getInstance("./db/database.db");
-
-if (args.patchall || args.patch) {
-    const patcher = new DatabasePatcher(database);
-    if (args.patchall) {
-        // node built/index.js --patchall
-        patcher.applyPatches(allPatches, args.revert === true).then(_ => process.exit(0));
-    } else if (args.patch) {
-        // node built/index.js --patch=PatchX
-        // node built/index.js --patch=PatchX --revert
-        const p: typeof DBPatch | undefined = getPatch(args.patch); // those are classes, not instances, so that they are only instantiated with the DB if needed
-        if (p === undefined) {
-            LOG.warn(`No patch ${args.patch} could be found to apply/revert.`);
-        } else {
-            patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));
+    if (args.patchall || args.patch) {
+        const patcher = new DatabasePatcher(database);
+        if (args.patchall) {
+            // node built/index.js --patchall
+            patcher.applyPatches(allPatches, args.revert === true).then(_ => process.exit(0));
+        } else if (args.patch) {
+            // node built/index.js --patch=PatchX
+            // node built/index.js --patch=PatchX --revert
+            const p: typeof DBPatch | undefined = getPatch(args.patch); // those are classes, not instances, so that they are only instantiated with the DB if needed
+            if (p === undefined) {
+                LOG.warn(`No patch ${args.patch} could be found to apply/revert.`);
+            } else {
+                patcher.applyPatch(<typeof DBPatch>p, args.revert === true).then(_ => process.exit(0));
+            }
         }
+    } else {
+        const config = getConfig();
+
+        LOG.info("Starting Botgart...");
+
+        const intents = new Intents(Intents.NON_PRIVILEGED); // default intents
+        intents.add("GUILD_MEMBERS"); // privileged intents, require checkbox in discord bot settings
+
+        L.setLanguages(config.get("locales"));
+        const client = new BotgartClient(
+            {ownerID: config.get("owner_ids")},
+            {ws: {intents: intents}},
+            database);
+        const webServer = new WebServer();
+
+        //shutdown listener
+        ["SIGINT", "SIGTERM", "SIGQUIT"].forEach((signal: NodeJS.Signals) =>
+            process.on(signal, () => {
+                LOG.info("Shutting down...");
+                client.prepareShutdown()
+                    .then(() => {
+                        client.destroy();
+                        webServer.close();
+                        LOG.info("Bye");
+                        process.exit(0);
+                    });
+            })
+        );
+
+        LOG.info("Starting up...");
+        client.login(config.get().token).then(() => {
+            LOG.info("Started up...");
+
+            LOG.info("Starting WebServer...");
+            webServer.start();
+
+            setTimeout(() => {
+                client.guilds.fetch("512656818997297173")
+                   .then(g => g.channels.resolve("676878614339256360") as discord.TextChannel)
+                   .then(c => client.calendarServices[0].postCalendarEvents(c));    
+            }, 1000);
+            
+        }).catch(reason => {
+            LOG.error(`Error starting up Bot: ${reason}`);
+            process.exit(1);
+        });
     }
-} else {
-    const config = getConfig();
-
-    LOG.info("Starting Botgart...");
-
-    const intents = new Intents(Intents.NON_PRIVILEGED); // default intents
-    intents.add("GUILD_MEMBERS"); // privileged intents, require checkbox in discord bot settings
-
-    L.setLanguages(config.get("locales"));
-    const client = new BotgartClient(
-        {ownerID: config.get("owner_ids")},
-        {ws: {intents: intents}},
-        database);
-    const webServer = new WebServer();
-
-    //shutdown listener
-    ['SIGINT', 'SIGTERM', 'SIGQUIT'].forEach((signal: NodeJS.Signals) =>
-        process.on(signal, () => {
-            LOG.info("Shutting down...");
-            client.prepareShutdown()
-                .then(() => {
-                    client.destroy();
-                    webServer.close();
-                    LOG.info("Bye");
-                    process.exit(0);
-                });
-        })
-    );
-
-    LOG.info("Starting up...");
-    client.login(config.get().token).then(() => {
-        LOG.info("Started up...");
-
-        LOG.info("Starting WebServer...");
-        webServer.start();
-    }).catch(reason => {
-        LOG.error(`Error starting up Bot: ${reason}`);
-        process.exit(1);
-    });
 }
+
+main();

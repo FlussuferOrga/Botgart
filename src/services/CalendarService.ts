@@ -51,9 +51,9 @@ export class CalendarService {
 
     private client: BotgartClient;
     private apiKey: string;
-    private calendarId: string;
     private nextSyncToken: string | undefined;
     private lastSync: moment.Moment;
+    public readonly calendarId: string;
 
     /**
     * @param client: Botgart
@@ -74,10 +74,13 @@ export class CalendarService {
     * @param nextSyncToken: token to only fetch updated events, see: https://developers.google.com/calendar/v3/reference/events/list
     * @returns the URL to use for a GET-request.
     */
-    private url(nextSyncToken: string | undefined = undefined): string {
+    private url(args: {nextSyncToken?: string, timeMin?: string, timeMax?: string}): string {
         const params = [
             "showDeleted=true",
-            nextSyncToken !== undefined ? `syncToken=${nextSyncToken}` : undefined
+            "singleEvents=true",
+            args.nextSyncToken ? `syncToken=${args.nextSyncToken}` : undefined,
+            !args.nextSyncToken && args.timeMin ? `timeMin=${args.timeMin}` : undefined,
+            !args.nextSyncToken && args.timeMax ? `timeMin=${args.timeMax}` : undefined
         ].filter(p => p !== undefined).join("&");
         return `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events?key=${this.apiKey}&${params}`;
     }
@@ -92,14 +95,14 @@ export class CalendarService {
     *                     Note that the nextSyncToken is neither shared between CalendarService instances targetting the same Google calendar, nor is it persistently stored and will be lost upon restarts.
     * @returns a list of events contained in the calendar this CalendarService instance is responsible for. Depending on the onlyUpdates parameter, either all events are produced or only events that were updated since the last call.
     */
-    public async getEvents(onlyUpdates = true): Promise<CalendarEvent[]> {
+    private async getEvents(onlyUpdates = true): Promise<CalendarEvent[]> {
         if(!onlyUpdates) {
             this.nextSyncToken = undefined;
         }
         let result: CalendarEvent[] = [];
-        const json = await U.gets(this.url(this.nextSyncToken));
+        const json = await U.gets(this.url({nextSyncToken: this.nextSyncToken}));
         this.lastSync = moment();
-        const parsed = JSON.parse(json); // here be dragons, check what an errored result would look like
+        const parsed = JSON.parse(json);
         if("error" in parsed) {
             if(parsed.error.code === 410) {
                 LOG.info(`Sync token for CalendarService expired. Fetching full list instead.`);
@@ -155,22 +158,21 @@ export class CalendarService {
         }
 
         return new discord.MessageEmbed()
-        .setColor(colour)
-        .attachFiles([embedImage])
-        .setImage(`attachment://${embedImage.name}`)
-        .setTitle(`${emote} ${event.summary}`)
-        .setDescription(event.description ?? "")
-        .setURL(event.htmlLink)
-        .setAuthor(event.organizer.displayName)
-        .addFields(
-            { name: "📅", value: (startDate != endDate ? `${startDate} – ${endDate}` : startDate)},
-            { name: "🕒", value: `${moment(event.start.dateTime).format("HH:mm")} – ${moment(event.end.dateTime).format("HH:mm")}`}
-        );
+            .setColor(colour)
+            .attachFiles([embedImage])
+            .setImage(`attachment://${embedImage.name}`)
+            .setTitle(`${emote} ${event.summary}`)
+            .setDescription(event.description ?? "")
+            .setURL(event.htmlLink)
+            .setAuthor(event.organizer.displayName)
+            .addFields(
+                { name: "📅", value: (startDate != endDate ? `${startDate} – ${endDate}` : startDate)},
+                { name: "🕒", value: `${moment(event.start.dateTime).format("HH:mm")} – ${moment(event.end.dateTime).format("HH:mm")}`}
+            );
     }
 
     public async postCalendarEvents(channel: discord.TextChannel) {
-        const events = await this.getEvents();
-        const embeds = events.map(this.eventToEmbed);
+        const embeds = (await this.getEvents()).map(this.eventToEmbed);
         channel.send(embeds[0]);
     }
 }
