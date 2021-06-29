@@ -93,6 +93,7 @@ EN = {
         "HELPTEXT_REACTION_SNAPSHOT": EN["HELPTEXT_PREFIX"] + "`<URL to the post that should be snapshoted (bot must have access to the guild, channel and post!)>`",
         "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + '"`<name of the guild>`" "`<accounts of the contact persons, comma separated, must follow the format foo.1234>`" "`<TS group (optional, default is the guild tag)>`"',
         "HELPTEXT_TS_GUILD_DELETE": EN["HELPTEXT_PREFIX"] + "`<name of the guild>`",
+        "HELPTEXT_CHECK_CALENDARS": EN["HELPTEXT_PREFIX"] + "`<channel to post updates to>` `<calendar id as set in the config> (optional)`",
 
         "DESC_PERMIT": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
@@ -134,6 +135,7 @@ EN = {
         "DESC_TS_GUILD_ADD": "Creates a new Guild on the TS server.",
         "DESC_TS_GUILD_DELETE": "Deletes a guild from the TS server.",
         "DESC_FIND_UNREGISTERED": "Find users, that are assigned a server role, but are not found in the database.",
+        "DESC_CHECK_CALENDARS": "Checks configured calendars for updates and posts them to a given channel.",
 
 
         "MK_GUILD_CONFIRM": "Your request:\n**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\nIs this correct?",
@@ -390,6 +392,7 @@ DE = {
         "HELPTEXT_REACTION_SNAPSHOT": DE["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
         "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + '"`<Name der Gilde>`" "`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`" "`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`"',
         "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
+        "HELPTEXT_CHECK_CALENDARS": EN["HELPTEXT_PREFIX"] + "`<Kanal, in den Aktualisierungen gepostet werden sollen>` `<Kalender-ID, wie in der Konfiguration festgelegt> (optional)`",
 
         "DESC_PERMIT": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
@@ -431,6 +434,7 @@ DE = {
         "DESC_TS_GUILD_ADD": "Erstellt eine neue Gilde auf dem TeamSpeak-Server.",
         "DESC_TS_GUILD_DELETE": "Lösche eine Gilde vom TeamSpeak-Server",
         "DESC_FIND_UNREGISTERED": "Finde Nutzer, die eine Serverrolle haben, aber nicht in der Datenbank zu finden sind.",
+        "DESC_CHECK_CALENDARS": "Prüft alle konfigurierten Kalender auf Aktualisierungen.",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nIst das so in Ordnung?",
