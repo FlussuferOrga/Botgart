@@ -69,7 +69,7 @@
     "@types/chai": "^4.2.20",
     "@types/chai-datetime": "^0.0.37",
     "@types/chai-moment": "^0.1.1",
-    "@types/command-line-args": "^5.0.0",
+    "@types/command-line-args": "^5.0.1",
     "@types/convict": "^6.1.1",
     "@types/lodash": "^4.14.170",
     "@types/mocha": "^8.2.2",
