@@ -39,7 +39,7 @@ export class RemoveResetLeader extends BotgartCommand {
         return !args || !args.weekNumber || !args.player ? L.get(this.helptextKey(), [WvwMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek();
         }
@@ -51,7 +51,7 @@ export class RemoveResetLeader extends BotgartCommand {
             const [g, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
             roster.removeLeadByName(WvwMap.getMapByName(args.map), name);
-            this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [name, args.weekNumber, mes.url]));
+            await this.reply(message, responsible, L.get("ROSTER_LEAD_REMOVED", [name, args.weekNumber, mes.url]));
         }
     }
 }

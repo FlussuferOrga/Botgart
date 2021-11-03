@@ -1,4 +1,4 @@
-import { Intents } from "discord.js";
+import { BitFieldResolvable, Intents, IntentsString } from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import { Database } from "./database/Database";
@@ -13,13 +13,24 @@ export async function runApp(database: Database) {
 
     LOG.info("Starting Botgart...");
 
-    const intents = new Intents(Intents.NON_PRIVILEGED); // default intents
-    intents.add("GUILD_MEMBERS"); // privileged intents, require checkbox in discord bot settings
+    const intents: BitFieldResolvable<IntentsString, number> = [
+       "GUILDS",
+       "GUILD_MEMBERS",
+       "GUILD_EMOJIS_AND_STICKERS",
+       "GUILD_INTEGRATIONS",
+       "GUILD_WEBHOOKS",
+       "GUILD_MESSAGES",
+       "GUILD_MESSAGE_REACTIONS",
+       "GUILD_MESSAGE_TYPING",
+       "DIRECT_MESSAGES",
+       "DIRECT_MESSAGE_REACTIONS",
+       "DIRECT_MESSAGE_TYPING"
+    ]; // privileged intents, require checkbox in discord bot settings
 
     L.setLanguages(config.get("locales"));
     const client = new BotgartClient(
         { ownerID: config.get("owner_ids") },
-        { ws: { intents: intents } },
+        { intents: intents },
         database);
     const webServer = new WebServer();
 

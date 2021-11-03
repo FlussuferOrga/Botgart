@@ -45,7 +45,7 @@ export class AddResetLeader extends BotgartCommand {
             : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek();
         }
@@ -57,7 +57,7 @@ export class AddResetLeader extends BotgartCommand {
             const [g, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
             roster.addLeadByName(WvwMap.getMapByName(args.map), name);
-            this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));
+            await this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));
         }
     }
 }

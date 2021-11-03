@@ -1,4 +1,5 @@
 import * as discord from "discord.js";
+import { Util } from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
 import { getConfig } from "../../config/Config";
 
@@ -20,11 +21,14 @@ export class ListAchievements extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, unknown>): void {
-        message.reply(this.getBotgartClient().achievementRegistry.getAchievements()
-                .map(a => `\`${a.name}\`: ${a.getDescription()}`)
-                .join("\n")
-            , { "split": true });
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, unknown>): Promise<void> {
+        const text = this.getBotgartClient().achievementRegistry.getAchievements()
+            .map(a => `\`${a.name}\`: ${a.getDescription()}`)
+            .join("\n");
+
+        for (const split of Util.splitMessage(text, { prepend: "_ _\n" })) {
+            await message.reply(split);
+        }
     }
 }
 

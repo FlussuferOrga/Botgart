@@ -48,7 +48,7 @@ export class PermissionAdd extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const cmd: string = args.command.id;
         const receiver: string = args.receiver.id;
         const type = (args.receiver instanceof discord.Role) ? PermissionTypes.role : PermissionTypes.user;

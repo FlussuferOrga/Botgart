@@ -14,7 +14,7 @@ export class FindDuplicates extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const cl = this.getBotgartClient();
         cl.registrationRepository.findDuplicateRegistrations().forEach(dup => {
             // unknown users are already filtered out. Maybe we want to change that and notify the caller

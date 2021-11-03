@@ -34,7 +34,7 @@ export class ToggleResetLeaderVisibility extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         if (args.weekNumber <= 0) {
             args.weekNumber = ResetUtil.currentWeek();
         }

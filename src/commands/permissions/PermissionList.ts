@@ -7,7 +7,7 @@ import { createTable } from "../../util/Table";
 const LOG = logger();
 
 const CHARSET = "utf-8";
-const ATTACHEMENT_NAME = "result.txt";
+const ATTACHMENT_NAME = "result.txt";
 
 export class PermissionList extends BotgartCommand {
     constructor() {
@@ -19,10 +19,10 @@ export class PermissionList extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         this.createTable(guild)
-            .then(value => new discord.MessageAttachment(Buffer.from(value, CHARSET), ATTACHEMENT_NAME))
-            .then(attachement => message.reply(attachement))
+            .then(value => new discord.MessageAttachment(Buffer.from(value, CHARSET), ATTACHMENT_NAME))
+            .then(attachment => message.reply({ files: [attachment] }))
             .catch(reason => LOG.error("Could not create markdown table " + reason));
     }
 
@@ -34,14 +34,14 @@ export class PermissionList extends BotgartCommand {
     }
 
     private async resolveReceiver(p: Permission) {
-        const guild = await this.getBotgartClient().guilds.fetch(p.guild, true, false);
+        const guild = await this.getBotgartClient().guilds.fetch(p.guild);
         switch (p.type) {
             case PermissionTypes.user: {
                 const user = await this.getBotgartClient().users.fetch(p.receiver);
                 if (user !== null && user != undefined) {
                     return user.username;
                 }
-                const guildMember = await guild.member(p.receiver)?.fetch();
+                const guildMember = await guild.members.fetch(p.receiver);
                 if (guildMember !== null && guildMember != undefined) {
                     return guildMember.nickname;
                 }

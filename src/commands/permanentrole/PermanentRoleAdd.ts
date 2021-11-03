@@ -31,7 +31,7 @@ export class AddPermanentRole extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         if (!message) {
             LOG.error("Mandatory message parameter missing. This command can not be issued as cron.");
             return;

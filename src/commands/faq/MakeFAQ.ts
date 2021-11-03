@@ -37,12 +37,12 @@ export class MakeFaq extends BotgartCommand {
         return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args) {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args) {
         this.getBotgartClient().faqRepository.storeFAQ(responsible.id, guild.id, args.keys, args.text);
         if (message) {
-            message.util?.send(L.get("FAQ_STORED"));
+            await message.util?.send(L.get("FAQ_STORED"));
         } else {
-            responsible.send(L.get("FAQ_STORED"));
+            await responsible.send(L.get("FAQ_STORED"));
         }
     }
 }

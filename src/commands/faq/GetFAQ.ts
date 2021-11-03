@@ -27,10 +27,10 @@ export class GetFaq extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const faq = this.getBotgartClient().faqRepository.getFAQ(args.key, guild.id);
         const response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
-        this.reply(message, responsible, response);
+        await this.reply(message, responsible, response);
     }
 }
 

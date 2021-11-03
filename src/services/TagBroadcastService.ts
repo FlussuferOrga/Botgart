@@ -27,12 +27,12 @@ export class TagBroadcastService {
     }
 
     async sendTagUpBroadcast(g: discord.Guild,
-                             commander: Commander,
-                             discordUser: discord.GuildMember | undefined,
-                             registration: undefined | Registration) {
+        commander: Commander,
+        discordUser: discord.GuildMember | undefined,
+        registration: undefined | Registration) {
         // broadcast the message
         const dchan: discord.TextChannel = g.channels.cache
-            .find(c => c.name === this.broadcastChannel && c.type == "text") as discord.TextChannel;
+            .find(c => c.name === this.broadcastChannel && c.type == "GUILD_TEXT") as discord.TextChannel;
         if (!dchan) {
             LOG.warn(`I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
@@ -44,14 +44,17 @@ export class TagBroadcastService {
             const pingRoleMention = pingRole ? pingRole.toString() : "";
 
             const embed = this.createEmbed(channelPath, commander);
-            const sendPromise = dchan.send(this.createMessage(name, role, pingRoleMention), embed);
+            const sendPromise = dchan.send({ content: this.createMessage(name, role, pingRoleMention), embeds: [embed] });
 
             if (discordUser?.user !== undefined) {
                 // user is known on discord -> is pingable
                 const userMention = discordUser!.user!.toString();
                 // replace message with version that links the user after it hast been sent initially.
                 // Editing does not trigger a notification.
-                return sendPromise.then(value => value.edit(this.createMessage(userMention, role, pingRoleMention), embed));
+                return sendPromise.then(value => value.edit({
+                    content: this.createMessage(userMention, role, pingRoleMention),
+                    embeds: [embed]
+                }));
             }
             return sendPromise;
         }
@@ -120,7 +123,7 @@ export class TagBroadcastService {
                 }
             }
             if (toUpdate) {
-                await message.edit(embed);
+                await message.edit({ embeds: [embed] });
             }
         }
     }

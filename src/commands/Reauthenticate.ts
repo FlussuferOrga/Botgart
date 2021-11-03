@@ -27,7 +27,7 @@ export class Reauthenticate extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
+    async command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
         const cl: BotgartClient = this.getBotgartClient();
         cl.revalidationService.revalidateKeys();
         LOG.info("Reauthentication started.");

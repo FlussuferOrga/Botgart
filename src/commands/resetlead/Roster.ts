@@ -1,4 +1,4 @@
-import discord from "discord.js";
+import discord, { ColorResolvable } from "discord.js";
 import events from "events";
 import moment, { Moment } from "moment-timezone";
 import { getConfig } from "../../config/Config";
@@ -141,8 +141,9 @@ export class Roster extends events.EventEmitter {
     /**
      * @returns the hex string of the colour to use for the embed based on how many maps are empty.
      */
-    private getEmbedColour(): string {
-        return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
+    private getEmbedColour(): ColorResolvable {
+        const colours: ColorResolvable[] = ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"];
+        return colours[this.emptyMapCount()];
     }
 
     /**

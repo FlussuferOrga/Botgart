@@ -1,5 +1,6 @@
 import { Argument, Command } from "discord-akairo";
 import * as discord from "discord.js";
+import { Util } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 
 /**
@@ -65,7 +66,9 @@ export class Help extends BotgartCommand {
                 )
                 .join(separator));
 
-        message.reply(descs, { split: { prepend: "_ _\n" } });
+        for (const split of Util.splitMessage(descs, { prepend: "_ _\n" })) {
+            await message.reply(split);
+        }
     }
 }
 

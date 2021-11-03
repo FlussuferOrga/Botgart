@@ -1,4 +1,4 @@
-import discord from "discord.js";
+import discord, { ColorResolvable } from "discord.js";
 import * as moment from "moment";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
@@ -24,16 +24,16 @@ const LOG = logger();
  * C: type of the context passed to both tryAward() and checkCondition() subsequently.
  */
 export abstract class Achievement<C> {
-    public static readonly EASY_COLOUR: string = "#c97012"; // 13201426, AD8A56 11373142
-    public static readonly MEDIUM_COLOUR: string = "#dadada"; // 14342874
-    public static readonly HARD_COLOUR: string = "#fcba03"; // 16562691
+    public static readonly EASY_COLOUR: ColorResolvable = "#c97012"; // 13201426, AD8A56 11373142
+    public static readonly MEDIUM_COLOUR: ColorResolvable = "#dadada"; // 14342874
+    public static readonly HARD_COLOUR: ColorResolvable = "#fcba03"; // 16562691
 
     readonly name: string;
     client: BotgartClient;
     imageURL: string;
     repeatable: boolean;
     roleName: string;
-    roleColour: string;
+    roleColour: ColorResolvable;
     announceRepetitions: boolean;
 
     getName(): string {
@@ -52,7 +52,7 @@ export abstract class Achievement<C> {
         return this.roleName;
     }
 
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour = "BLUE", repeatable = false, announceRepetitions = false) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: ColorResolvable = "BLUE", repeatable = false, announceRepetitions = false) {
         this.client = client;
         this.name = this.constructor.name;
         this.imageURL = imageURL;
@@ -127,7 +127,7 @@ export abstract class Achievement<C> {
                 if (isNew || this.announceRepetitions) {
                     // text does not matter at all, but Discord does not mention users anymore if the text is completely empty, it would seem
                     (achievementChannel as discord.TextChannel)
-                        .send("🏆", { reply: discordUser, embed: this.createEmbed(discordUser, rowId) });
+                        .send({ content: "🏆", target: discordUser, embeds: [this.createEmbed(discordUser, rowId)] });
                 }
             } else {
                 LOG.warn(`Tried to send achievement notification for achievement '${this.name}' for player ${discordUser.displayName} to achievement channel in guild ${guild.name}, but that channel does not exist.`);
@@ -146,7 +146,7 @@ export abstract class Achievement<C> {
     }
 
     private async createRole(guild: discord.Guild) {
-        return guild.roles.create({ data: { name: this.roleName, color: this.roleColour }, reason: "Achievement" });
+        return guild.roles.create({ name: this.roleName, color: this.roleColour, reason: "Achievement" });
     }
 
     /**
@@ -177,7 +177,7 @@ export abstract class Achievement<C> {
             .addField(L.get("ACHIEVEMENT_UNLOCKED", [], " | ", false), this.getDescription())
             .addField("\u200b", `${this.getFlavourText()}`)
             .setTimestamp(moment.utc().valueOf())
-            .setFooter(dbId);
+            .setFooter(String(dbId));
     }
 
     /**
@@ -225,7 +225,7 @@ export abstract class Achievement<C> {
 }
 
 export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: ColorResolvable, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }
 
@@ -241,7 +241,7 @@ export abstract class TagUpAchievement extends Achievement<ts3.TagUp> {
 }
 
 export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: ColorResolvable, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }
 
@@ -257,7 +257,7 @@ export abstract class TagDownAchievement extends Achievement<ts3.TagDown> {
 }
 
 export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts3.Commander; "objectives": gw2api.WvWMatches }> {
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: ColorResolvable, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }
 
@@ -276,7 +276,7 @@ export abstract class ObjectiveAchievement extends Achievement<{ "commander": ts
 }
 
 export abstract class NewMatchupAchievement extends Achievement<{ lastMatchup: Matchup; newMatchup: Matchup }> {
-    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: string, repeatable: boolean, announceRepetitions: boolean) {
+    protected constructor(client: BotgartClient, imageURL: string, roleName: string, roleColour: ColorResolvable, repeatable: boolean, announceRepetitions: boolean) {
         super(client, imageURL, roleName, roleColour, repeatable, announceRepetitions);
     }
 

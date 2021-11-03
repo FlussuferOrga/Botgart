@@ -1,5 +1,6 @@
 import * as cheerio from "cheerio";
 import * as discord from "discord.js";
+import { MessageEmbed } from "discord.js";
 import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
@@ -32,16 +33,19 @@ async function image(term: string): Promise<string> {
     let image = "";
 
     try {
-        const response = await gets(`https://results.dogpile.com/serp?qc=images&q=${term}`, {
+        const response = await gets(`https://www.gettyimages.de/search/2/image?phrase=${term}`, {
             headers: {
                 "Accept": "text/html",
-                "User-Agent": "Chrome"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
             }
         });
+        LOG.info("Page: " + response);
 
         const page = cheerio.load(response);
-        const links = page(".image a.link");
-        const urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
+
+        const links = page("picture source");
+        LOG.info("" + links);
+        const urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("srcset"));
         image = (urls.length === 0 ? "" : urls[Math.floor(Math.random() * urls.length)]) ?? "";
     } catch (e) {
         LOG.error(`Error while trying to retrieve random image from Dogpile: ${e}`);
@@ -96,9 +100,12 @@ class ActiveFisher {
     }
 
     public async bite(): Promise<void> {
-        await this.message.edit(await this.createBittenEmbed());
+        await this.message.edit({ embeds: [await this.createBittenEmbed()] });
         await this.message.react(REEL_EMOTE);
-        this.message.createReactionCollector((e, u) => u.id !== this.client.user?.id && e.emoji.name === REEL_EMOTE, { time: REEL_BASE_TIME * this.fish.reel_time_factor })
+        this.message.createReactionCollector({
+            filter: (e, u) => u.id !== this.client.user?.id && e.emoji.name === REEL_EMOTE,
+            time: REEL_BASE_TIME * this.fish.reel_time_factor
+        })
             .on("collect", r => this.end(true))
             .on("end", rs => this.end(rs.size > 0));
     }
@@ -107,12 +114,14 @@ class ActiveFisher {
         if (this.ended) return;
         this.ended = true;
 
+        let embed: MessageEmbed;
         if (reeled) {
             this.client.fishingRepository.catchFish(this.fisher, this.fish);
-            await this.message.edit(await this.createCaughtEmbed());
+            embed = await this.createCaughtEmbed();
         } else {
-            await this.message.edit(await this.createEscapedEmbed());
+            embed = await this.createEscapedEmbed();
         }
+        await this.message.edit({ embeds: [embed] });
     }
 }
 
@@ -130,16 +139,15 @@ export class GoFish extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const fish: Fish = this.getBotgartClient().fishingRepository.getRandomFish();
 
-        responsible.send(":fish:").then(async message => {
-            if (message instanceof discord.Message) {
+        await responsible.send(":fish:")
+            .then(async message => {
                 const af = new ActiveFisher(this.getBotgartClient(), responsible, message, fish);
-                message.edit(await af.createIdleEmbed());
+                await message.edit({ embeds: [await af.createIdleEmbed()] });
                 setTimeout(_ => af.bite(), Math.floor(Math.random() * 1000 * (WAIT_MAX_SECONDS - WAIT_MIN_SECONDS + 1) + WAIT_MIN_SECONDS));
-            }
-        });
+            });
     }
 }
 

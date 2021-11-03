@@ -23,7 +23,7 @@ export class ListCrons extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message | null, responsible: discord.User, guild: discord.Guild, args) {
+    async command(message: discord.Message | null, responsible: discord.User, guild: discord.Guild, args) {
         if (!responsible) {
             LOG.error("Can not execute lscron without member to reply to. Canceling.");
             return;
