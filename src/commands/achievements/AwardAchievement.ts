@@ -37,26 +37,29 @@ export class AwardAchievement extends BotgartCommand {
         );
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { achievement: Achievement<unknown>; player: discord.GuildMember; timestamp?: moment.Moment }): Promise<void> {
+    async command(message: discord.Message,
+        responsible: discord.User,
+        guild: discord.Guild,
+        args: { achievement: Achievement<unknown>; player: discord.GuildMember; timestamp?: moment.Moment }): Promise<void> {
         if (args.achievement === undefined) {
-            message.reply(L.get("NO_SUCH_ACHIEVEMENT"));
+            await message.reply(L.get("NO_SUCH_ACHIEVEMENT"));
         } else {
             const res = args.achievement.awardIn(message.guild as discord.Guild, args.player, responsible.id);
             switch (res) {
                 case AchievementAwardResult.AWARDED_FIRST_TIME:
-                    message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME"));
+                    await message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME"));
                     break;
                 case AchievementAwardResult.AWARDED_AGAIN:
-                    message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_AGAIN"));
+                    await message.reply(L.get("AWARD_ACHIEVEMENT_SUCCESS_AGAIN"));
                     break;
                 case AchievementAwardResult.NOT_AWARDED:
-                    message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED"));
+                    await message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED"));
                     break;
                 case AchievementAwardResult.USER_NOT_FOUND:
-                    message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
+                    await message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND"));
                     break;
                 case AchievementAwardResult.HIDDEN:
-                    message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN"));
+                    await message.reply(L.get("AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN"));
                     break;
             }
         }
