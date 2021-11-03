@@ -73,7 +73,7 @@ export class Whois extends BotgartCommand {
 
     private static matches(m: discord.GuildMember, needle: string): boolean {
         function nicknameMatches() {
-            return (m.nickname ? m.nickname?.toLowerCase() : "").search(needle) > -1;
+            return (m.nickname?.toLowerCase() ?? "").search(needle) > -1;
         }
 
         function usernameMatches() {
