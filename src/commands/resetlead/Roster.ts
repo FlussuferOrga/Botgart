@@ -8,6 +8,8 @@ import { ResetLeader } from "./ResetLeader";
 import * as ResetUtil from "./ResetUtil";
 import { WvwMap } from "./WvwMap";
 
+const EMPTY_MESSAGE = "_ _";
+
 export class Roster extends events.EventEmitter {
     public readonly leads: { [key: string]: [WvwMap, Util.GeneralSet<ResetLeader>] };
     public readonly weekNumber: number;
@@ -176,6 +178,10 @@ export class Roster extends events.EventEmitter {
             result.push(...leads);
         }
         const uniqueResult = [...new Set(result.map(value => value.name))];
-        return uniqueResult.join(",");
+        if (uniqueResult.length > 0) {
+            return uniqueResult.join(",");
+        } else {
+            return EMPTY_MESSAGE;
+        }
     }
 }
