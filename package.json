@@ -60,7 +60,7 @@
     "node-schedule": "^2.1.0",
     "server-health": "^5.0.1",
     "source-map-support": "^0.5.21",
-    "table": "^6.7.5",
+    "table": "^6.8.0",
     "winston": "^3.4.0"
   },
   "devDependencies": {
