@@ -48,7 +48,7 @@
     "better-sqlite3": "^7.5.0",
     "callsites": "^3.1.0",
     "cheerio": "^1.0.0-rc.10",
-    "command-line-args": "^5.2.0",
+    "command-line-args": "^5.2.1",
     "convict": "^6.2.1",
     "discord-akairo": "github:discord-akairo/discord-akairo#905f69382957023601ebbb6f8a3a8b6b0f615bd1",
     "discord.js": "^13.6.0",
