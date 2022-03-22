@@ -87,6 +87,6 @@
     "mocha": "^9.2.2",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.2",
-    "typesync": "^0.8.0"
+    "typesync": "^0.9.0"
   }
 }
