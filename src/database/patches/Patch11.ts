@@ -38,7 +38,7 @@ export class Patch11 extends DBPatch {
         this.dbbegin();
         this.connection.pragma("foreign_keys = OFF");
         for (const table of this.tables) {
-            this.connection.prepare("DROP TABLE IF EXISTS `" + table + "`").run();
+            this.connection.prepare("DROP TABLE IF EXISTS " + table + ";").run();
         }
         this.connection.pragma("foreign_keys = ON");
         this.dbcommit();
