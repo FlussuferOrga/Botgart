@@ -17,7 +17,8 @@ import { CronJobService } from "./services/CronJobService";
 import { RevalidationService } from "./services/RevalidationService";
 import { TagBroadcastService } from "./services/TagBroadcastService";
 import { ValidationService } from "./services/ValidationService";
-import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection";
+import { CommanderStorage, TS3Connection } from "./TS3Connection";
+import { TS3Listener } from "./TS3Listener";
 import { logger } from "./util/Logging";
 
 const LOG = logger();
@@ -46,11 +47,9 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
 
-    // public readonly options;
-
     constructor(options: akairo.AkairoOptions,
-        clientOptions: discord.ClientOptions,
-        db: Database) {
+                clientOptions: discord.ClientOptions,
+                db: Database) {
         super(options, clientOptions);
 
         // Repositories

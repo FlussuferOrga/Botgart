@@ -12,7 +12,7 @@ import { Patch0 } from "./Patch0";
 import { Patch11 } from "./Patch11";
 
 export const allPatches: (typeof DBPatch)[] =
-    [Patch0, Patch1, Patch2, Patch3, Patch4, Patch5, Patch6, Patch7,Patch9, Patch10, Patch11];
+    [Patch0, Patch1, Patch2, Patch3, Patch4, Patch5, Patch6, Patch7, Patch9, Patch10, Patch11];
 
 export function getPatch(patchName: string) {
     return allPatches.find(value => value.name == patchName);

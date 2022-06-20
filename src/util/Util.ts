@@ -1,5 +1,6 @@
 import { Guild, Role } from "discord.js";
 import moment from "moment-timezone";
+import "./string.extensions";
 
 export const RESET_WEEKDAY = 5; // FRIDAY
 
