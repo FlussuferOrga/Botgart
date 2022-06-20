@@ -96,6 +96,7 @@ export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
     return new Set(Array.from(s1).filter(x => !s2.has(x)));
 }
+
 export interface Equalable<T> {
     equals: (other: T) => boolean;
 }

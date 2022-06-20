@@ -9,7 +9,7 @@ export class DBPatch extends Patch {
     constructor(db: Database) {
         super();
         this.db = db;
-        this.connection = sqlite3.default(this.db.file, undefined);
+        this.connection = db.openConnection(null);
     }
 
     protected async commit(): Promise<void> {
@@ -33,6 +33,12 @@ export class DBPatch extends Patch {
             .filter(col => col.name === column).length > 0;
     }
 
+    protected columnHasDefault(table: string, column: string, def: string): boolean {
+        return this.connection.prepare("PRAGMA table_info(" + table + ")").all() // can't use prepared parameters for some reason in this instance
+            .filter(col => col.name === column)
+            .filter(col => col.dflt_value === def).length > 0;
+    }
+
     protected indexExists(table: string, index: string): boolean {
         return this.connection.prepare("SELECT name FROM sqlite_master WHERE type='index' AND tbl_name=? AND name=?").all(table, index).length > 0;
     }
@@ -42,7 +48,9 @@ export class DBPatch extends Patch {
     }
 
     protected dbcommit(): void {
-        this.connection.prepare("COMMIT").run();
+        if (this.connection.inTransaction) {
+            this.connection.prepare("COMMIT").run();
+        }
     }
 
     protected dbrollback(): void {

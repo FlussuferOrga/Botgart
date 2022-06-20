@@ -9,6 +9,13 @@ import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 const LOG = logger();
 
 const configSchema = {
+    db_location: {
+        doc: "database file to use",
+        format: String,
+        default: "./db/database.db",
+        arg: "db-location",
+        env: "db-location"
+    },
     prefix: {
         doc: "Prefix to use in discord",
         format: val => {
@@ -198,42 +205,6 @@ const configSchema = {
             arg: "http-port",
             env: "HTTP_PORT"
         },
-    },
-    achievements: {
-        enabled: {
-            format: Boolean,
-            default: true,
-            arg: "achievements-enabled",
-            env: "ACHIEVEMENTS_ENABLED"
-        },
-        channel: {
-            format: String,
-            default: "achievements",
-            arg: "achievements-channel",
-            env: "ACHIEVEMENTS_CHANNEL"
-        },
-        ignoring_roles: {
-            format: Array,
-            default: ["covert"],
-            arg: "achievements-ignoring_roles",
-            env: "ACHIEVEMENTS_IGNORING_ROLES"
-        },
-    },
-    gw2api: {
-        delays: {
-            wvw_stats: {
-                format: "nat",
-                default: 10000,
-                arg: "gw2api-delays-wvw-stats",
-                env: "GW2API_DELAYS_WVW_STATS"
-            },
-            wvw_matches: {
-                format: "nat",
-                default: 10000,
-                arg: "gw2api-delays-wvw-matches",
-                env: "GW2API_DELAYS_WVW_MATCHES"
-            },
-        }
     },
     disabled: {
         listeners: {

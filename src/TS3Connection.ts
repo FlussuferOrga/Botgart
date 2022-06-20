@@ -541,7 +541,6 @@ export class TS3Listener extends events.EventEmitter {
                 LOG.error("Could not unassign commander role from user", e);
             }
 
-            this.tagDownWriteToDb(dmember, commander, registration);
             LOG.debug("Done processing commander. Will now send out tagdown event.");
         }
 
@@ -556,26 +555,6 @@ export class TS3Listener extends events.EventEmitter {
     private async tagUpdate(g: Guild, commander: Commander) {
         await this.botgartClient.tagBroadcastService.tagUpdateBroadcast(g, commander);
     }
-
-    private tagDownWriteToDb(dmember: discord.GuildMember, commander: Commander, registration: Registration) {
-        // do not write leads of members which hide their roles
-        const writeToDB = !(dmember?.roles.cache.find(r => getConfig().get().achievements.ignoring_roles.includes(r.name)));
-        if (writeToDB) {
-            LOG.debug("Writing raid information to database.");
-            if (commander.getRaidStart() === undefined) {
-                LOG.error(`Wanted to write raid for commander ${dmember.displayName} `
-                    + "during tag-down, but no raid start was stored.");
-            } else {
-                this.botgartClient.tsLeadRepository.addLead(
-                    registration.gw2account,
-                    commander.getRaidStart() as moment.Moment,
-                    moment.utc(),
-                    commander.getTS3Channel());
-            }
-            LOG.debug("Done writing to database.");
-        }
-    }
-
     private async tagUpAssignRole(g: discord.Guild, commander: Commander) {
         const crole = g.roles.cache.find(r => r.name === this.commanderRole);
         if (crole && commander.getDiscordMember()) {

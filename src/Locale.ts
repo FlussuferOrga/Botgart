@@ -40,14 +40,6 @@ EN = {
         "WHOIS_RESULTS": "The following possible results were found:",
         "DLOG_AUTH": "User {0} with ingame account `{1}` has been authorised with role {2}.",
         "DLOG_UNAUTH": "User {0} with ingame account `{1}` has been de-authorised and lost their role {2}.",
-        "AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME": "Achievement successfully awarded for the first time.",
-        "AWARD_ACHIEVEMENT_SUCCESS_AGAIN": "Achievement successfully awarded again.",
-        "AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED": "Could not award this achievement to that user. The achievement is probably not repeatable and already awarded to that player.",
-        "AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "No GW2 account found to award them this achievement.",
-        "AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN": "That user has chosen to hide their achievements.",
-        "NO_SUCH_ACHIEVEMENT": "There is achievement with that name.",
-        "REVOKE_ACHIEVEMENT_SUCCESS": "{0} achievement(s) revoked.",
-        "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "No GW2 account found to revoke this achievement from.",
 
         "CRONJOB_STORED": "Your cronjob has been saved with ID `{0}`. Next execution: `{1}`.",
         "CRONJOB_NOT_STORED": "Your cronjob could not be created. Either the command is not available for crons, or the time you gave me is invalid. Please check https://crontab.guru/ in the latter case.",
@@ -88,9 +80,6 @@ EN = {
         "HELPTEXT_TOGGLE_RESET_LEADER_VISIBILITY": EN["HELPTEXT_PREFIX"] + "`<player to add (any text)>` `<{0}>` `<week number (optional)>` `<year (optional)>`",
         "HELPTEXT_REMOVE_RESET_LEADER": EN["HELPTEXT_PREFIX"] + "`<player to add (any text)>` `<week number (optional)>` `<year (optional)>`",
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
-        "HELPTEXT_AWARD_ACHIEVEMENT": EN["HELPTEXT_PREFIX"] + "`<achievement name>` `<player name>` `<timestamp dd.mm.yyyy hh:mm (optional, default: now)>`",
-        "HELPTEXT_REVOKE_ACHIEVEMENT": EN["HELPTEXT_PREFIX"] + "`<achievement name or achievement DB id>` (`<Discord user to revoke from, iff an achievement name was given>`)",
-        "HELPTEXT_LIST_ACHIEVEMENTS": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": EN["HELPTEXT_PREFIX"] + "`<GW2 account name>`",
         "HELPTEXT_GO_FISH": EN["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": EN["HELPTEXT_PREFIX"] + "",
@@ -127,9 +116,6 @@ EN = {
         "DESC_TOGGLE_RESET_LEADER_VISIBILITY": "Toggles the visibility of a reset leader.",
         "DESC_SET_TS3_RESET_ROSTER": "Syncs the current reset roster to TS3.",
         "DESC_ADD_EVENT": "Creates a new event.",
-        "DESC_AWARD_ACHIEVEMENT": "Grants a player an achievement.",
-        "DESC_REVOKE_ACHIEVEMENT": "Revokes all instances of an achievement from a player or deletes a particular achievement entry.",
-        "DESC_LIST_ACHIEVEMENTS": "Lists all achievable achievements.",
         "DESC_DELETE_TS_REGISTRATION": "Deletes all TS registrations from a GW2 account.",
         "DESC_GO_FISH": "Head out for a relaxing day at the riverside.",
         "DESC_FISHING_LADDER": "Lists the most successful anglers. Ordered by the weight of their total caught fish.",
@@ -177,123 +163,6 @@ EN = {
         "MK_EVENT_REMINDER": "If you want to have an automatic reminder posted for your event, enter how many minutes before the event the reminder should be posted. If you do not want to have reminder, enter a negative number instead.",
         "MK_EVENT_TIMEOUT": "The time for input ran out and event creation was canceled. You can start over the event creation.",
 
-        "ACHIEVEMENT_UNLOCKED": "Achievement unlocked",
-
-        "ACHIEVEMENT_NAME_GLIMMER": "Glimmer",
-        "ACHIEVEMENT_DESC_GLIMMER": "Tag up for a total of one hour.",
-        "ACHIEVEMENT_FLAV_GLIMMER": "Welcome to the bridge, commander!",
-
-        "ACHIEVEMENT_NAME_SUNRAY": "Sunray",
-        "ACHIEVEMENT_DESC_SUNRAY": "Tag up for a total of ten hours.",
-        "ACHIEVEMENT_FLAV_SUNRAY": "Welcome back, commander!",
-
-        "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Blazing Light",
-        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Tag up for a total of one hundred hours.",
-        "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "The troops are counting on you.",
-
-        "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
-        "ACHIEVEMENT_DESC_SUPERNOVA": "Tag up for a total of one thousand hours.",
-        "ACHIEVEMENT_FLAV_SUPERNOVA": "Hosts abide your arrival.",
-
-        "ACHIEVEMENT_NAME_TRAILBLAZER": "Trailblazer",
-        "ACHIEVEMENT_DESC_TRAILBLAZER": "Tag up during a reset. For this to count, you need to tag up at before the reset takes place and lead for at least two hours from then.",
-        "ACHIEVEMENT_FLAV_TRAILBLAZER": "You are the calm before the storm.",
-
-        "ACHIEVEMENT_NAME_OWL": "Owl",
-        "ACHIEVEMENT_DESC_OWL": "Tag up during the night. For this to count, you need to tag up between 11 PM and 6 AM for at least one hour.",
-        "ACHIEVEMENT_FLAV_OWL": "Who zergs there so late through the night dark and drear? It is the commander, he soweth the fear.",
-
-        "ACHIEVEMENT_NAME_EARLYBIRD": "Early Bird",
-        "ACHIEVEMENT_DESC_EARLYBIRD": "Tag up in the morning. For this to count, you need to tag up between 6 AM and 10 AM for at least one hour.",
-        "ACHIEVEMENT_FLAV_EARLYBIRD": "I love the smell of Sand Shades in the morning!",
-
-        "ACHIEVEMENT_NAME_ANNIHILATOR": "Annihilator",
-        "ACHIEVEMENT_DESC_ANNIHILATOR": "Tag up while the server has a total KDR of 2.",
-        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Colour the ground with their blood.",
-
-        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Never Surrender!",
-        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Tag up when the server has a KD of 0.6 or less.",
-        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "They may take our lives, but they will never take our freedom!",
-
-        "ACHIEVEMENT_NAME_CONQUEROR": "Conqueror",
-        "ACHIEVEMENT_DESC_CONQUEROR": "The server reaches a tick of at least 250 during your raid.",
-        "ACHIEVEMENT_FLAV_CONQUEROR": "Colour the map with our colours.",
-
-        "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unchallenged Sovereign",
-        "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Stonemist Castle did not fall during your raid. For this to count, Stonemist Castle needs to be under our control for at least an hour during your raid.",
-        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "It is good to be the king.",
-
-        "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agile Defender",
-        "ACHIEVEMENT_DESC_AGILEDEFENDER": "None of our objectives with tier 3 fell during your raid. This achievement is only awarded if your raid started during prime time (somewhere between 6 PM and 9 PM), went on for one hour or more, and at least three of our objectives were of tier 3 at the start of your raid.",
-        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "When you call, we will come.",
-
-        "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Thorough Commander",
-        "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "All objectives on a map belong to us during your raid. This only includes camps, towers, keeps, and Stone Mist castle.",
-        "ACHIEVEMENT_FLAV_THOROUGHCOMMANDER": "Everything the light touches is our kingdom.",
-
-        "ACHIEVEMENT_NAME_BOLDBESIEGER": "Bold Besieger",
-        "ACHIEVEMENT_DESC_BOLDBESIEGER": "Crash ten tier 3 objectives during your raids.",
-        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Wasn't that ours a moment ago?!",
-
-        "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Tenacious Besieger",
-        "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Crash 100 tier 3 objectives during your raids.",
-        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "We have taken the bridge and the Second Hall. They have barred the gates but cannot hold them for long. The ground shakes.",
-
-        "ACHIEVEMENT_NAME_PRINCESS": "Princess",
-        "ACHIEVEMENT_DESC_PRINCESS": "Capture Osprey's Palace during your raid.",
-        "ACHIEVEMENT_FLAV_PRINCESS": "\"I am a princess!\" -- anonymous",
-
-        "ACHIEVEMENT_NAME_CASTLING": "Castling",
-        "ACHIEVEMENT_DESC_CASTLING": "Take a more valuable objective from another faction while they are taking one of our objectives.",
-        "ACHIEVEMENT_FLAV_CASTLING": "A fair trade.",
-
-        "ACHIEVEMENT_NAME_ETTIN": "Ettin",
-        "ACHIEVEMENT_DESC_ETTIN": "Have a raid simultaneously with another commander. Only commanders that are leading for at least one hour are counted.",
-        "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
-
-        "ACHIEVEMENT_NAME_HYDRA": "Hydra",
-        "ACHIEVEMENT_DESC_HYDRA": "Have a raid simultaneously with at least two other commanders. Only commanders that are leading for at least one hour are counted.",
-        "ACHIEVEMENT_FLAV_HYDRA": "Cut off one head, two more will take its place.",
-
-        "ACHIEVEMENT_NAME_SHIFTCHANGE": "Shift Change",
-        "ACHIEVEMENT_DESC_SHIFTCHANGE": "Take over the raid from another commander. For this to count you need to tag up in the same channel as another commander or at most five minutes after they tagged down. Lead the raid for at least one hour after that.",
-        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "I am so glad to see you.",
-
-        "ACHIEVEMENT_NAME_BULLETPROOF": "Bullet Proof",
-        "ACHIEVEMENT_DESC_BULLETPROOF": "Raid while the matchup can not be won anymore. This achievement is only awarded if our ranking withtin the ongoing match can not change anymore.",
-        "ACHIEVEMENT_FLAV_BULLETPROOF": "Behind this commander's tag there is more than just a player. Beneath this commander's tag there is an idea... and ideas are indestructible.",
-
-        "ACHIEVEMENT_NAME_BOOZECOMMANDER": "Booze Commander",
-        "ACHIEVEMENT_DESC_BOOZECOMMANDER": "Do a booze raid.",
-        "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "That's unfair! They have suddenly doubled in numbers!",
-
-        "ACHIEVEMENT_NAME_FROMASHES": "From the Ashes",
-        "ACHIEVEMENT_DESC_FROMASHES": "Aid in raising the server to tier 4.",
-        "ACHIEVEMENT_FLAV_FROMASHES": "They have taken everything from us. Even fear itself.",
-
-        "ACHIEVEMENT_NAME_THEPRESIDENT": "The President",
-        "ACHIEVEMENT_DESC_THEPRESIDENT": "Aid in raising the server to tier 3.",
-        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I take number sthree.",
-
-        "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "The Mountain is Calling",
-        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Aid in raising the server to tier 2.",
-        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Rasta from Jamaica in Bavarian exile",
-
-        "ACHIEVEMENT_NAME_THEPEAK": "The Peak",
-        "ACHIEVEMENT_DESC_THEPEAK": "Aid in raising the server to tier 1.",
-        "ACHIEVEMENT_FLAV_THEPEAK": "The best view.",
-
-        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Tier Solidifier",
-        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Aid in keeping the server in the current tier.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Nice tier. I'll take it.",
-
-        "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Sustained Commander",
-        "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Lead for five hours straight.",
-        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Probably fell asleep on their keyboard.",
-
-        "ACHIEVEMENT_NAME_INFINITESTAMINA": "Infinite Stamina",
-        "ACHIEVEMENT_DESC_INFINITESTAMINA": "Lead for ten hours straight.",
-        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "It's easy. Just brew your coffee with Red Bull.",
 
         "FISHING_IDLE_TITLE": "Fishing",
         "FISHING_IDLE_DESCRIPTION": "Sit back and relax. But watch for your blinker! Click :fishing_pole_and_fish: once it pops up!",
@@ -345,14 +214,6 @@ DE = {
         "WHOIS_RESULTS": "Die folgenden möglichen Treffer wurden gefunden:",
         "DLOG_AUTH": "Benutzer {0} mit dem Ingame-Account `{1}` wurde mit der Rolle {2} autorisiert.",
         "DLOG_UNAUTH": "Benutzer {0} mit dem Ingame-Account `{1}` wurde ent-autorisiert und hat die Rolle {2} verloren.",
-        "AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME": "Errungenschaft wurde erfolgreich zum ersten mal gewährt.",
-        "AWARD_ACHIEVEMENT_SUCCESS_AGAIN": "Errungenschaft wurde erfolgreich erneut gewährt.",
-        "AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED": "Diese Errungenschaft konnte dem Benutzer nicht gewährt werden. Wahrscheinlich ist die Errungenschaft nicht wiederholbar und wurde dem Spieler bereits gewährt.",
-        "AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Es wurde kein zugehöriger GW2-Account gefunden, dem die Errungenschaft gewährt werden könnte.",
-        "AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN": "Dieser Benutzer lässt seine Errungenschaften nicht anzeigen.",
-        "NO_SUCH_ACHIEVEMENT": "Es gibt keine Errungenschaft dieses Namens.",
-        "REVOKE_ACHIEVEMENT_SUCCESS": "{0} Errungenschaft(en) entzogen.",
-        "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Es wurde kein zugehöriger GW2-Account gefunden, dem die Errungenschaft entzogen werden könnte.",
 
         "CRONJOB_STORED": "Dein Cronjob wurde gespeichert mit der ID `{0}`. Nächste Ausführung: `{1}`.",
         "CRONJOB_NOT_STORED": "Dein Cronjob konnte nicht erstellt werden. Entweder, der Befehl ist für Cronjobs nicht verfügbar oder die von dir übergebene Zeitangabe ist ungültig. Du kannst diese auf https://crontab.guru/ überprüfen.",
@@ -393,9 +254,6 @@ DE = {
         "HELPTEXT_TOGGLE_RESET_LEADER_VISIBILITY": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)` `<Jahr (optional)>`",
         "HELPTEXT_REMOVE_RESET_LEADER": DE["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
-        "HELPTEXT_AWARD_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
-        "HELPTEXT_REVOKE_ACHIEVEMENT": DE["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
-        "HELPTEXT_LIST_ACHIEVEMENTS": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": DE["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
         "HELPTEXT_GO_FISH": DE["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": DE["HELPTEXT_PREFIX"] + "",
@@ -432,9 +290,6 @@ DE = {
         "DESC_TOGGLE_RESET_LEADER_VISIBILITY": "Ändert manuell die Sichtbarkeit eines oder einer Reset-Kommandeur*in.",
         "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
         "DESC_ADD_EVENT": "Erstellt ein neues Event",
-        "DESC_AWARD_ACHIEVEMENT": "Vergibt eine Errungenschaft an einen Spieler.",
-        "DESC_REVOKE_ACHIEVEMENT": "Entfernt alle Instanzen einer Errungenschaft von einem Spieler oder entfernt einenbestimmten Errungenschaften-Eintrag aus der Datenbank.",
-        "DESC_LIST_ACHIEVEMENTS": "Listet alle verfügbaren Errungenschaften auf.",
         "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
         "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
         "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fische.",
@@ -482,123 +337,6 @@ DE = {
         "MK_EVENT_REMINDER": "Falls automatisch eine Erinnerung gepostet werden soll, gib jetzt an, wie viele Minuten vor dem Event das geschehen soll. Gib eine negative Zahl an, falls du keine Erinnerung möchtest.",
         "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
 
-        "ACHIEVEMENT_UNLOCKED": "Erfolg freigeschaltet",
-
-        "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
-        "ACHIEVEMENT_DESC_GLIMMER": "Leite für insgesamt eine Stunde.",
-        "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur*in!",
-
-        "ACHIEVEMENT_NAME_SUNRAY": "Sonnenstrahl",
-        "ACHIEVEMENT_DESC_SUNRAY": "Leite für insgesamt zehn Stunden.",
-        "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur*in!",
-
-        "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
-        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leite für insgesamt einhundert Stunden.",
-        "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf Euch.",
-
-        "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
-        "ACHIEVEMENT_DESC_SUPERNOVA": "Leite für insgesamt eintausend Stunden.",
-        "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren Eurer.",
-
-        "ACHIEVEMENT_NAME_TRAILBLAZER": "Vorreiter",
-        "ACHIEVEMENT_DESC_TRAILBLAZER": "Leite während eines Resets. Schalte dazu deine Lampe schon vor dem Reset an leite ab dann mindestens zwei Stunden.",
-        "ACHIEVEMENT_FLAV_TRAILBLAZER": "Du bist die Ruhe vor dem Sturm.",
-
-        "ACHIEVEMENT_NAME_OWL": "Eule",
-        "ACHIEVEMENT_DESC_OWL": "Leite eine Nachtschicht. Schalte dazu deine Lampe zwischen 23:00 Uhr und 6:00 Uhr für mindestens eine Stunde an.",
-        "ACHIEVEMENT_FLAV_OWL": "Wer zergt so spät durch Nacht und Wind? Es ist der Kommandeur, die Furcht er euch bringt.",
-
-        "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
-        "ACHIEVEMENT_DESC_EARLYBIRD": "Leite eine Frühschicht. Schalte dazu deine Lampe zwischen 6:00 Uhr und 10:00 Uhr für mindestens eine Stunde an.",
-        "ACHIEVEMENT_FLAV_EARLYBIRD": "Ich liebe den Geruch von Sandschatten am Morgen! ",
-
-        "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
-        "ACHIEVEMENT_DESC_ANNIHILATOR": "Der Server erreicht unter deiner Leitung eine gesamte KDR von 2.",
-        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit ihrem Blut..",
-
-        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Niemals Aufgeben!",
-        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Beginne einen Schlachtzug wenn der Server eine KD von 0,6 oder weniger hat.",
-        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie mögen uns das Leben nehmen, doch niemals nehmen sie uns unsere Freiheit!",
-
-        "ACHIEVEMENT_NAME_CONQUEROR": "Eroberer",
-        "ACHIEVEMENT_DESC_CONQUEROR": "Der Server erreicht unter deiner Leitung einen Tick von 250.",
-        "ACHIEVEMENT_FLAV_CONQUEROR": "Färbe die Karte mit unseren Farben.",
-
-        "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
-        "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Schloss Steinnebel ist während deiner Leitung nicht gefallen. Dazu muss Schloss Steinnebel mindestens eine Stunde lang während deines Schlachtzuges unter unserer Kontrolle stehen.",
-        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, der König zu sein.",
-
-        "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agiler Verteidiger",
-        "ACHIEVEMENT_DESC_AGILEDEFENDER": "Unter deiner Leitung wurde keine unserer Befestigungen der Stufe 3 von Feinden eingenommen. Dieses Achievement wird nur vergeben, wenn dein Raid zur Primetime begann (zwischen 18:00 und 21:00), du mindestens eine Stunde lang leitest und wir bereits zu Beginn deines Raids mindestens drei Befestigungen der Stufe 3 kontrollieren.",
-        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Wenn ihr uns ruft, dann werden wir kommen.",
-
-        "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Gründlicher Feldherr",
-        "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "Alle Befestigungen einer beliebigen Karte gehören während deiner Leitung vollständig uns. Das schließt nur Lager, Türme, Festungen und Schloss Steinnebel ein.",
-        "ACHIEVEMENT_FLAV_THOROUGHCOMMANDER": "Das ist unser Königreich. Alles, was das Licht berührt.",
-
-        "ACHIEVEMENT_NAME_BOLDBESIEGER": "Dreister Belagerer",
-        "ACHIEVEMENT_DESC_BOLDBESIEGER": "Nimm während deiner Raids zehn Befestigungen der Stufe 3 ein.",
-        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Hat das nicht eben noch uns gehört?!",
-
-        "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Beharrlicher Belagerer",
-        "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Nimm während deiner Raids 100 Befestigungen der Stufe 3 ein.",
-        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "Wir haben die Brücke und die zweite Halle genommen. Sie haben das Tor versperrt, können es aber nicht lange halten. Die Erde bebt.",
-
-        "ACHIEVEMENT_NAME_PRINCESS": "Prinzessin",
-        "ACHIEVEMENT_DESC_PRINCESS": "Nimm während deines Raids den Fischadler-Palast ein",
-        "ACHIEVEMENT_FLAV_PRINCESS": "\"Ich bin eine Prinzessin!\" -- Unbekannt ",
-
-        "ACHIEVEMENT_NAME_CASTLING": "Rochade",
-        "ACHIEVEMENT_DESC_CASTLING": "Nimm eine höherwertige Befestigung eines Gegners ein, der gleichzeitig eine unserer Befestigungen einnimmt.",
-        "ACHIEVEMENT_FLAV_CASTLING": "Ein fairer Tausch.",
-
-        "ACHIEVEMENT_NAME_ETTIN": "Ettin",
-        "ACHIEVEMENT_DESC_ETTIN": "Leite gleichzeitig mit mindestens einem weiteren Kommandeur einen Schlachtzug. Nur Kommandeure, die bereits für mindestens eine Stunde leiten zählen.",
-        "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
-
-        "ACHIEVEMENT_NAME_HYDRA": "Hydra",
-        "ACHIEVEMENT_DESC_HYDRA": "Leite gleichzeitig mit mindestens zwei weiteren Kommandeuren einen Schlachtzug. Nur Kommandeure, die bereits für mindestens eine Stunde leiten zählen.",
-        "ACHIEVEMENT_FLAV_HYDRA": "Schlagt einen Kopf ab, und zwei weitere werden ihren Platz einnehmen.",
-
-        "ACHIEVEMENT_NAME_SHIFTCHANGE": "Schichtwechsel",
-        "ACHIEVEMENT_DESC_SHIFTCHANGE": "Übernimm die Leitung eines Schlachtzuges von einem Kommandeur. Beginne dazu einen Schlachtzug im selben Kanal während ein anderer Kommandeur leitet oder spätestens fünf Minuten nach diesem. Leite dann mindestens eine Stunde.",
-        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "Bin ich froh, dass du da bist.",
-
-        "ACHIEVEMENT_NAME_BULLETPROOF": "Kugelsicher",
-        "ACHIEVEMENT_DESC_BULLETPROOF": "Beginne einen Raid für mindestens eine Stunde, wenn das Matchup bereits gelaufen ist. Dieses Achievement wird dann vergeben, wenn sich unsere Platzierung nicht weiter verändern kann.",
-        "ACHIEVEMENT_FLAV_BULLETPROOF": "Hinter diesem Kommandeursabzeichen ist nicht nur ein Spieler, hinter diesem Kommandeursabzeichen steckt eine Idee... und Ideen sind unzerstörbar.",
-
-        "ACHIEVEMENT_NAME_BOOZECOMMANDER": "Promillekommandeur",
-        "ACHIEVEMENT_DESC_BOOZECOMMANDER": "Führe einen Saufraid.",
-        "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "Das ist unfair! Die sind plötzlich doppelt so viele!",
-
-        "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
-        "ACHIEVEMENT_DESC_FROMASHES": "Trage dazu bei, den Server in das T4 aufsteigen zu lassen.",
-        "ACHIEVEMENT_FLAV_FROMASHES": "Sie haben uns alles genommen. Auch unsere Furcht.",
-
-        "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
-        "ACHIEVEMENT_DESC_THEPRESIDENT": "Trage dazu bei, den Server in das T3 aufsteigen zu lassen.",
-        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I nimm de Nummer drey.",
-
-        "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
-        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Trage dazu bei, den Server in das T2 aufsteigen zu lassen.",
-        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Wos sogt er? Sellerie?",
-
-        "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
-        "ACHIEVEMENT_DESC_THEPEAK": "Trage dazu bei, den Server in das T1 aufsteigen zu lassen.",
-        "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht.",
-
-        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Verfestiger",
-        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Trage dazu bei, den Server im aktuellen Tier zu halten.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!",
-
-        "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Ausdauernder Kommandeur",
-        "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Leite für fünf Stunden am Stück.",
-        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Ist wahrscheinlich nur auf dem Keyboard eingeschlafen.",
-
-        "ACHIEVEMENT_NAME_INFINITESTAMINA": "Unerschöpfliche Ausdauer",
-        "ACHIEVEMENT_DESC_INFINITESTAMINA": "Leite für zehn Stunden am Stück.",
-        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "Gar nicht so schwierig. Einfach mal den Kaffee mit Red Bull aufgießen.",
 
         "FISHING_IDLE_TITLE": "Angeln",
         "FISHING_IDLE_DESCRIPTION": "Lehn dich zurück und entspann dich. Aber achte auf deine Angel! Klicke schnell auf :fishing_pole_and_fish: wenn es auftaucht!",
@@ -650,14 +388,6 @@ DE_SWG = {
         "WHOIS_RESULTS": "Des han ich gfunde:",
         "DLOG_AUTH": "Benutzer {0} mit dem Ingame-Account `{1}` han ich mit der Rolle {2} autorisiert.",
         "DLOG_UNAUTH": "Benutzer {0} mit dem Ingame-Account `{1}` han ich ent-autorisiert und er het die Rolle {2} verloren.",
-        "AWARD_ACHIEVEMENT_SUCCESS_FIRST_TIME": "Errungenschaft wurde erfolgreich zum ersten mal gewährt.",
-        "AWARD_ACHIEVEMENT_SUCCESS_AGAIN": "Errungenschaft wurde erfolgreich erneut gewährt.",
-        "AWARD_ACHIEVEMENT_FAILED_NOT_AWARDED": "Des kann ich dem net gebe. Heter vielleicht scho.",
-        "AWARD_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Dafür han ich keinen GW2-Account gefunden, um ihm des zu gebe.",
-        "AWARD_ACHIEVEMENT_FAILED_USER_HIDDEN": "Der Grasdackel versteckt seine Erfolge.",
-        "NO_SUCH_ACHIEVEMENT": "Des gibts net.",
-        "REVOKE_ACHIEVEMENT_SUCCESS": "{0} Errungenschaft(en) entzogen.",
-        "REVOKE_ACHIEVEMENT_FAILED_USER_NOT_FOUND": "Dafür han ich keinen GW2-Account gefunden, um ihm des wegzunehmen.",
 
         "CRONJOB_STORED": "Deinen Cronjob han ich mir gemerkt mit der ID `{0}`. Snächscht mal: `{1}`.",
         "CRONJOB_NOT_STORED": "Den Cronjob konnt ich net erstellen. Befehl für Cronjobs nicht möglich oder du hasch die Zeitangabe verkackt. Schausch mal auf https://crontab.guru/ .",
@@ -698,9 +428,6 @@ DE_SWG = {
         "HELPTEXT_TOGGLE_RESET_LEADER_VISIBILITY": DE_SWG["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)` `<Jahr (optional)>`",
         "HELPTEXT_REMOVE_RESET_LEADER": DE_SWG["HELPTEXT_PREFIX"] + "`<Spielername (beliebiger Text)>` `<Kalenderwoche (optional)>`",
         "HELPTEXT_SET_TS3_RESET_ROSTER": "",
-        "HELPTEXT_AWARD_ACHIEVEMENT": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft>` `<Spieler>` `<Zeitstempel dd.mm.yyyy hh:mm (optional, Standard: jetzt)>`",
-        "HELPTEXT_REVOKE_ACHIEVEMENT": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Errungenschaft oder ID eines Spieler-Achievement-Datenbankeintrages>` (`<Discord-Benutzer von dem die Errungenschaft entfernt werden soll, wenn der Name einer Errungenschaft übergeben wurde>`)",
-        "HELPTEXT_LIST_ACHIEVEMENTS": DE_SWG["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_DELETE_TS_REGISTRATION": DE_SWG["HELPTEXT_PREFIX"] + "`<GW2 Accountname>`",
         "HELPTEXT_GO_FISH": DE_SWG["HELPTEXT_PREFIX"] + "",
         "HELPTEXT_FISHING_LADDER": DE_SWG["HELPTEXT_PREFIX"] + "",
@@ -737,9 +464,6 @@ DE_SWG = {
         "DESC_TOGGLE_RESET_LEADER_VISIBILITY": "Ändert manuell die Sichtbarkeit eines Reset-Kommandeurs.",
         "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
         "DESC_ADD_EVENT": "Erstellt ein neues Event",
-        "DESC_AWARD_ACHIEVEMENT": "Vergibt eine Errungenschaft an einen Spieler.",
-        "DESC_REVOKE_ACHIEVEMENT": "Entfernt alle Instanzen einer Errungenschaft von einem Spieler oder entfernt einenbestimmten Errungenschaften-Eintrag aus der Datenbank.",
-        "DESC_LIST_ACHIEVEMENTS": "Listet alle verfügbaren Errungenschaften auf.",
         "DESC_DELETE_TS_REGISTRATION": "Löscht alle Registrierungen im TS anhand eines GW2 Accounts.",
         "DESC_GO_FISH": "Begib dich auf eine entspannte Angeltour am Flussufer.",
         "DESC_FISHING_LADDER": "Listet die erfolgreichsten Fischer auf. Sortiert nach Gesamtgewicht der gefangenen Fische.",
@@ -782,124 +506,6 @@ DE_SWG = {
         "MK_EVENT_DESC": "Gib nun eine kurze Beschreibung für das Event an.",
         "MK_EVENT_REMINDER": "Falls automatisch eine Erinnerung gepostet werden soll, gib jetzt an, wie viele Minuten vor dem Event das geschehen soll. Gib eine negative Zahl an, falls du keine Erinnerung möchtest.",
         "MK_EVENT_TIMEOUT": "Das Zeitlimit für die Eingabe wurde überschritten und die Event-Erstellung abgebrochen. Du kannst den Prozess erneut starten.",
-
-        "ACHIEVEMENT_UNLOCKED": "Erfolg freigschaltet",
-
-        "ACHIEVEMENT_NAME_GLIMMER": "Lichtle",
-        "ACHIEVEMENT_DESC_GLIMMER": "Leitsch für e Stund.",
-        "ACHIEVEMENT_FLAV_GLIMMER": "Fangsch amol gloi oa!",
-
-        "ACHIEVEMENT_NAME_SUNRAY": "d'Sunn",
-        "ACHIEVEMENT_DESC_SUNRAY": "Leitsch für zehn Stund.",
-        "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur!",
-
-        "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Funzel",
-        "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leitsch für hunnert Stund.",
-        "ACHIEVEMENT_FLAV_BLAZINGLIGHT": "Die Truppen zählen auf Euch.",
-
-        "ACHIEVEMENT_NAME_SUPERNOVA": "Supernova",
-        "ACHIEVEMENT_DESC_SUPERNOVA": "Leitsch für tausend Stund.",
-        "ACHIEVEMENT_FLAV_SUPERNOVA": "Heerscharen harren Eurer.",
-
-        "ACHIEVEMENT_NAME_TRAILBLAZER": "Vorreiter",
-        "ACHIEVEMENT_DESC_TRAILBLAZER": "Leitsch beim Reset. Musch halt dei Lamp scho vorem Reset anschalte und dann für zwei Stunde mache.",
-        "ACHIEVEMENT_FLAV_TRAILBLAZER": "Du bist die Ruhe vor dem Sturm.",
-
-        "ACHIEVEMENT_NAME_OWL": "Eul",
-        "ACHIEVEMENT_DESC_OWL": "Leitsch e Spätschicht. Dann musch aber dei Lamp zwische 23:00 Uhr und 6:00 Uhr anschalte und e ganze Stund mache.",
-        "ACHIEVEMENT_FLAV_OWL": "Wennd net bald schlafe gehsch, verpennsch morge wieder de halbe Tag.",
-
-        "ACHIEVEMENT_NAME_EARLYBIRD": "Früher Vogel",
-        "ACHIEVEMENT_DESC_EARLYBIRD": "Leitsch e Frühschicht. Dann musch aber dei Lamp zwische 6:00 Uhr und 10:00 Uhr anschalte und e ganze Stund mache.",
-        "ACHIEVEMENT_FLAV_EARLYBIRD": "Schaffe, Schaffe, Früh Uffstande",
-
-        "ACHIEVEMENT_NAME_ANNIHILATOR": "Vernichter",
-        "ACHIEVEMENT_DESC_ANNIHILATOR": "Du führsch de Server zu erre KDR von 2.",
-        "ACHIEVEMENT_FLAV_ANNIHILATOR": "Färbe den Boden mit dem Blut der Badenser..",
-
-        "ACHIEVEMENT_NAME_NEVERSURRENDER": "Net Aufgebbe!",
-        "ACHIEVEMENT_DESC_NEVERSURRENDER": "Fängsch amol mit deim Raid an, wenn der Server höchschtens e KDR von 0,6 hat.",
-        "ACHIEVEMENT_FLAV_NEVERSURRENDER": "Sie möget uns es Leben nemme, aber niemals nemmet se uns unsere Mauldasche!",
-
-        "ACHIEVEMENT_NAME_CONQUEROR": "Eroberer",
-        "ACHIEVEMENT_DESC_CONQUEROR": "Mit dir hebemer en Tick von 250.",
-        "ACHIEVEMENT_FLAV_CONQUEROR": "Färbe die Karte mit unseren Farben.",
-
-        "ACHIEVEMENT_NAME_UNCHALLENGEDSOVEREIGN": "Unbestrittener Herrscher",
-        "ACHIEVEMENT_DESC_UNCHALLENGEDSOVEREIGN": "Schloss Stoinebel gebe mer net her. Muschs aber für mindeschtens e Stund halte.",
-        "ACHIEVEMENT_FLAV_UNCHALLENGEDSOVEREIGN": "Es ist gut, en Schwob zum sein.",
-
-        "ACHIEVEMENT_NAME_AGILEDEFENDER": "Agiler Verteidiger",
-        "ACHIEVEMENT_DESC_AGILEDEFENDER": "Mir hend kei Stufe 3 Ziel hergebe. Aber nur zur Primetime (zwischen 18:00 und 21:00) wennd mindeschtens e Stund gleitet hasch und mir drei oder mehr Stufe 3 Ziele hend.",
-        "ACHIEVEMENT_FLAV_AGILEDEFENDER": "Sagsch bscheid, dann kommet mer.",
-
-        "ACHIEVEMENT_NAME_THOROUGHCOMMANDER": "Gründlicher Feldherr",
-        "ACHIEVEMENT_DESC_THOROUGHCOMMANDER": "Mir hend elle Befestigungen einer beliebigen Karte. Des umfasst nur Lager, Türme, Festungen und Schloss Stoinebel ein.",
-        "ACHIEVEMENT_FLAV_THOROUGHCOMMANDER": "Das ist unser Königreich. Alles, was das Licht berührt.",
-
-        "ACHIEVEMENT_NAME_BOLDBESIEGER": "Dreister Belagerer",
-        "ACHIEVEMENT_DESC_BOLDBESIEGER": "Nimmsch während deiner Raids zehn Bfestigunge der Stufe 3 ei.",
-        "ACHIEVEMENT_FLAV_BOLDBESIEGER": "Wardemal, des war doch unsers?!",
-
-        "ACHIEVEMENT_NAME_TENACIOUSBESIEGER": "Beharrlicher Belagerer",
-        "ACHIEVEMENT_DESC_TENACIOUSBESIEGER": "Nimmsch während deiner Raids hunnert Bfestigunge der Stufe 3 ei.",
-        "ACHIEVEMENT_FLAV_TENACIOUSBESIEGER": "Mir hend die Brücke und die zwoite Hall gnomme. Die hend des Tor versperrt, könnet es aber net lang halte. Die Erde bebt.",
-
-        "ACHIEVEMENT_NAME_PRINCESS": "Prinzessin",
-        "ACHIEVEMENT_DESC_PRINCESS": "Nimmsch während deirer Raids de Fischadler-Palascht ei",
-        "ACHIEVEMENT_FLAV_PRINCESS": "\"Ich bin eine Prinzessin!\" -- Domi",
-
-        "ACHIEVEMENT_NAME_CASTLING": "Rochade",
-        "ACHIEVEMENT_DESC_CASTLING": "Nimmsch e höherwertige Befeschtigung deirer Gegner ei, der gleichzeitig eine unsrer Befeschtigungen ei'nimmt.",
-        "ACHIEVEMENT_FLAV_CASTLING": "Ein fairer Tausch.",
-
-        "ACHIEVEMENT_NAME_ETTIN": "Ettin",
-        "ACHIEVEMENT_DESC_ETTIN": "Leitsch zsamme mit em annere Kommandeur. Szählt aber nur, wenner beide für a Stund oder länger schaffet.",
-        "ACHIEVEMENT_FLAV_ETTIN": "Divide et impera.",
-
-        "ACHIEVEMENT_NAME_HYDRA": "Hydra",
-        "ACHIEVEMENT_DESC_HYDRA": "Leitsch zsamme mit zwoi annere Kommandeure. Szählt aber nur, wenner elle für a Stund oder länger schaffet.",
-        "ACHIEVEMENT_FLAV_HYDRA": "Kannsch scho mache, bringt halt nix.",
-
-        "ACHIEVEMENT_NAME_SHIFTCHANGE": "Schichtwechsel",
-        "ACHIEVEMENT_DESC_SHIFTCHANGE": "Übernimmsch d'Leitung vom Schlachtzug vonm annerem Kommandeur. Dazu fängsch dein Schlachtzug im selbe Kanal wie der annere Kommandeur an solange der noch leitet. Oder höchschtens fünf Minute später. Dann machsch aber mindeschtens e Stund!",
-        "ACHIEVEMENT_FLAV_SHIFTCHANGE": "Feierabend!",
-
-        "ACHIEVEMENT_NAME_BULLETPROOF": "Kugelsicher",
-        "ACHIEVEMENT_DESC_BULLETPROOF": "Fängsch mitem Raid für mindeschtens e Stund an, wenns Matchup eh schon im Arsch isch. Des Achievement kriegsch nur dann, wenn unsere Platzierung nimmer ändern kann.",
-        "ACHIEVEMENT_FLAV_BULLETPROOF": "Hinter diesem Kommandeursabzeichen ist nicht nur ein Spieler, hinter diesem Kommandeursabzeichen steckt eine Idee... und Ideen sind unzerstörbar.",
-
-        "ACHIEVEMENT_NAME_BOOZECOMMANDER": "Promillekommandeur",
-        "ACHIEVEMENT_DESC_BOOZECOMMANDER": "Machsch e Sauftour.",
-        "ACHIEVEMENT_FLAV_BOOZECOMMANDER": "Das ist unfair! Die sind plötzlich doppelt so viele!",
-
-        "ACHIEVEMENT_NAME_FROMASHES": "Aus der Asche",
-        "ACHIEVEMENT_DESC_FROMASHES": "Hilfsch, dass de Server ins T4 hochkommt.",
-        "ACHIEVEMENT_FLAV_FROMASHES": "Etzetle pass uff.",
-
-        "ACHIEVEMENT_NAME_THEPRESIDENT": "Der Präsident",
-        "ACHIEVEMENT_DESC_THEPRESIDENT": "Hilfsch, dass de Server ins T3 hochkommt.",
-        "ACHIEVEMENT_FLAV_THEPRESIDENT": "I nimm de Nummer drey.",
-
-        "ACHIEVEMENT_NAME_MOUNTAINISCALLING": "Der Berg Ruft",
-        "ACHIEVEMENT_DESC_MOUNTAINISCALLING": "Hilfsch, dass de Server ins T2 hochkommt.",
-        "ACHIEVEMENT_FLAV_MOUNTAINISCALLING": "Hörschs Bergle?",
-
-        "ACHIEVEMENT_NAME_THEPEAK": "Der Gipfel",
-        "ACHIEVEMENT_DESC_THEPEAK": "Hilfsch, dass de Server ins T1 hochkommt.",
-        "ACHIEVEMENT_FLAV_THEPEAK": "Die schönste Aussicht.",
-
-        "ACHIEVEMENT_NAME_TIERSOLIDIFIER": "Verfestiger",
-        "ACHIEVEMENT_DESC_TIERSOLIDIFIER": "Hilfsch, dass de Server net absteigt.",
-        "ACHIEVEMENT_FLAV_TIERSOLIDIFIER": "Mh is'n hübsches Tierchen. Das nehm' ich!",
-
-        "ACHIEVEMENT_NAME_STAMINACOMMANDER": "Ausdauernder Kommandeur",
-        "ACHIEVEMENT_DESC_STAMINACOMMANDER": "Machsch für fünf Stunde.",
-        "ACHIEVEMENT_FLAV_STAMINACOMMANDER": "Isch eh aufem Keyboard eingschlofe.",
-
-        "ACHIEVEMENT_NAME_INFINITESTAMINA": "Unerschöpfliche Ausdauer",
-        "ACHIEVEMENT_DESC_INFINITESTAMINA": "Machsch für zehn Stunde.",
-        "ACHIEVEMENT_FLAV_INFINITESTAMINA": "Gar nicht so schwierig. Einfach mal den Kaffee mit Red Bull aufgießen.",
 
         "FISHING_IDLE_TITLE": "Angeln",
         "FISHING_IDLE_DESCRIPTION": "Jetzt machsch ma halblang. Aber pass auf dei Angel auf! Wenn :fishing_pole_and_fish: kommt musch da zügig draufklicke!",

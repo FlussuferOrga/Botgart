@@ -1,7 +1,8 @@
 import * as CommandLineArgs from "command-line-args";
 
 import "source-map-support/register";
-import { runApp } from "./app"; // show .ts files in stacktraces if sourcemaps are present
+import { runApp } from "./app";
+import { getConfig } from "./config/Config"; // show .ts files in stacktraces if sourcemaps are present
 import { Database } from "./database/Database";
 import { DatabasePatcher } from "./database/patches/DatabasePatcher";
 import { DBPatch } from "./database/patches/DBPatch";
@@ -19,7 +20,8 @@ const args = CommandLineArgs.default([
 ]);
 
 async function run(args) {
-    const database = Database.getInstance("./db/database.db");
+    const config = getConfig();
+    const database = Database.getInstance(config.get("db_location"));
 
     if ("patchall" in args) {
         LOG.info("Patching Database");

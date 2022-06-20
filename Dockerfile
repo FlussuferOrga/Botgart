@@ -35,7 +35,7 @@ RUN apk add --no-cache curl
 ENV HTTP_PORT=3000
 EXPOSE 3000
 
-HEALTHCHECK --interval=1m --timeout=20s --start-period=30s \
+HEALTHCHECK --interval=1m --timeout=20s --start-period=2m \
    CMD curl -f --max-time 18 "http://127.0.0.1:${HTTP_PORT}/health" || exit 1
 
 CMD ["node","--enable-source-maps","/app/built/index.js","--patchall=run"]
