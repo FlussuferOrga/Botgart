@@ -1,4 +1,5 @@
 import * as discord from "discord.js";
+import { Guild } from "discord.js";
 import * as events from "events";
 import * as http from "http";
 import * as moment from "moment";
@@ -37,6 +38,7 @@ export interface TS3Commander {
     readonly ts_channel_name: string;
     readonly ts_channel_path: string[];
     readonly ts_join_url: string;
+    readonly leadtype?: LeadType;
 }
 
 interface HTTPRequestOptions {
@@ -148,6 +150,8 @@ enum CommanderState {
     TAG_DOWN
 }
 
+export type LeadType = "UNKNOWN" | "PPT" | "PPK";
+
 export class Commander {
     private accountName: string;
     private ts3DisplayName: string;
@@ -156,10 +160,13 @@ export class Commander {
     private ts3channelPath: string[];
     private ts3joinUrl: string;
     private raidStart?: moment.Moment;
+    private raidEnd?: moment.Moment;
     private lastUpdate: moment.Moment;
     private state: CommanderState;
     private discordMember: discord.GuildMember;
     private broadcastMessage: discord.Message | undefined;
+    private currentLeadType: LeadType;
+    private registration: Registration | undefined;
 
     public getAccountName(): string {
         return this.accountName;
@@ -209,6 +216,14 @@ export class Commander {
         this.raidStart = timestamp;
     }
 
+    public getRaidEnd(): moment.Moment | undefined {
+        return this.raidEnd;
+    }
+
+    public setRaidEnd(timestamp: moment.Moment) {
+        this.raidEnd = timestamp;
+    }
+
     public getLastUpdate(): moment.Moment {
         return this.lastUpdate;
     }
@@ -242,6 +257,14 @@ export class Commander {
     }
 
 
+    public getCurrentLeadType(): "UNKNOWN" | "PPT" | "PPK" {
+        return this.currentLeadType;
+    }
+
+    public setCurrentLeadType(value: "UNKNOWN" | "PPT" | "PPK") {
+        this.currentLeadType = value;
+    }
+
     /**
      * returns: the time of the _ongoing_ raid in seconds. If no raid is going on, 0 is returned.
      *          That means: when this method is called, it assumes the raid is still going on!
@@ -261,6 +284,14 @@ export class Commander {
         this.lastUpdate = moment.utc();
         this.raidStart = undefined;
         this.state = CommanderState.TAG_UP;
+    }
+
+    public getRegistration(): Registration | undefined {
+        return this.registration;
+    }
+
+    public setRegistration(registraton: Registration | undefined) {
+        this.registration = registraton;
     }
 }
 
@@ -287,7 +318,8 @@ export class CommanderStorage {
         if (this.getCommanderByTS3UID(commander.getTS3ClientUID()) === undefined) {
             this.commanders.push(commander);
         } else {
-            LOG.warn(`Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);
+            LOG.warn(
+                `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);
         }
     }
 
@@ -368,6 +400,7 @@ export class TS3Listener extends events.EventEmitter {
                     const channel = c.ts_channel_name; // for broadcast and this.channels
                     const channel_path = c.ts_channel_path; // for broadcast and this.channels
                     const ts_join_url = c.ts_join_url; // for broadcast and this.channels
+                    const type = c.leadtype || "UNKNOWN";
 
                     let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
                     if (commander === undefined) {
@@ -388,6 +421,7 @@ export class TS3Listener extends events.EventEmitter {
                                 commander.setState(CommanderState.COMMANDER);
                                 commander.setTS3Channel(channel);
                                 commander.setTs3channelPath(channel_path);
+                                commander.setCurrentLeadType(type);
                                 this.tagUp(g, commander);
                                 LOG.debug(`Moving ${username} from TAG_UP to COMMANDER state.`);
                             }
@@ -418,12 +452,17 @@ export class TS3Listener extends events.EventEmitter {
                         case CommanderState.COMMANDER:
                             // still raiding -> update timestamp
                             commander.setLastUpdate(now);
+                            commander.setCurrentLeadType(type);
+                            commander.setTS3Channel(channel);
+                            commander.setTs3channelPath(channel_path);
+                            this.tagUpdate(g, commander);
                             break;
                     }
                 });
                 taggedDown.forEach((commander: Commander) => {
                     commander.setLastUpdate(now);
                     commander.setState(CommanderState.TAG_DOWN);
+                    commander.setRaidEnd(now);
                     this.tagDown(g, commander);
                     LOG.debug(`Moving ${commander.getTS3ClientUID()} from COOLDOWN, TAG_UP, or COMMANDER to TAG_DOWN state.`);
                 });
@@ -455,17 +494,19 @@ export class TS3Listener extends events.EventEmitter {
 
         let duser: discord.GuildMember | undefined;
         if (registration !== undefined) {
+            commander.setRegistration(registration);
             // the commander is member of the current discord -> give role
             duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser === undefined) {
-                LOG.warn(`Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`);
+                LOG.warn(
+                    `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`);
             }
             commander.setDiscordMember(duser);
 
             await this.tagUpAssignRole(g, commander);
         }
 
-        await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander, duser, registration)
+        await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander)
             .then(value => commander.setBroadcastMessage(value))
             .catch(e => LOG.error("Could send tag up broadcast", e));
 
@@ -482,7 +523,8 @@ export class TS3Listener extends events.EventEmitter {
      * - the user's TS-UID-Discordname is forgotten
      */
     private async tagDown(g: discord.Guild, commander: Commander) {
-        const registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
+        const registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(
+            commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
 
         try {
@@ -509,6 +551,10 @@ export class TS3Listener extends events.EventEmitter {
             "commander": commander,
             "dbRegistration": registration
         });
+    }
+
+    private async tagUpdate(g: Guild, commander: Commander) {
+        await this.botgartClient.tagBroadcastService.tagUpdateBroadcast(g, commander);
     }
 
     private tagDownWriteToDb(dmember: discord.GuildMember, commander: Commander, registration: Registration) {
