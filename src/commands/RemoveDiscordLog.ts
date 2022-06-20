@@ -34,18 +34,18 @@ export class RemoveDiscordLog extends BotgartCommand {
         );
     }
 
-    command(message, responsible, guild, args) {
+    async command(message, responsible, guild, args) {
         const cl = this.getBotgartClient();
         const textChannel = guild.channels.cache.find(channel => channel.name === args.channel);
         cl.logChannelRepository.removeLogChannel(guild, args.type, textChannel);
         LOG.info("Removed log channel '{0}' for event type '{1}' in guild '{2}'."
             .formatUnicorn(textChannel.name, args.type, guild.name));
         if (message) {
-            message.react("✅"); // that's a white checkmark, even if not rendered properly...
+            await message.react("✅"); // that's a white checkmark, even if not rendered properly...
         }
         const types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
         const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name).concat(types.join("\n"));
-        message.reply(desc);
+        await message.reply(desc);
     }
 }
 

@@ -173,6 +173,18 @@ const configSchema = {
             arg: "ts-listener-ping-role",
             env: "TS_LISTENER_PING_ROLE"
         },
+        ping_role_ppt: {
+            format: String,
+            default: "Raiders (PPT)",
+            arg: "ts-listener-ping-role-ppt",
+            env: "TS_LISTENER_PING_ROLE_PPT"
+        },
+        ping_role_ppk: {
+            format: String,
+            default: "Raiders (PPK)",
+            arg: "ts-listener-ping-role-ppk",
+            env: "TS_LISTENER_PING_ROLE_PPK"
+        },
         commander_role: {
             format: String,
             default: "Commander",

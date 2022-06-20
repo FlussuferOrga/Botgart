@@ -85,7 +85,7 @@ export class RosterService {
 
     private refresh(guild: discord.Guild, roster: Roster, message: discord.Message) {
         this.repository.upsertRosterPost(guild, roster, message);
-        message.edit(roster.toMessage(), roster.toMessageEmbed());
+        message.edit({ content: roster.toMessage(), embeds: [roster.toMessageEmbed()] });
 
         if (roster.isUpcoming()) {
             this.syncToTS3(guild, roster);
@@ -94,8 +94,14 @@ export class RosterService {
 
     public watchRosterMessageReactions(message: discord.Message, roster: Roster): void {
         LOG.debug("Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
-        message.createReactionCollector(e =>
-            RosterService.EMOTES.includes(e.emoji.name), {}).on("collect", r => this.processReacts(r, roster));
+        message.createReactionCollector({
+            filter: e => {
+                if (e.emoji.name === null) {
+                    return false;
+                }
+                return RosterService.EMOTES.includes(e.emoji.name);
+            }
+        }).on("collect", r => this.processReacts(r, roster));
 
         for (const [_, e] of message.reactions.cache) {
             this.processReacts(e, roster);
@@ -107,7 +113,7 @@ export class RosterService {
         if (r.partial) {
             r = await r.fetch();
         }
-        const mapForEmote = WvwMap.getMapByEmote(r.emoji.name);
+        const mapForEmote = WvwMap.getMapByEmote(r.emoji.name ? r.emoji.name : "");
         const reactedUsers = await r.users.fetch();
         reactedUsers
             .filter(user => user.id !== this.client.user?.id)
@@ -128,7 +134,7 @@ export class RosterService {
 
     public createRoster(guild: discord.Guild, channel: discord.TextChannel, rosterYear, rosterWeek) {
         const roster = new Roster(rosterWeek, rosterYear);
-        channel.send(roster.toMessage(), roster.toMessageEmbed())
+        channel.send({ content: roster.toMessage(), embeds: [roster.toMessageEmbed()] })
             .then(async (mes: discord.Message) => {
                 for (const e of RosterService.EMOTES) {
                     await mes.react(e);

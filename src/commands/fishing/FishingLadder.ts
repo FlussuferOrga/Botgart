@@ -1,4 +1,4 @@
-import * as discord from "discord.js";
+import discord, { Util } from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
 import { FishLadderEntry } from "../../repositories/FishingRepository";
 
@@ -28,13 +28,18 @@ export class FishingLadder extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const length = 10;
         const ladder: FishLadderEntry[] = this.getBotgartClient().fishingRepository.fishLadder(length);
 
         Promise.all(ladder.map(fle => this.client.users.fetch(fle.user)
             .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))
-            .then(xs => message.reply(`:fish::crown:\n${xs.join("\n")}`, { split: true }));
+            .then(async xs => {
+                const messageParts = Util.splitMessage(`:fish::crown:\n${xs.join("\n")}`);
+                for (const part of messageParts) {
+                    await message.reply(part);
+                }
+            });
     }
 }
 

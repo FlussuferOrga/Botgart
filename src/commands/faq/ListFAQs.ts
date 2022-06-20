@@ -20,7 +20,7 @@ export class ListFaqs extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         if (!responsible) {
             LOG.error("Can not execute lsfaqs without member to reply to. Canceling.");
             return;

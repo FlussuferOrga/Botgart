@@ -43,7 +43,7 @@ export class Authenticate extends BotgartCommand {
         );
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { key: string }): void {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { key: string }): Promise<void> {
         if (!message) {
             LOG.error("Mandatory message parameter missing. This command can not be issued as cron.");
             return;
@@ -55,13 +55,12 @@ export class Authenticate extends BotgartCommand {
         // through a DM and is dedicated to Jey, who is a fucking
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
-        this.client.guilds.cache.forEach(async g => {
+        for (const g of this.client.guilds.cache.values()) {
             const m: discord.GuildMember = await g.members.fetch(message.author.id); // cache.find(m => m.id == message.author.id);
             if (m) {
                 members.push({ guild: g, member: m });
             }
-        });
-
+        }
         message.util?.send(L.get("CHECKING_KEY"));
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
         const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(args.key);
@@ -85,7 +84,7 @@ export class Authenticate extends BotgartCommand {
                     } else {
                         getAccountGUID(args.key).then(async guid => {
                             await Util.asyncForEach(members, async (m: { guild: discord.Guild; member: discord.GuildMember }) => {
-                                const r: discord.Role | undefined = (await m.guild.roles.fetch()).cache.find(r => r.name === role);
+                                const r: discord.Role | undefined = (await m.guild.roles.fetch()).find(r => r.name === role);
                                 if (r === undefined) {
                                     LOG.error(`Role '${role}' not found on server '${m.guild.name}'. Skipping.`);
                                     reply = L.get("INTERNAL_ERROR");
@@ -107,7 +106,7 @@ export class Authenticate extends BotgartCommand {
                                         const reg: Registration | undefined = cl.registrationRepository.getUserByAccountName(accountName);
                                         if (reg) {
                                             // assignServerRole() expects Role | null, but find() returns Role | undefined, so we do null-coalescing here
-                                            currentRole = (await m.guild.roles.fetch()).cache.find(r => r.name === reg.registration_role) || null;
+                                            currentRole = (await m.guild.roles.fetch()).find(r => r.name === reg.registration_role) || null;
                                             LOG.info(`User '${responsible.username}' was already registered with role '${currentRole}' which will be removed.`);
                                         }
                                     }
@@ -148,7 +147,7 @@ export class Authenticate extends BotgartCommand {
                                     }
                                 }
                             });
-                            responsible.send(reply);
+                            await responsible.send(reply);
                         });
                     }
                 }, err => {

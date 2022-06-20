@@ -7,7 +7,7 @@ export class MessageListener extends Listener {
     constructor() {
         super("message", {
             emitter: "client",
-            event: "message"
+            event: "messageCreate"
         });
     }
 

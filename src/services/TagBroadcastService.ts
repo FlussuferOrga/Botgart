@@ -1,9 +1,8 @@
-import discord, { Message, MessageEmbed, Util } from "discord.js";
+import discord, { Guild, Message, MessageEmbed, Util } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
-import { Registration } from "../repositories/RegistrationRepository";
-import { Commander } from "../TS3Connection";
+import { Commander, LeadType } from "../TS3Connection";
 import { logger } from "../util/Logging";
 
 const LOG = logger();
@@ -13,10 +12,11 @@ export class TagBroadcastService {
     private readonly COLOR_ACTIVE = Util.resolveColor("GREEN");
     private readonly COLOR_INACTIVE = Util.resolveColor("RED");
     private readonly COLOR_UNKNOWN = Util.resolveColor("GREY");
-
-    private client: BotgartClient;
-    private broadcastChannel: string;
-    private pingRole: string;
+    private readonly broadcastChannel: string;
+    private readonly pingRole: string;
+    private readonly pingRolePPT: string;
+    private readonly pingRolePPK: string;
+    private readonly client: BotgartClient;
 
     constructor(client: BotgartClient) {
         this.client = client;
@@ -24,61 +24,124 @@ export class TagBroadcastService {
 
         this.broadcastChannel = config.ts_listener.broadcast_channel;
         this.pingRole = config.ts_listener.ping_role;
+        this.pingRolePPT = config.ts_listener.ping_role_ppt;
+        this.pingRolePPK = config.ts_listener.ping_role_ppk;
     }
 
-    async sendTagUpBroadcast(g: discord.Guild,
-                             commander: Commander,
-                             discordUser: discord.GuildMember | undefined,
-                             registration: undefined | Registration) {
+    async sendTagUpBroadcast(g: discord.Guild, commander: Commander) {
         // broadcast the message
-        const dchan: discord.TextChannel = g.channels.cache
-            .find(c => c.name === this.broadcastChannel && c.type == "text") as discord.TextChannel;
-        if (!dchan) {
-            LOG.warn(`I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
+        const textChannel: discord.TextChannel = g.channels.cache
+            .find(c => c.name === this.broadcastChannel && c.type == "GUILD_TEXT") as discord.TextChannel;
+        if (!textChannel) {
+            LOG.warn(
+                `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
-            const pingRole = g.roles.cache.find(r => r.name === this.pingRole);
-            const channelPath = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ");
-            const name = discordUser?.displayName || commander.getTS3DisplayName();
-
-            const role = registration?.registration_role || "?";
-            const pingRoleMention = pingRole ? pingRole.toString() : "";
-
-            const embed = this.createEmbed(channelPath, commander);
-            const sendPromise = dchan.send(this.createMessage(name, role, pingRoleMention), embed);
-
-            if (discordUser?.user !== undefined) {
-                // user is known on discord -> is pingable
-                const userMention = discordUser!.user!.toString();
-                // replace message with version that links the user after it hast been sent initially.
-                // Editing does not trigger a notification.
-                return sendPromise.then(value => value.edit(this.createMessage(userMention, role, pingRoleMention), embed));
-            }
-            return sendPromise;
+            const message = this.generateMessage(g, commander);
+            const embed = this.createEmbed(commander);
+            return textChannel.send(
+                { content: message, embeds: [embed] }
+            );
         }
     }
 
-    private createEmbed(channelPath: string, commander: Commander, includeLink = true, color = this.COLOR_ACTIVE) {
+
+    private generateMessage(g: Guild, commander: Commander) {
+        const role = commander.getRegistration()?.registration_role || "?";
+        const pingRoleMention = this.generatePingRolesMention(g, commander);
+
+        let name = commander.getDiscordMember()?.displayName || commander.getTS3DisplayName();
+        if (commander.getDiscordMember()?.user !== undefined) {
+            // user is known on discord -> is pingable
+            name = (commander.getDiscordMember())!.user!.toString();
+        }
+        return this.ZERO_WIDTH_SPACE + pingRoleMention + "\n" + L.get("COMMANDER_TAG_UP", [name, role], "\n");
+    }
+
+    private generatePingRolesMention(g: Guild, commander: Commander) {
+        const pingRoles: discord.Role[] = this.detectRoles(g, commander.getCurrentLeadType());
+
+        return pingRoles.map(value => value.toString()).join(",");
+    }
+
+    private detectRoles(g: Guild, currentLeadType: LeadType): discord.Role[] {
+        function addRoleIfExists(list: discord.Role[], roleName: string) {
+            const generalRole: discord.Role | undefined = g.roles.cache.find(r => r.name === roleName);
+            if (generalRole) {
+                list.push(generalRole);
+            }
+        }
+
+        const roles: discord.Role[] = [];
+        addRoleIfExists(roles, this.pingRole);
+
+        switch (currentLeadType) {
+            case "UNKNOWN":
+                break;
+            case "PPT":
+                addRoleIfExists(roles, this.pingRolePPT);
+                break;
+            case "PPK":
+                addRoleIfExists(roles, this.pingRolePPK);
+                break;
+        }
+        return roles;
+    }
+
+    async tagUpdateBroadcast(g: discord.Guild, commander: Commander) {
+        const message = await TagBroadcastService.fetchMessageOrNull(commander);
+        if (message) {
+            const messageEmbed = this.createEmbed(commander);
+            const msgContent = this.generateMessage(g, commander);
+            await message.edit({ content: msgContent, embeds: [messageEmbed] });
+        }
+    }
+
+    private createEmbed(commander: Commander, active = true, color = this.COLOR_ACTIVE) {
         const embed = new MessageEmbed();
-        let text = channelPath + " ❯ " + commander.getTS3DisplayName();
-        if (includeLink && commander.getTs3joinUrl()) {
+        switch (commander.getCurrentLeadType()) {
+            case "UNKNOWN":
+                break;
+            case "PPT":
+                embed.addField("Lead Type", "🏰️  **PPT**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPT", [], " | ", false));
+                break;
+            case "PPK":
+                embed.addField("Lead Type", "⚔ ️**PPK**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPK", [], " | ", false));
+                break;
+        }
+
+        let text = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ") + " ❯ " + commander.getTS3DisplayName();
+        if (active && commander.getTs3joinUrl()) {
             const linkText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT", [], " | ", false);
             const linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], "\n\n", false);
-            text += `\n\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`;
+            text += `\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`;
         }
-        embed.addField("🔊 TeamSpeak 3", text, false);
+
+        embed.addField(`${active ? "🔊" : "🔈"} TeamSpeak 3`, text, false);
+
+        if (commander.getRaidStart() !== undefined || commander.getRaidEnd() !== undefined) {
+            const lines: string[] = [];
+            let timestampFormat = "R"; // https://hammertime.cyou/de
+            if (!active) {
+                timestampFormat = "f";
+            }
+            if (commander.getRaidStart() !== undefined) {
+                lines.push(`**Start:** <t:${commander.getRaidStart()!.unix()!}:${timestampFormat}>`);
+            }
+            if (commander.getRaidEnd() !== undefined) {
+                lines.push(`**End:** <t:${commander.getRaidEnd()!.unix()!}:${timestampFormat}>`);
+            }
+            embed.addField("🕐 " + L.get("COMMANDER_TAG_UP_TIMES", [], " | ", false), lines.join("\n"));
+        }
         embed.setColor(color);
         embed.setTimestamp(new Date());
         return embed;
     }
 
-    private createMessage(name: string, role: string, pingRoleString: string) {
-        return this.ZERO_WIDTH_SPACE + "\n" + L.get("COMMANDER_TAG_UP", [name, role, pingRoleString], "\n");
-    }
-
     async tagDownBroadcast(commander: Commander) {
         const message = await TagBroadcastService.fetchMessageOrNull(commander);
         if (message !== undefined) {
-            await TagBroadcastService.updateEmbedTagDown(message, this.COLOR_INACTIVE);
+            const messageEmbed = this.createEmbed(commander, false, this.COLOR_INACTIVE);
+            await message.edit({ embeds: [messageEmbed] });
         }
     }
 
@@ -94,33 +157,12 @@ export class TagBroadcastService {
     async tagDownAllBroadcastsForShutdown() {
         for (const commander of this.client.commanders.getAllCommanders()) {
             const message = await TagBroadcastService.fetchMessageOrNull(commander); // better refetch...
-            if (message !== undefined) {
+            if (message?.guild) {
                 LOG.info(`Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
-                await TagBroadcastService.updateEmbedTagDown(message, this.COLOR_UNKNOWN);
-            }
-        }
-    }
 
-    private static async updateEmbedTagDown(message: Message, color: number) {
-        const embed = message.embeds[0];
-        if (embed) {
-            let toUpdate = false;
-            if (embed.color != color) {
-                toUpdate = true;
-                embed.setColor(color);
-            }
-            if (embed.fields.length == 1) {
-                const field = embed.fields[0];
-                const textLines = field.value.split("\n");
-                if (textLines.length > 1) {
-                    toUpdate = true;
-                    const newName = field.name.replace("🔊", "🔈"); // nobody will probably ever notice that :D
-                    const newField = { name: newName, value: textLines[0], inline: field.inline };
-                    embed.spliceFields(0, 1, newField);
-                }
-            }
-            if (toUpdate) {
-                await message.edit(embed);
+                const messageEmbed = this.createEmbed(commander, false, this.COLOR_UNKNOWN);
+                const msgContent = this.generateMessage(message.guild, commander);
+                await message.edit({ content: msgContent, embeds: [messageEmbed] });
             }
         }
     }

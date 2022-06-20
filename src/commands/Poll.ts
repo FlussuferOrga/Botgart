@@ -58,8 +58,8 @@ export class Poll extends BotgartCommand {
         return args;
     }
 
-    command(message, responsible, guild, args) {
-        args.channel.send(args.question).then(m => {
+    async command(message, responsible, guild, args) {
+        await args.channel.send(args.question).then(m => {
                 // filter empty strings out beforehand
                 args.emotes.filter(react => react).forEach(react => {
                     // works for standard emotes, like ":D" etc

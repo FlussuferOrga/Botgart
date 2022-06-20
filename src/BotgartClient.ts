@@ -24,6 +24,7 @@ import { ValidationService } from "./services/ValidationService";
 import { CommanderStorage, TS3Connection, TS3Listener } from "./TS3Connection";
 import { logger } from "./util/Logging";
 import { WvWWatcher } from "./WvWWatcher";
+import { GuildChannel, ThreadChannel } from "discord.js";
 
 const LOG = logger();
 
@@ -59,8 +60,8 @@ export class BotgartClient extends akairo.AkairoClient {
 
     // public readonly options;
 
-    constructor(options: (akairo.AkairoOptions & discord.ClientOptions) | undefined,
-                clientOptions: discord.ClientOptions | undefined,
+    constructor(options: akairo.AkairoOptions,
+                clientOptions: discord.ClientOptions,
                 db: Database) {
         super(options, clientOptions);
 
@@ -163,7 +164,7 @@ export class BotgartClient extends akairo.AkairoClient {
             LOG.debug("Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message));
         } else {
             channels.forEach(cid => {
-                const channel: discord.GuildChannel | undefined = guild.channels.cache.find(c => c.id === cid);
+                const channel: GuildChannel | ThreadChannel | undefined = guild.channels.cache.find(c => c.id === cid);
                 if (!channel) {
                     LOG.error(`Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`);
                 } else if (!(channel instanceof discord.TextChannel)) {

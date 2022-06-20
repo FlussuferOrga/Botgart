@@ -1,4 +1,4 @@
-import discord from "discord.js";
+import discord, { ColorResolvable } from "discord.js";
 import events from "events";
 import moment, { Moment } from "moment-timezone";
 import { getConfig } from "../../config/Config";
@@ -7,6 +7,8 @@ import * as Util from "../../util/Util";
 import { ResetLeader } from "./ResetLeader";
 import * as ResetUtil from "./ResetUtil";
 import { WvwMap } from "./WvwMap";
+
+const EMPTY_MESSAGE = "_ _";
 
 export class Roster extends events.EventEmitter {
     public readonly leads: { [key: string]: [WvwMap, Util.GeneralSet<ResetLeader>] };
@@ -141,8 +143,9 @@ export class Roster extends events.EventEmitter {
     /**
      * @returns the hex string of the colour to use for the embed based on how many maps are empty.
      */
-    private getEmbedColour(): string {
-        return ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"][this.emptyMapCount()];
+    private getEmbedColour(): ColorResolvable {
+        const colours: ColorResolvable[] = ["#00ff00", "#cef542", "#f5dd42", "#f58442", "#ff0000"];
+        return colours[this.emptyMapCount()];
     }
 
     /**
@@ -175,6 +178,10 @@ export class Roster extends events.EventEmitter {
             result.push(...leads);
         }
         const uniqueResult = [...new Set(result.map(value => value.name))];
-        return uniqueResult.join(",");
+        if (uniqueResult.length > 0) {
+            return uniqueResult.join(",");
+        } else {
+            return EMPTY_MESSAGE;
+        }
     }
 }

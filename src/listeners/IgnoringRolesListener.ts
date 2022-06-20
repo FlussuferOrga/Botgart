@@ -16,7 +16,7 @@ export class IgnoringRolesListener extends Listener {
 
     exec(oldMember: discord.GuildMember, newMember: discord.GuildMember) {
         const oldRoles = oldMember.roles.cache.map(r => r.name);
-        const newRoles: discord.Role[] = newMember.roles.cache.filter(r => !oldRoles.includes(r.name)).array();
+        const newRoles: discord.Role[] = Array.from(newMember.roles.cache.filter(r => !oldRoles.includes(r.name)).values());
         const ignoringRoles = newRoles.filter(r => getConfig().get().achievements.ignoring_roles.includes(r.name));
         if (ignoringRoles.length > 0) {
             const client = this.client as BotgartClient;

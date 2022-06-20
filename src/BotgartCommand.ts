@@ -208,7 +208,7 @@ export class BotgartCommand extends akairo.Command {
      * @param {Guild} guild - the Guild on which to execute the command.
      * @param {map} args - arguments for the command. Each command specifies the format themselves.
      */
-    public command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Record<string, unknown>): unknown {
+    public async command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Record<string, unknown>): Promise<unknown> {
         throw new Error("command() not implemented.");
     }
 
@@ -252,25 +252,25 @@ export class BotgartCommand extends akairo.Command {
      * @param {Message} message - message that triggered this command.
      * @param {Object} args - parameters.
      */
-    public exec(message: discord.Message, args: Record<string, unknown>): void {
+    public async exec(message: discord.Message, args: Record<string, unknown>): Promise<void> {
         if (!this.availableAsDM && !message.member && message.util) {
-            message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
+            await message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
 
         const causer = message.member || message.author;
         if (!this.isAllowed(causer)) {
-            message.util?.send(L.get("NOT_PERMITTED"));
+            await message.util?.send(L.get("NOT_PERMITTED"));
             return;
         }
 
         const errorMessage = this.checkArgs(args);
         if (errorMessage && message.util) {
-            message.util.send(errorMessage);
+            await message.util.send(errorMessage);
             return;
         }
 
-        const res = this.command(message, message.author, message.guild, args);
+        const res = await this.command(message, message.author, message.guild, args);
         return this.postExecHook(message, args, res);
     }
 

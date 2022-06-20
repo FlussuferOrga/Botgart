@@ -153,9 +153,12 @@ EN = {
 
         "COOLDOWN_GO_FISH": "You are still totally relaxed from your last fishing trip. Wait another {0} second(s). :relieved:",
 
-        "COMMANDER_TAG_UP": "Commander **{0}** ({1}) tagged up in TeamSpeak! {2}",
+        "COMMANDER_TAG_UP": "Commander **{0}** ({1}) tagged up in TeamSpeak!",
         "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Join on TeamSpeak",
         "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "If you have TeamSpeak 3 installed, you can join by clicking this link.",
+        "COMMANDER_TAG_UP_TYPE_PPK": "Fighting",
+        "COMMANDER_TAG_UP_TYPE_PPT": "Capture & defend objectives",
+        "COMMANDER_TAG_UP_TIMES": "Times",
 
         "RED_BORDERLANDS": "Red Borderlands",
         "BLUE_BORDERLANDS": "Blue Borderlands",
@@ -423,10 +426,10 @@ DE = {
         "DESC_REMOVE_DISCORD_LOG": "Entfernt eine Verbindung zwischen einem Event-Typ und einem Discord-Text-Kanal.",
         "DESC_LIST_DISCORD_LOG": "Listet die im Discord-Text-Kanal vorhandenen Eventtypen auf.",
         "DESC_PRUNE": "Entfernt inaktive Benutzer ohne Rolle.",
-        "DESC_RESET_ROSTER": "Erstellt einen Post, mithilfe dessen Kommandeure rostern können.",
-        "DESC_ADD_RESET_LEADER": "Fügt manuell einen Spieler als Reset-Kommandeur hinzu.",
-        "DESC_REMOVE_RESET_LEADER": "Entfernt manuell einen Spieler von den Reset-Kommandeuren.",
-        "DESC_TOGGLE_RESET_LEADER_VISIBILITY": "Ändert manuell die Sichtbarkeit eines Reset-Kommandeurs.",
+        "DESC_RESET_ROSTER": "Erstellt einen Post, mithilfe dessen Kommandeur*innen rostern können.",
+        "DESC_ADD_RESET_LEADER": "Fügt manuell einen Spieler als Reset-Kommandeur*in hinzu.",
+        "DESC_REMOVE_RESET_LEADER": "Entfernt manuell einen Spieler von den Reset-Kommandeur*innen.",
+        "DESC_TOGGLE_RESET_LEADER_VISIBILITY": "Ändert manuell die Sichtbarkeit eines oder einer Reset-Kommandeur*in.",
         "DESC_SET_TS3_RESET_ROSTER": "Syncronisiert das aktuelle Resetroster ins TS3.",
         "DESC_ADD_EVENT": "Erstellt ein neues Event",
         "DESC_AWARD_ACHIEVEMENT": "Vergibt eine Errungenschaft an einen Spieler.",
@@ -455,19 +458,22 @@ DE = {
 
         "COOLDOWN_GO_FISH": "Du bist noch sehr entspannt von deinem letzten Angelausflug. Warte noch {0} Sekunde(n). :relieved:",
 
-        "COMMANDER_TAG_UP": "Kommandeur **{0}** ({1}) hat im TeamSpeak einen Raid gestartet! {2}",
+        "COMMANDER_TAG_UP": "Kommandeur*in **{0}** ({1}) hat im TeamSpeak einen Raid gestartet!",
         "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Auf dem TeamSpeak beitreten",
-        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn du TeamSpeak 3 installiert hast, kannst du über diesen Link dem Kommandeur beitreten.",
+        "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn du TeamSpeak 3 installiert hast, kannst du über diesen Link dem/der Kommandeur*in beitreten.",
+        "COMMANDER_TAG_UP_TYPE_PPK": "Kämpfen",
+        "COMMANDER_TAG_UP_TYPE_PPT": "Ziele erobern & verteidigen",
+        "COMMANDER_TAG_UP_TIMES": "Zeiten",
 
         "RED_BORDERLANDS": "Rote Grenzlande",
         "BLUE_BORDERLANDS": "Blaue Grenzlande",
         "GREEN_BORDERLANDS": "Grüne Grenzlande",
         "ETERNAL_BATTLEGROUNDS": "Ewige Schlachtfelder",
-        "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur einzutragen. Reagiere mit ❌ um dich wieder auszutragen. Benutze 📣, wenn du damit einverstanden bist, dass deine Karte unseren Gegnern mitgeteilt wird.",
+        "RESETLEAD_HEADER": "Reagiere mit einem der Emotes, um dich als Reset-Kommandeur*in einzutragen. Reagiere mit ❌ um dich wieder auszutragen. Benutze 📣, wenn du damit einverstanden bist, dass deine Karte unseren Gegnern mitgeteilt wird.",
         "ROSTER_EXISTS": "Es gibt bereits ein Roster für diese Woche: {0}",
         "WEEK_NUMBER": "Kalenderwoche",
-        "ROSTER_LEAD_ADDED": "Spieler `{0}` wurde erfolgreich als Kommandeur für die Karte `{1}` in der Woche {2} hinzugefügt. Siehe {3}",
-        "ROSTER_LEAD_REMOVED": "Spieler `{0}` wurde erfolgreich als Kommandeur in der Woche {1} entfernt. Siehe {2}",
+        "ROSTER_LEAD_ADDED": "Spieler `{0}` wurde erfolgreich als Kommandeur*in für die Karte `{1}` in der Woche {2} hinzugefügt. Siehe {3}",
+        "ROSTER_LEAD_REMOVED": "Spieler `{0}` wurde erfolgreich als Kommandeur*in in der Woche {1} entfernt. Siehe {2}",
         "ROSTER_LEAD_VISIBILITY_TOGGLED": "Spieler `{0}`s Sichtbarkeit in Woche {1} wurde geändert. Siehe {2}",
 
         "MK_EVENT_DATE": "Gib als nächstes ein gültiges Datum mit Uhrzeit an. Z.B. `15.02.2022 16:33`",
@@ -480,11 +486,11 @@ DE = {
 
         "ACHIEVEMENT_NAME_GLIMMER": "Schimmer",
         "ACHIEVEMENT_DESC_GLIMMER": "Leite für insgesamt eine Stunde.",
-        "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur!",
+        "ACHIEVEMENT_FLAV_GLIMMER": "Willkommen auf der Brücke, Kommandeur*in!",
 
         "ACHIEVEMENT_NAME_SUNRAY": "Sonnenstrahl",
         "ACHIEVEMENT_DESC_SUNRAY": "Leite für insgesamt zehn Stunden.",
-        "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur!",
+        "ACHIEVEMENT_FLAV_SUNRAY": "Willkommen zurück, Kommandeur*in!",
 
         "ACHIEVEMENT_NAME_BLAZINGLIGHT": "Gleißendes Licht",
         "ACHIEVEMENT_DESC_BLAZINGLIGHT": "Leite für insgesamt einhundert Stunden.",
@@ -756,7 +762,7 @@ DE_SWG = {
 
         "COOLDOWN_GO_FISH": "Du bisch noch viel zum entspannt. Jetzt wartsch halt emol noch {0} Sekunde(n). :relieved:",
 
-        "COMMANDER_TAG_UP": "Kommandör **{0}** ({1}) fangt grad en Raid im TeamSpeak an! {2}",
+        "COMMANDER_TAG_UP": "Kommandör **{0}** ({1}) fangt grad en Raid im TeamSpeak an!",
         "COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT": "Uffen TeamSpeak gange",
         "COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT": "Wenn'd TeamSpeak 3 installiert hesch, kannsch über selle Link em Kommandör beitrete.",
 

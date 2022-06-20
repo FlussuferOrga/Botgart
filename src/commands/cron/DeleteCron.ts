@@ -34,11 +34,11 @@ export class DeleteCron extends BotgartCommand {
         return args === undefined || args.id === undefined || args.id < 0 ? L.get(this.helptextKey()) : undefined;
     }
 
-    command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Args): boolean {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Args): Promise<boolean> {
         return this.deleteCronjob(args.id as number);
     }
 
-    exec(message: discord.Message, args: Args): void {
+    async exec(message: discord.Message, args: Args): Promise<void> {
         if (!message.member) {
             message.util?.send(L.get("NOT_AVAILABLE_AS_DM"));
             return;
@@ -51,7 +51,7 @@ export class DeleteCron extends BotgartCommand {
         }
 
         // not cronable, can be casted
-        const mes = this.command(message, message.author, message.guild as discord.Guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
+        const mes = await this.command(message, message.author, message.guild as discord.Guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
         message.util?.send(mes);
     }
 
