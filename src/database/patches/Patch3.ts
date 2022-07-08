@@ -1,5 +1,5 @@
 import { Semaphore } from "await-semaphore";
-import { getAccountInfo} from "../../Gw2ApiUtils";
+import { getAccountInfo } from "../../Gw2ApiUtils";
 import { logger } from "../../util/Logging";
 import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
@@ -50,48 +50,48 @@ export class Patch3 extends DBPatch {
         con.prepare(`
             CREATE TABLE IF NOT EXISTS new_registrations (
                 id
-                INTEGER
-                PRIMARY
-                KEY
-                AUTOINCREMENT,
+                    INTEGER
+                    PRIMARY
+                        KEY
+                    AUTOINCREMENT,
                 user
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 guild
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 api_key
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 gw2account
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 registration_role
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 account_name
-                TEXT,
+                    TEXT,
                 created
-                TIMESTAMP
-                DEFAULT (
-                datetime(
-                'now',
-                'localtime'
-            )),
+                    TIMESTAMP
+                    DEFAULT (
+                        datetime(
+                                'now',
+                                'localtime'
+                            )),
                 UNIQUE (
-                user,
-                guild
-            ) ON CONFLICT REPLACE,
+                        user,
+                        guild
+                    ) ON CONFLICT REPLACE,
                 UNIQUE (
-                guild,
-                api_key
-            )
-                )`).run();
+                        guild,
+                        api_key
+                    )
+            )`).run();
 
         await this.resolveAccountNames(con.prepare(`SELECT *
                                                     FROM registrations`).all());
@@ -123,46 +123,46 @@ export class Patch3 extends DBPatch {
         con.prepare(`
             CREATE TABLE IF NOT EXISTS new_registrations (
                 id
-                INTEGER
-                PRIMARY
-                KEY
-                AUTOINCREMENT,
+                    INTEGER
+                    PRIMARY
+                        KEY
+                    AUTOINCREMENT,
                 user
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 guild
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 api_key
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 gw2account
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 registration_role
-                TEXT
-                NOT
-                NULL,
+                    TEXT
+                    NOT
+                        NULL,
                 created
-                TIMESTAMP
-                DEFAULT (
-                datetime(
-                'now',
-                'localtime'
-            )),
+                    TIMESTAMP
+                    DEFAULT (
+                        datetime(
+                                'now',
+                                'localtime'
+                            )),
                 UNIQUE (
-                user,
-                guild
-            ) ON CONFLICT REPLACE,
+                        user,
+                        guild
+                    ) ON CONFLICT REPLACE,
                 UNIQUE (
-                guild,
-                api_key
-            )
-                )`).run();
+                        guild,
+                        api_key
+                    )
+            )`).run();
         this.connection.prepare(`
             INSERT INTO new_registrations(id, user, guild, api_key, gw2account, registration_role, created)
             SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, r.registration_role, r.created
