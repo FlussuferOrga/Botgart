@@ -4,8 +4,8 @@ import Timeout from "await-timeout";
 import discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig, WorldAssignment } from "../config/Config";
-import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
+import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import { Registration } from "../repositories/RegistrationRepository";
 import { logger } from "../util/Logging";
@@ -95,7 +95,6 @@ export class RevalidationService {
 
     private static readonly LOG_TYPE_DEAUTHORIZE: string = "unauth";
 
-
     private async handle(registration: Registration, authResult: CheckResult) {
         const guild: discord.Guild | null = await this.client.guilds.fetch(registration.guild);
 
@@ -105,7 +104,7 @@ export class RevalidationService {
         } else {
             const member: discord.GuildMember | undefined = await guild.members.fetch(registration.user)
                 .catch(ex => {
-                    LOG.error(`Could not restrieve user ${registration.user}: ${ex.message}`);
+                    LOG.error(`Could not retrieve user ${registration.user}: ${ex.message}`);
                     return undefined;
                 });
             const registeredWithRole = registration.registration_role;
@@ -123,32 +122,10 @@ export class RevalidationService {
                 this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
                 await member.send(L.get("KEY_INVALIDATED"));
             } else if (authResult.valid) {
-                const accountData = authResult.accountData;
-                if (registration.account_name != accountData.name
-                    || registration.gw2account != accountData.id
-                    || registration.registration_role != authResult.roleName) {
-                    this.client.registrationRepository.updateRegistration(registration.id, authResult.roleName, accountData.name, accountData.id);
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info(`Account Data updated for ${registration.id}`,
-                            {
-                                old: {
-                                    account_name: registration.account_name,
-                                    gw2account: registration.gw2account,
-                                    registration_role: registration.registration_role
-                                },
-                                new: {
-                                    account_name: accountData.name,
-                                    gw2account: accountData.id,
-                                    registration_role: authResult.roleName
-                                }
-                            });
-                    }
-                }
-
-                const admittedRoleName = authResult.roleName;
-                const admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === admittedRoleName);
+                this.updateDatabaseIfRequired(registration, authResult.accountData, authResult.roleName);
+                const admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === authResult.roleName);
                 if (!admittedRole) { // false -> no role should be assigned assigned at all
-                    LOG.error(`Can not find the role "${admittedRoleName}" that should be currently used.`);
+                    LOG.error(`Can not find the role "${(authResult.roleName)}" that should be currently used.`);
                     throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`);
                 } else {
                     // user transferred to another admitted server -> update role
@@ -156,6 +133,30 @@ export class RevalidationService {
                     await this.client.validationService.setMemberRolesByString(member, [admittedRole.name], "ReAuthentication");
                     // assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
                 }
+            }
+        }
+    }
+
+    private updateDatabaseIfRequired(registration: Registration, accountData: AccountData, roleName: string) {
+        const outdated = registration.account_name != accountData.name
+            || registration.gw2account != accountData.id
+            || registration.registration_role != roleName;
+        if (outdated) {
+            this.client.registrationRepository.updateRegistration(registration.id, roleName, accountData.name, accountData.id);
+            if (LOG.isInfoEnabled()) {
+                LOG.info(`Account Data updated for ${registration.id}`,
+                    {
+                        old: {
+                            account_name: registration.account_name,
+                            gw2account: registration.gw2account,
+                            registration_role: registration.registration_role
+                        },
+                        new: {
+                            account_name: accountData.name,
+                            gw2account: accountData.id,
+                            registration_role: roleName
+                        }
+                    });
             }
         }
     }
