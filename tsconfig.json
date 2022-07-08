@@ -2,7 +2,8 @@
   "compilerOptions": {
     "outDir": "./built",
     "allowJs": true,
-    "target": "ES2022",
+    "removeComments": true,
+    "target": "ES2017",
     "baseUrl": "./src",
     "sourceMap": true,
     "experimentalDecorators": true,
@@ -10,14 +11,13 @@
       "config.json": ["../config/config.json", "../config.json"]
     },
     "module": "commonjs",
-    "lib": ["es6", "es2017"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "incremental": true
   },
   "include": [
-    "./src/**/*",
-    ".typings-custom/**/*.ts"
+    "./src/**/*"
   ]
 }
