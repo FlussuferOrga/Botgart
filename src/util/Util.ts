@@ -83,7 +83,7 @@ export function formatUserPing(uid: string) {
     return "<@{0}>".formatUnicorn(uid);
 }
 
-export async function asyncForEach(array, callback) {
+export async function asyncForEach<T>(array: T[], callback: (item: T, index?: number, array?: T[]) => Promise<unknown>): Promise<void> {
     for (let i = 0; i < array.length; i++) {
         await callback(array[i], i, array);
     }

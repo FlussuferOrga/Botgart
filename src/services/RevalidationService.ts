@@ -1,9 +1,10 @@
 import PromisePool from "@supercharge/promise-pool";
-import { Semaphore } from "await-semaphore/index";
+import { Semaphore } from "await-semaphore";
 import Timeout from "await-timeout";
 import discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
-import { getConfig } from "../config/Config";
+import { getConfig, WorldAssignment } from "../config/Config";
+import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import { Registration } from "../repositories/RegistrationRepository";
@@ -12,6 +13,15 @@ import { formatUserPing } from "../util/Util";
 
 
 const LOG = logger();
+
+export type CheckResult =
+    { valid: false }
+    |
+    {
+        roleName: string;
+        accountData: AccountData;
+        valid: true;
+    };
 
 export class RevalidationService {
     private static REAUTH_DELAY = 8000;
@@ -49,52 +59,45 @@ export class RevalidationService {
                 } else {
                     LOG.error("API validation yielded undefined for the entire result of revalidations. Critical error!");
                 }
+                await Timeout.set(RevalidationService.REAUTH_DELAY);
             });
     }
 
 
-    private async checkRegistration(worldAssignments: { world_id: number; role: string }[],
-                                    r: Registration): Promise<undefined | { roleName?: string; valid: boolean }> {
+    private async checkRegistration(worldAssignments: WorldAssignment[],
+                                    r: Registration): Promise<undefined | CheckResult> {
         const release = await RevalidationService.SEM.acquire();
         LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
-        const res: (string | boolean) | undefined = await Gw2ApiUtils.validateWorld(r.api_key, worldAssignments)
-            .then(
-                // this ternary hack is required to work around the typing of the Promise from validateWorld
-                // which returns a number upon rejecting and string | boolean in case of success.
-                // So we can never end up with a number in success! But since we can not have distinct typing for both cases,
-                // the type is always number | string | boolean. The ternary casts all numbers (which never occur) to string
-                // so that the type is consistent from here on.
-                (admittedRole): (string | boolean) => typeof admittedRole === "boolean" ? admittedRole : "" + admittedRole,
-                (error): undefined | false => {
-                    if (error === Gw2ApiUtils.validateWorld.ERRORS.invalid_key) {
-                        // while this was an actual error when initially registering (=> tell user their key is invalid),
-                        // in the context of revalidation this is actually a valid case: the user must have given a valid key
-                        // upon registration (or else it would not have ended up in the DB) and has now deleted the key
-                        // => remove the validation role from the user
-                        return false;
-                    } else {
-                        LOG.error(`Error occured while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
-                        return undefined;
-                    }
-                }
-            );
-        await Timeout.set(RevalidationService.REAUTH_DELAY);
-        release();
+        try {
+            const accountData = await getAccountInfo(r.api_key);
+            const validationResult = await Gw2ApiUtils.validateWorld(accountData, worldAssignments);
 
-
-        if (typeof res === "string") {
-            return { roleName: res, valid: true };
-        } else if (typeof res === "boolean") {
-            return { valid: false };
-        } else return undefined;
+            if (validationResult !== false) {
+                return { roleName: validationResult.role, accountData: accountData, valid: true };
+            } else {
+                return { valid: false };
+            }
+        } catch (e) {
+            if (e instanceof InvalidKeyError) {
+                // while this was an actual error when initially registering (=> tell user their key is invalid),
+                // in the context of revalidation this is actually a valid case: the user must have given a valid key
+                // upon registration (or else it would not have ended up in the DB) and has now deleted the key
+                // => remove the validation role from the user
+                return { valid: false };
+            } else {
+                LOG.error(`Error occurred while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
+                return undefined;
+            }
+        } finally {
+            release();
+        }
     }
 
     private static readonly LOG_TYPE_DEAUTHORIZE: string = "unauth";
 
 
-    private async handle(registration: Registration, authResult: { roleName?: string; valid: boolean }) {
+    private async handle(registration: Registration, authResult: CheckResult) {
         const guild: discord.Guild | null = await this.client.guilds.fetch(registration.guild);
-
 
         // filter out users for which we encountered errors
         if (!guild) {
@@ -120,12 +123,28 @@ export class RevalidationService {
                 this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
                 await member.send(L.get("KEY_INVALIDATED"));
             } else if (authResult.valid) {
-                if (authResult.roleName !== undefined) {
-                    if (registration.registration_role != authResult.roleName) {
-                        // db update required ?
-                        this.client.registrationRepository.setRegistrationRoleById(registration.id, authResult.roleName);
+                const accountData = authResult.accountData;
+                if (registration.account_name != accountData.name
+                    || registration.gw2account != accountData.id
+                    || registration.registration_role != authResult.roleName) {
+                    this.client.registrationRepository.updateRegistration(registration.id, authResult.roleName, accountData.name, accountData.id);
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info(`Account Data updated for ${registration.id}`,
+                            {
+                                old: {
+                                    account_name: registration.account_name,
+                                    gw2account: registration.gw2account,
+                                    registration_role: registration.registration_role
+                                },
+                                new: {
+                                    account_name: accountData.name,
+                                    gw2account: accountData.id,
+                                    registration_role: authResult.roleName
+                                }
+                            });
                     }
                 }
+
                 const admittedRoleName = authResult.roleName;
                 const admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === admittedRoleName);
                 if (!admittedRole) { // false -> no role should be assigned assigned at all

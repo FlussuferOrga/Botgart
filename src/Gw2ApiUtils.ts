@@ -1,6 +1,20 @@
 import gw2client from "gw2api-client";
+import { getConfig, WorldAssignment } from "./config/Config";
 import { logger } from "./util/Logging";
 
+
+export abstract class UnsuccessfulValidationError extends Error {
+
+}
+
+export class NetworkError extends UnsuccessfulValidationError {
+}
+
+export class InvalidKeyError extends UnsuccessfulValidationError {
+}
+
+export class ConfigError extends UnsuccessfulValidationError {
+}
 
 export function createApiInstance() {
     const api = gw2client();
@@ -17,68 +31,39 @@ const api = createApiInstance();
 
 const LOG = logger();
 
-/**
- * Tries to validate the passed API key.
- * @param {string} apikey - valid apikey. No format checking will be done at this point.
- * @param worldAssignments a map of world_id to role
- * @returns {string|bool|int} - either
- *           (1) resolves to the name of the role the user should be assigned, according to the config (string)
- *           (2) resolves to false if the world the user plays on is not qualified to get any role
- *           (3) rejects to an error from validateWorld.ERRORS if
- *                   (a) the world is faulty within the config
- *                   (b) a network error occured
- *                   (c) the key is structurally valid, but not known to the API (invalid key)
- */
-export async function validateWorld(apikey: string, worldAssignments: { world_id: number; role: string }[]): Promise<string | boolean | number> {
-    const api = createApiInstance();
-    api.authenticate(apikey);
-    return api.account().get().then(
-        acc => new Promise((resolve, reject) => {
-            const match = worldAssignments.filter(a => a.world_id === acc.world);
-            if (match.length > 1) {
-                // config broken
-                return reject(exports.validateWorld.ERRORS.config_world_duplicate);
-            } else if (match.length === 1) {
-                // world admitted -> name of role the user should have
-                return resolve(match[0].role);
-            } else {
-                // world not admitted -> false
-                return resolve(false);
-            }
-        }),
-        err => new Promise((resolve, reject) => {
-            LOG.error("Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
-            if (err.content.text === "invalid key") {
-                return reject(exports.validateWorld.ERRORS.invalid_key);
-            } else {
-                return reject(exports.validateWorld.ERRORS.network_error);
-            }
-        })
-    );
+export interface AccountData {
+    id: string;
+    world: number;
+    name: string;
 }
 
-validateWorld.ERRORS = {
-    "config_world_duplicate": 1,
-    "network_error": 2,
-    "invalid_key": 3
-};
-
-export async function getAccountGUID(apikey: string): Promise<number | boolean> {
-    const api = createApiInstance();
-    api.authenticate(apikey);
-    return api.account().get().then(
-        res => new Promise((resolve, reject) => resolve(res.id)),
-        res => new Promise((resolve, reject) => resolve(false))
-    );
+export async function getAccountInfo(apikey: string): Promise<AccountData> {
+    try {
+        const api = createApiInstance();
+        api.authenticate(apikey);
+        return api.account().get();
+    } catch (err) {
+        LOG.error("Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
+        if (err.content.text === "invalid key") {
+            throw new InvalidKeyError();
+        } else {
+            throw new NetworkError();
+        }
+    }
 }
 
-export async function getAccountName(apikey: string): Promise<string | boolean> {
-    const api = createApiInstance();
-    api.authenticate(apikey);
-    return api.account().get().then(
-        res => new Promise((resolve, reject) => resolve(res.name)),
-        res => new Promise((resolve, reject) => resolve(false))
-    );
+export async function validateWorld(accountData: AccountData, worldAssignments: WorldAssignment[] = getConfig().get().world_assignments): Promise<WorldAssignment | false> {
+    const match = worldAssignments.filter(a => a.world_id === accountData.world);
+    if (match.length > 1) {
+        // config broken
+        throw new ConfigError();
+    } else if (match.length === 1) {
+        // world admitted -> name of role the user should have
+        return match[0];
+    } else {
+        // world not admitted -> false
+        return false;
+    }
 }
 
 export async function guildExists(guildname: string): Promise<boolean> {

@@ -1,5 +1,5 @@
 import { Semaphore } from "await-semaphore";
-import { getAccountName } from "../../Gw2ApiUtils";
+import { getAccountInfo} from "../../Gw2ApiUtils";
 import { logger } from "../../util/Logging";
 import { Database } from "../Database";
 import { DBPatch } from "./DBPatch";
@@ -24,8 +24,9 @@ export class Patch3 extends DBPatch {
         const semaphore = new Semaphore(10);
         for await (const r of rows) {
             const release = await semaphore.acquire();
-            let accname = await getAccountName(r.api_key);
-            if (accname === false) {
+            const account = await getAccountInfo(r.api_key);
+            let accname = account?.name;
+            if (accname !== undefined) {
                 accname = "INVALID API KEY"; // doesn't matter, will be deleted in next reauth anyway.
             }
             release();
@@ -47,19 +48,50 @@ export class Patch3 extends DBPatch {
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
         con.prepare(`
-            CREATE TABLE IF NOT EXISTS new_registrations
-            (
-                id                INTEGER PRIMARY KEY AUTOINCREMENT,
-                user              TEXT NOT NULL,
-                guild             TEXT NOT NULL,
-                api_key           TEXT NOT NULL,
-                gw2account        TEXT NOT NULL,
-                registration_role TEXT NOT NULL,
-                account_name      TEXT,
-                created           TIMESTAMP DEFAULT (datetime('now', 'localtime')),
-                UNIQUE (user, guild) ON CONFLICT REPLACE,
-                UNIQUE (guild, api_key)
-            )`).run();
+            CREATE TABLE IF NOT EXISTS new_registrations (
+                id
+                INTEGER
+                PRIMARY
+                KEY
+                AUTOINCREMENT,
+                user
+                TEXT
+                NOT
+                NULL,
+                guild
+                TEXT
+                NOT
+                NULL,
+                api_key
+                TEXT
+                NOT
+                NULL,
+                gw2account
+                TEXT
+                NOT
+                NULL,
+                registration_role
+                TEXT
+                NOT
+                NULL,
+                account_name
+                TEXT,
+                created
+                TIMESTAMP
+                DEFAULT (
+                datetime(
+                'now',
+                'localtime'
+            )),
+                UNIQUE (
+                user,
+                guild
+            ) ON CONFLICT REPLACE,
+                UNIQUE (
+                guild,
+                api_key
+            )
+                )`).run();
 
         await this.resolveAccountNames(con.prepare(`SELECT *
                                                     FROM registrations`).all());
@@ -89,18 +121,48 @@ export class Patch3 extends DBPatch {
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
         con.prepare(`
-            CREATE TABLE IF NOT EXISTS new_registrations
-            (
-                id                INTEGER PRIMARY KEY AUTOINCREMENT,
-                user              TEXT NOT NULL,
-                guild             TEXT NOT NULL,
-                api_key           TEXT NOT NULL,
-                gw2account        TEXT NOT NULL,
-                registration_role TEXT NOT NULL,
-                created           TIMESTAMP DEFAULT (datetime('now', 'localtime')),
-                UNIQUE (user, guild) ON CONFLICT REPLACE,
-                UNIQUE (guild, api_key)
-            )`).run();
+            CREATE TABLE IF NOT EXISTS new_registrations (
+                id
+                INTEGER
+                PRIMARY
+                KEY
+                AUTOINCREMENT,
+                user
+                TEXT
+                NOT
+                NULL,
+                guild
+                TEXT
+                NOT
+                NULL,
+                api_key
+                TEXT
+                NOT
+                NULL,
+                gw2account
+                TEXT
+                NOT
+                NULL,
+                registration_role
+                TEXT
+                NOT
+                NULL,
+                created
+                TIMESTAMP
+                DEFAULT (
+                datetime(
+                'now',
+                'localtime'
+            )),
+                UNIQUE (
+                user,
+                guild
+            ) ON CONFLICT REPLACE,
+                UNIQUE (
+                guild,
+                api_key
+            )
+                )`).run();
         this.connection.prepare(`
             INSERT INTO new_registrations(id, user, guild, api_key, gw2account, registration_role, created)
             SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, r.registration_role, r.created

@@ -8,6 +8,8 @@ import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
 
 const LOG = logger();
 
+export type WorldAssignment = { world_id: number; role: string };
+
 const configSchema = {
     db_location: {
         doc: "database file to use",

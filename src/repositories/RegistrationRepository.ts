@@ -30,28 +30,6 @@ export class RegistrationRepository extends AbstractDbRepository {
     }
 
     /**
-     * Same as getUserByAccountName, but this time, the unique account ID
-     * is used. That's the one looking like FFFF-FFFF-FFFF-FFFF.
-     * accountName: GW2 account name.
-     * returns: the latest entry for that account name if any, else undefined.
-     */
-    public getUserByGW2Account(gw2account: string): Registration {
-        return this.execute(db => db.prepare(`
-            SELECT id,
-                   user,
-                   guild,
-                   api_key,
-                   gw2account,
-                   registration_role,
-                   account_name,
-                   created
-            FROM registrations
-            WHERE gw2account = ?
-            ORDER BY created DESC
-        `).get(gw2account));
-    }
-
-    /**
      * Same as getUserByAccountName, but this time, the Discord user ID
      * is used.
      * discordUser: the Discord user to retrieve the account for.
@@ -118,9 +96,9 @@ export class RegistrationRepository extends AbstractDbRepository {
     public loadRegistrationsFromDb(): Registration[] {
         LOG.info("Loading all registrations from DB.");
         const execute = this.execute(db =>
-            db.prepare(`SELECT id, api_key, guild, user, registration_role, account_name
+            db.prepare(`SELECT id, api_key, gw2account, guild, user, registration_role, account_name
                         FROM registrations
-                        ORDER BY guild`).all());
+                        ORDER BY id`).all());
         LOG.info(`Loaded ${execute.length} from DB.`);
 
         return execute;
@@ -129,9 +107,9 @@ export class RegistrationRepository extends AbstractDbRepository {
     public loadUserIds(guildId: string): string[] {
         LOG.info(`Loading all user ids for guild ${guildId}`);
         const execute = this.execute(db => db.prepare(`SELECT user
-                               FROM registrations
-                               WHERE guild = ?
-                               ORDER BY user`).all(guildId));
+                                                       FROM registrations
+                                                       WHERE guild = ?
+                                                       ORDER BY user`).all(guildId));
         LOG.info(`Loaded ${execute.length} user ids from DB.`);
 
         return execute.map(value => value.user);
@@ -152,21 +130,23 @@ export class RegistrationRepository extends AbstractDbRepository {
 
     public findDuplicateRegistrations() {
         return this.execute(db => db.prepare(`SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account
-                               FROM registrations
-                               GROUP BY gw2account
-                               HAVING count > 1`).all()).map(value => ({
-                userIds: value.users.split(","),
-                count: value.count,
-                gw2account: value.gw2account
-            }));
+                                              FROM registrations
+                                              GROUP BY gw2account
+                                              HAVING count > 1`).all()).map(value => ({
+            userIds: value.users.split(","),
+            count: value.count,
+            gw2account: value.gw2account
+        }));
     }
 
-    public setRegistrationRoleById(id: string, roleName: string) {
+    public updateRegistration(id: string, roleName: string, accountName: string, gw2accountId: string) {
         this.execute(db => {
             db.prepare(`UPDATE registrations
-                        SET registration_role = ?
+                        SET registration_role = ?,
+                            account_name      = ?,
+                            gw2account        = ?
                         WHERE id = ?`)
-                .run(roleName, id);
+                .run(roleName, accountName, gw2accountId, id);
         });
     }
 }
