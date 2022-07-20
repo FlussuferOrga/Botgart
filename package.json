@@ -82,7 +82,7 @@
     "chai-datetime": "^1.8.0",
     "chai-moment": "^0.1.0",
     "depcheck": "^1.4.3",
-    "eslint": "^8.19.0",
+    "eslint": "^8.20.0",
     "eslint-plugin-jsonc": "^2.2.1",
     "mocha": "^10.0.0",
     "ts-node": "^10.9.1",
