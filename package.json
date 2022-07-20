@@ -52,7 +52,7 @@
     "command-line-args": "^5.2.1",
     "convict": "^6.2.3",
     "discord-akairo": "github:discord-akairo/discord-akairo#905f69382957023601ebbb6f8a3a8b6b0f615bd1",
-    "discord.js": "^13.8.1",
+    "discord.js": "^14.0.3",
     "gw2api-client": "^7.5.2",
     "lodash": "^4.17.21",
     "memoizer-ts": "^1.0.1",
