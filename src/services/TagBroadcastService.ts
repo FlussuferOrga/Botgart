@@ -1,4 +1,4 @@
-import discord, { Guild, Message, MessageEmbed, Util } from "discord.js";
+import discord, { ChannelType, EmbedBuilder, Guild, Message, resolveColor } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
@@ -9,9 +9,9 @@ const LOG = logger();
 
 export class TagBroadcastService {
     private readonly ZERO_WIDTH_SPACE = "\u200B";
-    private readonly COLOR_ACTIVE = Util.resolveColor("GREEN");
-    private readonly COLOR_INACTIVE = Util.resolveColor("RED");
-    private readonly COLOR_UNKNOWN = Util.resolveColor("GREY");
+    private readonly COLOR_ACTIVE = resolveColor("Green");
+    private readonly COLOR_INACTIVE = resolveColor("Red");
+    private readonly COLOR_UNKNOWN = resolveColor("Grey");
     private readonly broadcastChannel: string;
     private readonly pingRole: string;
     private readonly pingRolePPT: string;
@@ -31,7 +31,7 @@ export class TagBroadcastService {
     async sendTagUpBroadcast(g: discord.Guild, commander: Commander) {
         // broadcast the message
         const textChannel: discord.TextChannel = g.channels.cache
-            .find(c => c.name === this.broadcastChannel && c.type == "GUILD_TEXT") as discord.TextChannel;
+            .find(c => c.name === this.broadcastChannel && c.type == ChannelType.GuildText) as discord.TextChannel;
         if (!textChannel) {
             LOG.warn(
                 `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
@@ -97,15 +97,25 @@ export class TagBroadcastService {
     }
 
     private createEmbed(commander: Commander, active = true, color = this.COLOR_ACTIVE) {
-        const embed = new MessageEmbed();
+        const embed = new EmbedBuilder();
         switch (commander.getCurrentLeadType()) {
             case "UNKNOWN":
                 break;
             case "PPT":
-                embed.addField("Lead Type", "🏰️  **PPT**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPT", [], " | ", false));
+                embed.addFields([
+                    {
+                        name: "Lead Type",
+                        value: "🏰️  **PPT**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPT", [], " | ", false)
+                    }
+                ]);
                 break;
             case "PPK":
-                embed.addField("Lead Type", "⚔ ️**PPK**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPK", [], " | ", false));
+                embed.addFields([
+                    {
+                        name: "Lead Type",
+                        value: "⚔ ️**PPK**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPK", [], " | ", false)
+                    }
+                ]);
                 break;
         }
 
@@ -116,7 +126,7 @@ export class TagBroadcastService {
             text += `\n [🔗 ${linkText}](${commander.getTs3joinUrl()} '${linkAltText}')`;
         }
 
-        embed.addField(`${active ? "🔊" : "🔈"} TeamSpeak 3`, text, false);
+        embed.addFields([{ name: `${active ? "🔊" : "🔈"} TeamSpeak 3`, value: text, inline: false }]);
 
         if (commander.getRaidStart() !== undefined || commander.getRaidEnd() !== undefined) {
             const lines: string[] = [];
@@ -130,7 +140,11 @@ export class TagBroadcastService {
             if (commander.getRaidEnd() !== undefined) {
                 lines.push(`**End:** <t:${commander.getRaidEnd()!.unix()!}:${timestampFormat}>`);
             }
-            embed.addField("🕐 " + L.get("COMMANDER_TAG_UP_TIMES", [], " | ", false), lines.join("\n"));
+            embed.addFields([{
+                    name: "🕐 " + L.get("COMMANDER_TAG_UP_TIMES", [], " | ", false),
+                    value: lines.join("\n")
+                }]
+            );
         }
         embed.setColor(color);
         embed.setTimestamp(new Date());

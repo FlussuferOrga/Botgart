@@ -21,7 +21,7 @@ export class PermissionList extends BotgartCommand {
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         this.createTable(guild)
-            .then(value => new discord.MessageAttachment(Buffer.from(value, CHARSET), ATTACHMENT_NAME))
+            .then(value => new discord.AttachmentBuilder(Buffer.from(value, CHARSET), { name: ATTACHMENT_NAME }))
             .then(attachment => message.reply({ files: [attachment] }))
             .catch(reason => LOG.error("Could not create markdown table " + reason));
     }

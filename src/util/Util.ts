@@ -1,4 +1,4 @@
-import { Guild, Role } from "discord.js";
+import { Guild, Role, verifyString } from "discord.js";
 import moment from "moment-timezone";
 import "./string.extensions";
 
@@ -149,4 +149,52 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
 
 export function findRole(guild: Guild, roleName: string): Role | undefined {
     return guild.roles.cache.find(r => r.name === roleName);
+}
+
+export type SplitOptions = {
+    maxLength?: number;
+    char?: string | string[] | RegExp | RegExp[];
+    prepend?: string;
+    append?: string;
+};
+
+/**
+ * Splits a string into multiple chunks at a designated character that do not exceed a specific length.
+ * @param {string} text Content to split
+ * @param {SplitOptions} [options] Options controlling the behavior of the split
+ * @returns {string[]}
+ */
+export function splitMessage(text: string, {
+    maxLength = 2_000,
+    char = "\n",
+    prepend = "",
+    append = ""
+}: SplitOptions = {}) {
+    // eslint-disable-next-line no-param-reassign
+    text = verifyString(text);
+    if (text.length <= maxLength) return [text];
+    let splitText = [text];
+    if (Array.isArray(char)) {
+        while (char.length > 0 && splitText.some(elem => elem.length > maxLength)) {
+            const currentChar = char.shift();
+            if (currentChar instanceof RegExp) {
+                splitText = splitText.flatMap(chunk => chunk.match(currentChar) || []);
+            } else if (currentChar !== undefined) {
+                splitText = splitText.flatMap(chunk => chunk.split(currentChar));
+            }
+        }
+    } else {
+        splitText = text.split(char);
+    }
+    if (splitText.some(elem => elem.length > maxLength)) throw new RangeError("SPLIT_MAX_LEN");
+    const messages: string[] = [];
+    let msg = "";
+    for (const chunk of splitText) {
+        if (msg && (msg + char + chunk + append).length > maxLength) {
+            messages.push(msg + append);
+            msg = prepend;
+        }
+        msg += (msg && msg !== prepend ? char : "") + chunk;
+    }
+    return messages.concat(msg).filter(m => m);
 }

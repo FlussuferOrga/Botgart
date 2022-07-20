@@ -1,4 +1,4 @@
-import { BitFieldResolvable, IntentsString } from "discord.js";
+import { BitFieldResolvable, GatewayIntentBits, GatewayIntentsString, Partials } from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import { Database } from "./database/Database";
@@ -13,18 +13,19 @@ export async function runApp(database: Database) {
 
     LOG.info("Starting Botgart...");
 
-    const intents: BitFieldResolvable<IntentsString, number> = [
-        "GUILDS",
-        "GUILD_MEMBERS",
-        "GUILD_EMOJIS_AND_STICKERS",
-        "GUILD_INTEGRATIONS",
-        "GUILD_WEBHOOKS",
-        "GUILD_MESSAGES",
-        "GUILD_MESSAGE_REACTIONS",
-        "GUILD_MESSAGE_TYPING",
-        "DIRECT_MESSAGES",
-        "DIRECT_MESSAGE_REACTIONS",
-        "DIRECT_MESSAGE_TYPING"
+    const intents: GatewayIntentBits[] = [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildWebhooks,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageReactions,
+        GatewayIntentBits.DirectMessageTyping,
+        GatewayIntentBits.MessageContent
     ]; // privileged intents, require checkbox in discord bot settings
 
     L.setLanguages(config.get("locales"));
@@ -33,7 +34,7 @@ export async function runApp(database: Database) {
         {
             intents: intents,
             partials: [
-                "CHANNEL" // Fix for DMs https://github.com/discordjs/discord.js/issues/5516
+                Partials.Channel // Fix for DMs https://github.com/discordjs/discord.js/issues/5516
             ]
         },
         database);

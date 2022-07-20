@@ -1,6 +1,7 @@
-import discord, { Util } from "discord.js";
+import discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
 import { FishLadderEntry } from "../../repositories/FishingRepository";
+import { splitMessage } from "../../util/Util";
 
 /**
  Testcases:
@@ -35,7 +36,7 @@ export class FishingLadder extends BotgartCommand {
         Promise.all(ladder.map(fle => this.client.users.fetch(fle.user)
             .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))
             .then(async xs => {
-                const messageParts = Util.splitMessage(`:fish::crown:\n${xs.join("\n")}`);
+                const messageParts = splitMessage(`:fish::crown:\n${xs.join("\n")}`);
                 for (const part of messageParts) {
                     await message.reply(part);
                 }

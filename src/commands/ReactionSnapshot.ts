@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { Util } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
+import { splitMessage } from "../util/Util";
 
 /**
  Testcases:
@@ -48,7 +48,7 @@ export class ReactionSnapshot extends BotgartCommand {
             const users = await reaction.users.fetch();
             listings.push(`**${reaction.emoji.name} (${reaction.count})**\n${users.map(u => `${u.username} (<@${u.id}>) `).join("\n")}`);
         }
-        for (const split of Util.splitMessage(listings.join("\n\n"), { prepend: "_ _\n" })) {
+        for (const split of splitMessage(listings.join("\n\n"), { prepend: "_ _\n" })) {
             await message.reply(split);
         }
     }

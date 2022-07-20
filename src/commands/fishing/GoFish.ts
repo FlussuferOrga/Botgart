@@ -1,6 +1,5 @@
 import * as cheerio from "cheerio";
 import * as discord from "discord.js";
-import { MessageEmbed } from "discord.js";
 import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
@@ -68,31 +67,33 @@ class ActiveFisher {
         this.ended = false;
     }
 
-    public async createIdleEmbed(): Promise<discord.MessageEmbed> {
-        return new discord.MessageEmbed()
+    public async createIdleEmbed(): Promise<discord.EmbedBuilder> {
+        return new discord.EmbedBuilder()
             .setTitle(L.get("FISHING_IDLE_TITLE", [], " | ", false))
             .setColor(0x0000FF)
             .setDescription(L.get("FISHING_IDLE_DESCRIPTION"))
             .setImage(await image("river"));
     }
 
-    public async createBittenEmbed(): Promise<discord.MessageEmbed> {
+    public async createBittenEmbed(): Promise<discord.EmbedBuilder> {
         return this.createIdleEmbed();
     }
 
-    public async createCaughtEmbed(): Promise<discord.MessageEmbed> {
-        return new discord.MessageEmbed()
+    public async createCaughtEmbed(): Promise<discord.EmbedBuilder> {
+        return new discord.EmbedBuilder()
             .setTitle(L.get("FISHING_CAUGHT_TITLE", [], " | ", false))
             .setColor(0x00FF00)
             .setDescription(L.get("FISHING_CAUGHT_DESCRIPTION"))
             .setImage(this.fish.image)
-            .addField(":fish:", `${this.fish.name}`, true)
-            .addField(":scales:", `${this.fish.weight} g`, true)
-            .addField(":moneybag:", `${this.fish.points_per_gramm * this.fish.weight}`, true);
+            .addFields([
+                { name: ":fish:", value: `${this.fish.name}`, inline: true },
+                { name: ":scales:", value: `${this.fish.weight} g`, inline: true },
+                { name: ":moneybag:", value: `${this.fish.points_per_gramm * this.fish.weight}`, inline: true }
+            ]);
     }
 
-    public async createEscapedEmbed(): Promise<discord.MessageEmbed> {
-        return new discord.MessageEmbed()
+    public async createEscapedEmbed(): Promise<discord.EmbedBuilder> {
+        return new discord.EmbedBuilder()
             .setTitle(L.get("FISHING_ESCAPED_TITLE", [], " | ", false))
             .setColor(0xFF0000)
             .setDescription(L.get("FISHING_ESCAPED_DESCRIPTION"))
@@ -114,7 +115,7 @@ class ActiveFisher {
         if (this.ended) return;
         this.ended = true;
 
-        let embed: MessageEmbed;
+        let embed: discord.EmbedBuilder;
         if (reeled) {
             this.client.fishingRepository.catchFish(this.fisher, this.fish);
             embed = await this.createCaughtEmbed();

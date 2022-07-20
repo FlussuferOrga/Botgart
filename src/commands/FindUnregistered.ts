@@ -1,8 +1,9 @@
 import * as discord from "discord.js";
-import { Util } from "discord.js";
+import { Utils } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import { getConfig } from "../config/Config";
+import { splitMessage } from "../util/Util";
 
 export class FindUnregistered extends BotgartCommand {
     constructor() {
@@ -27,7 +28,7 @@ export class FindUnregistered extends BotgartCommand {
             .then(async value => {
                 const result = `Found ${value.size}:\n` + value.map(value1 => value1.toString()).join("\n");
 
-                for (const split of Util.splitMessage(result)) {
+                for (const split of splitMessage(result)) {
                     await message.channel.send(split);
                 }
             });

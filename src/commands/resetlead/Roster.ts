@@ -151,22 +151,26 @@ export class Roster extends events.EventEmitter {
     /**
      * @returns the message embed for the roster.
      */
-    public toMessageEmbed(): discord.MessageEmbed {
+    public toMessageEmbed(): discord.EmbedBuilder {
         const timezone = getConfig().get().timeZone;
         const resetDateTime = this.getResetMoment();
         const displayedDateTime = resetDateTime.tz(timezone).format("DD.MM.YYYY HH:mm z");
-        const re = new discord.MessageEmbed()
+        const re = new discord.EmbedBuilder()
             .setColor(this.getEmbedColour())
-            .setAuthor("Reset Commander Roster")
+            .setAuthor({ name: "Reset Commander Roster" })
             .setTitle(`${L.get("WEEK_NUMBER", [], " | ", false)} ${this.weekNumber} (${displayedDateTime})`)
             // .setThumbnail("https://wiki.guildwars2.com/images/5/54/Commander_tag_%28blue%29.png")
             .setDescription(L.get("RESETLEAD_HEADER"));
         for (const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
-            re.addField(`${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`, leads.size() === 0 ? "-" : Array.from(leads)
+            const mapText = `${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`;
+            const leadsText = leads.size() === 0 ? "-" : Array.from(leads)
                 .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
-                .join(", "))
-                .addField("\u200b", "\u200b"); // discord.js v12 version of addBlankField()
+                .join(", ");
+            re.addFields([
+                { name: mapText, value: leadsText },
+                { name: "\u200b", value: "\u200b" }
+            ]);
         }
         return re;
     }
@@ -177,6 +181,7 @@ export class Roster extends events.EventEmitter {
             const [, leads] = this.leads[mname];
             result.push(...leads);
         }
+
         const uniqueResult = [...new Set(result.map(value => value.name))];
         if (uniqueResult.length > 0) {
             return uniqueResult.join(",");
