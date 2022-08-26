@@ -57,7 +57,7 @@
     "lodash": "^4.17.21",
     "memoizer-ts": "^1.0.1",
     "moment": "^2.29.4",
-    "moment-timezone": "^0.5.34",
+    "moment-timezone": "^0.5.37",
     "node-schedule": "^2.1.0",
     "server-health": "^5.1.1",
     "source-map-support": "^0.5.21",
