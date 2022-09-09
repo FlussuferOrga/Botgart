@@ -85,7 +85,7 @@ export class RevalidationService {
                 // => remove the validation role from the user
                 return { valid: false };
             } else {
-                LOG.error(`Error occurred while revalidating key ${r.api_key}. User will be excempt from this revalidation.`);
+                LOG.error(`Error occurred while revalidating key ${r.api_key}. User will be except from this revalidation.\n${e}`);
                 return undefined;
             }
         } finally {
