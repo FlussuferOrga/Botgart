@@ -24,7 +24,7 @@ export type CheckResult =
     };
 
 export class RevalidationService {
-    private static REAUTH_DELAY = 8000;
+    private static REAUTH_DELAY = 1000;
     private static REAUTH_MAX_PARALLEL_REQUESTS = 3;
 
 
