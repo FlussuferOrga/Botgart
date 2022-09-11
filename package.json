@@ -62,7 +62,7 @@
     "server-health": "^5.1.1",
     "source-map-support": "^0.5.21",
     "table": "^6.8.0",
-    "winston": "^3.8.1"
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@types/await-timeout": "^0.3.1",
@@ -72,7 +72,7 @@
     "@types/chai-moment": "^0.1.1",
     "@types/command-line-args": "^5.2.0",
     "@types/convict": "^6.1.1",
-    "@types/lodash": "^4.14.184",
+    "@types/lodash": "^4.14.185",
     "@types/mocha": "^9.1.1",
     "@types/node-schedule": "^2.1.0",
     "@types/source-map-support": "^0.5.6",
@@ -86,7 +86,7 @@
     "eslint-plugin-jsonc": "^2.2.1",
     "mocha": "^10.0.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.8.2",
+    "typescript": "^4.8.3",
     "typesync": "^0.9.2"
   }
 }
