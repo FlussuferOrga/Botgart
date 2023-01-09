@@ -50,7 +50,7 @@
     "callsites": "^3.1.0",
     "cheerio": "^1.0.0-rc.12",
     "command-line-args": "^5.2.1",
-    "convict": "^6.2.3",
+    "convict": "^6.2.4",
     "discord-akairo": "github:discord-akairo/discord-akairo#905f69382957023601ebbb6f8a3a8b6b0f615bd1",
     "discord.js": "^13.8.1",
     "gw2api-client": "^7.5.2",
