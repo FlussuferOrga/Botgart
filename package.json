@@ -58,7 +58,7 @@
     "memoizer-ts": "^1.0.1",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.40",
-    "node-schedule": "^2.1.0",
+    "node-schedule": "^2.1.1",
     "server-health": "^5.1.3",
     "source-map-support": "^0.5.21",
     "table": "^6.8.1",
