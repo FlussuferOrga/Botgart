@@ -303,7 +303,7 @@ DE = {
         "DESC_PERMISSION_LIST": "Listet alle gesetzen Berechtigungen auf",
         "DESC_PERMISSION_REMOVE": "Entfernt eine Berechtigung anhand ihrer Id.",
         "DESC_GUILD_CHAN": "Werte hängen von Server Startzeit ab und könnten deshalb falsch sein",
-        "DESC_GUILD_CHANNELS": "Listet Gildenkanäle and deren Aktivität im TS",
+        "DESC_GUILD_CHANNELS": "Listet Gildenkanäle und deren Aktivität im TS",
 
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
@@ -479,7 +479,7 @@ DE_SWG = {
         "DESC_PERMISSION_LIST": "Listet all gsezte Bereschtigunge uf.",
         "DESC_PERMISSION_REMOVE": "Löscht die Berechtigung mit ihrer Id.",
         "DESC_GUILD_CHAN": "Werte hängen von Server Startzeit ab und könnten deshalb falsch sein",
-        "DESC_GUILD_CHANNELS": "Listet Gildenkanäle and deren Aktivität im TS",
+        "DESC_GUILD_CHANNELS": "Listet Gildenkanäle und deren Aktivität im TS",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nBasst des so?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nBasst des so?",
