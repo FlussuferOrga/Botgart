@@ -44,7 +44,7 @@ export async function getAccountInfo(apikey: string): Promise<AccountData> {
         return api.account().get();
     } catch (err) {
         LOG.error("Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
-        if (err.content.text === "invalid key") {
+        if (err.content.text === "invalid key" || err.content.text === "Invalid access token") {
             throw new InvalidKeyError();
         } else {
             throw new NetworkError();

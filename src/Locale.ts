@@ -86,6 +86,7 @@ EN = {
         "HELPTEXT_REACTION_SNAPSHOT": EN["HELPTEXT_PREFIX"] + "`<URL to the post that should be snapshoted (bot must have access to the guild, channel and post!)>`",
         "HELPTEXT_TS_GUILD_ADD": EN["HELPTEXT_PREFIX"] + "\"`<name of the guild>`\" \"`<accounts of the contact persons, comma separated, must follow the format foo.1234>`\" \"`<TS group (optional, default is the guild tag)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": EN["HELPTEXT_PREFIX"] + "`<name of the guild>`",
+        "HELPTEXT_GUILD_CHANNEL_LIST": EN["HELPTEXT_PREFIX"] + "",
 
         "DESC_DELETE_CRON": "Deletes the cronjob with the given ID.",
         "DESC_LIST_CRONS": "Lists all cronjobs.",
@@ -126,6 +127,8 @@ EN = {
         "DESC_PERMISSION_ADD": "Grants or revokes permissions for a role or user to use a command.",
         "DESC_PERMISSION_LIST": "List all set permissions.",
         "DESC_PERMISSION_REMOVE": "Removes a permission by it's Id",
+        "DESC_GUILD_CHAN": "Values depend on server start time and might not be correct",
+        "DESC_GUILD_CHANNEL_LIST": "Lists guild channels and activity in ts",
 
 
         "MK_GUILD_CONFIRM": "Your request:\n**Name:** {0}\n**Contact:** {1}\n**TS-Group:** {2}\nIs this correct?",
@@ -260,6 +263,7 @@ DE = {
         "HELPTEXT_REACTION_SNAPSHOT": DE["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
         "HELPTEXT_TS_GUILD_ADD": DE["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" \"`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`\" \"`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": DE["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
+        "HELPTEXT_GUILD_CHANNEL_LIST": DE["HELPTEXT_PREFIX"] + "",
 
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
         "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
@@ -300,6 +304,8 @@ DE = {
         "DESC_PERMISSION_ADD": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_PERMISSION_LIST": "Listet alle gesetzen Berechtigungen auf",
         "DESC_PERMISSION_REMOVE": "Entfernt eine Berechtigung anhand ihrer Id.",
+        "DESC_GUILD_CHAN": "Werte hängen von Server Startzeit ab und könnten deshalb falsch sein",
+        "DESC_GUILD_CHANNEL_LIST": "Listet Gildenkanäle und deren Aktivität im TS",
 
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nIst das so in Ordnung?",
@@ -434,6 +440,7 @@ DE_SWG = {
         "HELPTEXT_REACTION_SNAPSHOT": DE_SWG["HELPTEXT_PREFIX"] + "`<URL zum Post, von dem ein Snapshot erstellt werden soll (der Bot muss Zugang zur Gilde, zum Kanal und zu der Nachricht haben!)>`",
         "HELPTEXT_TS_GUILD_ADD": DE_SWG["HELPTEXT_PREFIX"] + "\"`<Name der Gilde>`\" \"`<Accounts der Ansprechpartner, mit Komma voneinander getrennt, muss dem Format foo.1234 folgen>`\" \"`<TS-Gruppe (optional, als Standardwert wird das Tag der Gilde verwendet)>`\"",
         "HELPTEXT_TS_GUILD_DELETE": DE_SWG["HELPTEXT_PREFIX"] + "`<Name der Gilde>`",
+        "HELPTEXT_GUILD_CHANNEL_LIST": DE_SWG["HELPTEXT_PREFIX"] + "",
 
         "DESC_DELETE_CRON": "Löscht den Cronjob mit der angegebenen ID.",
         "DESC_LIST_CRONS": "Listet alle offenen Cronjobs auf.",
@@ -474,6 +481,8 @@ DE_SWG = {
         "DESC_PERMISSION_ADD": "Vergibt oder entzieht einer Rolle oder einem Benutzer oder einer Rolle Berechtigungen für Befehle.",
         "DESC_PERMISSION_LIST": "Listet all gsezte Bereschtigunge uf.",
         "DESC_PERMISSION_REMOVE": "Löscht die Berechtigung mit ihrer Id.",
+        "DESC_GUILD_CHAN": "Werte hängen von Server Startzeit ab und könnten deshalb falsch sein",
+        "DESC_GUILD_CHANNEL_LIST": "Listet Gildenkanäle und deren Aktivität im TS",
 
         "MK_GUILD_CONFIRM": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\n**TS-Gruppe:** {2}\nBasst des so?",
         "MK_GUILD_CONFIRM_NO_GROUP": "Deine Anfrage:\n**Name:** {0}\n**Kontakt:** {1}\nBasst des so?",
