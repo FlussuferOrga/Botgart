@@ -1,5 +1,6 @@
 /* eslint-disable max-lines */
-import { logger as logger1 } from "./util/Logging";
+import {logger as logger1} from "./util/Logging";
+import discord from "discord.js";
 
 const logger = logger1();
 
@@ -529,6 +530,10 @@ DE_SWG = {
     }
 };
 
+type Options = {
+    [option: string]: boolean
+};
+
 class Language {
     public readonly abbreviation: string;
     public readonly flag: string;
@@ -540,7 +545,7 @@ class Language {
         this.strings = strings;
     }
 
-    public get(key: string, args: string[] = [], options: { [option: string]: boolean } = {}): string {
+    public get(key: string, args: string[] = [], options: Options = {}): string {
         let str: string = key in this.strings ? this.strings[key].formatUnicorn(args) : key;
         if ("italic" in options && options["italic"]) {
             str = `_${str}_`;
@@ -591,7 +596,17 @@ export function setLanguages(abbreviations: string[]) {
  * @returns if a locale string could be found, that string with the passed arguments inserted into it, if it contains placeholders.
  *          If no locale string could be found, the key is returned instead.
  */
-export function get(key: string, args?: string[], separator = "\n\n", flags = true, options: { [option: string]: boolean } = {}): string {
+export function get(key: string, args?: string[], separator = "\n\n", flags = true, options: Options = {}): string {
     options.flags = flags; // flags was a separate parameter for historical reasons. Monkey-patching this into a proper option-dictionary now~
     return currentLanguages.map(l => l.get(key, args, options)).join(separator);
+}
+
+export function getIn(locale: discord.Locale, key: string, args?: string[], options: Options = {}): string {
+    options.flags = false;
+    switch (locale) {
+        case discord.Locale.German:
+            return german.get(key, args, options);
+        default:
+            return english.get(key, args, options);
+    }
 }

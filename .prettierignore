@@ -1,0 +1,7 @@
+node_modules
+db
+config
+log
+built
+.idea
+.run

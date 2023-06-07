@@ -48,9 +48,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
 
-    constructor(options: AkairoClientOptions,
-                clientOptions: discord.ClientOptions,
-                db: Database) {
+    constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, db: Database) {
         super(options, clientOptions);
 
         // Repositories
@@ -78,7 +76,8 @@ export class BotgartClient extends akairo.AkairoClient {
             directory: __dirname + "/commands/",
             prefix: prefix,
             commandUtil: true,
-            commandUtilLifetime: 600000
+            commandUtilLifetime: 600000,
+            autoRegisterSlashCommands: true,
         });
         this.commandHandler.loadAll();
 
@@ -92,12 +91,12 @@ export class BotgartClient extends akairo.AkairoClient {
         });
 
         this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: __dirname + "/listeners/"
+            directory: __dirname + "/listeners/",
         });
         this.listenerHandler.loadAll();
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: __dirname + "/inhibitors/"
+            directory: __dirname + "/inhibitors/",
         });
         this.inhibitorHandler.loadAll();
     }
@@ -124,17 +123,20 @@ export class BotgartClient extends akairo.AkairoClient {
     public discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
-            LOG.debug("Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type,
-                guild.name, message));
+            LOG.debug(
+                "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message)
+            );
         } else {
-            channels.forEach(cid => {
-                const channel: GuildChannel | ThreadChannel | undefined = guild.channels.cache.find(c => c.id === cid);
+            channels.forEach((cid) => {
+                const channel: GuildChannel | ThreadChannel | undefined = guild.channels.cache.find((c) => c.id === cid);
                 if (!channel) {
                     LOG.error(
-                        `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`);
+                        `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`
+                    );
                 } else if (!(channel instanceof discord.TextChannel)) {
                     LOG.error(
-                        `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`);
+                        `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`
+                    );
                 } else {
                     (channel as discord.TextChannel).send(message);
                 }
@@ -143,7 +145,8 @@ export class BotgartClient extends akairo.AkairoClient {
     }
 
     public async prepareShutdown() {
-        if (this.token !== null) { // is logged in
+        if (this.token !== null) {
+            // is logged in
             LOG.info("Preparing Shutdown");
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }

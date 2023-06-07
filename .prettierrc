@@ -1,0 +1,9 @@
+{
+  "singleQuote": false,
+  "endOfLine": "auto",
+  "printWidth": 150,
+  "tabWidth": 4,
+  "useTabs": false,
+  "editor.tabSize": 4,
+  "editor.formatOnSave": true
+}
