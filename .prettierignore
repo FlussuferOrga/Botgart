@@ -8,3 +8,5 @@ built
 .mocharc.json
 .typesafe-i18n.json
 package-lock.json
+package.json
+tsconfig.json
