@@ -32,7 +32,7 @@ export class RemovePermanentRole extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-        if (!message || !message.guild) {
+        if (!message?.guild) {
             LOG.error("Mandatory message parameter missing or it is a direct message. This command can not be issued as cron.");
             return;
         }

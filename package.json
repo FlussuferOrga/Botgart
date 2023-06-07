@@ -30,7 +30,7 @@
     "run-patchall": "npm run build && node ./built/index.js --patchall",
     "test": "mocha",
     "lint": "eslint . --ext .ts,.json",
-    "lint-fix": "run lint --fix",
+    "lint-fix": "eslint . --ext .ts,.json --fix",
     "dep-outdated": "npm outdated",
     "dep-typesync": "node ./node_modules/typesync/bin/typesync",
     "dep-check-unused": "node ./node_modules/depcheck/bin/depcheck.js",

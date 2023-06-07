@@ -35,7 +35,7 @@ export class PipeGuildLog extends BotgartCommand {
     }
 
     checkArgs(args): string | undefined {
-        return !args || !args.guildnamechannel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
+        return !args?.guildnamechannel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

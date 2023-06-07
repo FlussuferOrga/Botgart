@@ -40,7 +40,7 @@ export class AddResetLeader extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.year || !args.player || !args.map
+        return !args?.weekNumber || !args.year || !args.player || !args.map
             ? L.get(this.helptextKey(), [WvwMap.getAllMapNames().join(" | ")])
             : undefined;
     }

@@ -42,7 +42,7 @@ export class ResetRoster extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.channel || !(args.channel instanceof discord.TextChannel) ? L.get(this.helptextKey()) : undefined;
+        return !args?.channel || !(args.channel instanceof discord.TextChannel) ? L.get(this.helptextKey()) : undefined;
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

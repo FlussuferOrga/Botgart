@@ -36,7 +36,7 @@ export class RemoveResetLeader extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.weekNumber || !args.player ? L.get(this.helptextKey(), [WvwMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
+        return !args?.weekNumber || !args.player ? L.get(this.helptextKey(), [WvwMap.getMaps().map(m => m.name).join(" | ")]) : undefined;
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

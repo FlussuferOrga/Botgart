@@ -1,9 +1,9 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import {BotgartClient} from "./BotgartClient";
-import {getConfig} from "./config/Config";
+import { BotgartClient } from "./BotgartClient";
+import { getConfig } from "./config/Config";
 import * as L from "./Locale";
-import {logger} from "./util/Logging";
+import { logger } from "./util/Logging";
 
 export enum PermissionTypes {
     user = "user",
@@ -51,7 +51,7 @@ export class BotgartCommand extends akairo.Command {
             everyonePermission: 0,
             enabled: true
         };
-        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({...defaults, ...botgartOptions});
+        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({ ...defaults, ...botgartOptions });
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
@@ -254,7 +254,7 @@ export class BotgartCommand extends akairo.Command {
      */
     public async exec(message: discord.Message, args: Record<string, unknown>): Promise<void> {
         if (!this.availableAsDM && !message.member && message.util) {
-            await message.reply(L.get("NOT_AVAILABLE_AS_DM"))
+            await message.reply(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
 

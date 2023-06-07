@@ -23,7 +23,7 @@ export class Whois extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.name || args.name.length < 3 ? L.get("HELPTEXT_WHOIS") : undefined;
+        return !args?.name || args.name.length < 3 ? L.get("HELPTEXT_WHOIS") : undefined;
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

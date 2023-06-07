@@ -1,8 +1,8 @@
-import {Semaphore} from "await-semaphore";
-import {getAccountInfo} from "../../Gw2ApiUtils";
-import {logger} from "../../util/Logging";
-import {Database} from "../Database";
-import {DBPatch} from "./DBPatch";
+import { Semaphore } from "await-semaphore";
+import { getAccountInfo } from "../../Gw2ApiUtils";
+import { logger } from "../../util/Logging";
+import { Database } from "../Database";
+import { DBPatch } from "./DBPatch";
 
 const LOG = logger();
 

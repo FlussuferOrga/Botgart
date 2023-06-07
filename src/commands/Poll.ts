@@ -42,7 +42,7 @@ export class Poll extends BotgartCommand {
     }
 
     checkArgs(args) {
-        return !args || !args.channel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
+        return !args?.channel || !args.question || !args.emotes || args.emotes.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
     serialiseArgs(args) {

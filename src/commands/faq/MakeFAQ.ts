@@ -34,7 +34,7 @@ export class MakeFaq extends BotgartCommand {
     }
 
     checkArgs(args): string | undefined {
-        return !args || !args.keys || !args.text || args.keys.length < 1 ? L.get(this.helptextKey()) : undefined;
+        return !args?.keys || !args.text || args.keys.length < 1 ? L.get(this.helptextKey()) : undefined;
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args) {
