@@ -143,7 +143,7 @@ export class GoFish extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const fish: Fish = this.getBotgartClient().fishingRepository.getRandomFish();
 
-        await responsible.send(":fish:")
+        await message.reply(":fish:")
             .then(async message => {
                 const af = new ActiveFisher(this.getBotgartClient(), responsible, message, fish);
                 await message.edit({ embeds: [await af.createIdleEmbed()] });

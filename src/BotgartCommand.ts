@@ -1,9 +1,9 @@
-import * as akairo from "discord-akairo";
+import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import { BotgartClient } from "./BotgartClient";
-import { getConfig } from "./config/Config";
+import {BotgartClient} from "./BotgartClient";
+import {getConfig} from "./config/Config";
 import * as L from "./Locale";
-import { logger } from "./util/Logging";
+import {logger} from "./util/Logging";
 
 export enum PermissionTypes {
     user = "user",
@@ -51,7 +51,7 @@ export class BotgartCommand extends akairo.Command {
             everyonePermission: 0,
             enabled: true
         };
-        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({ ...defaults, ...botgartOptions });
+        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({...defaults, ...botgartOptions});
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
@@ -254,19 +254,19 @@ export class BotgartCommand extends akairo.Command {
      */
     public async exec(message: discord.Message, args: Record<string, unknown>): Promise<void> {
         if (!this.availableAsDM && !message.member && message.util) {
-            await message.util.send(L.get("NOT_AVAILABLE_AS_DM"));
+            await message.reply(L.get("NOT_AVAILABLE_AS_DM"))
             return;
         }
 
         const causer = message.member || message.author;
         if (!this.isAllowed(causer)) {
-            await message.util?.send(L.get("NOT_PERMITTED"));
+            await message.reply(L.get("NOT_PERMITTED"));
             return;
         }
 
         const errorMessage = this.checkArgs(args);
         if (errorMessage && message.util) {
-            await message.util.send(errorMessage);
+            await message.reply(errorMessage);
             return;
         }
 
@@ -300,7 +300,7 @@ export class BotgartCommand extends akairo.Command {
     */
     public async reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
         if (message) {
-            return message.channel.send(response);
+            return message.reply(response);
         } else {
             return responsible.send(response);
         }

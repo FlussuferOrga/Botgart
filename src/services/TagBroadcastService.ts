@@ -1,4 +1,12 @@
-import discord, { ChannelType, EmbedBuilder, Guild, Message, resolveColor } from "discord.js";
+import discord, {
+    BaseGuildTextChannel,
+    ChannelType,
+    EmbedBuilder,
+    Guild,
+    Message,
+    resolveColor,
+    TextBasedChannel
+} from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
@@ -30,18 +38,23 @@ export class TagBroadcastService {
 
     async sendTagUpBroadcast(g: discord.Guild, commander: Commander) {
         // broadcast the message
-        const textChannel: discord.TextChannel = g.channels.cache
-            .find(c => c.name === this.broadcastChannel && c.type == ChannelType.GuildText) as discord.TextChannel;
+        const textChannel: discord.TextBasedChannel = g.channels.cache
+            .find(c => c.name === this.broadcastChannel && c.isTextBased()) as discord.TextBasedChannel;
         if (!textChannel) {
             LOG.warn(
                 `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
         } else {
             const message = this.generateMessage(g, commander);
             const embed = this.createEmbed(commander);
-            return textChannel.send(
+            let send = await textChannel.send(
                 { content: message, embeds: [embed] }
             );
+            if (send.crosspostable) {
+                send = await send.crosspost();
+            }
+            return send;
         }
+        return undefined;
     }
 
 

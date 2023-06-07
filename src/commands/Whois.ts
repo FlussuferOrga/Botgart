@@ -1,4 +1,4 @@
-import { Argument } from "discord-akairo";
+import { Argument } from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import * as L from "../Locale";

@@ -1,4 +1,4 @@
-import { Listener } from "discord-akairo";
+import { Listener } from "@notenoughupdates/discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { logger } from "../util/Logging";
 

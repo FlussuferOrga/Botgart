@@ -40,7 +40,7 @@ export class MakeFaq extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args) {
         this.getBotgartClient().faqRepository.storeFAQ(responsible.id, guild.id, args.keys, args.text);
         if (message) {
-            await message.util?.send(L.get("FAQ_STORED"));
+            await message.reply(L.get("FAQ_STORED"));
         } else {
             await responsible.send(L.get("FAQ_STORED"));
         }

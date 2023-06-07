@@ -37,11 +37,11 @@ export class ListFaqs extends BotgartCommand {
             } else {
                 // message full -> send it and start a new one
                 mes = "```\n" + mes + "\n```";
-                responsible.send(mes);
+                message.reply(mes);
                 mes = header + line;
             }
         });
-        responsible.send("```\n" + mes + "\n```");
+        message.reply("```\n" + mes + "\n```");
     }
 }
 

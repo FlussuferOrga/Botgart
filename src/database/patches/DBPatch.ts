@@ -2,6 +2,8 @@ import * as sqlite3 from "better-sqlite3";
 import { Database } from "../Database";
 import { Patch } from "./Patch";
 
+export type Column = { name: string; dflt_value: never };
+
 export class DBPatch extends Patch {
     protected db: Database;
     protected connection: sqlite3.Database;
@@ -30,13 +32,13 @@ export class DBPatch extends Patch {
 
     protected columnExists(table: string, column: string): boolean {
         return this.connection.prepare("PRAGMA table_info(" + table + ")").all() // can't use prepared parameters for some reason in this instance
-            .filter(col => col.name === column).length > 0;
+            .filter(col => (col as Column).name === column).length > 0;
     }
 
     protected columnHasDefault(table: string, column: string, def: string): boolean {
         return this.connection.prepare("PRAGMA table_info(" + table + ")").all() // can't use prepared parameters for some reason in this instance
-            .filter(col => col.name === column)
-            .filter(col => col.dflt_value === def).length > 0;
+            .filter(col => (col as Column).name === column)
+            .filter(col => (col as Column).dflt_value === def).length > 0;
     }
 
     protected indexExists(table: string, index: string): boolean {

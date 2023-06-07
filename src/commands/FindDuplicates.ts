@@ -19,13 +19,13 @@ export class FindDuplicates extends BotgartCommand {
         cl.registrationRepository.findDuplicateRegistrations().forEach(dup => {
             // unknown users are already filtered out. Maybe we want to change that and notify the caller
             Promise.all(dup.users.map(async u => guild.members.fetch(u)).filter(u => u))
-                .then(users => responsible.send(`${dup.gw2account}: ${users.join(", ")}`));
+                .then(users => message.reply(`${dup.gw2account}: ${users.join(", ")}`));
         });
         LOG.info("Finding duplicates complete.");
     }
 
     postExecHook(message: discord.Message, args: Record<string, unknown>, result): void {
-        message.util?.send(L.get("FIND_DUPLICATES_COMPLETE"));
+        message.reply(L.get("FIND_DUPLICATES_COMPLETE"));
     }
 }
 

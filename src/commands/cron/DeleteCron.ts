@@ -40,19 +40,19 @@ export class DeleteCron extends BotgartCommand {
 
     async exec(message: discord.Message, args: Args): Promise<void> {
         if (!message.member) {
-            message.util?.send(L.get("NOT_AVAILABLE_AS_DM"));
+            message.reply(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
 
         const errorMessage = this.checkArgs(args);
         if (errorMessage) {
-            message.util?.send(errorMessage);
+            message.reply(errorMessage);
             return;
         }
 
         // not cronable, can be casted
         const mes = await this.command(message, message.author, message.guild as discord.Guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
-        message.util?.send(mes);
+        message.reply(mes);
     }
 
     /**

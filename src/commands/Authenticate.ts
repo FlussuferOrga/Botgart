@@ -23,11 +23,34 @@ const LOG = logger();
 export class Authenticate extends BotgartCommand {
     private static readonly LOG_TYPE_AUTH: string = "auth";
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { key: string }): Promise<void> {
+    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: {
+        key: string;
+    }): Promise<void> {
         if (!message) {
             LOG.error("Mandatory message parameter missing. This command can not be issued as cron.");
             return;
         }
+        let reply = (s) => message.reply(s);
+
+        if (message.inGuild()) {
+            // We only allow DMs
+
+            // try to delete the message for privacy reasons if it is not a direct message
+            await message.delete();
+            const pm_message = await message.author.send(L.get("AUTH_ONLY_PM"));
+            reply = (s) => pm_message.reply(s);
+        }
+
+
+        await reply(L.get("CHECKING_KEY"));
+        // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
+        const apiKey = args.key;
+        const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(apiKey);
+        if (!validFormat) {
+            await reply(L.get("KEY_INVALID_FORMAT"));
+            return;
+        }
+
 
         const members: { guild: discord.Guild; member: discord.GuildMember }[] = []; // plural, as this command takes place on all servers this bot shares with the user
         // this snippet allows users to authenticate themselves
@@ -40,22 +63,7 @@ export class Authenticate extends BotgartCommand {
                 members.push({ guild: guild, member: m });
             }
         }
-        message.util?.send(L.get("CHECKING_KEY"));
-        // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
-        const apiKey = args.key;
-        const validFormat: boolean = /^\w{8}-\w{4}-\w{4}-\w{4}-\w{20}-\w{4}-\w{4}-\w{4}-\w{12}$/.test(apiKey);
-        if (!validFormat) {
-            message.util?.send(L.get("KEY_INVALID_FORMAT"));
-            return;
-        }
-        // try to delete the message for privacy reasons if it is not a direct message
-        if (message?.member) {
-            if (message.deletable) {
-                message.delete();
-            } else {
-                message.util?.send(L.get("NO_DEL_PERM"));
-            }
-        }
+
         const cl: BotgartClient = this.getBotgartClient();
 
         try {
@@ -63,9 +71,9 @@ export class Authenticate extends BotgartCommand {
             const validationResult = await validateWorld(acc);
             if (validationResult === false) {
                 LOG.info("Declined API key {0}.".formatUnicorn(apiKey));
-                responsible.send(L.get("KEY_DECLINED"));
+                await reply(L.get("KEY_DECLINED"));
             } else {
-                let reply = "";
+                let replyString = "";
                 await Util.asyncForEach(members, async (m: { guild: discord.Guild; member: discord.GuildMember }) => {
                     const role: discord.Role | undefined = (await m.guild.roles.fetch()).find(r => r.name === validationResult.role);
                     if (role === undefined) {
@@ -91,30 +99,31 @@ export class Authenticate extends BotgartCommand {
                                 Authenticate.LOG_TYPE_AUTH,
                                 L.get("DLOG_AUTH", [Util.formatUserPing(m.member.id), acc.name as string, role.name]),
                                 false);
-                            reply = L.get("KEY_ACCEPTED");
+                            replyString = L.get("KEY_ACCEPTED");
                         } else {
                             LOG.info("Duplicate API key {0} on server {1}.".formatUnicorn(apiKey, m.guild.name));
-                            reply = L.get("KEY_NOT_UNIQUE");
+                            replyString = L.get("KEY_NOT_UNIQUE");
                         }
                     }
                 });
-                await responsible.send(reply);
+                await reply(reply);
             }
         } catch (err) {
+            let error = "";
             if (err instanceof ConfigError) {
                 LOG.error("A world is defined more than once in the config. Please fix the config file.");
-                responsible.send(L.get("INTERNAL_ERROR"));
+                error = (L.get("INTERNAL_ERROR"));
             } else if (err instanceof NetworkError) {
                 LOG.error("Network error while trying to resolve world.");
-                responsible.send(L.get("INTERNAL_ERROR"));
+                error = (L.get("INTERNAL_ERROR"));
             } else if (err instanceof InvalidKeyError) {
                 LOG.error("Invalid key: {0}".formatUnicorn(apiKey));
-                responsible.send(L.get("KEY_DECLINED"));
+                error = (L.get("KEY_DECLINED"));
             } else {
-                LOG.error("Unexpected error occured while validating world.");
-                LOG.error(err);
-                responsible.send(L.get("INTERNAL_ERROR"));
+                LOG.error("Unexpected error occured while validating world.", err);
+                error = (L.get("INTERNAL_ERROR"));
             }
+            await reply(error);
         }
     }
 

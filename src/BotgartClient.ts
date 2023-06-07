@@ -1,4 +1,4 @@
-import * as akairo from "discord-akairo";
+import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
 import { GuildChannel, ThreadChannel } from "discord.js";
 import { BotgartCommand } from "./BotgartCommand";
@@ -20,6 +20,7 @@ import { ValidationService } from "./services/ValidationService";
 import { CommanderStorage, TS3Connection } from "./TS3Connection";
 import { TS3Listener } from "./TS3Listener";
 import { logger } from "./util/Logging";
+import { AkairoClientOptions } from "@notenoughupdates/discord-akairo";
 
 const LOG = logger();
 
@@ -47,7 +48,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
 
-    constructor(options: akairo.AkairoOptions,
+    constructor(options: AkairoClientOptions,
                 clientOptions: discord.ClientOptions,
                 db: Database) {
         super(options, clientOptions);

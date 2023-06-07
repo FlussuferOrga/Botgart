@@ -42,10 +42,10 @@ export class RemovePermanentRole extends BotgartCommand {
 
         if (success) {
             LOG.info("Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
-            message.util?.send(L.get("PERMANENT_ROLE_RM_SUCC"));
+            message.reply(L.get("PERMANENT_ROLE_RM_SUCC"));
         } else {
             LOG.info("Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
-            message.util?.send(L.get("PERMANENT_ROLE_RM_FAIL"));
+            message.reply(L.get("PERMANENT_ROLE_RM_FAIL"));
         }
     }
 }

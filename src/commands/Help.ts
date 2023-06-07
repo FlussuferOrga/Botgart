@@ -1,4 +1,4 @@
-import { Argument, Command } from "discord-akairo";
+import { Argument, Command } from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import { splitMessage } from "../util/Util";

@@ -34,7 +34,7 @@ export class Reauthenticate extends BotgartCommand {
     }
 
     postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<discord.Message> | undefined {
-        return message.util?.send(L.get("PRUNING_COMPLETE"));
+        return message.reply(L.get("PRUNING_COMPLETE"));
     }
 }
 

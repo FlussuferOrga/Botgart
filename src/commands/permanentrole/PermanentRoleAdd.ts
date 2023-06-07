@@ -47,10 +47,10 @@ export class AddPermanentRole extends BotgartCommand {
         const guildName = messageGuild.name;
         if (success) {
             LOG.info("Successfully added role {0} to user {0} in guild {0}.".formatUnicorn(roleName, user.username, guildName));
-            message.util?.send(L.get("PERMANENT_ROLE_ADD_SUCC"));
+            message.reply(L.get("PERMANENT_ROLE_ADD_SUCC"));
         } else {
             LOG.info("Could not add role {0} to user {0} in guild {0}.".formatUnicorn(roleName, user.username, guildName));
-            message.util?.send(L.get("PERMANENT_ROLE_ADD_FAIL"));
+            message.reply(L.get("PERMANENT_ROLE_ADD_FAIL"));
         }
     }
 }

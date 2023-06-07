@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { createTable } from "../util/Table";
+import {BotgartCommand} from "../BotgartCommand";
+import {createTable} from "../util/Table";
 import * as L from "../Locale";
 
 const CHARSET = "utf-8";
@@ -28,8 +28,8 @@ export class GuildChannelList extends BotgartCommand {
                     }
                 }
                 const table = createTable(["guild", "empty for"], data);
-                const attachment = new discord.MessageAttachment(Buffer.from(table, CHARSET), ATTACHMENT_NAME);
-                return message.reply({ content: L.get("DESC_GUILD_CHAN"), files: [attachment] });
+                const attachment = new discord.AttachmentBuilder(Buffer.from(table, CHARSET)).setName(ATTACHMENT_NAME);
+                return message.reply({ content: L.get("DESC_GUILD_CHAN"), files: [attachment]});
             });
     }
 }
