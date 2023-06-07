@@ -11,18 +11,20 @@ import * as L from "../../Locale";
 
 export class GetFaq extends BotgartCommand {
     constructor() {
-        super("getfaq", {
+        super(
+            "getfaq",
+            {
                 aliases: ["getfaq", "faq", "getrtfm", "rtfm"],
                 args: [
                     {
                         id: "key",
-                        type: "string"
-                    }
-                ]
+                        type: "string",
+                    },
+                ],
             },
             {
                 cronable: true,
-                everyonePermission: 1
+                everyonePermission: 1,
             }
         );
     }

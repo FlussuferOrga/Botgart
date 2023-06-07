@@ -10,11 +10,13 @@ export class Patch0 extends DBPatch {
     }
 
     protected async satisfied(): Promise<boolean> {
-        return this.tableExists("registrations")
-            && this.tableExists("cronjobs")
-            && this.tableExists("faqs")
-            && this.tableExists("faq_keys")
-            && this.indexExists("faq_keys", "index_faq_keys_key");
+        return (
+            this.tableExists("registrations") &&
+            this.tableExists("cronjobs") &&
+            this.tableExists("faqs") &&
+            this.tableExists("faq_keys") &&
+            this.indexExists("faq_keys", "index_faq_keys_key")
+        );
     }
 
     protected async apply(): Promise<void> {
@@ -63,8 +65,8 @@ export class Patch0 extends DBPatch {
                      ON UPDATE CASCADE
                      ON DELETE CASCADE
              )`,
-            "CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)"
+            "CREATE INDEX IF NOT EXISTS index_faq_keys_key ON faq_keys (key)",
         ];
-        sqls.forEach(sql => this.connection.exec(sql));
+        sqls.forEach((sql) => this.connection.exec(sql));
     }
 }

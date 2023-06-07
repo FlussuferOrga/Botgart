@@ -14,21 +14,19 @@ const LOG = logger();
 export class AddPermanentRole extends BotgartCommand {
     constructor() {
         super("addpermanentrole", {
-                aliases: ["addpermarole", "addpermanentrole", "addprole"],
-                args: [
-                    {
-                        id: "member",
-                        type: "member"
-                    },
-                    {
-                        id: "role",
-                        type: "role"
-                    }
-                ],
-                // userPermissions: ["ADMINISTRATOR"]
-
-            }
-        );
+            aliases: ["addpermarole", "addpermanentrole", "addprole"],
+            args: [
+                {
+                    id: "member",
+                    type: "member",
+                },
+                {
+                    id: "role",
+                    type: "role",
+                },
+            ],
+            // userPermissions: ["ADMINISTRATOR"]
+        });
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

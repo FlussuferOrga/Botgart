@@ -22,31 +22,30 @@ function createLogger() {
         transports: [
             new winston.transports.Console({
                 level: "debug",
-                format: winston.format.combine(
-                    winston.format.colorize(),
-                    defaultFormat
-                )
+                format: winston.format.combine(winston.format.colorize(), defaultFormat),
             }),
             new winston.transports.File({
                 filename: "log/bot_combined.log",
-                level: "info"
+                level: "info",
             }),
             new winston.transports.File({
                 filename: "log/bot_errors.log",
-                level: "error"
+                level: "error",
             }),
             new winston.transports.File({
                 filename: "/tmp/botgart_debug.log",
-                level: "debug"
-            })
-        ]
+                level: "debug",
+            }),
+        ],
     };
 
     // hack from https://github.com/winstonjs/winston/issues/1673
-    options.transports = options.transports.map(value => Object.assign(value, {
-        handleExceptions: true,
-        handleRejections: true
-    }));
+    options.transports = options.transports.map((value) =>
+        Object.assign(value, {
+            handleExceptions: true,
+            handleRejections: true,
+        })
+    );
 
     return winston.createLogger(options);
 }
@@ -58,6 +57,6 @@ export function logger(options: Record<string, unknown> = {}): winston.Logger {
     const file = callFile[callFile.length - 1];
     return internalLogger.child({
         ...options,
-        "file": file
+        file: file,
     });
 }

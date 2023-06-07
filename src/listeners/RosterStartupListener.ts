@@ -8,7 +8,7 @@ export class RosterStartupListener extends Listener {
     constructor() {
         super(RosterStartupListener.name, {
             emitter: "client",
-            event: "ready"
+            event: "ready",
         });
     }
 

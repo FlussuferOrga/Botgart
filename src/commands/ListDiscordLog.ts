@@ -7,29 +7,31 @@ import { BotgartCommand } from "../BotgartCommand";
  */
 export class ListDiscordLog extends BotgartCommand {
     constructor() {
-        super("listdiscordlog", {
+        super(
+            "listdiscordlog",
+            {
                 aliases: ["listdiscordlog"],
                 quoted: true,
                 args: [
                     {
                         id: "channel",
-                        type: (message: discord.Message | undefined, phrase?: string) => message?.guild?.channels.cache.find(channel => channel.name === phrase)?.name
-                            ?? (message?.channel as discord.TextChannel).name
-                    }
-
+                        type: (message: discord.Message | undefined, phrase?: string) =>
+                            message?.guild?.channels.cache.find((channel) => channel.name === phrase)?.name ??
+                            (message?.channel as discord.TextChannel).name,
+                    },
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
                 cronable: false,
-                availableAsDM: false
+                availableAsDM: false,
             }
         );
     }
 
     async command(message, responsible, guild, args) {
         const cl = this.getBotgartClient();
-        const textChannel: discord.TextChannel = guild.channels.cache.find(channel => channel.name === args.channel);
+        const textChannel: discord.TextChannel = guild.channels.cache.find((channel) => channel.name === args.channel);
         const types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
         const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name).concat(types.join("\n"));
         message.reply(desc);

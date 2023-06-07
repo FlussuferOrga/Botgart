@@ -14,7 +14,7 @@ export class WebServer {
         //     return true;
         // });
         const options = {
-            endpoint: "/health" // optional and will default to `/health`
+            endpoint: "/health", // optional and will default to `/health`
         };
         this.server = serverHealth.createNodeHttpHealthCheckServer(options);
     }
@@ -23,7 +23,7 @@ export class WebServer {
         return new Promise((resolve, reject) => {
             const httpConfig = getConfig().get().http;
 
-            const startupErrorListener = err => {
+            const startupErrorListener = (err) => {
                 // not needed after it has been invoked
                 this.server.removeListener("error", startupErrorListener);
                 reject(err);
@@ -49,7 +49,7 @@ export class WebServer {
         if (this.server != undefined) {
             return new Promise((resolve, reject) => {
                 this.server.removeListener("error", WebServer.onError);
-                this.server.close(err => {
+                this.server.close((err) => {
                     if (err) reject(err);
                     resolve(err);
                 });

@@ -11,12 +11,7 @@ export function currentYear(): number {
 
 export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
     const { resetWeekDay, resetTimeUTC } = WvwRegion.getProperties(wvwRegion);
-    return moment().tz("UTC")
-        .year(year)
-        .isoWeek(isoWeek)
-        .isoWeekday(resetWeekDay)
-        .hour(resetTimeUTC)
-        .startOf("hour");
+    return moment().tz("UTC").year(year).isoWeek(isoWeek).isoWeekday(resetWeekDay).hour(resetTimeUTC).startOf("hour");
 }
 
 export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {

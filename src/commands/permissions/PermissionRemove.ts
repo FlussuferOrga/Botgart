@@ -8,16 +8,15 @@ const LOG = logger();
 export class PermissionRemove extends BotgartCommand {
     constructor() {
         super("permissionremove", {
-                aliases: ["permissionremove", "permremove"],
-                quoted: true,
-                args: [
-                    {
-                        id: "permissionId",
-                        type: "number"
-                    }
-                ]
-            }
-        );
+            aliases: ["permissionremove", "permremove"],
+            quoted: true,
+            args: [
+                {
+                    id: "permissionId",
+                    type: "number",
+                },
+            ],
+        });
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

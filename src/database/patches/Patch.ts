@@ -13,7 +13,7 @@ import { logger } from "../../util/Logging";
 
 const LOG = logger();
 
-export class Patch {
+export abstract class Patch {
     /**
      * Checks, if this patch has already been executed.
      * This method obviously doesn't need to be implemented
@@ -48,8 +48,8 @@ export class Patch {
      * implement checkPostconditions(), commit() and rollback() to take
      * appropriate action if something should go wrong.
      */
-    protected async apply(): Promise<void> {
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    protected async apply(): Promise<void> {}
 
     /**
      * Reverts the patch. This method is probably not going to be used,
@@ -69,8 +69,8 @@ export class Patch {
      * place to call dbconnection.commit().
      * Usecase (2): apply() only created a file, there is nothing left to be done.
      */
-    protected async commit(): Promise<void> {
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    protected async commit(): Promise<void> {}
 
     /**
      * This method can be used to revert the changes from apply()
@@ -80,15 +80,15 @@ export class Patch {
      * this is the place to call dbconnection.rollback().
      * Usecase (2): apply() tried to create a file and failed. Nothing left to do.
      */
-    protected async rollback(): Promise<void> {
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    protected async rollback(): Promise<void> {}
 
     public async execute(): Promise<void> {
         if (await this.satisfied()) {
             LOG.info("Patch {0} is already satisfied and will not be applied.".formatUnicorn(this.constructor.name));
             return;
         }
-        if (!await this.checkPreconditions()) {
+        if (!(await this.checkPreconditions())) {
             LOG.error("Could not execute patch {0} due to unfulfilled preconditions. Please consult the log.".formatUnicorn(this.constructor.name));
             return;
         }

@@ -11,7 +11,7 @@ export class DatabasePatcher {
         this.database = database;
     }
 
-    public createPatch<T extends DBPatch>(Type: { new(db: Database): T }, db: Database): T {
+    public createPatch<T extends DBPatch>(Type: { new (db: Database): T }, db: Database): T {
         return new Type(db);
     }
 
@@ -37,7 +37,7 @@ export class DatabasePatcher {
         }
     }
 
-    async applyPatches(patches: typeof DBPatch[], revert = false) {
+    async applyPatches(patches: (typeof DBPatch)[], revert = false) {
         const ps = revert ? patches.reverse() : patches;
         for (const p of ps) {
             await this.applyPatch(p, revert);

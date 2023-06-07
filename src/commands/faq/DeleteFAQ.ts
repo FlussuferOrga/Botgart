@@ -12,18 +12,20 @@ import * as L from "../../Locale";
 
 export class DeleteFaq extends BotgartCommand {
     constructor() {
-        super("deletefaq", {
+        super(
+            "deletefaq",
+            {
                 aliases: ["deletefaq", "deletertfm", "rmfaq", "rmrtfm"],
                 args: [
                     {
                         id: "key",
-                        type: "string"
-                    }
+                        type: "string",
+                    },
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: true
+                cronable: true,
             }
         );
     }

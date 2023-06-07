@@ -15,7 +15,9 @@ export class Patch2 extends DBPatch {
 
     protected async apply(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE IF NOT EXISTS permanent_roles (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 guild TEXT NOT NULL,
@@ -23,7 +25,9 @@ export class Patch2 extends DBPatch {
                 role TEXT NOT NULL,
                 created TIMESTAMP DEFAULT (datetime('now','localtime')),
                 UNIQUE(guild, user, role)
-        )`).run();
+        )`
+            )
+            .run();
     }
 
     public async revert(): Promise<void> {

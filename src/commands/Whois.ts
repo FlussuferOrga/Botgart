@@ -11,15 +11,14 @@ import * as U from "../util/Util";
 export class Whois extends BotgartCommand {
     constructor() {
         super("whois", {
-                aliases: ["whois"],
-                args: [
-                    {
-                        id: "name",
-                        type: Argument.union("memberMention", "string")
-                    }
-                ],
-            }
-        );
+            aliases: ["whois"],
+            args: [
+                {
+                    id: "name",
+                    type: Argument.union("memberMention", "string"),
+                },
+            ],
+        });
     }
 
     checkArgs(args) {
@@ -37,25 +36,26 @@ export class Whois extends BotgartCommand {
             res = await this.query(guild, namedEscaped, name);
         }
 
-
         if (res.length === 0) {
             await this.reply(message, responsible, L.get("WHOIS_EMPTY_RESULT"));
         } else {
-            await this.reply(message, responsible, L.get("WHOIS_RESULTS", [], "\n")
-                + "\n\n@Mention | (D) Id | (D) Tag | (D) Nickname | (GW) Account");
+            await this.reply(
+                message,
+                responsible,
+                L.get("WHOIS_RESULTS", [], "\n") + "\n\n@Mention | (D) Id | (D) Tag | (D) Nickname | (GW) Account"
+            );
 
             let chunk = "\u200B";
             for (const queryResult of res) {
                 // output result
-                const response = "{0}{1} | {2} | {3} | {4} | {5}"
-                    .formatUnicorn(
-                        queryResult.member?.toString(),
-                        queryResult.member?.user?.bot ? " :robot:" : "",
-                        Whois.backticksIfNotEmpty(queryResult.member?.id),
-                        Whois.backticksIfNotEmpty(queryResult.member?.user?.tag),
-                        Whois.backticksIfNotEmpty(queryResult.member?.nickname),
-                        Whois.backticksIfNotEmpty(queryResult?.account_name)
-                    );
+                const response = "{0}{1} | {2} | {3} | {4} | {5}".formatUnicorn(
+                    queryResult.member?.toString(),
+                    queryResult.member?.user?.bot ? " :robot:" : "",
+                    Whois.backticksIfNotEmpty(queryResult.member?.id),
+                    Whois.backticksIfNotEmpty(queryResult.member?.user?.tag),
+                    Whois.backticksIfNotEmpty(queryResult.member?.nickname),
+                    Whois.backticksIfNotEmpty(queryResult?.account_name)
+                );
 
                 const nextChunk = chunk + "\n" + response;
                 if (nextChunk.length >= 2000) {
@@ -88,40 +88,40 @@ export class Whois extends BotgartCommand {
             return m.id.search(needle) > -1;
         }
 
-        return nicknameMatches()
-            || usernameMatches()
-            || tagMatches()
-            || idMatches();
+        return nicknameMatches() || usernameMatches() || tagMatches() || idMatches();
     }
 
     private async query(guild: discord.Guild, namedEscaped: string, name: string) {
         const members = await guild.members.fetch();
 
-        const matchingDiscordMembers = members
-            .filter(member => Whois.matches(member, namedEscaped))
-            .map(value => value.user.id);
+        const matchingDiscordMembers = members.filter((member) => Whois.matches(member, namedEscaped)).map((value) => value.user.id);
 
         const res = this.getBotgartClient().registrationRepository.whois(name, matchingDiscordMembers);
 
         // map members
-        const enhancedResult = await Promise.all(res.map(async value => ({
-            ...value, member: guild.members.cache.get(value.discord_id)
-        })));
+        const enhancedResult = await Promise.all(
+            res.map(async (value) => ({
+                ...value,
+                member: guild.members.cache.get(value.discord_id),
+            }))
+        );
 
         return this.sort(enhancedResult);
     }
 
     private sort(enhancedResult: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[]) {
         // sort and return
-        return enhancedResult.sort((a, b) =>
-            Whois.compareStringSafe(a.member?.nickname, b.member?.nickname)
-            || Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag)
-            || Whois.compareStringSafe(a.account_name, b.account_name));
+        return enhancedResult.sort(
+            (a, b) =>
+                Whois.compareStringSafe(a.member?.nickname, b.member?.nickname) ||
+                Whois.compareStringSafe(a.member?.client?.user?.tag, b.member?.client?.user?.tag) ||
+                Whois.compareStringSafe(a.account_name, b.account_name)
+        );
     }
 
     private static compareStringSafe(a: string | null | undefined, b: string | null | undefined) {
         // eslint-disable-next-line no-nested-ternary
-        return (a || b) ? (!a ? -1 : !b ? 1 : a.localeCompare(b)) : 0;
+        return a || b ? (!a ? -1 : !b ? 1 : a.localeCompare(b)) : 0;
     }
 
     private static backticksIfNotEmpty(value: string | undefined | null) {
@@ -130,11 +130,13 @@ export class Whois extends BotgartCommand {
 
     private async queryUser(member: discord.GuildMember) {
         const user = this.getBotgartClient().registrationRepository.getUserByDiscordId(member.user);
-        return [{
-            discord_id: member.id,
-            member: member,
-            account_name: user?.account_name
-        }];
+        return [
+            {
+                discord_id: member.id,
+                member: member,
+                account_name: user?.account_name,
+            },
+        ];
     }
 }
 

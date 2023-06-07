@@ -10,7 +10,6 @@ import { logger } from "./util/Logging";
 
 const LOG = logger();
 
-
 // after failing to reconnect to TS after losing connection once this many times,
 // all ongoing raids will be terminated to avoid commanders being credited for seemingly extremely
 // long raids after the TS bot has been unreachable for a prolonged time, althrough they have long
@@ -52,12 +51,12 @@ export class TS3Listener extends events.EventEmitter {
         try {
             const res: string = await this.ts3connection.get("commanders");
             const data: { commanders: TS3Commander[] } = JSON.parse(res); // FIXME: error check
-            const commanderTSUIDs: string[] = data.commanders.map(c => c.ts_cluid);
+            const commanderTSUIDs: string[] = data.commanders.map((c) => c.ts_cluid);
             LOG.debug(`Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
             const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(commanderTSUIDs));
             LOG.debug("Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
-            this.botgartClient.guilds.cache.forEach(g => {
-                data.commanders.forEach(c => {
+            this.botgartClient.guilds.cache.forEach((g) => {
+                data.commanders.forEach((c) => {
                     const account = c.account_name; // for lookup
                     const uid = c.ts_cluid; // for this.users
                     const username = c.ts_display_name; // for broadcast
@@ -139,9 +138,10 @@ export class TS3Listener extends events.EventEmitter {
             this.patience = Math.max(this.patience - 1, -1);
             if (this.patience == 0) {
                 LOG.warn(`Could not reconnect to TS after ${RECONNECT_PATIENCE} tries. Tagging down all active commanders.`);
-                this.botgartClient.commanders.getAllCommanders()
-                    .filter(commander => commander.getDiscordMember() !== undefined)
-                    .map(commander => this.botgartClient.guilds.cache.map(g => this.tagDown(g, commander)));
+                this.botgartClient.commanders
+                    .getAllCommanders()
+                    .filter((commander) => commander.getDiscordMember() !== undefined)
+                    .map((commander) => this.botgartClient.guilds.cache.map((g) => this.tagDown(g, commander)));
             }
         }
     }
@@ -153,7 +153,7 @@ export class TS3Listener extends events.EventEmitter {
      * - a mapping of the TS-UID to the Discord-username is created
      */
     private async tagUp(g: discord.Guild, commander: Commander) {
-        LOG.info(`Tagging up ${(commander.getTS3DisplayName())} in ${g.name}.`);
+        LOG.info(`Tagging up ${commander.getTS3DisplayName()} in ${g.name}.`);
         const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
 
         let duser: discord.GuildMember | undefined;
@@ -163,21 +163,23 @@ export class TS3Listener extends events.EventEmitter {
             duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser === undefined) {
                 LOG.warn(
-                    `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`);
+                    `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`
+                );
             }
             commander.setDiscordMember(duser);
 
             await this.tagUpAssignRole(g, commander);
         }
 
-        await this.botgartClient.tagBroadcastService.sendTagUpBroadcast(g, commander)
-            .then(value => commander.setBroadcastMessage(value))
-            .catch(e => LOG.error("Could send tag up broadcast", e));
+        await this.botgartClient.tagBroadcastService
+            .sendTagUpBroadcast(g, commander)
+            .then((value) => commander.setBroadcastMessage(value))
+            .catch((e) => LOG.error("Could send tag up broadcast", e));
 
         this.emit("tagup", {
-            "guild": g,
-            "commander": commander,
-            "dbRegistration": registration
+            guild: g,
+            commander: commander,
+            dbRegistration: registration,
         });
     }
 
@@ -187,8 +189,7 @@ export class TS3Listener extends events.EventEmitter {
      * - the user's TS-UID-Discordname is forgotten
      */
     private async tagDown(g: discord.Guild, commander: Commander) {
-        const registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(
-            commander.getAccountName());
+        const registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
         let dmember: discord.GuildMember | undefined = undefined;
 
         try {
@@ -210,9 +211,9 @@ export class TS3Listener extends events.EventEmitter {
 
         this.botgartClient.commanders.deleteCommander(commander);
         this.emit("tagdown", {
-            "guild": g,
-            "commander": commander,
-            "dbRegistration": registration
+            guild: g,
+            commander: commander,
+            dbRegistration: registration,
         });
     }
 
@@ -221,11 +222,18 @@ export class TS3Listener extends events.EventEmitter {
     }
 
     private async tagUpAssignRole(g: discord.Guild, commander: Commander) {
-        const crole = g.roles.cache.find(r => r.name === this.commanderRole);
+        const crole = g.roles.cache.find((r) => r.name === this.commanderRole);
         if (crole && commander.getDiscordMember()) {
-            await commander.getDiscordMember()?.roles.add(crole)
-                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from `
-                    + `user '${(commander.getDiscordMember() as discord.GuildMember).displayName}'`, e));
+            await commander
+                .getDiscordMember()
+                ?.roles.add(crole)
+                .catch((e) =>
+                    LOG.warn(
+                        `Could not remove role '${this.commanderRole}' from ` +
+                            `user '${(commander.getDiscordMember() as discord.GuildMember).displayName}'`,
+                        e
+                    )
+                );
         }
     }
 
@@ -234,13 +242,18 @@ export class TS3Listener extends events.EventEmitter {
         // since removing roles has gone wrong a lot lately,
         // we're updating the cache manually
         // https://discord.js.org/#/docs/main/stable/class/RoleManager?scrollTo=fetch
-        const crole: discord.Role | undefined = (await g.roles.fetch()).find(r => r.name === this.commanderRole);
+        const crole: discord.Role | undefined = (await g.roles.fetch()).find((r) => r.name === this.commanderRole);
         if (crole && dmember) {
             LOG.info(`Tagging down ${dmember.displayName} in ${g.name}, will remove their role ${crole}.`);
-            await dmember.roles.remove(crole)
-                .catch(e => LOG.warn(`Could not remove role '${this.commanderRole}' from user `
-                    + `'${(dmember as discord.GuildMember).displayName}' which was expected to be there.`
-                    + ` Maybe someone else already removed it. ${e}`));
+            await dmember.roles
+                .remove(crole)
+                .catch((e) =>
+                    LOG.warn(
+                        `Could not remove role '${this.commanderRole}' from user ` +
+                            `'${(dmember as discord.GuildMember).displayName}' which was expected to be there.` +
+                            ` Maybe someone else already removed it. ${e}`
+                    )
+                );
 
             LOG.debug("Done managing roles for former commander.");
         }

@@ -6,20 +6,20 @@ import * as L from "../Locale";
 const CHARSET = "utf-8";
 const ATTACHMENT_NAME = "result.txt";
 
-
 export class GuildChannelList extends BotgartCommand {
     constructor() {
         super("guildchannnellist", {
-                aliases: ["guildchannnellist", "lsguildchan"],
-                quoted: true,
-                args: []
-            }
-        );
+            aliases: ["guildchannnellist", "lsguildchan"],
+            quoted: true,
+            args: [],
+        });
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, never>): Promise<void> {
-        this.getBotgartClient().getTS3Connection().get("guild/channels", {})
-            .then(res => {
+        this.getBotgartClient()
+            .getTS3Connection()
+            .get("guild/channels", {})
+            .then((res) => {
                 const resJson = JSON.parse(res);
                 const data: string[][] = [];
                 if (Array.isArray(resJson)) {

@@ -13,13 +13,15 @@ const LOG = logger();
  */
 export class RepairRoles extends BotgartCommand {
     public constructor() {
-        super("repairroles", {
+        super(
+            "repairroles",
+            {
                 aliases: ["rolerepair"],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
                 availableAsDM: true,
-                cronable: true
+                cronable: true,
             }
         );
     }
@@ -30,17 +32,17 @@ export class RepairRoles extends BotgartCommand {
         let g: discord.Guild | undefined = undefined;
         let m: discord.GuildMember;
         let r: discord.Role | undefined;
-        designations.forEach(async d => {
+        designations.forEach(async (d) => {
             if (g === undefined || g.id != d.guild) {
                 // designations come ordered by guild. This trick allows us to
                 // find each guild only once.
-                g = cl.guilds.cache.find(g => g.id == d.guild);
+                g = cl.guilds.cache.find((g) => g.id == d.guild);
             }
             // check again, in case lookup fails
             if (g === undefined) {
                 LOG.error(`Could not look up a guild with ID ${d.guild}. Have I been kicked?`);
             } else {
-                r = g.roles.cache.find(role => role.name === d.registration_role);
+                r = g.roles.cache.find((role) => role.name === d.registration_role);
                 m = await g.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
                 if (r === undefined) {
                     LOG.error(`Was supposed to assign role '${d.registration_role}' to user, but could not find it.`);

@@ -1,6 +1,6 @@
 export enum WvwRegion {
     EU = "EU",
-    NA = "NA"
+    NA = "NA",
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

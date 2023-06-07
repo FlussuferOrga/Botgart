@@ -12,25 +12,23 @@ const ATTACHMENT_NAME = "result.txt";
 export class PermissionList extends BotgartCommand {
     constructor() {
         super("permissionlist", {
-                aliases: ["permissionlist", "permlist"],
-                quoted: true,
-                args: []
-            }
-        );
+            aliases: ["permissionlist", "permlist"],
+            quoted: true,
+            args: [],
+        });
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         this.createTable(guild)
-            .then(value => new discord.AttachmentBuilder(Buffer.from(value, CHARSET), { name: ATTACHMENT_NAME }))
-            .then(attachment => message.reply({ files: [attachment] }))
-            .catch(reason => LOG.error("Could not create markdown table " + reason));
+            .then((value) => new discord.AttachmentBuilder(Buffer.from(value, CHARSET), { name: ATTACHMENT_NAME }))
+            .then((attachment) => message.reply({ files: [attachment] }))
+            .catch((reason) => LOG.error("Could not create markdown table " + reason));
     }
 
     private async createTable(guild: discord.Guild) {
         const repo = this.getBotgartClient().commandPermissionRepository;
         const permissions = repo.getPermissions(guild.id);
-        return this.remap(permissions)
-            .then(value => createTable(["Id", "Command", "Receiver", "Value"], value));
+        return this.remap(permissions).then((value) => createTable(["Id", "Command", "Receiver", "Value"], value));
     }
 
     private async resolveReceiver(p: Permission) {
@@ -58,10 +56,12 @@ export class PermissionList extends BotgartCommand {
     }
 
     private async remap(permissions: Permission[]) {
-        return Promise.all(permissions.map(async p => {
-            const newVar = await this.resolveReceiver(p);
-            return ["" + p.command_permissions_id, p.command, p.type + ": " + (newVar || "?"), "" + p.value];
-        }));
+        return Promise.all(
+            permissions.map(async (p) => {
+                const newVar = await this.resolveReceiver(p);
+                return ["" + p.command_permissions_id, p.command, p.type + ": " + (newVar || "?"), "" + p.value];
+            })
+        );
     }
 }
 

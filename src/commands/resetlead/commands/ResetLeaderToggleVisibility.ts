@@ -12,26 +12,25 @@ import * as ResetUtil from "../ResetUtil";
 export class ToggleResetLeaderVisibility extends BotgartCommand {
     constructor() {
         super("toggleresetleadervisibility", {
-                aliases: ["toggleresetleadervisibility"],
-                quoted: true,
-                args: [
-                    {
-                        id: "player",
-                        type: akairo.Argument.union("member", "string")
-                    },
-                    {
-                        id: "weekNumber",
-                        type: "integer",
-                        default: -1
-                    },
-                    {
-                        id: "year",
-                        type: "integer",
-                        default: -1
-                    }
-                ]
-            }
-        );
+            aliases: ["toggleresetleadervisibility"],
+            quoted: true,
+            args: [
+                {
+                    id: "player",
+                    type: akairo.Argument.union("member", "string"),
+                },
+                {
+                    id: "weekNumber",
+                    type: "integer",
+                    default: -1,
+                },
+                {
+                    id: "year",
+                    type: "integer",
+                    default: -1,
+                },
+            ],
+        });
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {

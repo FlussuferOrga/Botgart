@@ -13,30 +13,29 @@ import { WvwMap } from "../WvwMap";
 export class AddResetLeader extends BotgartCommand {
     constructor() {
         super("addresetlead", {
-                aliases: ["addresetlead"],
-                quoted: true,
-                args: [
-                    {
-                        id: "player",
-                        type: akairo.Argument.union("member", "string")
-                    },
-                    {
-                        id: "map",
-                        type: (message: discord.Message, phrase: string) => WvwMap.getAllMapNames().includes(phrase) ? phrase : null
-                    },
-                    {
-                        id: "weekNumber",
-                        type: "integer",
-                        default: -1
-                    },
-                    {
-                        id: "year",
-                        type: "integer",
-                        default: -1
-                    }
-                ]
-            }
-        );
+            aliases: ["addresetlead"],
+            quoted: true,
+            args: [
+                {
+                    id: "player",
+                    type: akairo.Argument.union("member", "string"),
+                },
+                {
+                    id: "map",
+                    type: (message: discord.Message, phrase: string) => (WvwMap.getAllMapNames().includes(phrase) ? phrase : null),
+                },
+                {
+                    id: "weekNumber",
+                    type: "integer",
+                    default: -1,
+                },
+                {
+                    id: "year",
+                    type: "integer",
+                    default: -1,
+                },
+            ],
+        });
     }
 
     checkArgs(args) {

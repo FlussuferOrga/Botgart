@@ -2,19 +2,13 @@ import gw2client from "gw2api-client";
 import { getConfig, WorldAssignment } from "./config/Config";
 import { logger } from "./util/Logging";
 
+export abstract class UnsuccessfulValidationError extends Error {}
 
-export abstract class UnsuccessfulValidationError extends Error {
+export class NetworkError extends UnsuccessfulValidationError {}
 
-}
+export class InvalidKeyError extends UnsuccessfulValidationError {}
 
-export class NetworkError extends UnsuccessfulValidationError {
-}
-
-export class InvalidKeyError extends UnsuccessfulValidationError {
-}
-
-export class ConfigError extends UnsuccessfulValidationError {
-}
+export class ConfigError extends UnsuccessfulValidationError {}
 
 export function createApiInstance() {
     const api = gw2client();
@@ -22,8 +16,8 @@ export function createApiInstance() {
     api.language("en");
 
     // retry some times and be polite about it
-    api.fetch.retry(tries => tries <= 5);
-    api.fetch.retryWait(tries => tries * 3000);
+    api.fetch.retry((tries) => tries <= 5);
+    api.fetch.retryWait((tries) => tries * 3000);
     return api;
 }
 
@@ -43,7 +37,9 @@ export async function getAccountInfo(apikey: string): Promise<AccountData> {
         api.authenticate(apikey);
         return api.account().get();
     } catch (err) {
-        LOG.error("Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err)));
+        LOG.error(
+            "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err))
+        );
         if (err.content.text === "invalid key" || err.content.text === "Invalid access token") {
             throw new InvalidKeyError();
         } else {
@@ -52,8 +48,11 @@ export async function getAccountInfo(apikey: string): Promise<AccountData> {
     }
 }
 
-export async function validateWorld(accountData: AccountData, worldAssignments: WorldAssignment[] = getConfig().get().world_assignments): Promise<WorldAssignment | false> {
-    const match = worldAssignments.filter(a => a.world_id === accountData.world);
+export async function validateWorld(
+    accountData: AccountData,
+    worldAssignments: WorldAssignment[] = getConfig().get().world_assignments
+): Promise<WorldAssignment | false> {
+    const match = worldAssignments.filter((a) => a.world_id === accountData.world);
     if (match.length > 1) {
         // config broken
         throw new ConfigError();
@@ -69,8 +68,12 @@ export async function validateWorld(accountData: AccountData, worldAssignments: 
 export async function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.
-    return api.authenticate(false).guild().search().name(guildname)
-        .then(async id => id !== undefined && (await api.authenticate(false).guild().get(id)).name === guildname);
+    return api
+        .authenticate(false)
+        .guild()
+        .search()
+        .name(guildname)
+        .then(async (id) => id !== undefined && (await api.authenticate(false).guild().get(id)).name === guildname);
 }
 
 /*

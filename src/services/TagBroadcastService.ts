@@ -1,12 +1,4 @@
-import discord, {
-    BaseGuildTextChannel,
-    ChannelType,
-    EmbedBuilder,
-    Guild,
-    Message,
-    resolveColor,
-    TextBasedChannel
-} from "discord.js";
+import discord, { EmbedBuilder, Guild, Message, resolveColor } from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
@@ -38,17 +30,17 @@ export class TagBroadcastService {
 
     async sendTagUpBroadcast(g: discord.Guild, commander: Commander) {
         // broadcast the message
-        const textChannel: discord.TextBasedChannel = g.channels.cache
-            .find(c => c.name === this.broadcastChannel && c.isTextBased()) as discord.TextBasedChannel;
+        const textChannel: discord.TextBasedChannel = g.channels.cache.find(
+            (c) => c.name === this.broadcastChannel && c.isTextBased()
+        ) as discord.TextBasedChannel;
         if (!textChannel) {
             LOG.warn(
-                `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`);
+                `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`
+            );
         } else {
             const message = this.generateMessage(g, commander);
             const embed = this.createEmbed(commander);
-            let send = await textChannel.send(
-                { content: message, embeds: [embed] }
-            );
+            let send = await textChannel.send({ content: message, embeds: [embed] });
             if (send.crosspostable) {
                 send = await send.crosspost();
             }
@@ -57,7 +49,6 @@ export class TagBroadcastService {
         return undefined;
     }
 
-
     private generateMessage(g: Guild, commander: Commander) {
         const role = commander.getRegistration()?.registration_role || "?";
         const pingRoleMention = this.generatePingRolesMention(g, commander);
@@ -65,7 +56,7 @@ export class TagBroadcastService {
         let name = commander.getDiscordMember()?.displayName || commander.getTS3DisplayName();
         if (commander.getDiscordMember()?.user !== undefined) {
             // user is known on discord -> is pingable
-            name = (commander.getDiscordMember())!.user!.toString();
+            name = commander.getDiscordMember()!.user!.toString();
         }
         return this.ZERO_WIDTH_SPACE + pingRoleMention + "\n" + L.get("COMMANDER_TAG_UP", [name, role], "\n");
     }
@@ -73,12 +64,12 @@ export class TagBroadcastService {
     private generatePingRolesMention(g: Guild, commander: Commander) {
         const pingRoles: discord.Role[] = this.detectRoles(g, commander.getCurrentLeadType());
 
-        return pingRoles.map(value => value.toString()).join(",");
+        return pingRoles.map((value) => value.toString()).join(",");
     }
 
     private detectRoles(g: Guild, currentLeadType: LeadType): discord.Role[] {
         function addRoleIfExists(list: discord.Role[], roleName: string) {
-            const generalRole: discord.Role | undefined = g.roles.cache.find(r => r.name === roleName);
+            const generalRole: discord.Role | undefined = g.roles.cache.find((r) => r.name === roleName);
             if (generalRole) {
                 list.push(generalRole);
             }
@@ -118,21 +109,27 @@ export class TagBroadcastService {
                 embed.addFields([
                     {
                         name: "Lead Type",
-                        value: "🏰️  **PPT**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPT", [], " | ", false)
-                    }
+                        value: "🏰️  **PPT**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPT", [], " | ", false),
+                    },
                 ]);
                 break;
             case "PPK":
                 embed.addFields([
                     {
                         name: "Lead Type",
-                        value: "⚔ ️**PPK**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPK", [], " | ", false)
-                    }
+                        value: "⚔ ️**PPK**\n" + L.get("COMMANDER_TAG_UP_TYPE_PPK", [], " | ", false),
+                    },
                 ]);
                 break;
         }
 
-        let text = commander.getTs3channelPath().map(value => `\`${value}\``).join(" ❯ ") + " ❯ " + commander.getTS3DisplayName();
+        let text =
+            commander
+                .getTs3channelPath()
+                .map((value) => `\`${value}\``)
+                .join(" ❯ ") +
+            " ❯ " +
+            commander.getTS3DisplayName();
         if (active && commander.getTs3joinUrl()) {
             const linkText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_TEXT", [], " | ", false);
             const linkAltText = L.get("COMMANDER_TAG_UP_TEAMSPEAK_LINK_ALT", [], "\n\n", false);
@@ -153,11 +150,12 @@ export class TagBroadcastService {
             if (commander.getRaidEnd() !== undefined) {
                 lines.push(`**End:** <t:${commander.getRaidEnd()!.unix()!}:${timestampFormat}>`);
             }
-            embed.addFields([{
+            embed.addFields([
+                {
                     name: "🕐 " + L.get("COMMANDER_TAG_UP_TIMES", [], " | ", false),
-                    value: lines.join("\n")
-                }]
-            );
+                    value: lines.join("\n"),
+                },
+            ]);
         }
         embed.setColor(color);
         embed.setTimestamp(new Date());

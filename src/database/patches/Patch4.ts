@@ -15,7 +15,9 @@ export class Patch4 extends DBPatch {
 
     protected async apply(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE command_permissions(
               command_permissions_id INTEGER PRIMARY KEY AUTOINCREMENT,
               command TEXT NOT NULL, -- primary name of the command
@@ -26,9 +28,13 @@ export class Patch4 extends DBPatch {
               timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- when this permission was granted
               UNIQUE(command, receiver),
               CHECK(type IN ('user','role','other'))
-            )`).run();
+            )`
+            )
+            .run();
 
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE VIEW command_permissions_agg(command, receiver, type, guild, value) AS 
               SELECT 
                 cp.command,
@@ -40,7 +46,9 @@ export class Patch4 extends DBPatch {
                 command_permissions AS cp 
               GROUP BY 
                 cp.command, cp.receiver, cp.type, cp.guild
-            `).run();
+            `
+            )
+            .run();
     }
 
     public async revert(): Promise<void> {

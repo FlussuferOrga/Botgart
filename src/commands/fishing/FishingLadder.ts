@@ -19,12 +19,14 @@ function readableWeight(n: number): string {
 
 export class FishingLadder extends BotgartCommand {
     constructor() {
-        super("fishingladder", {
-                aliases: ["fishingladder", "epeen"]
+        super(
+            "fishingladder",
+            {
+                aliases: ["fishingladder", "epeen"],
             },
             {
                 availableAsDM: true,
-                everyonePermission: 1
+                everyonePermission: 1,
             }
         );
     }
@@ -33,14 +35,18 @@ export class FishingLadder extends BotgartCommand {
         const length = 10;
         const ladder: FishLadderEntry[] = this.getBotgartClient().fishingRepository.fishLadder(length);
 
-        Promise.all(ladder.map(fle => this.client.users.fetch(fle.user)
-            .then(u => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)))
-            .then(async xs => {
-                const messageParts = splitMessage(`:fish::crown:\n${xs.join("\n")}`);
-                for (const part of messageParts) {
-                    await message.reply(part);
-                }
-            });
+        Promise.all(
+            ladder.map((fle) =>
+                this.client.users
+                    .fetch(fle.user)
+                    .then((u) => `\`${pad(fle.rank, 2)}\` ${u.username}: ${fle.number_of_fish} × 🐟 (${readableWeight(fle.total_weight)})`)
+            )
+        ).then(async (xs) => {
+            const messageParts = splitMessage(`:fish::crown:\n${xs.join("\n")}`);
+            for (const part of messageParts) {
+                await message.reply(part);
+            }
+        });
     }
 }
 

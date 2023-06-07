@@ -18,11 +18,13 @@ const WAIT_MAX_SECONDS = 150;
 
 async function gets(url: string, options = {}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
-        https.get(url, options, (response) => {
-            let body = "";
-            response.on("data", (chunk) => body += chunk);
-            response.on("end", () => resolve(body));
-        }).on("error", reject);
+        https
+            .get(url, options, (response) => {
+                let body = "";
+                response.on("data", (chunk) => (body += chunk));
+                response.on("end", () => resolve(body));
+            })
+            .on("error", reject);
     });
 }
 
@@ -34,9 +36,9 @@ async function image(term: string): Promise<string> {
     try {
         const response = await gets(`https://www.gettyimages.de/search/2/image?phrase=${term}`, {
             headers: {
-                "Accept": "text/html",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36"
-            }
+                Accept: "text/html",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
+            },
         });
         LOG.info("Page: " + response);
 
@@ -70,7 +72,7 @@ class ActiveFisher {
     public async createIdleEmbed(): Promise<discord.EmbedBuilder> {
         return new discord.EmbedBuilder()
             .setTitle(L.get("FISHING_IDLE_TITLE", [], " | ", false))
-            .setColor(0x0000FF)
+            .setColor(0x0000ff)
             .setDescription(L.get("FISHING_IDLE_DESCRIPTION"))
             .setImage(await image("river"));
     }
@@ -82,20 +84,20 @@ class ActiveFisher {
     public async createCaughtEmbed(): Promise<discord.EmbedBuilder> {
         return new discord.EmbedBuilder()
             .setTitle(L.get("FISHING_CAUGHT_TITLE", [], " | ", false))
-            .setColor(0x00FF00)
+            .setColor(0x00ff00)
             .setDescription(L.get("FISHING_CAUGHT_DESCRIPTION"))
             .setImage(this.fish.image)
             .addFields([
                 { name: ":fish:", value: `${this.fish.name}`, inline: true },
                 { name: ":scales:", value: `${this.fish.weight} g`, inline: true },
-                { name: ":moneybag:", value: `${this.fish.points_per_gramm * this.fish.weight}`, inline: true }
+                { name: ":moneybag:", value: `${this.fish.points_per_gramm * this.fish.weight}`, inline: true },
             ]);
     }
 
     public async createEscapedEmbed(): Promise<discord.EmbedBuilder> {
         return new discord.EmbedBuilder()
             .setTitle(L.get("FISHING_ESCAPED_TITLE", [], " | ", false))
-            .setColor(0xFF0000)
+            .setColor(0xff0000)
             .setDescription(L.get("FISHING_ESCAPED_DESCRIPTION"))
             .setImage(await image("sunset"));
     }
@@ -103,12 +105,13 @@ class ActiveFisher {
     public async bite(): Promise<void> {
         await this.message.edit({ embeds: [await this.createBittenEmbed()] });
         await this.message.react(REEL_EMOTE);
-        this.message.createReactionCollector({
-            filter: (e, u) => u.id !== this.client.user?.id && e.emoji.name === REEL_EMOTE,
-            time: REEL_BASE_TIME * this.fish.reel_time_factor
-        })
-            .on("collect", r => this.end(true))
-            .on("end", rs => this.end(rs.size > 0));
+        this.message
+            .createReactionCollector({
+                filter: (e, u) => u.id !== this.client.user?.id && e.emoji.name === REEL_EMOTE,
+                time: REEL_BASE_TIME * this.fish.reel_time_factor,
+            })
+            .on("collect", (r) => this.end(true))
+            .on("end", (rs) => this.end(rs.size > 0));
     }
 
     private async end(reeled: boolean): Promise<void> {
@@ -128,14 +131,16 @@ class ActiveFisher {
 
 export class GoFish extends BotgartCommand {
     constructor() {
-        super("gofish", {
+        super(
+            "gofish",
+            {
                 aliases: ["gofish"],
                 cooldown: WAIT_MAX_SECONDS * 1000,
-                ratelimit: 1
+                ratelimit: 1,
             },
             {
                 availableAsDM: true,
-                everyonePermission: 1
+                everyonePermission: 1,
             }
         );
     }
@@ -143,12 +148,11 @@ export class GoFish extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const fish: Fish = this.getBotgartClient().fishingRepository.getRandomFish();
 
-        await message.reply(":fish:")
-            .then(async message => {
-                const af = new ActiveFisher(this.getBotgartClient(), responsible, message, fish);
-                await message.edit({ embeds: [await af.createIdleEmbed()] });
-                setTimeout(_ => af.bite(), Math.floor(Math.random() * 1000 * (WAIT_MAX_SECONDS - WAIT_MIN_SECONDS + 1) + WAIT_MIN_SECONDS));
-            });
+        await message.reply(":fish:").then(async (message) => {
+            const af = new ActiveFisher(this.getBotgartClient(), responsible, message, fish);
+            await message.edit({ embeds: [await af.createIdleEmbed()] });
+            setTimeout((_) => af.bite(), Math.floor(Math.random() * 1000 * (WAIT_MAX_SECONDS - WAIT_MIN_SECONDS + 1) + WAIT_MIN_SECONDS));
+        });
     }
 }
 

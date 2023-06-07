@@ -9,7 +9,10 @@ export class FishingRepository extends AbstractDbRepository {
      * @returns a randomly selected Fish.
      */
     public getRandomFish(): Fish {
-        return this.execute(db => db.prepare(`
+        return this.execute((db) =>
+            db
+                .prepare(
+                    `
                 SELECT 
                     fish_id,
                     name,
@@ -24,7 +27,10 @@ export class FishingRepository extends AbstractDbRepository {
                     ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC         
                 LIMIT 
                     1
-        `).get());
+        `
+                )
+                .get()
+        );
     }
 
     /**
@@ -33,10 +39,16 @@ export class FishingRepository extends AbstractDbRepository {
      * @param fish: the fish that was caught
      */
     public catchFish(user: discord.User, fish: Fish): void {
-        this.execute(db => db.prepare(`
+        this.execute((db) =>
+            db
+                .prepare(
+                    `
             INSERT INTO caught_fish(fish_id, weight, user)
             VALUES (?,?,?)
-        `).run(fish.fish_id, fish.weight, user.id));
+        `
+                )
+                .run(fish.fish_id, fish.weight, user.id)
+        );
     }
 
     /**
@@ -45,7 +57,10 @@ export class FishingRepository extends AbstractDbRepository {
      * @returns the ladder
      */
     public fishLadder(length = 10): FishLadderEntry[] {
-        return this.execute(db => db.prepare(`
+        return this.execute((db) =>
+            db
+                .prepare(
+                    `
             SELECT 
                 user,
                 ROW_NUMBER() OVER (ORDER BY SUM(weight) DESC) AS rank,
@@ -59,7 +74,10 @@ export class FishingRepository extends AbstractDbRepository {
                 SUM(weight) DESC
             LIMIT 
                 ?
-        `).all(length));
+        `
+                )
+                .all(length)
+        );
     }
 }
 

@@ -10,7 +10,6 @@ import * as ResetUtil from "./ResetUtil";
 import { Roster } from "./Roster";
 import { WvwMap } from "./WvwMap";
 
-
 const LOG = logger();
 
 export class RosterService {
@@ -18,9 +17,7 @@ export class RosterService {
     private static readonly WITHDRAW = "❌"; // cross
     private static readonly VISIBLE = "📣"; // megaphone
 
-    private static readonly EMOTES: string[] = [
-        ...WvwMap.getMaps().map(m => m.emote), RosterService.WITHDRAW, RosterService.VISIBLE
-    ];
+    private static readonly EMOTES: string[] = [...WvwMap.getMaps().map((m) => m.emote), RosterService.WITHDRAW, RosterService.VISIBLE];
 
     private repository: RosterRepository;
 
@@ -29,7 +26,6 @@ export class RosterService {
     private rosters: { [key: string]: [discord.Guild, discord.Message, Roster] };
 
     private syncScheduled: boolean;
-
 
     constructor(repository: RosterRepository, client: BotgartClient) {
         this.repository = repository;
@@ -60,7 +56,8 @@ export class RosterService {
             return;
         }
         const refreshDelayedFn = (eventRoster: Roster, map: string, p: string) => {
-            const onDelayReached = function (service: RosterService, roster: Roster) { // no arrow function, as we need to bind()!
+            const onDelayReached = function (service: RosterService, roster: Roster) {
+                // no arrow function, as we need to bind()!
                 service.refreshGuarded(guild, roster, message);
             }.bind(null, this, eventRoster);
 
@@ -94,16 +91,18 @@ export class RosterService {
 
     public watchRosterMessageReactions(message: discord.Message, roster: Roster): void {
         LOG.debug("Now watching message {0} as roster for week {1}.".formatUnicorn(message.url, roster.weekNumber));
-        message.createReactionCollector({
-            filter: e => {
-                if (e.emoji.name === null) {
-                    return false;
-                }
-                return RosterService.EMOTES.includes(e.emoji.name);
-            }
-        }).on("collect", r => this.processReacts(r, roster));
+        message
+            .createReactionCollector({
+                filter: (e) => {
+                    if (e.emoji.name === null) {
+                        return false;
+                    }
+                    return RosterService.EMOTES.includes(e.emoji.name);
+                },
+            })
+            .on("collect", (r) => this.processReacts(r, roster));
 
-        for (const [_, e] of message.reactions.cache) {
+        for (const [, e] of message.reactions.cache) {
             this.processReacts(e, roster);
         }
     }
@@ -116,11 +115,13 @@ export class RosterService {
         const mapForEmote = WvwMap.getMapByEmote(r.emoji.name ? r.emoji.name : "");
         const reactedUsers = await r.users.fetch();
         reactedUsers
-            .filter(user => user.id !== this.client.user?.id)
-            .forEach(user => { // reactions coming from anyone but the bot
+            .filter((user) => user.id !== this.client.user?.id)
+            .forEach((user) => {
+                // reactions coming from anyone but the bot
                 const formattedName = Util.formatUserPing(user.id);
                 if (!mapForEmote) {
-                    if (r.emoji.name === RosterService.WITHDRAW) { // X -> user wants to remove themselves from roster
+                    if (r.emoji.name === RosterService.WITHDRAW) {
+                        // X -> user wants to remove themselves from roster
                         roster.removeLead(undefined, new ResetLeader(formattedName, false)); // equality is defined by name, so wrapping the name in ResetLeader is sufficient to find all instances of that user
                     } else if (r.emoji.name === RosterService.VISIBLE) {
                         roster.toggleLeaderVisibility(formattedName);
@@ -134,7 +135,11 @@ export class RosterService {
 
     public createRoster(guild: discord.Guild, channel: discord.TextChannel, rosterYear, rosterWeek) {
         const roster = new Roster(rosterWeek, rosterYear);
-        channel.send({ content: roster.toMessage(), embeds: [roster.toMessageEmbed()] })
+        channel
+            .send({
+                content: roster.toMessage(),
+                embeds: [roster.toMessageEmbed()],
+            })
             .then(async (mes: discord.Message) => {
                 for (const e of RosterService.EMOTES) {
                     await mes.react(e);
@@ -150,12 +155,11 @@ export class RosterService {
     }
 
     public onStartup() {
-        this.client.guilds.cache.forEach(g => {
-            Promise.all(this.repository.getActiveRosters(g)).then(ars => {
-                ars.filter(([dbRoster, _, __]) => dbRoster !== undefined)
-                    .forEach(([dbRoster, dbChannel, dbMessage]) => {
-                        this.startup(dbRoster, dbChannel, dbMessage);
-                    });
+        this.client.guilds.cache.forEach((g) => {
+            Promise.all(this.repository.getActiveRosters(g)).then((ars) => {
+                ars.filter(([dbRoster]) => dbRoster !== undefined).forEach(([dbRoster, dbChannel, dbMessage]) => {
+                    this.startup(dbRoster, dbChannel, dbMessage);
+                });
             });
         });
 
@@ -174,7 +178,11 @@ export class RosterService {
         const guilds = this.client.guilds.cache;
 
         guilds.forEach(async (guild) => {
-            const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await this.repository.getRosterPost(guild, rosterWeek, rosterYear);
+            const roster: undefined | [Roster, discord.TextChannel, discord.Message] = await this.repository.getRosterPost(
+                guild,
+                rosterWeek,
+                rosterYear
+            );
 
             if (roster === undefined) {
                 LOG.error(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
@@ -189,8 +197,7 @@ export class RosterService {
         // users are stored as <@123123123123> when clicking themselves, or as <!123123123123> when added through command.
         // Resolve if possible.
 
-
-        const resolveUser: (string) => Promise<string> = async sid => {
+        const resolveUser: (string) => Promise<string> = async (sid) => {
             const idregxp = /<[@!](\d+)>/;
             const match = idregxp.exec(sid);
             let user = sid;
@@ -204,12 +211,12 @@ export class RosterService {
         };
         const resetDateTime = roster.getResetMoment().tz(getConfig().get().timeZone);
         await this.client.getTS3Connection().post("resetroster", {
-            "date": resetDateTime.format("DD.MM.YYYY HH:mm z"), // TODO: remove
-            "datetime": resetDateTime.format(),
-            "rbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map(l => resolveUser(l.name))),
-            "gbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map(l => resolveUser(l.name))),
-            "bbl": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.BlueBorderlands)).map(l => resolveUser(l.name))),
-            "ebg": await Promise.all(Array.from(roster.getMapLeaders(WvwMap.EternalBattlegrounds)).map(l => resolveUser(l.name)))
+            date: resetDateTime.format("DD.MM.YYYY HH:mm z"), // TODO: remove
+            datetime: resetDateTime.format(),
+            rbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map((l) => resolveUser(l.name))),
+            gbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map((l) => resolveUser(l.name))),
+            bbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.BlueBorderlands)).map((l) => resolveUser(l.name))),
+            ebg: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.EternalBattlegrounds)).map((l) => resolveUser(l.name))),
         });
     }
 }

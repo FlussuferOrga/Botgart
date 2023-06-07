@@ -15,26 +15,25 @@ const LOG = logger();
 export class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
-                aliases: ["makecron", "mkcron"],
-                quoted: true,
-                args: [
-                    {
-                        id: "schedule",
-                        type: "string",
-                        default: ""
-                    },
-                    {
-                        id: "cmd",
-                        type: "string" // "commandAlias"
-                    },
-                    {
-                        id: "args",
-                        match: "rest"
-                    }
-                ],
-                // userPermissions: ["ADMINISTRATOR"]
-            }
-        );
+            aliases: ["makecron", "mkcron"],
+            quoted: true,
+            args: [
+                {
+                    id: "schedule",
+                    type: "string",
+                    default: "",
+                },
+                {
+                    id: "cmd",
+                    type: "string", // "commandAlias"
+                },
+                {
+                    id: "args",
+                    match: "rest",
+                },
+            ],
+            // userPermissions: ["ADMINISTRATOR"]
+        });
     }
 
     async command(message, responsible, guild, args) {
@@ -50,7 +49,9 @@ export class MakeCron extends BotgartCommand {
         // but then invalid commands just result in undefined.
         // That doesn't give us the opportunity to give feedback to the user what his faulty command string was.
         // So we look for the command for ourselves from a plain string.
-        const mod = this.getBotgartClient().commandHandler.modules[cmd] || Array.from(this.getBotgartClient().commandHandler.modules.values()).find(m => m.aliases.includes(cmd));
+        const mod =
+            this.getBotgartClient().commandHandler.modules[cmd] ||
+            Array.from(this.getBotgartClient().commandHandler.modules.values()).find((m) => m.aliases.includes(cmd));
         if (!mod) {
             return message.util.send(L.get("NO_SUCH_COMMAND").formatUnicorn(cmd));
         }
@@ -64,7 +65,7 @@ export class MakeCron extends BotgartCommand {
             return message.util.send(L.get("NOT_CRONABLE"));
         }
 
-        return mod.parse(message, cmdargs).then(parsedArgs => {
+        return mod.parse(message, cmdargs).then((parsedArgs) => {
             const checkError = mod.checkArgs(parsedArgs);
             if (checkError !== undefined) {
                 return message.util.send(checkError);
@@ -85,7 +86,7 @@ export class MakeCron extends BotgartCommand {
                 command: mod.id,
                 arguments: mod.serialiseArgs(parsedArgs),
                 created_by: message.member!.user.id,
-                guild: message.guild!.id
+                guild: message.guild!.id,
             });
             if (cid === undefined) {
                 LOG.error(`An error was encountered while storing a cronjob for the command ${mod.name}, the DB returned an undefined ID.`);

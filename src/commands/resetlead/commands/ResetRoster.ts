@@ -1,5 +1,4 @@
 import * as discord from "discord.js";
-import { BotgartClient } from "../../../BotgartClient";
 import { BotgartCommand } from "../../../BotgartCommand";
 import * as L from "../../../Locale";
 import { logger } from "../../../util/Logging";
@@ -12,31 +11,32 @@ const LOG = logger();
 
  */
 
-
 export class ResetRoster extends BotgartCommand {
     constructor() {
-        super("resetroster", {
+        super(
+            "resetroster",
+            {
                 aliases: ["resetroster"],
                 args: [
                     {
                         id: "channel",
-                        type: "channel"
+                        type: "channel",
                     },
                     {
                         id: "weekNumber",
                         type: "integer",
-                        default: undefined
+                        default: undefined,
                     },
                     {
                         id: "year",
                         type: "integer",
-                        default: undefined
-                    }
+                        default: undefined,
+                    },
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: true
+                cronable: true,
             }
         );
     }
@@ -52,14 +52,16 @@ export class ResetRoster extends BotgartCommand {
 
         const client = this.getBotgartClient();
 
-        client.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then(dbEntry => {
+        client.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then((dbEntry) => {
             if (dbEntry === undefined) {
                 // no roster for this guild+week -> create one
                 client.rosterService.createRoster(guild, args.channel, rosterYear, rosterWeek);
             } else {
                 const [dbRoster, dbChannel, dbMessage] = dbEntry;
                 // there is already a roster-post for this guild+week -> do nothing, log warning
-                LOG.warn(`Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`);
+                LOG.warn(
+                    `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`
+                );
                 this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
             }
         });
@@ -73,12 +75,12 @@ export class ResetRoster extends BotgartCommand {
 
     deserialiseArgs(jsonargs) {
         const args = JSON.parse(jsonargs);
-        const guild: discord.Guild | undefined = this.client.guilds.cache.find(g => g.id == args.channel.guild);
+        const guild: discord.Guild | undefined = this.client.guilds.cache.find((g) => g.id == args.channel.guild);
         if (guild === undefined) {
             LOG.warn(`The guild with id ${args.channel.id} which is put down as roster argument is unknown to me. Have I been kicked?`);
             args.channel = undefined;
         } else {
-            args.channel = guild.channels.cache.find(c => c.id == args.channel.channel);
+            args.channel = guild.channels.cache.find((c) => c.id == args.channel.channel);
         }
         return args;
     }

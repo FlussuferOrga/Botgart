@@ -3,29 +3,35 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 export class CronJobRepository extends AbstractDbRepository {
     public storeCronJob(job: CronJobEntity): number | undefined {
         const sql = "INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?, ?, ?, ?, ?)";
-        return this.execute(db => {
+        return this.execute((db) => {
             let lastId = undefined;
             db.transaction((_) => {
-                lastId = db.prepare(sql)
-                    .run(job.schedule, job.command, job.arguments, job.created_by, job.guild)
-                    .lastInsertRowid;
+                lastId = db.prepare(sql).run(job.schedule, job.command, job.arguments, job.created_by, job.guild).lastInsertRowid;
             })(null);
             return lastId;
         });
     }
 
     public getCronJobs(): StoredCronJobEntity[] {
-        return this.execute(db => db.prepare(`SELECT *
-                                              FROM cronjobs`).all());
+        return this.execute((db) =>
+            db
+                .prepare(
+                    `SELECT *
+                                              FROM cronjobs`
+                )
+                .all()
+        );
     }
 
     public deleteCronJob(id: number): boolean | undefined {
-        return this.execute(db => {
+        return this.execute((db) => {
             let changes = 0;
             db.transaction((_) => {
-                db.prepare(`DELETE
+                db.prepare(
+                    `DELETE
                             FROM cronjobs
-                            WHERE id = ?`).run(id);
+                            WHERE id = ?`
+                ).run(id);
                 changes = db.prepare("SELECT changes() AS changes").get().changes;
             })(null);
             return changes > 0;

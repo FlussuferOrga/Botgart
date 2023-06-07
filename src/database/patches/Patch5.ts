@@ -15,13 +15,17 @@ export class Patch5 extends DBPatch {
 
     protected async apply(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE discord_log_channels(
               discord_log_channel_id INTEGER PRIMARY KEY AUTOINCREMENT,
               guild TEXT NOT NULL,
               type TEXT NOT NULL,
               channel TEXT NOT NULL
-            )`).run();
+            )`
+            )
+            .run();
     }
 
     public async revert(): Promise<void> {

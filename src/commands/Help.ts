@@ -13,18 +13,22 @@ import { splitMessage } from "../util/Util";
  */
 export class Help extends BotgartCommand {
     constructor() {
-        super("help", {
+        super(
+            "help",
+            {
                 aliases: ["help", "commands", "hilfe"],
-                args: [{
-                    id: "command",
-                    type: Argument.union("command", "commandAlias"),
-                    default: "this is a string that is just a placeholder for a missing parameter :>"
-                }]
+                args: [
+                    {
+                        id: "command",
+                        type: Argument.union("command", "commandAlias"),
+                        default: "this is a string that is just a placeholder for a missing parameter :>",
+                    },
+                ],
             },
             {
                 availableAsDM: true,
                 cronable: true,
-                everyonePermission: 1
+                everyonePermission: 1,
             }
         );
     }
@@ -43,28 +47,28 @@ export class Help extends BotgartCommand {
         const separator = "\n";
         const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; // cache.find(m => m.id == responsible.id) : responsible;
         // let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
-        const descs = "**COMMANDS:**\n\n"
-            .concat(Array.from(this.getBotgartClient().commandHandler.modules.values())
-                .filter(value => commandId === null || value.id == commandId)
-                .map(m => m as BotgartCommand)
-                .filter(m => m.isAllowed(user))
-                .sort((m1, m2) => m1.id < m2.id ? -1 : 1)
-                .map(cmd => {
-                        let message = "";
-                        if (cmd.desc) {
-                            message += `**${cmd.id}** (${cmd.aliases.map(a => "`{0}`".formatUnicorn(a)).join(", ")}):\n${cmd.desc()}\n_ _`;
-                        } else {
-                            message += cmd.id;
-                        }
-
-                        // if querying for a single command, print usage.
-                        if (commandId !== null) {
-                            message += "\n" + cmd.usage();
-                        }
-                        return message;
+        const descs = "**COMMANDS:**\n\n".concat(
+            Array.from(this.getBotgartClient().commandHandler.modules.values())
+                .filter((value) => commandId === null || value.id == commandId)
+                .map((m) => m as BotgartCommand)
+                .filter((m) => m.isAllowed(user))
+                .sort((m1, m2) => (m1.id < m2.id ? -1 : 1))
+                .map((cmd) => {
+                    let message = "";
+                    if (cmd.desc) {
+                        message += `**${cmd.id}** (${cmd.aliases.map((a) => "`{0}`".formatUnicorn(a)).join(", ")}):\n${cmd.desc()}\n_ _`;
+                    } else {
+                        message += cmd.id;
                     }
-                )
-                .join(separator));
+
+                    // if querying for a single command, print usage.
+                    if (commandId !== null) {
+                        message += "\n" + cmd.usage();
+                    }
+                    return message;
+                })
+                .join(separator)
+        );
 
         for (const split of splitMessage(descs, { prepend: "_ _\n" })) {
             await message.reply(split);

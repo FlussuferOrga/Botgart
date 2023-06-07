@@ -15,7 +15,9 @@ export class Patch6 extends DBPatch {
 
     protected async apply(): Promise<void> {
         this.dbbegin();
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE reset_rosters(
               reset_roster_id INTEGER PRIMARY KEY AUTOINCREMENT, 
               week_number INTEGER NOT NULL,
@@ -23,8 +25,12 @@ export class Patch6 extends DBPatch {
               channel TEXT NOT NULL,
               message TEXT NOT NULL,
               UNIQUE(guild, week_number)         
-            )`).run();
-        this.connection.prepare(`
+            )`
+            )
+            .run();
+        this.connection
+            .prepare(
+                `
             CREATE TABLE reset_leaders(
               reset_leader_id INTEGER PRIMARY KEY AUTOINCREMENT,
               reset_roster_id INTEGER,
@@ -33,7 +39,9 @@ export class Patch6 extends DBPatch {
               FOREIGN KEY(reset_roster_id) REFERENCES reset_rosters(reset_roster_id)
                 ON UPDATE CASCADE
                 ON DELETE CASCADE
-            )`).run();
+            )`
+            )
+            .run();
     }
 
     public async revert(): Promise<void> {

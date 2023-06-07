@@ -12,23 +12,25 @@ import * as L from "../../Locale";
 
 export class MakeFaq extends BotgartCommand {
     constructor() {
-        super("addfaq", {
+        super(
+            "addfaq",
+            {
                 aliases: ["addfaq", "addrtfm"],
                 quoted: true,
                 args: [
                     {
                         id: "keys",
-                        type: (message: discord.Message, es: string) => es ? es.split(";").filter(e => e) : []
+                        type: (message: discord.Message, es: string) => (es ? es.split(";").filter((e) => e) : []),
                     },
                     {
                         id: "text",
-                        type: "string"
-                    }
+                        type: "string",
+                    },
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: true
+                cronable: true,
             }
         );
     }

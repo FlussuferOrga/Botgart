@@ -22,7 +22,7 @@ export class Patch11 extends DBPatch {
         "stats_snapshots",
         "ts_leads",
         "wvw_factions",
-        "wvw_maps"
+        "wvw_maps",
     ];
 
     protected async satisfied(): Promise<boolean> {

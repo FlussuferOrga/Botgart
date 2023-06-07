@@ -10,7 +10,7 @@ if (!String.prototype.formatUnicorn) {
         let str = this.toString();
         if (fnargs.length) {
             const t = typeof fnargs[0];
-            const args = (t === "string" || t === "number") ? Array.prototype.slice.call(fnargs) : fnargs[0];
+            const args = t === "string" || t === "number" ? Array.prototype.slice.call(fnargs) : fnargs[0];
             for (const key in args) {
                 str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
             }

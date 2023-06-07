@@ -9,24 +9,25 @@ const LOG = logger();
  */
 export class DiscordLog extends BotgartCommand {
     constructor() {
-        super("discordlog", {
+        super(
+            "discordlog",
+            {
                 aliases: ["discordlog"],
                 quoted: true,
                 args: [
                     {
                         id: "type",
-                        type: "string"
+                        type: "string",
                     },
                     {
                         id: "channel",
-                        type: "textChannel"
-                    }
-
+                        type: "textChannel",
+                    },
                 ],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: true
+                cronable: true,
             }
         );
     }

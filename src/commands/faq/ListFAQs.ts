@@ -12,10 +12,13 @@ const LOG = logger();
  */
 export class ListFaqs extends BotgartCommand {
     constructor() {
-        super("listfaqs", {
-                aliases: ["listfaqs", "lsfaqs", "lsrtfms"]
-            }, {
-                everyonePermission: 1
+        super(
+            "listfaqs",
+            {
+                aliases: ["listfaqs", "lsfaqs", "lsrtfms"],
+            },
+            {
+                everyonePermission: 1,
             }
         );
     }
@@ -28,19 +31,21 @@ export class ListFaqs extends BotgartCommand {
         const format = "{0} | {1}";
         const header: string = format.formatUnicorn("KEY", "       TEXT      ") + "\n";
         let mes: string = header;
-        this.getBotgartClient().faqRepository.getFAQs(guild.id).forEach((faq) => {
-            const t = faq.text.length < TEASER_LENGTH ? faq.text : faq.text.substring(0, TEASER_LENGTH - 3) + "...";
-            const line = format.formatUnicorn(faq.key, t) + "\n";
-            if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
-                // leave some space for the backticks and additional linebreaks
-                mes += line;
-            } else {
-                // message full -> send it and start a new one
-                mes = "```\n" + mes + "\n```";
-                message.reply(mes);
-                mes = header + line;
-            }
-        });
+        this.getBotgartClient()
+            .faqRepository.getFAQs(guild.id)
+            .forEach((faq) => {
+                const t = faq.text.length < TEASER_LENGTH ? faq.text : faq.text.substring(0, TEASER_LENGTH - 3) + "...";
+                const line = format.formatUnicorn(faq.key, t) + "\n";
+                if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
+                    // leave some space for the backticks and additional linebreaks
+                    mes += line;
+                } else {
+                    // message full -> send it and start a new one
+                    mes = "```\n" + mes + "\n```";
+                    message.reply(mes);
+                    mes = header + line;
+                }
+            });
         message.reply("```\n" + mes + "\n```");
     }
 }

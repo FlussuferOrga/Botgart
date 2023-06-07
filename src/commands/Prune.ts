@@ -12,23 +12,25 @@ const LOG = logger();
 
 export class Prune extends BotgartCommand {
     constructor() {
-        super("prune", {
+        super(
+            "prune",
+            {
                 aliases: ["prune"],
                 args: [
                     {
                         id: "days",
                         type: "integer",
-                        default: -1
+                        default: -1,
                     },
                     {
                         id: "message",
                         type: "string",
-                        default: ""
-                    }
-                ]
+                        default: "",
+                    },
+                ],
             },
             {
-                cronable: true
+                cronable: true,
             }
         );
     }
@@ -38,20 +40,24 @@ export class Prune extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<string | void> {
-        return guild.members.prune({ days: args.days, dry: false, reason: args.message })
-            .then(pruned => {
-                const mes: string = "{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days);
+        return guild.members
+            .prune({ days: args.days, dry: false, reason: args.message })
+            .then((pruned) => {
+                const mes: string = "{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(
+                    pruned,
+                    args.days
+                );
                 LOG.info("{0} members have been pruned after being inactive without role for at least {1} days.".formatUnicorn(pruned, args.days));
                 return mes;
             })
-            .catch(e => {
+            .catch((e) => {
                 LOG.error(e.message);
                 return "An error occurred while pruning: {0}".formatUnicorn(e.message);
             });
     }
 
     async postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<string | void> {
-        return result.then(m => message.reply(m)).catch(LOG.error);
+        return result.then((m) => message.reply(m)).catch(LOG.error);
     }
 }
 

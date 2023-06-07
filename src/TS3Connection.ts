@@ -6,7 +6,6 @@ import { logger } from "./util/Logging";
 
 const LOG = logger();
 
-
 export interface TS3Commander {
     readonly account_name: string;
     readonly ts_cluid: string;
@@ -43,14 +42,14 @@ export class TS3Connection {
             path: "/",
             headers: {
                 "Content-Type": "application/json",
-                "Content-Length": Buffer.byteLength(dataString)
-            }
+                "Content-Length": Buffer.byteLength(dataString),
+            },
         };
-        const settings: HTTPRequestOptions = options === undefined ? defaults : ({ ...defaults, ...options });
+        const settings: HTTPRequestOptions = options === undefined ? defaults : { ...defaults, ...options };
         return new Promise<string>((resolve, reject) => {
             const req = http.request(settings, (response) => {
                 let body = "";
-                response.on("data", (chunk) => body += chunk);
+                response.on("data", (chunk) => (body += chunk));
                 response.on("end", () => resolve(body));
             });
             req.on("error", reject);
@@ -62,21 +61,21 @@ export class TS3Connection {
     public async get(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
-            method: "GET"
+            method: "GET",
         });
     }
 
     public async post(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
-            method: "POST"
+            method: "POST",
         });
     }
 
     public async delete(command: string, args: unknown = {}): Promise<string> {
         return this.request(args, {
             path: command,
-            method: "DELETE"
+            method: "DELETE",
         });
     }
 
@@ -123,7 +122,7 @@ export enum CommanderState {
     COOLDOWN,
     TAG_UP,
     COMMANDER,
-    TAG_DOWN
+    TAG_DOWN,
 }
 
 export type LeadType = "UNKNOWN" | "PPT" | "PPK";
@@ -232,7 +231,6 @@ export class Commander {
         this.broadcastMessage = msg;
     }
 
-
     public getCurrentLeadType(): "UNKNOWN" | "PPT" | "PPK" {
         return this.currentLeadType;
     }
@@ -250,7 +248,14 @@ export class Commander {
         return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (this.getRaidStart() as moment.Moment).valueOf()) / 1000 : 0;
     }
 
-    public constructor(accountName: string, ts3DisplayName: string, ts3clientUID: string, ts3channel: string, ts3channelPath: string[], ts3joinUrl: string) {
+    public constructor(
+        accountName: string,
+        ts3DisplayName: string,
+        ts3clientUID: string,
+        ts3channel: string,
+        ts3channelPath: string[],
+        ts3joinUrl: string
+    ) {
         this.accountName = accountName;
         this.ts3DisplayName = ts3DisplayName;
         this.ts3clientUID = ts3clientUID;
@@ -283,11 +288,11 @@ export class CommanderStorage {
     }
 
     public getActiveCommanders(): Commander[] {
-        return this.commanders.filter(c => c.getState() === CommanderState.COMMANDER);
+        return this.commanders.filter((c) => c.getState() === CommanderState.COMMANDER);
     }
 
     public getCommanderByTS3UID(ts3uid: string) {
-        return this.commanders.find(c => c.getTS3ClientUID() === ts3uid);
+        return this.commanders.find((c) => c.getTS3ClientUID() === ts3uid);
     }
 
     public addCommander(commander: Commander) {
@@ -295,7 +300,8 @@ export class CommanderStorage {
             this.commanders.push(commander);
         } else {
             LOG.warn(
-                `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`);
+                `Tried to add commander to the cache whose TS3UID ${commander.getTS3ClientUID()} was already present. The old object was retained and no update was done!`
+            );
         }
     }
 
@@ -308,7 +314,7 @@ export class CommanderStorage {
     }
 
     public setMinus(stillUp: Set<string>): Commander[] {
-        LOG.debug(`Calling setMinus on current commanders ${this.commanders.map(c => c.getTS3ClientUID())}`);
-        return this.commanders.filter(c => !stillUp.has(c.getTS3ClientUID()));
+        LOG.debug(`Calling setMinus on current commanders ${this.commanders.map((c) => c.getTS3ClientUID())}`);
+        return this.commanders.filter((c) => !stillUp.has(c.getTS3ClientUID()));
     }
 }

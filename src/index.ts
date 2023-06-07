@@ -16,7 +16,7 @@ const args = CommandLineArgs.default([
     { name: "verbose", alias: "v", type: Boolean },
     { name: "patch", type: String, multiple: true },
     { name: "revert", type: Boolean },
-    { name: "patchall", type: String }
+    { name: "patchall", type: String },
 ]);
 
 async function run(args) {
@@ -40,7 +40,7 @@ async function run(args) {
         if (p === undefined) {
             LOG.warn(`No patch ${args.patch} could be found to apply/revert.`);
         } else {
-            await new DatabasePatcher(database).applyPatch(p as (typeof DBPatch), args.revert === true);
+            await new DatabasePatcher(database).applyPatch(p as typeof DBPatch, args.revert === true);
         }
     }
     await runApp(database);

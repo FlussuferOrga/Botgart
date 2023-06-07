@@ -33,9 +33,7 @@ export function escapeRegExp(text: string) {
  *          "foo" -> "Foo", "Foo" -> "Foo", "foo bar" -> "Foo bar"
  */
 export function capitalise(word: string) {
-    return word.length === 0
-        ? word
-        : word.charAt(0).toUpperCase() + word.slice(1);
+    return word.length === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1);
 }
 
 export function determineTier(yaksDelivered: number) {
@@ -53,14 +51,13 @@ export function determineTier(yaksDelivered: number) {
  or false, if the input could not be parsed to either format.
  */
 export function parseCronDate(input: string, dateFomat = "DD.MM.YYYY H:m"): string | moment.Moment | boolean {
-    if (input === "") { // empty strings are "valid dates"
+    if (input === "") {
+        // empty strings are "valid dates"
         return false;
     }
     let res: string | moment.Moment | boolean = moment(input, dateFomat, true);
     if (!res.isValid()) {
-        res = /^(\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*)$/.test(input)
-            ? input
-            : false;
+        res = /^(\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*) (\d{1,2}|\*)$/.test(input) ? input : false;
     }
     return res;
 }
@@ -74,9 +71,7 @@ export function parseCronDate(input: string, dateFomat = "DD.MM.YYYY H:m"): stri
  * returns: true if both dates are equal in day, month, and year
  */
 export function compareDatesWithoutTime(d1: Date, d2: Date) {
-    return d1.getUTCDate() == d2.getUTCDate()
-        && d1.getUTCMonth() == d2.getUTCMonth()
-        && d1.getUTCFullYear() == d2.getUTCFullYear();
+    return d1.getUTCDate() == d2.getUTCDate() && d1.getUTCMonth() == d2.getUTCMonth() && d1.getUTCFullYear() == d2.getUTCFullYear();
 }
 
 export function formatUserPing(uid: string) {
@@ -91,11 +86,11 @@ export async function asyncForEach<T>(array: T[], callback: (item: T, index?: nu
 
 export function setEqual<T>(s1: Set<T>, s2: Set<T>): boolean {
     // https://stackoverflow.com/a/44827922
-    return s1.size === s2.size && [...s1].every(value => s2.has(value));
+    return s1.size === s2.size && [...s1].every((value) => s2.has(value));
 }
 
 export function setMinus<T>(s1: Iterable<T>, s2: Set<T>): Set<T> {
-    return new Set(Array.from(s1).filter(x => !s2.has(x)));
+    return new Set(Array.from(s1).filter((x) => !s2.has(x)));
 }
 
 export interface Equalable<T> {
@@ -148,7 +143,7 @@ export class GeneralSet<T extends Equalable<T>> implements Iterable<T> {
 }
 
 export function findRole(guild: Guild, roleName: string): Role | undefined {
-    return guild.roles.cache.find(r => r.name === roleName);
+    return guild.roles.cache.find((r) => r.name === roleName);
 }
 
 export type SplitOptions = {
@@ -164,29 +159,24 @@ export type SplitOptions = {
  * @param {SplitOptions} [options] Options controlling the behavior of the split
  * @returns {string[]}
  */
-export function splitMessage(text: string, {
-    maxLength = 2_000,
-    char = "\n",
-    prepend = "",
-    append = ""
-}: SplitOptions = {}) {
+export function splitMessage(text: string, { maxLength = 2_000, char = "\n", prepend = "", append = "" }: SplitOptions = {}) {
     // eslint-disable-next-line no-param-reassign
     text = verifyString(text);
     if (text.length <= maxLength) return [text];
     let splitText = [text];
     if (Array.isArray(char)) {
-        while (char.length > 0 && splitText.some(elem => elem.length > maxLength)) {
+        while (char.length > 0 && splitText.some((elem) => elem.length > maxLength)) {
             const currentChar = char.shift();
             if (currentChar instanceof RegExp) {
-                splitText = splitText.flatMap(chunk => chunk.match(currentChar) || []);
+                splitText = splitText.flatMap((chunk) => chunk.match(currentChar) || []);
             } else if (currentChar !== undefined) {
-                splitText = splitText.flatMap(chunk => chunk.split(currentChar));
+                splitText = splitText.flatMap((chunk) => chunk.split(currentChar));
             }
         }
     } else {
         splitText = text.split(char);
     }
-    if (splitText.some(elem => elem.length > maxLength)) throw new RangeError("SPLIT_MAX_LEN");
+    if (splitText.some((elem) => elem.length > maxLength)) throw new RangeError("SPLIT_MAX_LEN");
     const messages: string[] = [];
     let msg = "";
     for (const chunk of splitText) {
@@ -196,5 +186,5 @@ export function splitMessage(text: string, {
         }
         msg += (msg && msg !== prepend ? char : "") + chunk;
     }
-    return messages.concat(msg).filter(m => m);
+    return messages.concat(msg).filter((m) => m);
 }

@@ -5,11 +5,9 @@ import * as U from "../util/Util";
 
 chai.use(chaiDateTime);
 
-
 describe("Util - Date", () => {
     it("compare dates without time", () =>
-        assert.isTrue(U.compareDatesWithoutTime(new Date(Date.UTC(2019, 1, 1, 23, 59, 59)),
-            new Date(Date.UTC(2019, 1, 1)))));
+        assert.isTrue(U.compareDatesWithoutTime(new Date(Date.UTC(2019, 1, 1, 23, 59, 59)), new Date(Date.UTC(2019, 1, 1)))));
 
     it("convert twice", () => {
         const orig = "2019-12-12 00:00:00";
@@ -58,7 +56,6 @@ describe("Util - Is Between", () => {
 
     it("is after", () => expect(!U.isBetweenTime(moment("2010-10-20 06:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
 });
-
 
 describe("Util - Crons", () => {
     it("empty string", () => expect(!U.parseCronDate("")));

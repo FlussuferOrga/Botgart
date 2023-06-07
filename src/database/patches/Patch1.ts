@@ -24,7 +24,9 @@ export class Patch1 extends DBPatch {
         // adding a column with NOT NULL constraint to an existing
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE IF NOT EXISTS new_registrations(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user TEXT NOT NULL,
@@ -35,13 +37,19 @@ export class Patch1 extends DBPatch {
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(user, guild) ON CONFLICT REPLACE,
             UNIQUE(guild, api_key)
-        )`).run();
+        )`
+            )
+            .run();
         // move the data over
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             INSERT INTO new_registrations(id, user, guild, api_key, gw2account, registration_role, created)
             SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, ?, r.created 
             FROM registrations AS r 
-        `).run("Flussufer");
+        `
+            )
+            .run("Flussufer");
         // delete old table and rename new one
         this.connection.prepare("DROP TABLE registrations").run();
         this.connection.prepare("ALTER TABLE new_registrations RENAME TO registrations").run();
@@ -54,7 +62,9 @@ export class Patch1 extends DBPatch {
         // adding a column with NOT NULL constraint to an existing
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE IF NOT EXISTS new_registrations(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user TEXT NOT NULL,
@@ -64,13 +74,19 @@ export class Patch1 extends DBPatch {
             created TIMESTAMP DEFAULT (datetime('now','localtime')),
             UNIQUE(user, guild) ON CONFLICT REPLACE,
             UNIQUE(guild, api_key)
-        )`).run();
+        )`
+            )
+            .run();
         // move the data over
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             INSERT INTO new_registrations(id, user, guild, api_key, gw2account, created)
             SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, r.created 
             FROM registrations AS r 
-        `).run();
+        `
+            )
+            .run();
         // delete old table and rename new one
         this.connection.prepare("DROP TABLE registrations").run();
         this.connection.prepare("ALTER TABLE new_registrations RENAME TO registrations").run();

@@ -9,7 +9,7 @@ export class Disabler extends Listener {
     constructor() {
         super("Disabler", {
             emitter: "client",
-            event: "ready"
+            event: "ready",
         });
     }
 
@@ -28,9 +28,15 @@ export class Disabler extends Listener {
 
         const cl: BotgartClient = this.client as BotgartClient;
         let disabled = 0;
-        disabled += getConfig().get().disabled.listeners.reduce((acc, l) => acc + disabler(l, cl.listenerHandler), 0);
-        disabled += getConfig().get().disabled.inhibitors.reduce((acc, l) => acc + disabler(l, cl.inhibitorHandler), 0);
-        disabled += getConfig().get().disabled.commands.reduce((acc, l) => acc + disabler(l, cl.commandHandler), 0);
+        disabled += getConfig()
+            .get()
+            .disabled.listeners.reduce((acc, l) => acc + disabler(l, cl.listenerHandler), 0);
+        disabled += getConfig()
+            .get()
+            .disabled.inhibitors.reduce((acc, l) => acc + disabler(l, cl.inhibitorHandler), 0);
+        disabled += getConfig()
+            .get()
+            .disabled.commands.reduce((acc, l) => acc + disabler(l, cl.commandHandler), 0);
         LOG.info("Done disabling {0} modules as specified by the config.".formatUnicorn(disabled));
     }
 }

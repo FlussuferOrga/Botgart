@@ -25,7 +25,7 @@ export class Database {
                 if (LOG.isVerboseEnabled()) {
                     LOG.verbose(`Sqlite Query: ${message}`, additionalArgs);
                 }
-            }
+            },
         };
         const db = sqlite(this.file, options);
         db.pragma("foreign_keys = ON");

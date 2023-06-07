@@ -10,15 +10,15 @@ export class Patch9 extends DBPatch {
     }
 
     protected async satisfied(): Promise<boolean> {
-        return this.tableExists("fish")
-            && this.tableExists("caught_fish")
-            && this.viewExists("fishing_leaderboard");
+        return this.tableExists("fish") && this.tableExists("caught_fish") && this.viewExists("fishing_leaderboard");
     }
 
     protected async apply(): Promise<void> {
         this.dbbegin();
 
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
           CREATE TABLE fish(
               fish_id INTEGER PRIMARY KEY,
               name TEXT,
@@ -33,9 +33,13 @@ export class Patch9 extends DBPatch {
               CHECK(min_weight > 0),
               CHECK(min_weight < max_weight)
           )
-          `).run();
+          `
+            )
+            .run();
 
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE caught_fish(
                 caught_id INTEGER PRIMARY KEY, 
                 fish_id INTEGER,
@@ -45,9 +49,13 @@ export class Patch9 extends DBPatch {
                 FOREIGN KEY(fish_id) REFERENCES fish(fish_id)
                 ON DELETE CASCADE
             )
-            `).run();
+            `
+            )
+            .run();
 
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE VIEW fishing_leaderboard(user, points) AS 
             SELECT 
                 cf.user, 
@@ -58,10 +66,14 @@ export class Patch9 extends DBPatch {
                   ON cf.fish_id = f.fish_id
             GROUP BY 
                 cf.user
-            `).run();
+            `
+            )
+            .run();
 
         // https://imgur.com/a/Jl7FnBE
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             INSERT INTO fish(name, image, rarity, min_weight, max_weight, points_per_gramm, reel_time_factor) VALUES
   ('odiosis piscis',       'https://i.imgur.com/XO1TV1j.png',  1.9,  100,    300, 2, 1.0), -- blue fish 
   ('minima pulchritudo',   'https://i.imgur.com/U4zWofT.png',  1.9,   50,    120, 2, 1.0), -- lady fish  
@@ -79,7 +91,9 @@ export class Patch9 extends DBPatch {
   ('puer magnus',          'https://i.imgur.com/C4SwLWh.png',  1.6,  200,    400, 2, 1.0), -- puffer
   ('mini minilodon',       'https://i.imgur.com/QzqHxTk.png',  1.5,  300,    360, 2, 0.9), -- baby shark
   ('Can of Tuna',          'https://i.imgur.com/SUHF7Sv.png',  1.7,   20,     40, 1, 2.5)  -- can
-          `).run();
+          `
+            )
+            .run();
     }
 
     public async revert(): Promise<void> {

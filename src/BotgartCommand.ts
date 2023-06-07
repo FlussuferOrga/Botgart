@@ -8,7 +8,7 @@ import { logger } from "./util/Logging";
 export enum PermissionTypes {
     user = "user",
     role = "role",
-    other = "other"
+    other = "other",
 }
 
 interface BotgartCommandOptionsNullable {
@@ -49,9 +49,9 @@ export class BotgartCommand extends akairo.Command {
             availableAsDM: false,
             cronable: false,
             everyonePermission: 0,
-            enabled: true
+            enabled: true,
         };
-        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : ({ ...defaults, ...botgartOptions });
+        const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : { ...defaults, ...botgartOptions };
         this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
@@ -72,7 +72,10 @@ export class BotgartCommand extends akairo.Command {
      *          Useful for generating default locale keys.
      */
     protected snakeCaseName(): string {
-        const match: string | undefined = this.constructor.name.match(/([A-Z][a-z0-9]*)/g)?.map(t => t.toUpperCase()).join("_");
+        const match: string | undefined = this.constructor.name
+            .match(/([A-Z][a-z0-9]*)/g)
+            ?.map((t) => t.toUpperCase())
+            .join("_");
         return match === undefined ? this.constructor.name : match;
     }
 
@@ -107,14 +110,14 @@ export class BotgartCommand extends akairo.Command {
      * @returns - true, if this function thinks the user is allowed to execute the command.
      *
      */
-    public isAllowed(user: (discord.GuildMember | discord.User)) {
+    public isAllowed(user: discord.GuildMember | discord.User) {
         const uid = user.id;
         const gid = user instanceof discord.GuildMember ? user.guild.id : undefined;
-        const roles = user instanceof discord.GuildMember ? user.roles.cache.map(r => r.id) : [];
+        const roles = user instanceof discord.GuildMember ? user.roles.cache.map((r) => r.id) : [];
         const [allowed, perm] = this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, uid, roles, gid);
         // console.log(allowed, perm);
         // console.log(this.isOwner(user), allowed, (perm + this.everyonePermission) > 0)
-        return this.isEnabled() && (this.isOwner(user) || allowed || (perm + this.everyonePermission) > 0);
+        return this.isEnabled() && (this.isOwner(user) || allowed || perm + this.everyonePermission > 0);
     }
 
     /**
@@ -125,7 +128,7 @@ export class BotgartCommand extends akairo.Command {
      * @param user - the user to check.
      * @returns - true, if the user is an owner.
      */
-    public isOwner(user: (discord.GuildMember | discord.User)) {
+    public isOwner(user: discord.GuildMember | discord.User) {
         const ownerIds = getConfig().get().owner_ids; // as string[]; // FIXME: this should actually come out of the config as string[] already
         return Array.isArray(ownerIds) && ownerIds.includes(user.id);
     }
@@ -190,25 +193,30 @@ export class BotgartCommand extends akairo.Command {
     }
 
     /**
-     * This is the method that should actually do the whole execution.
-     * Ideally, exec() just calls this without doing anything else.
-     * That's important to make Commands seemlessly available through
-     * cronjobs, where no context like a Message is available.
-     * Discord objects like Guilds and Channels should also be resolved
-     * within this method to verify that they still exist.
-     * A user could have scheduled a cronjob a week before and since then
-     * the bot may have been kicked from the Guild or the channel could have
-     * been deleted.
-     * @param {Message} message - Message that triggered this command.
-     If the command is run as a cron, this parameter will be null.
-     Each command must check the validity of this parameter themselves if needed.
-     * @param {User} responsible - the User responsible for this command.
-     Either caller or whoever created the cronjob this command is running in.
-     Note the this could fail to resolve and should always be checked for null.
-     * @param {Guild} guild - the Guild on which to execute the command.
-     * @param {map} args - arguments for the command. Each command specifies the format themselves.
-     */
-    public async command(message: discord.Message | null, responsible: discord.User | null, guild: discord.Guild | null, args: Record<string, unknown>): Promise<unknown> {
+   * This is the method that should actually do the whole execution.
+   * Ideally, exec() just calls this without doing anything else.
+   * That's important to make Commands seemlessly available through
+   * cronjobs, where no context like a Message is available.
+   * Discord objects like Guilds and Channels should also be resolved
+   * within this method to verify that they still exist.
+   * A user could have scheduled a cronjob a week before and since then
+   * the bot may have been kicked from the Guild or the channel could have
+   * been deleted.
+   * @param {Message} message - Message that triggered this command.
+   If the command is run as a cron, this parameter will be null.
+   Each command must check the validity of this parameter themselves if needed.
+   * @param {User} responsible - the User responsible for this command.
+   Either caller or whoever created the cronjob this command is running in.
+   Note the this could fail to resolve and should always be checked for null.
+   * @param {Guild} guild - the Guild on which to execute the command.
+   * @param {map} args - arguments for the command. Each command specifies the format themselves.
+   */
+    public async command(
+        message: discord.Message | null,
+        responsible: discord.User | null,
+        guild: discord.Guild | null,
+        args: Record<string, unknown>
+    ): Promise<unknown> {
         throw new Error("command() not implemented.");
     }
 
@@ -228,11 +236,11 @@ export class BotgartCommand extends akairo.Command {
     }
 
     /*
-    * Inverse to serialiseArgs. Has to revert everything that was done there.
-    * @param {string} jsonargs - serialised JSON arguments for the command.
-    *                 NOTE: deserialiseArgs may _not_ modify the arguments by reference!
-    * @returns {Map} the deserialised arguments.
-    */
+     * Inverse to serialiseArgs. Has to revert everything that was done there.
+     * @param {string} jsonargs - serialised JSON arguments for the command.
+     *                 NOTE: deserialiseArgs may _not_ modify the arguments by reference!
+     * @returns {Map} the deserialised arguments.
+     */
     public deserialiseArgs(jsonargs: string): Record<string, unknown> {
         return JSON.parse(jsonargs);
     }
@@ -283,21 +291,21 @@ export class BotgartCommand extends akairo.Command {
      * @param {any} result - the result from command().
      * @returns {any} - is returned to the caller.
      */
-    public postExecHook(message: discord.Message, args: Record<string, unknown>, result: unknown): void {
-    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    public postExecHook(message: discord.Message, args: Record<string, unknown>, result: unknown): void {}
 
     /*
-    * Convenience method to reply from within a command.
-    * If a message is present, the bot will reply to where
-    * the message was received.
-    * Else, it will send a DM to the responsible person.
-    * This is relevent when a command is scheduled as cron
-    * where a message to reply to is not available.
-    * @param {Message} message - the message to reply to, may be null.
-    * @param {User} responsible - the person responsible for the execution of the command.
-    * @param response - the message text to send to the user.
-    * @returns {Promise} - the promise for whichever method was executed.
-    */
+     * Convenience method to reply from within a command.
+     * If a message is present, the bot will reply to where
+     * the message was received.
+     * Else, it will send a DM to the responsible person.
+     * This is relevent when a command is scheduled as cron
+     * where a message to reply to is not available.
+     * @param {Message} message - the message to reply to, may be null.
+     * @param {User} responsible - the person responsible for the execution of the command.
+     * @param response - the message text to send to the user.
+     * @returns {Promise} - the promise for whichever method was executed.
+     */
     public async reply(message: discord.Message, responsible: discord.User, response: string): Promise<discord.Message | discord.Message[]> {
         if (message) {
             return message.reply(response);

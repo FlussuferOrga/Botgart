@@ -31,23 +31,33 @@ export class Patch3 extends DBPatch {
             }
             release();
             LOG.debug("resolved " + accname);
-            this.connection.prepare(`INSERT INTO new_registrations(id, user, guild, api_key, gw2account,
+            this.connection
+                .prepare(
+                    `INSERT INTO new_registrations(id, user, guild, api_key, gw2account,
                                                                    registration_role, account_name, created)
-                                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+                                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+                )
                 .run(r.id, r.user, r.guild, r.api_key, r.gw2account, r.registration_role, accname, r.created);
         }
     }
 
     protected async apply(): Promise<void> {
         const con = this.connection;
-        this.oldCount = (this.connection.prepare(`SELECT COUNT(*) AS c
-                                                  FROM registrations`).get() as { c: number }).c;
+        this.oldCount = (
+            this.connection
+                .prepare(
+                    `SELECT COUNT(*) AS c
+                                                  FROM registrations`
+                )
+                .get() as { c: number }
+        ).c;
         this.dbbegin();
         con.pragma("foreign_keys = OFF");
         // adding a column with NOT NULL constraint to an existing
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
-        con.prepare(`
+        con.prepare(
+            `
             CREATE TABLE IF NOT EXISTS new_registrations
             (
                 id
@@ -92,24 +102,41 @@ export class Patch3 extends DBPatch {
                         guild,
                         api_key
                     )
-            )`).run();
+            )`
+        ).run();
 
-        await this.resolveAccountNames(con.prepare(`SELECT *
-                                                    FROM registrations`).all());
+        await this.resolveAccountNames(
+            con
+                .prepare(
+                    `SELECT *
+                                                    FROM registrations`
+                )
+                .all()
+        );
         // delete old table and rename new one
         con.prepare("DROP TABLE registrations").run();
-        con.prepare(`ALTER TABLE new_registrations
-            RENAME TO registrations`).run();
+        con.prepare(
+            `ALTER TABLE new_registrations
+            RENAME TO registrations`
+        ).run();
         con.pragma("foreign_keys = ON");
     }
 
     public async checkPostconditions(): Promise<boolean> {
-        const newCount = (this.connection.prepare(`SELECT COUNT(*) AS c
-                                                  FROM registrations`).get() as { c: number }).c;
+        const newCount = (
+            this.connection
+                .prepare(
+                    `SELECT COUNT(*) AS c
+                                                  FROM registrations`
+                )
+                .get() as { c: number }
+        ).c;
         const post = this.oldCount === newCount;
         if (!post) {
-            LOG.error("Expected equal number of entries for old and new table. But old table had {0} entries "
-                + "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount));
+            LOG.error(
+                "Expected equal number of entries for old and new table. But old table had {0} entries " +
+                    "while new has {1}. Reverting.".formatUnicorn(this.oldCount, newCount)
+            );
         }
         return post;
     }
@@ -121,7 +148,8 @@ export class Patch3 extends DBPatch {
         // adding a column with NOT NULL constraint to an existing
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
-        con.prepare(`
+        con.prepare(
+            `
             CREATE TABLE IF NOT EXISTS new_registrations
             (
                 id
@@ -164,17 +192,24 @@ export class Patch3 extends DBPatch {
                         guild,
                         api_key
                     )
-            )`).run();
-        this.connection.prepare(`
+            )`
+        ).run();
+        this.connection
+            .prepare(
+                `
             INSERT INTO new_registrations(id, user, guild, api_key, gw2account, registration_role, created)
             SELECT r.id, r.user, r.guild, r.api_key, r.gw2account, r.registration_role, r.created
             FROM registrations AS r
-        `).run();
+        `
+            )
+            .run();
 
         // delete old table and rename new one
         con.prepare("DROP TABLE registrations").run();
-        con.prepare(`ALTER TABLE new_registrations
-            RENAME TO registrations`).run();
+        con.prepare(
+            `ALTER TABLE new_registrations
+            RENAME TO registrations`
+        ).run();
         con.pragma("foreign_keys = ON");
         this.dbcommit();
     }

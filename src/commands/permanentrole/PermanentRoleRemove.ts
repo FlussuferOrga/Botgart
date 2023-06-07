@@ -14,21 +14,19 @@ const LOG = logger();
 export class RemovePermanentRole extends BotgartCommand {
     constructor() {
         super("removepermanentrole", {
-                aliases: ["removepermarole", "removepermanentrole", "rmprole"],
-                args: [
-                    {
-                        id: "member",
-                        type: "member"
-                    },
-                    {
-                        id: "role",
-                        type: "role"
-                    }
-                ],
-                // userPermissions: ["ADMINISTRATOR"]
-
-            }
-        );
+            aliases: ["removepermarole", "removepermanentrole", "rmprole"],
+            args: [
+                {
+                    id: "member",
+                    type: "member",
+                },
+                {
+                    id: "role",
+                    type: "role",
+                },
+            ],
+            // userPermissions: ["ADMINISTRATOR"]
+        });
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
@@ -41,10 +39,18 @@ export class RemovePermanentRole extends BotgartCommand {
         const success = cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
 
         if (success) {
-            LOG.info("Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
+            LOG.info(
+                "Successfully removed role {0} from user {0} in guild {0}.".formatUnicorn(
+                    args.role.name,
+                    args.member.user.username,
+                    message.guild.name
+                )
+            );
             message.reply(L.get("PERMANENT_ROLE_RM_SUCC"));
         } else {
-            LOG.info("Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name));
+            LOG.info(
+                "Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name)
+            );
             message.reply(L.get("PERMANENT_ROLE_RM_FAIL"));
         }
     }

@@ -19,7 +19,9 @@ export class Patch10 extends DBPatch {
         // adding a column with NOT NULL constraint to an existing
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE new_reset_leaders(
               reset_leader_id INTEGER PRIMARY KEY AUTOINCREMENT,
               reset_roster_id INTEGER,
@@ -29,14 +31,20 @@ export class Patch10 extends DBPatch {
               FOREIGN KEY(reset_roster_id) REFERENCES reset_rosters(reset_roster_id)
                 ON UPDATE CASCADE
                 ON DELETE CASCADE
-            )`).run();
+            )`
+            )
+            .run();
 
         // move the data over
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             INSERT INTO new_reset_leaders(reset_leader_id, reset_roster_id, map, player, visible)
             SELECT rl.reset_leader_id, rl.reset_roster_id, rl.map, rl.player, FALSE
             FROM reset_leaders AS rl
-        `).run();
+        `
+            )
+            .run();
         // delete old table and rename new one
         this.connection.prepare("DROP TABLE reset_leaders").run();
         this.connection.prepare("ALTER TABLE new_reset_leaders RENAME TO reset_leaders").run();
@@ -49,7 +57,9 @@ export class Patch10 extends DBPatch {
         // adding a column with NOT NULL constraint to an existing
         // table in SQLite requires creating a temporary table of the new format
         // and moving all the data over: https://www.sqlite.org/lang_altertable.html
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             CREATE TABLE new_reset_leaders(
               reset_leader_id INTEGER PRIMARY KEY AUTOINCREMENT,
               reset_roster_id INTEGER,
@@ -58,14 +68,20 @@ export class Patch10 extends DBPatch {
               FOREIGN KEY(reset_roster_id) REFERENCES reset_rosters(reset_roster_id)
                 ON UPDATE CASCADE
                 ON DELETE CASCADE   
-            )`).run();
+            )`
+            )
+            .run();
 
         // move the data over
-        this.connection.prepare(`
+        this.connection
+            .prepare(
+                `
             INSERT INTO new_reset_leaders(reset_leader_id, reset_roster_id, map, player)
             SELECT rl.reset_leader_id, rl.reset_roster_id, rl.map, rl.player
             FROM reset_leaders AS rl
-        `).run();
+        `
+            )
+            .run();
         // delete old table and rename new one
         this.connection.prepare("DROP TABLE reset_leaders").run();
         this.connection.prepare("ALTER TABLE new_reset_leaders RENAME TO reset_leaders").run();

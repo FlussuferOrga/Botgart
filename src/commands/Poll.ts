@@ -16,13 +16,15 @@ const LOG = logger();
  */
 export class Poll extends BotgartCommand {
     constructor() {
-        super("poll", {
+        super(
+            "poll",
+            {
                 aliases: ["poll", "vote"],
                 quoted: true,
                 args: [
                     {
                         id: "channel",
-                        type: "textChannel"
+                        type: "textChannel",
                     },
                     {
                         id: "question",
@@ -31,12 +33,12 @@ export class Poll extends BotgartCommand {
                     {
                         id: "emotes",
                         // type: "string"
-                        type: (message: discord.Message, emotes: string) => emotes ? emotes.split(" ") : []
-                    }
-                ]
+                        type: (message: discord.Message, emotes: string) => (emotes ? emotes.split(" ") : []),
+                    },
+                ],
             },
             {
-                cronable: true
+                cronable: true,
             }
         );
     }
@@ -53,33 +55,30 @@ export class Poll extends BotgartCommand {
 
     deserialiseArgs(jsonargs) {
         const args = JSON.parse(jsonargs);
-        const guild = this.client.guilds.cache.find(g => g.id == args.channel.guild);
-        args.channel = guild?.channels.cache.find(c => c.id == args.channel.channel);
+        const guild = this.client.guilds.cache.find((g) => g.id == args.channel.guild);
+        args.channel = guild?.channels.cache.find((c) => c.id == args.channel.channel);
         return args;
     }
 
     async command(message, responsible, guild, args) {
-        await args.channel.send(args.question).then(m => {
-                // filter empty strings out beforehand
-                args.emotes.filter(react => react).forEach(react => {
+        await args.channel.send(args.question).then((m) => {
+            // filter empty strings out beforehand
+            args.emotes
+                .filter((react) => react)
+                .forEach((react) => {
                     // works for standard emotes, like ":D" etc
-                    m.react(react).then(
-                        _ => {},
-                        _ => {
-                            const reg = /<a?:[a-zA-Z0-9_]+:(\d+)>/;
-                            const match = react.match(reg);
-                            const customEmote = match ? args.channel.guild.emojis.cache.find(e => e.id === match[1]) : undefined;
+                    m.react(react).catch((_) => {
+                        const reg = /<a?:[a-zA-Z0-9_]+:(\d+)>/;
+                        const match = react.match(reg);
+                        const customEmote = match ? args.channel.guild.emojis.cache.find((e) => e.id === match[1]) : undefined;
 
-                            // could still be garbage or from another server -> just ignore it in that case
-                            if (customEmote) {
-                                m.react(customEmote);
-                            }
+                        // could still be garbage or from another server -> just ignore it in that case
+                        if (customEmote) {
+                            m.react(customEmote);
                         }
-                    );
+                    });
                 });
-            },
-            _ => {
-            });
+        });
         LOG.info("Created poll '{0}'.".formatUnicorn(args.question));
     }
 }

@@ -56,8 +56,8 @@ export class Roster extends events.EventEmitter {
     public findLeader(name: string): ResetLeader[] {
         const leaders: ResetLeader[] = [];
         for (const m of WvwMap.getMaps()) {
-            const [wvwmap, leads] = this.leads[m.name];
-            leaders.push(...Array.from(leads).filter(l => l.name === name));
+            const [, leads] = this.leads[m.name];
+            leaders.push(...Array.from(leads).filter((l) => l.name === name));
         }
         return leaders;
     }
@@ -68,7 +68,7 @@ export class Roster extends events.EventEmitter {
     public getLeaders(): [WvwMap, ResetLeader][] {
         const leaders: [WvwMap, ResetLeader][] = [];
         for (const m of WvwMap.getMaps()) {
-            const [wvwmap, leads] = this.leads[m.name];
+            const [, leads] = this.leads[m.name];
             for (const l of leads) {
                 leaders.push([m, l]);
             }
@@ -130,7 +130,9 @@ export class Roster extends events.EventEmitter {
      * @returns all maps for which no leader has been determined yet.
      */
     private emptyMaps(): WvwMap[] {
-        return Object.keys(this.leads).filter(k => this.leads[k][1].size() === 0).map(k => this.leads[k][0]);
+        return Object.keys(this.leads)
+            .filter((k) => this.leads[k][1].size() === 0)
+            .map((k) => this.leads[k][0]);
     }
 
     /**
@@ -164,12 +166,15 @@ export class Roster extends events.EventEmitter {
         for (const mname in this.leads) {
             const [wvwmap, leads] = this.leads[mname];
             const mapText = `${wvwmap.emote} ${wvwmap.getLocalisedName(" | ", false)}`;
-            const leadsText = leads.size() === 0 ? "-" : Array.from(leads)
-                .map(l => l.isOpenlyVisible() ? `${l.name} 📣` : l.name)
-                .join(", ");
+            const leadsText =
+                leads.size() === 0
+                    ? "-"
+                    : Array.from(leads)
+                          .map((l) => (l.isOpenlyVisible() ? `${l.name} 📣` : l.name))
+                          .join(", ");
             re.addFields([
                 { name: mapText, value: leadsText },
-                { name: "\u200b", value: "\u200b" }
+                { name: "\u200b", value: "\u200b" },
             ]);
         }
         return re;
@@ -182,7 +187,7 @@ export class Roster extends events.EventEmitter {
             result.push(...leads);
         }
 
-        const uniqueResult = [...new Set(result.map(value => value.name))];
+        const uniqueResult = [...new Set(result.map((value) => value.name))];
         if (uniqueResult.length > 0) {
             return uniqueResult.join(",");
         } else {

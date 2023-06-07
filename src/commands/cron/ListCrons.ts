@@ -13,12 +13,14 @@ const LOG = logger();
  */
 export class ListCrons extends BotgartCommand {
     constructor() {
-        super("listcrons", {
+        super(
+            "listcrons",
+            {
                 aliases: ["listcrons", "lscrons"],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                availableAsDM: true
+                availableAsDM: true,
             }
         );
     }
@@ -29,20 +31,25 @@ export class ListCrons extends BotgartCommand {
             return;
         }
         const format = "{0} | {1} | {2} | {3} | {4} | {5} | {6}";
-        const header = format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") + "\n";
+        const header =
+            format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") +
+            "\n";
         let mes = header;
-        this.getBotgartClient().cronJobRepository.getCronJobs().forEach((cron) => {
-            const line = format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
-            if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
-                // leave some space for the backticks and additional linebreaks
-                mes += line;
-            } else {
-                // message full -> send it and start a new one
-                mes = "```\n" + mes + "\n```";
-                message?.reply(mes);
-                mes = header + line;
-            }
-        });
+        this.getBotgartClient()
+            .cronJobRepository.getCronJobs()
+            .forEach((cron) => {
+                const line =
+                    format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
+                if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
+                    // leave some space for the backticks and additional linebreaks
+                    mes += line;
+                } else {
+                    // message full -> send it and start a new one
+                    mes = "```\n" + mes + "\n```";
+                    message?.reply(mes);
+                    mes = header + line;
+                }
+            });
         message?.reply("```\n" + mes + "\n```");
     }
 }

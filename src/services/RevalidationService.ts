@@ -11,22 +11,19 @@ import { Registration } from "../repositories/RegistrationRepository";
 import { logger } from "../util/Logging";
 import { formatUserPing } from "../util/Util";
 
-
 const LOG = logger();
 
 export type CheckResult =
-    { valid: false }
-    |
-    {
-        roleName: string;
-        accountData: AccountData;
-        valid: true;
-    };
+    | { valid: false }
+    | {
+          roleName: string;
+          accountData: AccountData;
+          valid: true;
+      };
 
 export class RevalidationService {
     private static REAUTH_DELAY = 1000;
     private static REAUTH_MAX_PARALLEL_REQUESTS = 3;
-
 
     private static SEM = new Semaphore(RevalidationService.REAUTH_MAX_PARALLEL_REQUESTS);
 
@@ -52,7 +49,7 @@ export class RevalidationService {
             .handleError(async (error, user) => {
                 LOG.error(`Error during validation of ${user.account_name}: ${error}`);
             })
-            .process(async reg => {
+            .process(async (reg) => {
                 const result = await this.checkRegistration(this.worldAssignments, reg);
                 if (result !== undefined) {
                     await this.handle(reg, result);
@@ -63,9 +60,7 @@ export class RevalidationService {
             });
     }
 
-
-    private async checkRegistration(worldAssignments: WorldAssignment[],
-                                    r: Registration): Promise<undefined | CheckResult> {
+    private async checkRegistration(worldAssignments: WorldAssignment[], r: Registration): Promise<undefined | CheckResult> {
         const release = await RevalidationService.SEM.acquire();
         LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
         try {
@@ -102,15 +97,18 @@ export class RevalidationService {
         if (!guild) {
             LOG.error(`Could not find a guild ${registration.guild}. Have I been kicked?`);
         } else {
-            const member: discord.GuildMember | undefined = await guild.members.fetch(registration.user)
-                .catch(ex => {
-                    LOG.error(`Could not retrieve user ${registration.user}: ${ex.message}`);
-                    return undefined;
-                });
+            const member: discord.GuildMember | undefined = await guild.members.fetch(registration.user).catch((ex) => {
+                LOG.error(`Could not retrieve user ${registration.user}: ${ex.message}`);
+                return undefined;
+            });
             const registeredWithRole = registration.registration_role;
             if (!member) {
                 LOG.info(`${registration.user} is no longer part of the discord guild. Deleting their key.`);
-                this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
+                this.client.discordLog(
+                    guild,
+                    RevalidationService.LOG_TYPE_DEAUTHORIZE,
+                    L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole])
+                );
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 return;
             }
@@ -119,13 +117,18 @@ export class RevalidationService {
                 LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
                 await this.client.validationService.setMemberRolesByString(member, [], "Api Key invalid or not authorized Server");
                 this.client.registrationRepository.deleteKey(registration.api_key);
-                this.client.discordLog(guild, RevalidationService.LOG_TYPE_DEAUTHORIZE, L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole]));
+                this.client.discordLog(
+                    guild,
+                    RevalidationService.LOG_TYPE_DEAUTHORIZE,
+                    L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole])
+                );
                 await member.send(L.get("KEY_INVALIDATED"));
             } else if (authResult.valid) {
                 this.updateDatabaseIfRequired(registration, authResult.accountData, authResult.roleName);
-                const admittedRole: discord.Role | undefined = guild.roles.cache.find(r => r.name === authResult.roleName);
-                if (!admittedRole) { // false -> no role should be assigned assigned at all
-                    LOG.error(`Can not find the role "${(authResult.roleName)}" that should be currently used.`);
+                const admittedRole: discord.Role | undefined = guild.roles.cache.find((r) => r.name === authResult.roleName);
+                if (!admittedRole) {
+                    // false -> no role should be assigned assigned at all
+                    LOG.error(`Can not find the role "${authResult.roleName}" that should be currently used.`);
                     throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`);
                 } else {
                     // user transferred to another admitted server -> update role
@@ -138,25 +141,23 @@ export class RevalidationService {
     }
 
     private updateDatabaseIfRequired(registration: Registration, accountData: AccountData, roleName: string) {
-        const outdated = registration.account_name != accountData.name
-            || registration.gw2account != accountData.id
-            || registration.registration_role != roleName;
+        const outdated =
+            registration.account_name != accountData.name || registration.gw2account != accountData.id || registration.registration_role != roleName;
         if (outdated) {
             this.client.registrationRepository.updateRegistration(registration.id, roleName, accountData.name, accountData.id);
             if (LOG.isInfoEnabled()) {
-                LOG.info(`Account Data updated for ${registration.id}`,
-                    {
-                        old: {
-                            account_name: registration.account_name,
-                            gw2account: registration.gw2account,
-                            registration_role: registration.registration_role
-                        },
-                        new: {
-                            account_name: accountData.name,
-                            gw2account: accountData.id,
-                            registration_role: roleName
-                        }
-                    });
+                LOG.info(`Account Data updated for ${registration.id}`, {
+                    old: {
+                        account_name: registration.account_name,
+                        gw2account: registration.gw2account,
+                        registration_role: registration.registration_role,
+                    },
+                    new: {
+                        account_name: accountData.name,
+                        gw2account: accountData.id,
+                        registration_role: roleName,
+                    },
+                });
             }
         }
     }

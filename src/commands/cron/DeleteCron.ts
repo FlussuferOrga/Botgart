@@ -18,16 +18,15 @@ type Args = { id?: number };
 export class DeleteCron extends BotgartCommand {
     constructor() {
         super("deletecron", {
-                aliases: ["deletecron", "rmcron"],
-                args: [
-                    {
-                        id: "id",
-                        type: "integer",
-                    }
-                ],
-                // userPermissions: ["ADMINISTRATOR"]
-            }
-        );
+            aliases: ["deletecron", "rmcron"],
+            args: [
+                {
+                    id: "id",
+                    type: "integer",
+                },
+            ],
+            // userPermissions: ["ADMINISTRATOR"]
+        });
     }
 
     checkArgs(args: Args): string | undefined {
@@ -51,7 +50,9 @@ export class DeleteCron extends BotgartCommand {
         }
 
         // not cronable, can be casted
-        const mes = await this.command(message, message.author, message.guild as discord.Guild, args) ? L.get("CRONJOB_DELETED") : L.get("CRONJOB_NOT_DELETED");
+        const mes = (await this.command(message, message.author, message.guild as discord.Guild, args))
+            ? L.get("CRONJOB_DELETED")
+            : L.get("CRONJOB_NOT_DELETED");
         message.reply(mes);
     }
 

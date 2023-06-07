@@ -16,13 +16,15 @@ const LOG = logger();
  */
 export class Reauthenticate extends BotgartCommand {
     constructor() {
-        super("reauthenticate", {
+        super(
+            "reauthenticate",
+            {
                 aliases: ["reauthenticate", "reauth", "revalidate"],
                 // userPermissions: ['ADMINISTRATOR']
             },
             {
                 availableAsDM: true,
-                cronable: true
+                cronable: true,
             }
         );
     }

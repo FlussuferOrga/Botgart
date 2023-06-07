@@ -19,8 +19,8 @@ export class ValidationService {
 
     public async setMemberRolesByString(member: GuildMember, wantedServerRoleNames: string[], reason?: string) {
         const wantedRoles = wantedServerRoleNames
-            .map(roleName => findRole(member.guild, roleName))
-            .filter(value => value !== undefined) as Role[];
+            .map((roleName) => findRole(member.guild, roleName))
+            .filter((value) => value !== undefined) as Role[];
 
         return this.setMemberRoles(member, wantedRoles, reason);
     }
@@ -30,22 +30,21 @@ export class ValidationService {
         const guild = guildMember.guild;
 
         const discordWorldRoles = this.worldAssignments
-            .map(value => value.role)
-            .map(roleName => findRole(guild, roleName))
-            .filter(value => value !== undefined) as Role[];
+            .map((value) => value.role)
+            .map((roleName) => findRole(guild, roleName))
+            .filter((value) => value !== undefined) as Role[];
 
-        const rolesToRemove = discordWorldRoles
-            .filter(value => !wantedRoles.includes(value));
+        const rolesToRemove = discordWorldRoles.filter((value) => !wantedRoles.includes(value));
 
-        const currentRoles = guildMember.roles.cache.map(value => value);
-        const desiredUserRoles = _.uniq(currentRoles.filter(value => !rolesToRemove.includes(value)).concat(wantedRoles));
+        const currentRoles = guildMember.roles.cache.map((value) => value);
+        const desiredUserRoles = _.uniq(currentRoles.filter((value) => !rolesToRemove.includes(value)).concat(wantedRoles));
 
         if (!_.isEqual(_.sortBy(desiredUserRoles), _.sortBy(currentRoles))) {
-            const toAdd = wantedRoles.filter(wantedRoleId => !currentRoles.includes(wantedRoleId));
-            const toRemove = rolesToRemove.filter(toRemove => currentRoles.includes(toRemove));
+            const toAdd = wantedRoles.filter((wantedRoleId) => !currentRoles.includes(wantedRoleId));
+            const toRemove = rolesToRemove.filter((toRemove) => currentRoles.includes(toRemove));
 
-            const toAddList = toAdd.map(value => value.name).join(",");
-            const toRemoveList = toRemove.map(value => value.name).join(",");
+            const toAddList = toAdd.map((value) => value.name).join(",");
+            const toRemoveList = toRemove.map((value) => value.name).join(",");
             LOG.info(`User roles of ${guildMember.user.tag} need to be updated.\n\tAdd: ${toAddList}\n\tRemove: ${toRemoveList}`);
 
             await guildMember.roles.set(desiredUserRoles, reason);
