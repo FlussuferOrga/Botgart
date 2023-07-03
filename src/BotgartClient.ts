@@ -121,15 +121,15 @@ export class BotgartClient extends akairo.AkairoClient {
      * @param message - the message to log
      * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback.
      */
-    public discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
+    public async discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
         const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
             LOG.debug(
                 "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message)
             );
         } else {
-            channels.forEach((cid) => {
-                const channel: GuildChannel | ThreadChannel | undefined = guild.channels.cache.find((c) => c.id === cid);
+            for (const cid of channels) {
+                const channel: GuildChannel | ThreadChannel | null = await guild.channels.fetch(cid);
                 if (!channel) {
                     LOG.error(
                         `Channel for type '${type}' for guild '${guild.name}' is set to channel '${cid}' in the DB, but no longer present in the guild. Skipping.`
@@ -139,9 +139,9 @@ export class BotgartClient extends akairo.AkairoClient {
                         `Channel '${cid}' in guild '${guild.name}' to log type '${type}' was found, but appears to be a voice channel. Skipping.`
                     );
                 } else {
-                    (channel as discord.TextChannel).send(message);
+                    await (channel as discord.TextChannel).send(message);
                 }
-            });
+            }
         }
     }
 

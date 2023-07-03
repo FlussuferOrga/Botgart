@@ -1,13 +1,13 @@
 import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
-import { getConfig, WorldAssignment } from "../config/Config";
-import { splitMessage } from "../util/Util";
+import {BotgartClient} from "../BotgartClient";
+import {BotgartCommand} from "../BotgartCommand";
+import {getConfig, WorldAssignment} from "../config/Config";
+import {splitMessage} from "../util/Util";
 
 export class FindUnregistered extends BotgartCommand {
     constructor() {
         super("findunregistered", {
-            aliases: ["findunreg"],
+            aliases: ["findunregistered", "findunreg"],
         });
     }
 

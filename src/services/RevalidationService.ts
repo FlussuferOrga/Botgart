@@ -109,7 +109,7 @@ export class RevalidationService {
             });
             if (!member) {
                 LOG.info(`${registration.user} is no longer part of the discord guild. Deleting their key.`);
-                this.client.discordLog(
+                await this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
                     L.get("DLOG_UNAUTH", [
@@ -126,7 +126,7 @@ export class RevalidationService {
                 LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
                 await this.client.validationService.setMemberRolesByWorldAssignment(member, null, "Api Key invalid or not authorized Server");
                 this.client.registrationRepository.deleteKey(registration.api_key);
-                this.client.discordLog(
+                await this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
                     L.get("DLOG_UNAUTH", [

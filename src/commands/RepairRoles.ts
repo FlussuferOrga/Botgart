@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { DesignatedWorlds } from "../repositories/RegistrationRepository";
-import { logger } from "../util/Logging";
+import {BotgartCommand} from "../BotgartCommand";
+import {DesignatedWorlds} from "../repositories/RegistrationRepository";
+import {logger} from "../util/Logging";
 import * as Gw2ApiUtils from "../Gw2ApiUtils";
 
 const LOG = logger();
@@ -17,7 +17,7 @@ export class RepairRoles extends BotgartCommand {
         super(
             "repairroles",
             {
-                aliases: ["rolerepair"],
+                aliases: ["repairroles", "rolerepair"],
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
@@ -33,20 +33,21 @@ export class RepairRoles extends BotgartCommand {
     }
 
     private async repairRoles() {
+        LOG.info(`Starting role repair.`);
+
         const cl = this.getBotgartClient();
         const designations: DesignatedWorlds[] = cl.registrationRepository.getDesignatedRoles();
+        LOG.info(`Found ${designations.length} users to check.`);
+
 
         await Promise.all(
             designations.map(async (d) => {
-                let guild: discord.Guild | undefined = undefined;
-                // designations come ordered by guild. This trick allows us to
-                // find each guild only once.
-                guild = cl.guilds.cache.find((g) => g.id == d.guild);
+                let guild: discord.Guild | null = await cl.guilds.fetch(d.guild);
                 // check again, in case lookup fails
-                if (guild === undefined) {
+                if (guild == null) {
                     LOG.error(`Could not look up a guild with ID ${d.guild}. Have I been kicked?`);
                 } else {
-                    const member: discord.GuildMember = await guild.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
+                    const member: discord.GuildMember | null = await guild.members.fetch(d.user);
                     if (!member) {
                         LOG.error(`User ${d.user} is not present in this guild.`);
                     } else {

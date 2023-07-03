@@ -79,6 +79,7 @@ export class ValidationService {
     }
 
     public async validate(apiKey: string, author: discord.User) {
+        apiKey = apiKey.trim().toUpperCase()
         this.validateKeyFormat(apiKey);
         const accountData = await getAccountInfo(apiKey);
 
@@ -107,16 +108,13 @@ export class ValidationService {
         if (unique) {
             LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(apiKey, member.user.username, member.guild.name, member.guild.id));
             await this.client.validationService.setMemberRolesByWorldAssignment(member, worldAssignment, "Authentication");
-            this.client.discordLog(
+            await this.client.discordLog(
                 member.guild,
                 ValidationService.LOG_TYPE_AUTH,
                 L.get("DLOG_AUTH", [Util.formatUserPing(member.id), accountData.name as string, worldAssignment.role]),
                 false
             );
             return;
-        } else {
-            LOG.info("Duplicate API key {0} on server {1}.".formatUnicorn(apiKey, member.guild.name));
-            throw new KeyNotUniqueError();
         }
     }
 

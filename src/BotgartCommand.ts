@@ -45,6 +45,9 @@ export class BotgartCommand extends akairo.Command {
      */
     constructor(id: string, options: akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
+        if (!options.aliases?.includes(id)){
+            LOG.warn(`Command ${id} is missing the command identity within the aliases`)
+        }
         const defaults: BotgartCommandOptions = {
             availableAsDM: false,
             cronable: false,

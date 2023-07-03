@@ -1,6 +1,6 @@
 import discord from "discord.js";
-import { logger } from "../util/Logging";
-import { AbstractDbRepository } from "./AbstractDbRepository";
+import {logger} from "../util/Logging";
+import {AbstractDbRepository} from "./AbstractDbRepository";
 
 const LOG = logger();
 
@@ -17,18 +17,18 @@ export class RegistrationRepository extends AbstractDbRepository {
             db
                 .prepare(
                     `
-              SELECT id,
-                     user,
-                     guild,
-                     api_key,
-                     gw2account,
-                     current_world_id,
-                     account_name,
-                     created
-              FROM registrations
-              WHERE account_name = ?
-              ORDER BY created DESC
-          `
+                        SELECT id,
+                               user,
+                               guild,
+                               api_key,
+                               gw2account,
+                               current_world_id,
+                               account_name,
+                               created
+                        FROM registrations
+                        WHERE account_name = ?
+                        ORDER BY created DESC
+                    `
                 )
                 .get(accountName)
         );
@@ -45,18 +45,18 @@ export class RegistrationRepository extends AbstractDbRepository {
             db
                 .prepare(
                     `
-              SELECT id,
-                     user,
-                     guild,
-                     api_key,
-                     gw2account,
-                     current_world_id,
-                     account_name,
-                     created
-              FROM registrations
-              WHERE user = ?
-              ORDER BY created DESC
-          `
+                        SELECT id,
+                               user,
+                               guild,
+                               api_key,
+                               gw2account,
+                               current_world_id,
+                               account_name,
+                               created
+                        FROM registrations
+                        WHERE user = ?
+                        ORDER BY created DESC
+                    `
                 )
                 .get(discordUser.id)
         );
@@ -66,23 +66,23 @@ export class RegistrationRepository extends AbstractDbRepository {
         return this.execute((db) => {
             db.prepare("CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)").run();
             const stmt = db.prepare(`INSERT INTO whois(discord_id)
-                               VALUES (?)`);
+                                     VALUES (?)`);
             discordUserIds.forEach((id) => stmt.run(id));
 
             return db
                 .prepare(
                     `
-              SELECT whois.discord_id AS discord_id,
-                     reg.account_name AS account_name
-              FROM whois AS whois
-                       LEFT JOIN registrations AS reg
-                                 ON whois.discord_id = reg.user
-              UNION
-              SELECT user         AS discord_id,
-                     account_name AS account_name
-              FROM registrations
-              WHERE LOWER(account_name) LIKE ('%' || ? || '%')
-          `
+                        SELECT whois.discord_id AS discord_id,
+                               reg.account_name AS account_name
+                        FROM whois AS whois
+                                 LEFT JOIN registrations AS reg
+                                           ON whois.discord_id = reg.user
+                        UNION
+                        SELECT user         AS discord_id,
+                               account_name AS account_name
+                        FROM registrations
+                        WHERE LOWER(account_name) LIKE ('%' || ? || '%')
+                    `
                 )
                 .all(searchString.toLowerCase());
         });
@@ -93,8 +93,8 @@ export class RegistrationRepository extends AbstractDbRepository {
             db
                 .prepare(
                     `SELECT user, guild, current_world_id
-           FROM registrations
-           ORDER BY guild`
+                     FROM registrations
+                     ORDER BY guild`
                 )
                 .all()
         );
@@ -109,15 +109,10 @@ export class RegistrationRepository extends AbstractDbRepository {
         currentWorldId: number
     ): boolean | undefined {
         const sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, current_world_id)
-                 VALUES (?, ?, ?, ?, ?, ?)`;
+                     VALUES (?, ?, ?, ?, ?, ?)`;
         return this.execute((db) => {
-            try {
-                db.prepare(sql).run(user, guild, key, gw2account, accountName, currentWorldId);
-                return true;
-            } catch (err) {
-                LOG.error("Error while trying to store API key: {0}.".formatUnicorn(err.message));
-                return false;
-            }
+            db.prepare(sql).run(user, guild, key, gw2account, accountName, currentWorldId);
+            return true;
         });
     }
 
@@ -127,8 +122,8 @@ export class RegistrationRepository extends AbstractDbRepository {
             db
                 .prepare(
                     `SELECT id, api_key, gw2account, guild, user, current_world_id, account_name
-           FROM registrations
-           ORDER BY id`
+                     FROM registrations
+                     ORDER BY id`
                 )
                 .all()
         );
@@ -143,9 +138,9 @@ export class RegistrationRepository extends AbstractDbRepository {
             db
                 .prepare(
                     `SELECT user
-           FROM registrations
-           WHERE guild = ?
-           ORDER BY user`
+                     FROM registrations
+                     WHERE guild = ?
+                     ORDER BY user`
                 )
                 .all(guildId)
         );
@@ -160,8 +155,8 @@ export class RegistrationRepository extends AbstractDbRepository {
             db.transaction((_) => {
                 db.prepare(
                     `DELETE
-           FROM registrations
-           WHERE api_key = ?`
+                     FROM registrations
+                     WHERE api_key = ?`
                 ).run(key);
                 changes = db.prepare("SELECT changes() AS changes").get().changes;
             })(null);
@@ -174,9 +169,9 @@ export class RegistrationRepository extends AbstractDbRepository {
             db
                 .prepare(
                     `SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account
-           FROM registrations
-           GROUP BY gw2account
-           HAVING count > 1`
+                     FROM registrations
+                     GROUP BY gw2account
+                     HAVING count > 1`
                 )
                 .all()
         ).map((value) => ({
@@ -190,10 +185,10 @@ export class RegistrationRepository extends AbstractDbRepository {
         this.execute((db) => {
             db.prepare(
                 `UPDATE registrations
-         SET current_world_id = ?,
-             account_name      = ?,
-             gw2account        = ?
-         WHERE id = ?`
+                 SET current_world_id = ?,
+                     account_name     = ?,
+                     gw2account       = ?
+                 WHERE id = ?`
             ).run(currentWorldId, accountName, gw2accountId, id);
         });
     }
