@@ -16,7 +16,6 @@ const LOG = logger();
 const args = CommandLineArgs.default([
     { name: "verbose", alias: "v", type: Boolean },
     { name: "patch", type: String, multiple: true },
-    { name: "revert", type: Boolean },
     { name: "patchall", type: String },
 ]);
 
@@ -27,7 +26,7 @@ async function run(args) {
     if ("patchall" in args) {
         LOG.info("Patching Database");
         // node built/index.js --patchall
-        await new DatabasePatcher(database).applyPatches(allPatches, args.revert === true);
+        await new DatabasePatcher(database).applyPatches(allPatches);
         if (args.patchall !== "run") {
             LOG.info("Patching Database done. Shutting down. (Run with --patchall=run to prevent this)");
             return;
@@ -39,9 +38,9 @@ async function run(args) {
         LOG.info(`Patching Database with Patches [${args.patch.join(",")}]`);
         const p: typeof DBPatch | undefined = getPatch(args.patch); // those are classes, not instances, so that they are only instantiated with the DB if needed
         if (p === undefined) {
-            LOG.warn(`No patch ${args.patch} could be found to apply/revert.`);
+            LOG.warn(`No patch ${args.patch} could be found to apply.`);
         } else {
-            await new DatabasePatcher(database).applyPatch(p as typeof DBPatch, args.revert === true);
+            await new DatabasePatcher(database).applyPatch(p as typeof DBPatch);
         }
     }
     await runApp(database);

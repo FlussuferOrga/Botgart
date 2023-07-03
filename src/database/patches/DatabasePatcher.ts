@@ -1,6 +1,6 @@
-import { logger } from "../../util/Logging";
-import { Database } from "../Database";
-import { DBPatch } from "./DBPatch";
+import {logger} from "../../util/Logging";
+import {Database} from "../Database";
+import {DBPatch} from "./DBPatch";
 
 const LOG = logger();
 
@@ -11,7 +11,7 @@ export class DatabasePatcher {
         this.database = database;
     }
 
-    public createPatch<T extends DBPatch>(Type: { new (db: Database): T }, db: Database): T {
+    public createPatch<T extends DBPatch>(Type: { new(db: Database): T }, db: Database): T {
         return new Type(db);
     }
 
@@ -20,15 +20,10 @@ export class DatabasePatcher {
         try {
             patch = this.createPatch(patchName, this.database);
             if (patch) {
-                if (revert) {
-                    LOG.info(`Reverting patch '${patchName.name}'.`);
-                    await patch.revert();
-                    LOG.info("Patch reversion done.");
-                } else {
-                    LOG.info(`Applying patch '${patchName.name}'.`);
-                    await patch.execute();
-                    LOG.info("Patch application done.");
-                }
+                LOG.info(`Applying patch '${patchName.name}'.`);
+                await patch.execute();
+                LOG.info("Patch application done.");
+               
             }
         } finally {
             if (patch !== undefined) {
