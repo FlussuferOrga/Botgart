@@ -17,7 +17,7 @@ export class ConfigError extends UnsuccessfulValidationError {
 function isBadToken(err) {
     if (err.response){
         if (err.response.status == 400){
-            return err.content.text === "invalid key" || err.content.text === "Invalid access token";
+            return err.content.text === "invalid key" || err.content.text === "Invalid access token" || err.content.text === "account does not have game access";
         }
     }
     return false
