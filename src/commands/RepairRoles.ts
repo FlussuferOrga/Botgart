@@ -1,7 +1,8 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
-import { DesignatedRole } from "../repositories/RegistrationRepository";
+import { DesignatedWorlds } from "../repositories/RegistrationRepository";
 import { logger } from "../util/Logging";
+import * as Gw2ApiUtils from "../Gw2ApiUtils";
 
 const LOG = logger();
 
@@ -27,32 +28,33 @@ export class RepairRoles extends BotgartCommand {
     }
 
     public async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, unknown>): Promise<void> {
+        // noinspection ES6MissingAwait
+        this.repairRoles();
+    }
+
+    private async repairRoles() {
         const cl = this.getBotgartClient();
-        const designations: DesignatedRole[] = cl.registrationRepository.getDesignatedRoles();
-        let g: discord.Guild | undefined = undefined;
-        let m: discord.GuildMember;
-        let r: discord.Role | undefined;
-        designations.forEach(async (d) => {
-            if (g === undefined || g.id != d.guild) {
+        const designations: DesignatedWorlds[] = cl.registrationRepository.getDesignatedRoles();
+
+        await Promise.all(
+            designations.map(async (d) => {
+                let guild: discord.Guild | undefined = undefined;
                 // designations come ordered by guild. This trick allows us to
                 // find each guild only once.
-                g = cl.guilds.cache.find((g) => g.id == d.guild);
-            }
-            // check again, in case lookup fails
-            if (g === undefined) {
-                LOG.error(`Could not look up a guild with ID ${d.guild}. Have I been kicked?`);
-            } else {
-                r = g.roles.cache.find((role) => role.name === d.registration_role);
-                m = await g.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
-                if (r === undefined) {
-                    LOG.error(`Was supposed to assign role '${d.registration_role}' to user, but could not find it.`);
-                } else if (!m) {
-                    LOG.error(`User ${d.user} is not present in this guild.`);
+                guild = cl.guilds.cache.find((g) => g.id == d.guild);
+                // check again, in case lookup fails
+                if (guild === undefined) {
+                    LOG.error(`Could not look up a guild with ID ${d.guild}. Have I been kicked?`);
                 } else {
-                    await this.getBotgartClient().validationService.setMemberRoles(m, [r], "Role Repair");
+                    const member: discord.GuildMember = await guild.members.fetch(d.user); // cache.find(member => member.user.id === d.user);
+                    if (!member) {
+                        LOG.error(`User ${d.user} is not present in this guild.`);
+                    } else {
+                        await this.getBotgartClient().validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
+                    }
                 }
-            }
-        });
+            })
+        );
     }
 }
 

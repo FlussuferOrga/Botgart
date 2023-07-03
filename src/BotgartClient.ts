@@ -69,6 +69,7 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.commanders = new CommanderStorage();
         this.ts3listener = new TS3Listener(this);
+
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
         const prefix = getConfig().get().prefix;

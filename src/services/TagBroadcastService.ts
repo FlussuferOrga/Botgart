@@ -4,8 +4,8 @@ import { getConfig } from "../config/Config";
 import * as L from "../Locale";
 import { Commander, LeadType } from "../TS3Connection";
 import { logger } from "../util/Logging";
-
 const LOG = logger();
+import * as Gw2ApiUtils from "../Gw2ApiUtils";
 
 export class TagBroadcastService {
     private readonly ZERO_WIDTH_SPACE = "\u200B";
@@ -38,7 +38,7 @@ export class TagBroadcastService {
                 `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`
             );
         } else {
-            const message = this.generateMessage(g, commander);
+            const message = await this.generateMessage(g, commander);
             const embed = this.createEmbed(commander);
             let send = await textChannel.send({ content: message, embeds: [embed] });
             if (send.crosspostable) {
@@ -49,8 +49,15 @@ export class TagBroadcastService {
         return undefined;
     }
 
-    private generateMessage(g: Guild, commander: Commander) {
-        const role = commander.getRegistration()?.registration_role || "?";
+    private async generateMessage(g: Guild, commander: Commander) {
+        const currentWorldId = commander.getRegistration()?.current_world_id;
+        let role = "?";
+        if (currentWorldId) {
+            const assignment = await this.client.validationService.getAssignmentByWorldId(currentWorldId);
+            if (assignment) {
+                role = assignment.role;
+            }
+        }
         const pingRoleMention = this.generatePingRolesMention(g, commander);
 
         let name = commander.getDiscordMember()?.displayName || commander.getTS3DisplayName();
@@ -95,7 +102,7 @@ export class TagBroadcastService {
         const message = await TagBroadcastService.fetchMessageOrNull(commander);
         if (message) {
             const messageEmbed = this.createEmbed(commander);
-            const msgContent = this.generateMessage(g, commander);
+            const msgContent = await this.generateMessage(g, commander);
             await message.edit({ content: msgContent, embeds: [messageEmbed] });
         }
     }
@@ -186,7 +193,7 @@ export class TagBroadcastService {
                 LOG.info(`Setting Broadcast message status to unknown state due to shutdown: ${message.id}`);
 
                 const messageEmbed = this.createEmbed(commander, false, this.COLOR_UNKNOWN);
-                const msgContent = this.generateMessage(message.guild, commander);
+                const msgContent = await this.generateMessage(message.guild, commander);
                 await message.edit({ content: msgContent, embeds: [messageEmbed] });
             }
         }

@@ -4,7 +4,6 @@ import Timeout from "await-timeout";
 import discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { getConfig, WorldAssignment } from "../config/Config";
-import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import { Registration } from "../repositories/RegistrationRepository";
@@ -16,9 +15,9 @@ const LOG = logger();
 export type CheckResult =
     | { valid: false }
     | {
-          roleName: string;
           accountData: AccountData;
           valid: true;
+          worldAssignment: WorldAssignment;
       };
 
 export class RevalidationService {
@@ -34,7 +33,7 @@ export class RevalidationService {
         this.worldAssignments = getConfig().get().world_assignments;
     }
 
-    private readonly worldAssignments: { world_id: number; role: string }[];
+    private readonly worldAssignments: WorldAssignment[];
 
     /**
      * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
@@ -65,10 +64,15 @@ export class RevalidationService {
         LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
         try {
             const accountData = await getAccountInfo(r.api_key);
-            const validationResult = await Gw2ApiUtils.validateWorld(accountData, worldAssignments);
 
-            if (validationResult !== false) {
-                return { roleName: validationResult.role, accountData: accountData, valid: true };
+            const validationResult = this.client.validationService.getAssignmentByWorldId(accountData.world);
+
+            if (validationResult) {
+                return {
+                    accountData: accountData,
+                    valid: true,
+                    worldAssignment: validationResult,
+                };
             } else {
                 return { valid: false };
             }
@@ -93,6 +97,8 @@ export class RevalidationService {
     private async handle(registration: Registration, authResult: CheckResult) {
         const guild: discord.Guild | null = await this.client.guilds.fetch(registration.guild);
 
+        const current_assignment = await this.client.validationService.getAssignmentByWorldId(registration.current_world_id);
+
         // filter out users for which we encountered errors
         if (!guild) {
             LOG.error(`Could not find a guild ${registration.guild}. Have I been kicked?`);
@@ -101,13 +107,16 @@ export class RevalidationService {
                 LOG.error(`Could not retrieve user ${registration.user}: ${ex.message}`);
                 return undefined;
             });
-            const registeredWithRole = registration.registration_role;
             if (!member) {
                 LOG.info(`${registration.user} is no longer part of the discord guild. Deleting their key.`);
                 this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
-                    L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole])
+                    L.get("DLOG_UNAUTH", [
+                        formatUserPing(registration.user),
+                        registration.account_name,
+                        current_assignment?.role || "world:" + registration.current_world_id,
+                    ])
                 );
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 return;
@@ -115,47 +124,46 @@ export class RevalidationService {
             if (!authResult.valid) {
                 // user should be pruned: user has either transed (false) or deleted their key (invalid key)
                 LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
-                await this.client.validationService.setMemberRolesByString(member, [], "Api Key invalid or not authorized Server");
+                await this.client.validationService.setMemberRolesByWorldAssignment(member, null, "Api Key invalid or not authorized Server");
                 this.client.registrationRepository.deleteKey(registration.api_key);
                 this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
-                    L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name, registeredWithRole])
+                    L.get("DLOG_UNAUTH", [
+                        formatUserPing(registration.user),
+                        registration.account_name,
+                        current_assignment?.role || "world:" + registration.current_world_id,
+                    ])
                 );
                 await member.send(L.get("KEY_INVALIDATED"));
             } else if (authResult.valid) {
-                this.updateDatabaseIfRequired(registration, authResult.accountData, authResult.roleName);
-                const admittedRole: discord.Role | undefined = guild.roles.cache.find((r) => r.name === authResult.roleName);
-                if (!admittedRole) {
-                    // false -> no role should be assigned assigned at all
-                    LOG.error(`Can not find the role "${authResult.roleName}" that should be currently used.`);
-                    throw new Error(`Can not find the role "${registeredWithRole}" that should be currently used.`);
-                } else {
-                    // user transferred to another admitted server -> update role
-                    // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
-                    await this.client.validationService.setMemberRolesByString(member, [admittedRole.name], "ReAuthentication");
-                    // assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
-                }
+                this.updateDatabaseIfRequired(registration, authResult.accountData);
+                // user transferred to another admitted server -> update role
+                // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
+                await this.client.validationService.setMemberRolesByWorldAssignment(member, authResult.worldAssignment, "ReAuthentication");
+                // assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
             }
         }
     }
 
-    private updateDatabaseIfRequired(registration: Registration, accountData: AccountData, roleName: string) {
+    private updateDatabaseIfRequired(registration: Registration, accountData: AccountData) {
         const outdated =
-            registration.account_name != accountData.name || registration.gw2account != accountData.id || registration.registration_role != roleName;
+            registration.account_name != accountData.name ||
+            registration.gw2account != accountData.id ||
+            registration.current_world_id != accountData.world;
         if (outdated) {
-            this.client.registrationRepository.updateRegistration(registration.id, roleName, accountData.name, accountData.id);
+            this.client.registrationRepository.updateRegistration(registration.id, accountData.world, accountData.name, accountData.id);
             if (LOG.isInfoEnabled()) {
                 LOG.info(`Account Data updated for ${registration.id}`, {
                     old: {
                         account_name: registration.account_name,
                         gw2account: registration.gw2account,
-                        registration_role: registration.registration_role,
+                        current_world_id: registration.current_world_id,
                     },
                     new: {
                         account_name: accountData.name,
                         gw2account: accountData.id,
-                        registration_role: roleName,
+                        current_world_id: accountData.world,
                     },
                 });
             }

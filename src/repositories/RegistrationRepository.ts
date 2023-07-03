@@ -22,7 +22,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                      guild,
                      api_key,
                      gw2account,
-                     registration_role,
+                     current_world_id,
                      account_name,
                      created
               FROM registrations
@@ -50,7 +50,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                      guild,
                      api_key,
                      gw2account,
-                     registration_role,
+                     current_world_id,
                      account_name,
                      created
               FROM registrations
@@ -88,11 +88,11 @@ export class RegistrationRepository extends AbstractDbRepository {
         });
     }
 
-    public getDesignatedRoles(): DesignatedRole[] {
+    public getDesignatedRoles(): DesignatedWorlds[] {
         return this.execute((db) =>
             db
                 .prepare(
-                    `SELECT user, guild, registration_role
+                    `SELECT user, guild, current_world_id
            FROM registrations
            ORDER BY guild`
                 )
@@ -100,12 +100,19 @@ export class RegistrationRepository extends AbstractDbRepository {
         );
     }
 
-    public storeAPIKey(user: string, guild: string, key: string, gw2account: string, accountName: string, role: string): boolean | undefined {
-        const sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, registration_role)
+    public storeAPIKey(
+        user: string,
+        guild: string,
+        key: string,
+        gw2account: string,
+        accountName: string,
+        currentWorldId: number
+    ): boolean | undefined {
+        const sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, current_world_id)
                  VALUES (?, ?, ?, ?, ?, ?)`;
         return this.execute((db) => {
             try {
-                db.prepare(sql).run(user, guild, key, gw2account, accountName, role);
+                db.prepare(sql).run(user, guild, key, gw2account, accountName, currentWorldId);
                 return true;
             } catch (err) {
                 LOG.error("Error while trying to store API key: {0}.".formatUnicorn(err.message));
@@ -119,7 +126,7 @@ export class RegistrationRepository extends AbstractDbRepository {
         const execute = this.execute((db) =>
             db
                 .prepare(
-                    `SELECT id, api_key, gw2account, guild, user, registration_role, account_name
+                    `SELECT id, api_key, gw2account, guild, user, current_world_id, account_name
            FROM registrations
            ORDER BY id`
                 )
@@ -179,15 +186,15 @@ export class RegistrationRepository extends AbstractDbRepository {
         }));
     }
 
-    public updateRegistration(id: string, roleName: string, accountName: string, gw2accountId: string) {
+    public updateRegistration(id: string, currentWorldId: number, accountName: string, gw2accountId: string) {
         this.execute((db) => {
             db.prepare(
                 `UPDATE registrations
-         SET registration_role = ?,
+         SET current_world_id = ?,
              account_name      = ?,
              gw2account        = ?
          WHERE id = ?`
-            ).run(roleName, accountName, gw2accountId, id);
+            ).run(currentWorldId, accountName, gw2accountId, id);
         });
     }
 }
@@ -198,13 +205,13 @@ export interface Registration {
     readonly guild: string;
     readonly api_key: string;
     readonly gw2account: string;
-    readonly registration_role: string;
+    readonly current_world_id: number;
     readonly account_name: string;
     readonly created: string;
 }
 
-export interface DesignatedRole {
+export interface DesignatedWorlds {
     readonly user: string;
     readonly guild: string;
-    readonly registration_role: string;
+    readonly current_world_id: number;
 }

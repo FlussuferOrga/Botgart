@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
-import { getConfig } from "../config/Config";
+import { getConfig, WorldAssignment } from "../config/Config";
 import { splitMessage } from "../util/Util";
 
 export class FindUnregistered extends BotgartCommand {
@@ -17,7 +17,7 @@ export class FindUnregistered extends BotgartCommand {
 
         const worldRoleNames = getConfig()
             .get()
-            .world_assignments.map((val) => val.role);
+            .world_assignments.map((val: WorldAssignment) => val.role);
 
         guild.members
             .fetch()

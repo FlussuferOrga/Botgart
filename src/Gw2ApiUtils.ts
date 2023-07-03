@@ -47,24 +47,6 @@ export async function getAccountInfo(apikey: string): Promise<AccountData> {
         }
     }
 }
-
-export async function validateWorld(
-    accountData: AccountData,
-    worldAssignments: WorldAssignment[] = getConfig().get().world_assignments
-): Promise<WorldAssignment | false> {
-    const match = worldAssignments.filter((a) => a.world_id === accountData.world);
-    if (match.length > 1) {
-        // config broken
-        throw new ConfigError();
-    } else if (match.length === 1) {
-        // world admitted -> name of role the user should have
-        return match[0];
-    } else {
-        // world not admitted -> false
-        return false;
-    }
-}
-
 export async function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.

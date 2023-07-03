@@ -1,14 +1,16 @@
 import convict from "convict";
 import fs from "fs";
-import { Memoizer } from "memoizer-ts";
+import {Memoizer} from "memoizer-ts";
 import moment from "moment-timezone";
 import * as Locale from "../Locale";
-import { logger } from "../util/Logging";
-import { isValidGuildWars2AccountHandle, isValidWorldId } from "./Validators";
+import {logger} from "../util/Logging";
+import {isValidGuildWars2AccountHandle, isValidWorldId} from "./Validators";
+import {number} from "typesafe-i18n/formatters";
 
 const LOG = logger();
 
-export type WorldAssignment = { world_id: number; role: string };
+export type WorldAssignment = { world_id: number; role: string, link:boolean };
+
 
 const configSchema = {
     db_location: {
@@ -29,16 +31,12 @@ const configSchema = {
         arg: "prefix",
         env: "command_prefix"
     },
-    home_id: {
-        doc: "HomeWorld ID",
-        format: val => {
-            if (!isValidWorldId(val)) {
-                throw new Error(`World id '${val}' is not a valid world id`);
-            }
-        },
-        default: 2202, // Riverside FTW
-        arg: "home-id",
-        env: "HOME_ID"
+    current_link_role: {
+        doc: "Name of the current link role",
+        format: String,
+        default: "Linkingpartner",
+        arg: "current_link_role",
+        env: "CURRENT_LINK_ROLE"
     },
     locales: {
         doc: "Language",
@@ -59,22 +57,25 @@ const configSchema = {
     },
     world_assignments: {
         doc: "World Role Mapping",
-        format: function (values) {
-            if (!Array.isArray(values)) {
-                throw new Error("must be of type Array");
+        format: 'source-array',
+        default: [],
+        children: {
+            world_id: {
+                doc: "World Id",
+                format: Number,
+                default: null
+            },
+            role: {
+                doc: "Role Name",
+                format: String,
+                default: null
+            },
+            link: {
+                doc: "Is currently a link",
+                format: Boolean,
+                default: false
             }
-            for (const value of values) {
-                if (value.role !== null && !isValidWorldId(value.world_id)) {
-                    throw new Error("World id is not valid");
-                }
-                if (value.role === null && value.role === "") {
-                    throw new Error("Role is not valid");
-                }
-            }
-        },
-        default: [{ "world_id": 2202, "role": "rolename (must exist!)" }],
-        arg: "world-assignments",
-        env: "WORLD_ASSIGNMENTS"
+        }
     },
     owner_ids: {
         format: val => {
@@ -249,6 +250,18 @@ function getConfigPath() {
 
 function loadConfiguration() {
     try {
+        convict.addFormat({
+            name: 'source-array',
+            validate: function(sources, schema) {
+                if (!Array.isArray(sources)) {
+                    throw new Error('must be of type Array');
+                }
+
+                for (const source of sources) {
+                    convict(schema.children).load(source).validate();
+                }
+            }
+        });
         const config = convict(configSchema);
 
         const configPath = getConfigPath();
@@ -258,7 +271,7 @@ function loadConfiguration() {
         }
 
         logConfig(config);
-        config.validate({ allowed: "strict" });// throws error if config does not conform to schema
+        config.validate({allowed: "strict"});// throws error if config does not conform to schema
 
         return config;
     } catch (e) {
