@@ -1,14 +1,27 @@
 import gw2client from "gw2api-client";
-import { getConfig, WorldAssignment } from "./config/Config";
-import { logger } from "./util/Logging";
+import {getConfig, WorldAssignment} from "./config/Config";
+import {logger} from "./util/Logging";
 
-export abstract class UnsuccessfulValidationError extends Error {}
+export abstract class UnsuccessfulValidationError extends Error {
+}
 
-export class NetworkError extends UnsuccessfulValidationError {}
+export class NetworkError extends UnsuccessfulValidationError {
+}
 
-export class InvalidKeyError extends UnsuccessfulValidationError {}
+export class InvalidKeyError extends UnsuccessfulValidationError {
+}
 
-export class ConfigError extends UnsuccessfulValidationError {}
+export class ConfigError extends UnsuccessfulValidationError {
+}
+
+function isBadToken(err) {
+    if (err.response){
+        if (err.response.status == 400){
+            return err.content.text === "invalid key" || err.content.text === "Invalid access token";
+        }
+    }
+    return false
+}
 
 export function createApiInstance() {
     const api = gw2client();
@@ -16,8 +29,14 @@ export function createApiInstance() {
     api.language("en");
 
     // retry some times and be polite about it
-    api.fetch.retry((tries) => tries <= 5);
+    api.fetch.retry((tries, err) => {
+        if (isBadToken(err)) {
+            return tries <= 2
+        }
+        return tries <= 5;
+    });
     api.fetch.retryWait((tries) => tries * 3000);
+
     return api;
 }
 
@@ -32,25 +51,28 @@ export interface AccountData {
 }
 
 export async function getAccountInfo(apikey: string): Promise<AccountData> {
+
+
     try {
         const api = createApiInstance();
         api.authenticate(apikey);
-        return api.account().get();
+        return await api.account().get();
     } catch (err) {
         LOG.error(
             "Encountered an error while trying to validate a key. This is most likely an expected error: {0}".formatUnicorn(JSON.stringify(err))
         );
-        if (err.content.text === "invalid key" || err.content.text === "Invalid access token") {
-            throw new InvalidKeyError();
+        if (isBadToken(err)) {
+            throw new InvalidKeyError("API Key is invalid");
         } else {
-            throw new NetworkError();
+            throw new NetworkError(err);
         }
     }
 }
+
 export async function guildExists(guildname: string): Promise<boolean> {
     // we need to verify by name after looking up the ID
     // because the lookup by ID is case insensitive.
-    return api
+    return await api
         .authenticate(false)
         .guild()
         .search()
