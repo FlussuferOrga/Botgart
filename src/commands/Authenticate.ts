@@ -31,13 +31,13 @@ export class Authenticate extends BotgartCommand {
             {
                 aliases: [LL.en.commands.auth.name(), "register", "authenticate"],
                 description: LL.en.commands.auth.description(),
-                // args: [
-                //     {
-                //         id: "key",
-                //         type: "string",
-                //         default: ""
-                //     },
-                // ],
+                args: [
+                    {
+                        id: "key",
+                        type: "string",
+                        default: ""
+                    },
+                ],
                 slash: true,
                 slashOnly: false,
                 slashEphemeral: true,
