@@ -21,9 +21,6 @@ const args = CommandLineArgs.default([
 ]);
 
 async function run(args) {
-
-    await getAccountInfo("E742FC40-E30C-B34A-AB28-16B5FC39DEF3238E56DC-39D3-4BEF-9056-E65A3B318DEA")
-
     const config = getConfig();
     const database = Database.getInstance(config.get("db_location"));
 
