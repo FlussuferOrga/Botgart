@@ -4,7 +4,6 @@ import { GuildChannel, ThreadChannel } from "discord.js";
 import { BotgartCommand } from "./BotgartCommand";
 import { RosterService } from "./commands/resetlead/RosterService";
 import { getConfig } from "./config/Config";
-import { Database } from "./database/Database";
 import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
 import { CronJobRepository } from "./repositories/CronJobRepository";
 import { FaqRepository } from "./repositories/FaqRepository";
@@ -21,6 +20,9 @@ import { CommanderStorage, TS3Connection } from "./TS3Connection";
 import { TS3Listener } from "./TS3Listener";
 import { logger } from "./util/Logging";
 import { AkairoClientOptions } from "@notenoughupdates/discord-akairo";
+import { MikroORM } from "@mikro-orm/core";
+import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
+import { ExtendedCommandHandler } from "./ExtendedCommandHandler";
 
 const LOG = logger();
 
@@ -47,39 +49,45 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
+    private orm: MikroORM<BetterSqliteDriver>;
 
-    constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, db: Database) {
+    constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, orm: MikroORM<BetterSqliteDriver>) {
         super(options, clientOptions);
+        this.orm = orm;
 
         // Repositories
-        this.fishingRepository = new FishingRepository(db);
-        this.registrationRepository = new RegistrationRepository(db);
-        this.rosterRepository = new RosterRepository(db);
-        this.cronJobRepository = new CronJobRepository(db);
-        this.faqRepository = new FaqRepository(db);
-        this.permanentRoleRepository = new PermanentRoleRepository(db);
-        this.commandPermissionRepository = new CommandPermissionRepository(db);
-        this.logChannelRepository = new LogChannelRepository(db);
+        this.fishingRepository = new FishingRepository(orm);
+        this.registrationRepository = new RegistrationRepository(orm);
+        this.rosterRepository = new RosterRepository(orm);
+        this.cronJobRepository = new CronJobRepository(orm);
+        this.faqRepository = new FaqRepository(orm);
+        this.permanentRoleRepository = new PermanentRoleRepository(orm);
+        this.commandPermissionRepository = new CommandPermissionRepository(orm);
+        this.logChannelRepository = new LogChannelRepository(orm);
 
-        this.cronJobService = new CronJobService(this.cronJobRepository, this);
-        this.rosterService = new RosterService(this.rosterRepository, this);
+        this.cronJobService = new CronJobService(this.cronJobRepository, orm, this);
+        this.rosterService = new RosterService(this.rosterRepository, orm, this);
         this.tagBroadcastService = new TagBroadcastService(this);
         this.validationService = new ValidationService(this);
         this.revalidationService = new RevalidationService(this);
 
         this.commanders = new CommanderStorage();
-        this.ts3listener = new TS3Listener(this);
+        this.ts3listener = new TS3Listener(this, orm);
 
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
         const prefix = getConfig().get().prefix;
-        this.commandHandler = new akairo.CommandHandler(this, {
-            directory: __dirname + "/commands/",
-            prefix: prefix,
-            commandUtil: true,
-            commandUtilLifetime: 600000,
-            autoRegisterSlashCommands: true,
-        });
+        this.commandHandler = new ExtendedCommandHandler(
+            this,
+            {
+                directory: __dirname + "/commands/",
+                prefix: prefix,
+                commandUtil: true,
+                commandUtilLifetime: 600000,
+                autoRegisterSlashCommands: true,
+            },
+            orm
+        );
         this.commandHandler.loadAll();
 
         this.commandHandler.on("cooldown", (message: discord.Message, command: akairo.Command, remaining: number) => {
@@ -122,7 +130,7 @@ export class BotgartClient extends akairo.AkairoClient {
      * @param disposable (optional, default: true) - if FALSE and no channel can be found to log the message, it will be written to the debug-log as fallback.
      */
     public async discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
-        const channels: string[] = this.logChannelRepository.getLogChannels(guild, type);
+        const channels: string[] = await this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
             LOG.debug(
                 "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message)

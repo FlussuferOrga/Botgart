@@ -44,7 +44,7 @@ export class RemoveDiscordLog extends BotgartCommand {
         if (message) {
             await message.react("✅"); // that's a white checkmark, even if not rendered properly...
         }
-        const types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
+        const types: string[] = await cl.logChannelRepository.getLogTypes(guild, textChannel);
         const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name).concat(types.join("\n"));
         await message.reply(desc);
     }

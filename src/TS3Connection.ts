@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
 import * as http from "http";
 import * as moment from "moment";
-import { Registration } from "./repositories/RegistrationRepository";
 import { logger } from "./util/Logging";
+import { Registration } from "./mikroorm/entities/Registration";
 
 const LOG = logger();
 

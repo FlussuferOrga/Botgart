@@ -79,7 +79,7 @@ export class ValidationService {
     }
 
     public async validate(apiKey: string, author: discord.User) {
-        apiKey = apiKey.trim().toUpperCase()
+        apiKey = apiKey.trim().toUpperCase();
         this.validateKeyFormat(apiKey);
         const accountData = await getAccountInfo(apiKey);
 
@@ -97,7 +97,7 @@ export class ValidationService {
     }
 
     private async addVerificationInGuild(member: GuildMember, worldAssignment: WorldAssignment, apiKey: string, accountData: AccountData) {
-        const unique = this.client.registrationRepository.storeAPIKey(
+        const registration = await this.client.registrationRepository.storeAPIKey(
             member.user.id,
             member.guild.id,
             apiKey,
@@ -105,7 +105,7 @@ export class ValidationService {
             accountData.name,
             accountData.world
         ); // this cast should pass, since we either resolved by now or fell back to NULL
-        if (unique) {
+        if (registration !== null) {
             LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(apiKey, member.user.username, member.guild.name, member.guild.id));
             await this.client.validationService.setMemberRolesByWorldAssignment(member, worldAssignment, "Authentication");
             await this.client.discordLog(

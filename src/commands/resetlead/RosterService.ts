@@ -9,6 +9,8 @@ import { ResetLeader } from "./ResetLeader";
 import * as ResetUtil from "./ResetUtil";
 import { Roster } from "./Roster";
 import { WvwMap } from "./WvwMap";
+import { MikroORM, UseRequestContext } from "@mikro-orm/core";
+import { debounce } from "lodash";
 
 const LOG = logger();
 
@@ -25,15 +27,11 @@ export class RosterService {
 
     private rosters: { [key: string]: [discord.Guild, discord.Message, Roster] };
 
-    private syncScheduled: boolean;
-
-    constructor(repository: RosterRepository, client: BotgartClient) {
+    constructor(repository: RosterRepository, private readonly orm: MikroORM, client: BotgartClient) {
         this.repository = repository;
         this.client = client;
 
         this.rosters = {};
-
-        this.syncScheduled = false;
     }
 
     public getCachedRoster(guild: discord.Guild, weekNumber: number, year: number): [discord.Guild, discord.Message, Roster] | undefined {
@@ -56,13 +54,10 @@ export class RosterService {
             return;
         }
         const refreshDelayedFn = (eventRoster: Roster, map: string, p: string) => {
-            const onDelayReached = function (service: RosterService, roster: Roster) {
-                // no arrow function, as we need to bind()!
-                service.refreshGuarded(guild, roster, message);
-            }.bind(null, this, eventRoster);
-
-            // eslint-disable-next-line @typescript-eslint/no-implied-eval
-            setTimeout(onDelayReached, RosterService.UPDATE_DELAY);
+            const wrappedFunc = async function (service: RosterService, roster: Roster) {
+                await service.refreshGuarded(guild, roster, message);
+            };
+            debounce(wrappedFunc.bind(null, this, eventRoster), RosterService.UPDATE_DELAY, { leading: true })();
         };
         roster.on("addleader", refreshDelayedFn);
         roster.on("removeleader", refreshDelayedFn);
@@ -73,16 +68,14 @@ export class RosterService {
     // reduces strain if people are being funny by clicking around wildly
     // and only updates once if someone who was tagged for multiple maps
     // pulls back, instead for once for every map.
-    public refreshGuarded(guild: discord.Guild, roster: Roster, message: discord.Message) {
-        if (this.syncScheduled) return;
-        this.syncScheduled = true;
-        this.refresh(guild, roster, message);
-        this.syncScheduled = false;
+    @UseRequestContext()
+    public async refreshGuarded(guild: discord.Guild, roster: Roster, message: discord.Message) {
+        await this.refresh(guild, roster, message);
     }
 
-    private refresh(guild: discord.Guild, roster: Roster, message: discord.Message) {
-        this.repository.upsertRosterPost(guild, roster, message);
-        message.edit({ content: roster.toMessage(), embeds: [roster.toMessageEmbed()] });
+    private async refresh(guild: discord.Guild, roster: Roster, message: discord.Message) {
+        await this.repository.upsertRosterPost(guild, roster, message);
+        await message.edit({ content: roster.toMessage(), embeds: [roster.toMessageEmbed()] });
 
         if (roster.isUpcoming()) {
             this.syncToTS3(guild, roster);
@@ -133,7 +126,7 @@ export class RosterService {
             });
     }
 
-    public createRoster(guild: discord.Guild, channel: discord.TextChannel, rosterYear, rosterWeek) {
+    public async createRoster(guild: discord.Guild, channel: discord.TextChannel, rosterYear, rosterWeek) {
         const roster = new Roster(rosterWeek, rosterYear);
         channel
             .send({
@@ -145,7 +138,7 @@ export class RosterService {
                     await mes.react(e);
                 }
                 this.storeInRosterCache(roster.weekNumber, roster.year, guild, mes, roster);
-                this.repository.upsertRosterPost(guild, roster, mes); // initial save
+                await this.repository.upsertRosterPost(guild, roster, mes); // initial save
                 this.watchRosterMessageReactions(mes, roster);
                 this.prepareRefresh(guild, mes, roster);
             });
@@ -154,10 +147,11 @@ export class RosterService {
         }
     }
 
+    @UseRequestContext()
     public onStartup() {
         this.client.guilds.cache.forEach((g) => {
-            Promise.all(this.repository.getActiveRosters(g)).then((ars) => {
-                ars.filter(([dbRoster]) => dbRoster !== undefined).forEach(([dbRoster, dbChannel, dbMessage]) => {
+            this.repository.getActiveRosters(g).then((value) => {
+                value.forEach(([dbRoster, dbChannel, dbMessage]) => {
                     this.startup(dbRoster, dbChannel, dbMessage);
                 });
             });
@@ -188,7 +182,8 @@ export class RosterService {
                 LOG.error(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
             } else {
                 const [r, chan, mes] = roster;
-                this.syncToTS3(guild, r);
+
+                this.syncToTS3(guild, r).catch((reason) => LOG.error("Error update TS3:", reason));
             }
         });
     }

@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import {BotgartClient} from "../BotgartClient";
-import {BotgartCommand} from "../BotgartCommand";
-import {getConfig, WorldAssignment} from "../config/Config";
-import {splitMessage} from "../util/Util";
+import { BotgartClient } from "../BotgartClient";
+import { BotgartCommand } from "../BotgartCommand";
+import { getConfig, WorldAssignment } from "../config/Config";
+import { splitMessage } from "../util/Util";
 
 export class FindUnregistered extends BotgartCommand {
     constructor() {
@@ -13,7 +13,7 @@ export class FindUnregistered extends BotgartCommand {
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args) {
         const cl: BotgartClient = this.getBotgartClient();
-        const registrations = cl.registrationRepository.loadUserIds(guild.id);
+        const registrations = await cl.registrationRepository.loadUserIds(guild.id);
 
         const worldRoleNames = getConfig()
             .get()

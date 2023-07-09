@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartCommand, PermissionTypes } from "../../BotgartCommand";
-import { Permission } from "../../repositories/CommandPermissionRepository";
+import { BotgartCommand } from "../../BotgartCommand";
 import { logger } from "../../util/Logging";
 import { createTable } from "../../util/Table";
+import { CommandPermission, PermissionType } from "../../mikroorm/entities/CommandPermission";
 
 const LOG = logger();
 
@@ -27,14 +27,14 @@ export class PermissionList extends BotgartCommand {
 
     private async createTable(guild: discord.Guild) {
         const repo = this.getBotgartClient().commandPermissionRepository;
-        const permissions = repo.getPermissions(guild.id);
+        const permissions = await repo.getPermissions(guild.id);
         return this.remap(permissions).then((value) => createTable(["Id", "Command", "Receiver", "Value"], value));
     }
 
-    private async resolveReceiver(p: Permission) {
+    private async resolveReceiver(p: CommandPermission) {
         const guild = await this.getBotgartClient().guilds.fetch(p.guild);
         switch (p.type) {
-            case PermissionTypes.user: {
+            case PermissionType.user: {
                 const user = await this.getBotgartClient().users.fetch(p.receiver);
                 if (user !== null && user != undefined) {
                     return user.username;
@@ -45,7 +45,7 @@ export class PermissionList extends BotgartCommand {
                 }
                 break;
             }
-            case PermissionTypes.role: {
+            case PermissionType.role: {
                 const role = await guild.roles.fetch(p.receiver);
                 if (role != undefined) {
                     return role.name;
@@ -55,11 +55,11 @@ export class PermissionList extends BotgartCommand {
         return p.receiver;
     }
 
-    private async remap(permissions: Permission[]) {
+    private async remap(permissions: CommandPermission[]) {
         return Promise.all(
             permissions.map(async (p) => {
                 const newVar = await this.resolveReceiver(p);
-                return ["" + p.command_permissions_id, p.command, p.type + ": " + (newVar || "?"), "" + p.value];
+                return ["" + p.commandPermissionsId, p.command, p.type + ": " + (newVar || "?"), "" + p.value];
             })
         );
     }

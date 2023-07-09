@@ -12,10 +12,11 @@ export class PermanentRoleListener extends Listener {
         });
     }
 
-    exec(member) {
+    async exec(member) {
         const cl = this.client as BotgartClient;
         const g = member.guild;
-        cl.permanentRoleRepository.getPermanentRoles(member.user.id, g.id).forEach((roleName) => {
+        const permanentRoles = await cl.permanentRoleRepository.getPermanentRoles(member.user.id, g.id);
+        permanentRoles.forEach((roleName) => {
             const role = g.roles.find((r) => r.name === roleName);
             if (role) {
                 member.addRole(role, "permanent role");

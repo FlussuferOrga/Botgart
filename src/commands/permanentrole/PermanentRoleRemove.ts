@@ -36,7 +36,7 @@ export class RemovePermanentRole extends BotgartCommand {
         }
 
         const cl = this.client as BotgartClient;
-        const success = cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
+        const success = await cl.permanentRoleRepository.deletePermanentRole(args.member.user.id, message.guild.id, args.role.name);
 
         if (success) {
             LOG.info(
@@ -46,12 +46,12 @@ export class RemovePermanentRole extends BotgartCommand {
                     message.guild.name
                 )
             );
-            message.reply(L.get("PERMANENT_ROLE_RM_SUCC"));
+            await message.reply(L.get("PERMANENT_ROLE_RM_SUCC"));
         } else {
             LOG.info(
                 "Could not remove role {0} from user {0} in guild {0}.".formatUnicorn(args.role.name, args.member.user.username, message.guild.name)
             );
-            message.reply(L.get("PERMANENT_ROLE_RM_FAIL"));
+            await message.reply(L.get("PERMANENT_ROLE_RM_FAIL"));
         }
     }
 }

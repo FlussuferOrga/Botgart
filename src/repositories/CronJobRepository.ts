@@ -1,53 +1,23 @@
 import { AbstractDbRepository } from "./AbstractDbRepository";
+import { CronJob } from "../mikroorm/entities/CronJob";
 
 export class CronJobRepository extends AbstractDbRepository {
-    public storeCronJob(job: CronJobEntity): number | undefined {
-        const sql = "INSERT INTO cronjobs(schedule, command, arguments, created_by, guild) VALUES (?, ?, ?, ?, ?)";
-        return this.execute((db) => {
-            let lastId = undefined;
-            db.transaction((_) => {
-                lastId = db.prepare(sql).run(job.schedule, job.command, job.arguments, job.created_by, job.guild).lastInsertRowid;
-            })(null);
-            return lastId;
-        });
+    public async storeCronJob(job: Omit<CronJob, "id" | "created">): Promise<CronJob> {
+        const cronJob = this.orm.em.create(CronJob, { ...job });
+        await this.orm.em.persistAndFlush(cronJob);
+        return cronJob;
     }
 
-    public getCronJobs(): StoredCronJobEntity[] {
-        return this.execute((db) =>
-            db
-                .prepare(
-                    `SELECT *
-                                              FROM cronjobs`
-                )
-                .all()
-        );
+    public async getCronJobs(): Promise<CronJob[]> {
+        return await this.orm.em.getRepository(CronJob).findAll();
     }
 
-    public deleteCronJob(id: number): boolean | undefined {
-        return this.execute((db) => {
-            let changes = 0;
-            db.transaction((_) => {
-                db.prepare(
-                    `DELETE
-                            FROM cronjobs
-                            WHERE id = ?`
-                ).run(id);
-                changes = db.prepare("SELECT changes() AS changes").get().changes;
-            })(null);
-            return changes > 0;
-        });
+    public async deleteCronJob(id: number): Promise<boolean> {
+        const reference = this.orm.em.getReference(CronJob, id);
+        if (reference) {
+            await this.orm.em.remove(reference).flush();
+            return true;
+        }
+        return false;
     }
-}
-
-export class CronJobEntity {
-    schedule: string;
-    command: string;
-    arguments: string;
-    created_by: string;
-    guild: string;
-}
-
-export class StoredCronJobEntity extends CronJobEntity {
-    id: number;
-    created: string;
 }

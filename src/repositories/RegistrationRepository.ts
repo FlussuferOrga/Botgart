@@ -1,8 +1,13 @@
 import discord from "discord.js";
-import {logger} from "../util/Logging";
-import {AbstractDbRepository} from "./AbstractDbRepository";
+import { logger } from "../util/Logging";
+import { AbstractDbRepository } from "./AbstractDbRepository";
+import { Registration } from "../mikroorm/entities/Registration";
+import { expr } from "@mikro-orm/core";
+import { uniq } from "lodash";
 
 const LOG = logger();
+
+type DuplicatesEntry = { gw2account: any; userIds: any; count: any };
 
 export class RegistrationRepository extends AbstractDbRepository {
     /**
@@ -12,26 +17,8 @@ export class RegistrationRepository extends AbstractDbRepository {
      * accountName: GW2 account name.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public getUserByAccountName(accountName: string): Registration | undefined {
-        return this.execute((db) =>
-            db
-                .prepare(
-                    `
-                        SELECT id,
-                               user,
-                               guild,
-                               api_key,
-                               gw2account,
-                               current_world_id,
-                               account_name,
-                               created
-                        FROM registrations
-                        WHERE account_name = ?
-                        ORDER BY created DESC
-                    `
-                )
-                .get(accountName)
-        );
+    public async getUserByAccountName(accountName: string): Promise<Registration | null> {
+        return await this.orm.em.getRepository(Registration).findOne({ account_name: accountName });
     }
 
     /**
@@ -40,173 +27,107 @@ export class RegistrationRepository extends AbstractDbRepository {
      * discordUser: the Discord user to retrieve the account for.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public getUserByDiscordId(discordUser: discord.User): Registration {
-        return this.execute((db) =>
-            db
-                .prepare(
-                    `
-                        SELECT id,
-                               user,
-                               guild,
-                               api_key,
-                               gw2account,
-                               current_world_id,
-                               account_name,
-                               created
-                        FROM registrations
-                        WHERE user = ?
-                        ORDER BY created DESC
-                    `
-                )
-                .get(discordUser.id)
-        );
+    public async getUserByDiscordId(discordUser: discord.User): Promise<Registration | null> {
+        return await this.orm.em.getRepository(Registration).findOne({ user: discordUser.id });
     }
 
-    public whois(searchString: string, discordUserIds: string[]): { discord_id: string; account_name: string }[] {
-        return this.execute((db) => {
-            db.prepare("CREATE TEMP TABLE IF NOT EXISTS whois(discord_id TEXT)").run();
-            const stmt = db.prepare(`INSERT INTO whois(discord_id)
-                                     VALUES (?)`);
-            discordUserIds.forEach((id) => stmt.run(id));
-
-            return db
-                .prepare(
-                    `
-                        SELECT whois.discord_id AS discord_id,
-                               reg.account_name AS account_name
-                        FROM whois AS whois
-                                 LEFT JOIN registrations AS reg
-                                           ON whois.discord_id = reg.user
-                        UNION
-                        SELECT user         AS discord_id,
-                               account_name AS account_name
-                        FROM registrations
-                        WHERE LOWER(account_name) LIKE ('%' || ? || '%')
-                    `
-                )
-                .all(searchString.toLowerCase());
-        });
+    public async whois(
+        searchString: string,
+        guildId: string,
+        discordUserIds: string[]
+    ): Promise<
+        {
+            user: string;
+            account_name: string;
+        }[]
+    > {
+        return uniq([
+            ...(await this.orm.em.find(
+                Registration,
+                {
+                    guild: guildId,
+                    user: { $in: discordUserIds },
+                },
+                { fields: ["account_name", "user"] }
+            )),
+            ...(await this.orm.em.find(
+                Registration,
+                {
+                    guild: guildId,
+                    [expr("lower(account_name)")]: { $like: `%${searchString.toLowerCase()}%` },
+                },
+                { fields: ["account_name", "user"] }
+            )),
+        ]);
     }
 
-    public getDesignatedRoles(): DesignatedWorlds[] {
-        return this.execute((db) =>
-            db
-                .prepare(
-                    `SELECT user, guild, current_world_id
-                     FROM registrations
-                     ORDER BY guild`
-                )
-                .all()
-        );
+    public async getDesignatedRoles(guildId): Promise<DesignatedWorlds[]> {
+        return await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["user", "current_world_id"] });
     }
 
-    public storeAPIKey(
+    public async storeAPIKey(
         user: string,
         guild: string,
         key: string,
         gw2account: string,
         accountName: string,
         currentWorldId: number
-    ): boolean | undefined {
-        const sql = `INSERT INTO registrations(user, guild, api_key, gw2account, account_name, current_world_id)
-                     VALUES (?, ?, ?, ?, ?, ?)`;
-        return this.execute((db) => {
-            db.prepare(sql).run(user, guild, key, gw2account, accountName, currentWorldId);
-            return true;
+    ): Promise<Registration> {
+        return await this.orm.em.upsert(Registration, {
+            guild: guild,
+            user: user,
+            api_key: key,
+            gw2account: gw2account,
+            account_name: accountName,
+            current_world_id: currentWorldId,
         });
     }
 
-    public loadRegistrationsFromDb(): Registration[] {
+    public async loadRegistrationsFromDb(): Promise<Registration[]> {
         LOG.info("Loading all registrations from DB.");
-        const execute = this.execute((db) =>
-            db
-                .prepare(
-                    `SELECT id, api_key, gw2account, guild, user, current_world_id, account_name
-                     FROM registrations
-                     ORDER BY id`
-                )
-                .all()
-        );
-        LOG.info(`Loaded ${execute.length} from DB.`);
-
-        return execute;
+        return await this.orm.em.getRepository(Registration).findAll();
     }
 
-    public loadUserIds(guildId: string): string[] {
+    public async loadUserIds(guildId: string): Promise<string[]> {
         LOG.info(`Loading all user ids for guild ${guildId}`);
-        const execute = this.execute((db) =>
-            db
-                .prepare(
-                    `SELECT user
-                     FROM registrations
-                     WHERE guild = ?
-                     ORDER BY user`
-                )
-                .all(guildId)
-        );
-        LOG.info(`Loaded ${execute.length} user ids from DB.`);
-
-        return execute.map((value) => value.user);
+        const result = await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["user"] });
+        return result.map((d) => d.user);
     }
 
-    public deleteKey(key: string): boolean | undefined {
-        return this.execute((db) => {
-            let changes = 0;
-            db.transaction((_) => {
-                db.prepare(
-                    `DELETE
-                     FROM registrations
-                     WHERE api_key = ?`
-                ).run(key);
-                changes = db.prepare("SELECT changes() AS changes").get().changes;
-            })(null);
-            return changes > 0;
+    public async findDuplicateRegistrations() {
+        const knex = this.orm.em.getKnex();
+        const result = await knex
+            .queryBuilder()
+            .from("registrations")
+            .select(["gw2account", knex.raw("group_concat(user, ',') as users")])
+            .count("* as count")
+            .groupBy("gw2account")
+            .having("count", ">", 1);
+        return result.map((value) => {
+            return {
+                users: value.users.split(","),
+                count: value.count,
+                gw2account: value.gw2account,
+            };
         });
     }
 
-    public findDuplicateRegistrations() {
-        return this.execute((db) =>
-            db
-                .prepare(
-                    `SELECT group_concat(user, ',') AS users, COUNT(*) AS count, gw2account
-                     FROM registrations
-                     GROUP BY gw2account
-                     HAVING count > 1`
-                )
-                .all()
-        ).map((value) => ({
-            userIds: value.users.split(","),
-            count: value.count,
-            gw2account: value.gw2account,
-        }));
-    }
-
-    public updateRegistration(id: string, currentWorldId: number, accountName: string, gw2accountId: string) {
-        this.execute((db) => {
-            db.prepare(
-                `UPDATE registrations
-                 SET current_world_id = ?,
-                     account_name     = ?,
-                     gw2account       = ?
-                 WHERE id = ?`
-            ).run(currentWorldId, accountName, gw2accountId, id);
+    public async updateRegistration(registration: Registration, currentWorldId: number, accountName: string, gw2accountId: string) {
+        const entity = this.orm.em.assign(registration, {
+            current_world_id: currentWorldId,
+            account_name: accountName,
+            gw2account: gw2accountId,
         });
+        await this.orm.em.flush();
+        return entity;
     }
-}
 
-export interface Registration {
-    readonly id: string;
-    readonly user: string;
-    readonly guild: string;
-    readonly api_key: string;
-    readonly gw2account: string;
-    readonly current_world_id: number;
-    readonly account_name: string;
-    readonly created: string;
+    public async delete(registration: Registration) {
+        await this.orm.em.removeAndFlush(registration);
+    }
 }
 
 export interface DesignatedWorlds {
     readonly user: string;
-    readonly guild: string;
     readonly current_world_id: number;
 }

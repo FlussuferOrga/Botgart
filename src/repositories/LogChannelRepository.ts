@@ -1,28 +1,35 @@
 import discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository";
+import { DiscordLogChannel } from "../mikroorm/entities/DiscordLogChannel";
 
 export class LogChannelRepository extends AbstractDbRepository {
-    public getLogChannels(guild: discord.Guild, type: string): string[] {
-        return this.execute((db) => {
-            const channels = db.prepare("SELECT channel FROM discord_log_channels WHERE guild = ? AND type = ?").all(guild.id, type);
-            return channels === undefined ? [] : channels.map((c) => c.channel);
-        });
+    public async getLogChannels(guild: discord.Guild, type: string): Promise<string[]> {
+        const channels = await this.orm.em.find(DiscordLogChannel, { guild: guild.id, type }, { fields: ["channel"] });
+        return channels.map((value) => value.channel);
     }
 
-    public addLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): void {
-        this.execute((db) => db.prepare("INSERT INTO discord_log_channels(guild, type, channel) VALUES(?,?,?)").run(guild.id, type, channel.id));
-    }
-
-    public removeLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): void {
-        this.execute((db) =>
-            db.prepare("DELETE FROM discord_log_channels WHERE guild = ? AND type = ? AND channel = ?").run(guild.id, type, channel.id)
+    public async getLogTypes(guild: discord.Guild, channel: discord.TextChannel): Promise<string[]> {
+        const channels = await this.orm.em.find(
+            DiscordLogChannel,
+            {
+                guild: guild.id,
+                channel: channel.id,
+            },
+            { fields: ["type"] }
         );
+        return channels.map((value) => value.type);
     }
 
-    public getLogTypes(guild: discord.Guild, channel: discord.TextChannel): string[] {
-        return this.execute((db) => {
-            const types = db.prepare("SELECT type FROM discord_log_channels WHERE guild = ? AND channel = ?").all(guild.id, channel.id);
-            return types === undefined ? [] : types.map((t) => t.type);
-        });
+    public async addLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): Promise<DiscordLogChannel> {
+        const logChannel = this.orm.em.create(DiscordLogChannel, { channel: channel.id, type, guild: guild.id });
+        await this.orm.em.persistAndFlush(logChannel);
+        return logChannel;
+    }
+
+    public async removeLogChannel(guild: discord.Guild, type: string, channel: discord.TextChannel): Promise<void> {
+        const logChannel = await this.orm.em.findOne(DiscordLogChannel, { channel: channel.id, type, guild: guild.id });
+        if (logChannel !== null) {
+            await this.orm.em.removeAndFlush(logChannel);
+        }
     }
 }

@@ -52,19 +52,19 @@ export class ResetRoster extends BotgartCommand {
 
         const client = this.getBotgartClient();
 
-        client.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear).then((dbEntry) => {
-            if (dbEntry === undefined) {
-                // no roster for this guild+week -> create one
-                client.rosterService.createRoster(guild, args.channel, rosterYear, rosterWeek);
-            } else {
-                const [dbRoster, dbChannel, dbMessage] = dbEntry;
-                // there is already a roster-post for this guild+week -> do nothing, log warning
-                LOG.warn(
-                    `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`
-                );
-                this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
-            }
-        });
+        const dbEntry = await client.rosterRepository.getRosterPost(guild, rosterWeek, rosterYear);
+
+        if (dbEntry === undefined) {
+            // no roster for this guild+week -> create one
+            await client.rosterService.createRoster(guild, args.channel, rosterYear, rosterWeek);
+        } else {
+            const [dbRoster, dbChannel, dbMessage] = dbEntry;
+            // there is already a roster-post for this guild+week -> do nothing, log warning
+            LOG.warn(
+                `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`
+            );
+            await this.reply(message, responsible, L.get("ROSTER_EXISTS", [dbMessage.url]));
+        }
     }
 
     serialiseArgs(args) {

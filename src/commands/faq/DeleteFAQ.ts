@@ -31,7 +31,7 @@ export class DeleteFaq extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<boolean> {
-        const deleted: boolean = this.getBotgartClient().faqRepository.deleteFAQ(args.key, guild.id) ?? false;
+        const deleted: boolean = (await this.getBotgartClient().faqRepository.deleteFAQ(args.key, guild.id)) ?? false;
         const reply: string = deleted ? L.get("FAQ_DELETED").formatUnicorn(args.key) : L.get("FAQ_NOT_DELETED").formatUnicorn(args.key);
         await this.reply(message, responsible, reply);
         return deleted;

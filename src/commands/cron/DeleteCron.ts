@@ -34,18 +34,18 @@ export class DeleteCron extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Args): Promise<boolean> {
-        return this.deleteCronjob(args.id as number);
+        return await this.deleteCronjob(args.id as number);
     }
 
     async exec(message: discord.Message, args: Args): Promise<void> {
         if (!message.member) {
-            message.reply(L.get("NOT_AVAILABLE_AS_DM"));
+            await message.reply(L.get("NOT_AVAILABLE_AS_DM"));
             return;
         }
 
         const errorMessage = this.checkArgs(args);
         if (errorMessage) {
-            message.reply(errorMessage);
+            await message.reply(errorMessage);
             return;
         }
 
@@ -53,7 +53,7 @@ export class DeleteCron extends BotgartCommand {
         const mes = (await this.command(message, message.author, message.guild as discord.Guild, args))
             ? L.get("CRONJOB_DELETED")
             : L.get("CRONJOB_NOT_DELETED");
-        message.reply(mes);
+        await message.reply(mes);
     }
 
     /**
@@ -61,7 +61,7 @@ export class DeleteCron extends BotgartCommand {
      * @param {int} id - ID of the cronjob to delete
      * @returns {boolean} - whether the cron was deleted from either DB or schedule.
      */
-    deleteCronjob(id: number): boolean {
+    async deleteCronjob(id: number): Promise<boolean> {
         let canceled = false;
         let deletedFromDB = false;
         const cl = this.getBotgartClient();
@@ -71,7 +71,7 @@ export class DeleteCron extends BotgartCommand {
             canceled = true;
             LOG.info("Canceled cronjob with ID {0}.".formatUnicorn(id));
         }
-        if (cl.cronJobRepository.deleteCronJob(id)) {
+        if (await cl.cronJobRepository.deleteCronJob(id)) {
             deletedFromDB = true;
             LOG.info("Deleted cronjob with ID {0} from DB.".formatUnicorn(id));
         }

@@ -81,19 +81,19 @@ export class MakeCron extends BotgartCommand {
         if (!job) {
             return message.util!.send(L.get("CRONJOB_NOT_STORED"));
         } else {
-            const cid = cl.cronJobRepository.storeCronJob({
+            const cronJob = await cl.cronJobRepository.storeCronJob({
                 schedule: schedule,
                 command: mod.id,
                 arguments: mod.serialiseArgs(parsedArgs),
-                created_by: message.member!.user.id,
+                createdBy: message.member!.user.id,
                 guild: message.guild!.id,
             });
-            if (cid === undefined) {
+            if (cronJob === undefined) {
                 LOG.error(`An error was encountered while storing a cronjob for the command ${mod.name}, the DB returned an undefined ID.`);
             } else {
-                cl.cronJobService.scheduledJobs[cid] = job;
-                LOG.info("Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cid));
-                return message.util!.send(L.get("CRONJOB_STORED").formatUnicorn(cid, job.nextInvocation()));
+                cl.cronJobService.scheduledJobs[cronJob.id!] = job;
+                LOG.info("Scheduled new cron of type '{0}' with ID {1}.".formatUnicorn(mod.id, cronJob.id));
+                return message.util!.send(L.get("CRONJOB_STORED").formatUnicorn(cronJob.id, job.nextInvocation()));
             }
             return message.util!.send(L.get("INTERNAL_ERROR"));
         }

@@ -35,21 +35,19 @@ export class ListCrons extends BotgartCommand {
             format.formatUnicorn("ID", "       GUILD      ", "    CREATED BY    ", "    CREATED AT     ", "    TIME   ", "COMMAND", "ARGUMENTS") +
             "\n";
         let mes = header;
-        this.getBotgartClient()
-            .cronJobRepository.getCronJobs()
-            .forEach((cron) => {
-                const line =
-                    format.formatUnicorn(cron.id, cron.guild, cron.created_by, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
-                if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
-                    // leave some space for the backticks and additional linebreaks
-                    mes += line;
-                } else {
-                    // message full -> send it and start a new one
-                    mes = "```\n" + mes + "\n```";
-                    message?.reply(mes);
-                    mes = header + line;
-                }
-            });
+        const cronJobs = await this.getBotgartClient().cronJobRepository.getCronJobs();
+        cronJobs.forEach((cron) => {
+            const line = format.formatUnicorn(cron.id, cron.guild, cron.createdBy, cron.created, cron.schedule, cron.command, cron.arguments) + "\n";
+            if (mes.length + line.length < Const.MAX_MESSAGE_LENGTH - 10) {
+                // leave some space for the backticks and additional linebreaks
+                mes += line;
+            } else {
+                // message full -> send it and start a new one
+                mes = "```\n" + mes + "\n```";
+                message?.reply(mes);
+                mes = header + line;
+            }
+        });
         message?.reply("```\n" + mes + "\n```");
     }
 }

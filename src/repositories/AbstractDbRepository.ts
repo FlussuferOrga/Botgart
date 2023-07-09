@@ -1,13 +1,10 @@
-import { Database } from "../database/Database";
+import { MikroORM } from "@mikro-orm/core";
+import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
 
 export abstract class AbstractDbRepository {
-    private db: Database;
+    protected orm: MikroORM<BetterSqliteDriver>;
 
-    public constructor(db: Database) {
-        this.db = db;
-    }
-
-    protected execute<T>(f: (sqlite3) => T): T | undefined {
-        return this.db.execute(f);
+    public constructor(orm: MikroORM<BetterSqliteDriver>) {
+        this.orm = orm;
     }
 }

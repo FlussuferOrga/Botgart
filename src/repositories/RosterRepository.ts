@@ -6,19 +6,29 @@ import { Roster } from "../commands/resetlead/Roster";
 import { WvwMap } from "../commands/resetlead/WvwMap";
 import { logger } from "../util/Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
+import { ResetRoster } from "../mikroorm/entities/ResetRoster";
+import { ResetLeader as ResetLeaderEntity } from "../mikroorm/entities/ResetLeader";
+
+import { compact } from "lodash";
+import { Guild, GuildBasedChannel, TextChannel } from "discord.js";
 
 const LOG = logger();
 
 type RosterPost = [Roster, discord.TextChannel, discord.Message];
 
 export class RosterRepository extends AbstractDbRepository {
-    public getActiveRosters(guild: discord.Guild): Promise<RosterPost>[] {
-        return this.execute((db) =>
-            db
-                .prepare("SELECT rr.week_number AS wn, rr.year FROM reset_rosters AS rr WHERE week_number >= ? AND year >= ? AND guild = ?")
-                .all(ResetUtil.currentWeek(), moment().utc().year(), guild.id)
-                .map((row) => this.getRosterPost(guild, row.wn, row.year))
-        ).filter((roster) => roster !== undefined);
+    public async getActiveRosters(guild: discord.Guild): Promise<RosterPost[]> {
+        const activeRosters = await this.orm.em.getRepository(ResetRoster).find(
+            {
+                weekNumber: { $gte: ResetUtil.currentWeek() },
+                year: { $gte: moment().utc().year() },
+                guild: guild.id,
+            },
+            { populate: ["leaders"] }
+        );
+
+        const values = activeRosters.map((roster) => this.createRosterObject(roster, guild));
+        return compact(await Promise.all(values));
     }
 
     /**
@@ -29,75 +39,78 @@ export class RosterRepository extends AbstractDbRepository {
      * roster: the roster to upsert. Uniqueness will be determined by week number and year of the roster.
      * message: the message that represents the roster post.
      */
-    public upsertRosterPost(guild: discord.Guild, roster: Roster, message: discord.Message): void {
-        return this.execute((db) => {
-            db.transaction((_) => {
-                const current = db
-                    .prepare("SELECT reset_roster_id AS rrid FROM reset_rosters WHERE guild = ? AND week_number = ? AND year = ?")
-                    .get(guild.id, roster.weekNumber, roster.year);
-                let rosterId = current ? current.rrid : undefined;
-                if (rosterId === undefined) {
-                    // completely new roster -> create new roster and store ID
-                    rosterId = db
-                        .prepare("INSERT INTO reset_rosters(week_number, year, guild, channel, message) VALUES(?,?,?,?,?)")
-                        .run(roster.weekNumber, roster.year, guild.id, message.channel.id, message.id).lastInsertRowid;
-                } else {
-                    // there is already a roster entry -> drop all leaders and insert the current state
-                    db.prepare("DELETE FROM reset_leaders WHERE reset_roster_id = ?").run(rosterId);
-                }
-                const stmt = db.prepare("INSERT INTO reset_leaders(reset_roster_id, player, map, visible) VALUES(?,?,?,?)");
-                roster.getLeaders().forEach(([map, leader]) => stmt.run(rosterId, leader.name, map.name, 0));
-            })(null);
-        });
+    public async upsertRosterPost(guild: discord.Guild, roster: Roster, message: discord.Message): Promise<void> {
+        let entity: ResetRoster;
+
+        const existingEntity = await this.orm.em.findOne(
+            ResetRoster,
+            {
+                guild: guild.id,
+                weekNumber: roster.weekNumber,
+                year: roster.year,
+            },
+            { populate: ["leaders"] }
+        );
+        if (existingEntity === null) {
+            // completely new roster -> create new roster
+            entity = await this.orm.em.create(ResetRoster, {
+                guild: guild.id,
+                weekNumber: roster.weekNumber,
+                year: roster.year,
+                channel: message.channel.id,
+                message: message.id,
+            });
+        } else {
+            // there is already a roster entry -> drop all leaders and insert the current state
+            existingEntity.leaders.removeAll();
+            entity = existingEntity;
+        }
+        this.orm.em.persist(entity);
+
+        roster.getLeaders().forEach(([map, leader]) =>
+            entity.leaders.add(
+                this.orm.em.create(ResetLeaderEntity, {
+                    player: leader.name,
+                    map: map.name,
+                    visible: false,
+                })
+            )
+        );
+
+        await this.orm.em.persistAndFlush(entity);
     }
 
     async getRosterPost(guild: discord.Guild, weekNumber: number, year: number): Promise<undefined | RosterPost> {
-        let postExists = false;
-        const roster = new Roster(weekNumber, year);
-        const entries = this.execute((db) =>
-            db
-                .prepare(
-                    `
-            SELECT rr.reset_roster_id,
-                   rr.week_number,
-                   rr.year,
-                   rr.guild,
-                   rr.channel,
-                   rr.message,
-                   rl.player,
-                   rl.map,
-                   rl.visible
-            FROM reset_rosters AS rr
-                     LEFT JOIN reset_leaders AS rl
-                               ON rr.reset_roster_id = rl.reset_roster_id
-            WHERE rr.guild = ?
-              AND rr.week_number = ?
-              AND rr.year = ?`
-                )
-                .all(guild.id, weekNumber, year)
+        const rosterEntity = await this.orm.em.findOne(
+            ResetRoster,
+            {
+                guild: guild.id,
+                weekNumber: weekNumber,
+                year: year,
+            },
+            { populate: ["leaders"] }
         );
-        entries.forEach((r) => roster.addLead(WvwMap.getMapByName(r.map), new ResetLeader(r.player, r.visible == 1))); // '1' and '0' used in sqlite -> typefree compare
+        return await this.createRosterObject(rosterEntity, guild);
+    }
 
-        let channel: discord.TextChannel | undefined = undefined;
-        let message: discord.Message | undefined = undefined;
-        if (entries.length > 0) {
-            channel = guild.channels.cache.find((c) => c.id === entries[0].channel) as discord.TextChannel;
-            if (channel) {
-                try {
-                    message = await channel.messages.fetch(entries[0].message);
-                    postExists = true;
-                } catch (e) {
-                    LOG.error(`Could not resolve message with ID ${entries[0].message} from channel ${channel.name} in guild ${guild.name}.`);
-                    postExists = false;
-                }
-            }
-            if (!postExists) {
-                // there was a roster in the DB to which there is no accessible roster-post left -> delete from db!
-                this.execute((db) => db.prepare("DELETE FROM reset_leaders WHERE reset_roster_id = ?").run(entries[0].reset_roster_id));
-                this.execute((db) => db.prepare("DELETE FROM reset_rosters WHERE reset_roster_id = ?").run(entries[0].reset_roster_id));
-            }
+    private async createRosterObject(rosterEntity, guild: Guild): Promise<RosterPost | undefined> {
+        if (rosterEntity === null) {
+            return undefined;
+        }
+        const roster = new Roster(rosterEntity.weekNumber, rosterEntity.year);
+        for (const leader of rosterEntity.leaders.getItems()) {
+            roster.addLead(WvwMap.getMapByName(leader.map), new ResetLeader(leader.player, leader.visible));
         }
 
-        return entries && postExists ? [roster as Roster, channel as discord.TextChannel, message as discord.Message] : undefined;
+        const channel: GuildBasedChannel | null = guild.channels.resolve(rosterEntity.channel);
+        if (channel === null || !(channel instanceof TextChannel)) {
+            LOG.error(`Could not resolve channel with ID ${rosterEntity.channel} in guild ${guild.name}.`);
+            return undefined;
+        }
+        const message: discord.Message | undefined = await channel.messages.fetch(rosterEntity.message);
+        if (message === undefined) {
+            return undefined;
+        }
+        return [roster as Roster, channel as discord.TextChannel, message as discord.Message];
     }
 }

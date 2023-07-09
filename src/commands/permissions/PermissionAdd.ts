@@ -1,7 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartCommand, PermissionTypes } from "../../BotgartCommand";
+import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
 import { logger } from "../../util/Logging";
+import { PermissionType } from "../../mikroorm/entities/CommandPermission";
 
 const LOG = logger();
 
@@ -51,17 +52,17 @@ export class PermissionAdd extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const cmd: string = args.command.id;
         const receiver: string = args.receiver.id;
-        const type = args.receiver instanceof discord.Role ? PermissionTypes.role : PermissionTypes.user;
+        const type = args.receiver instanceof discord.Role ? PermissionType.role : PermissionType.user;
         const receiverName = args.receiver instanceof discord.Role ? args.receiver.name : args.receiver.displayName;
         const value = args.value;
-        const perm = this.getBotgartClient().commandPermissionRepository.setPermission(
+        const perm = await this.getBotgartClient().commandPermissionRepository.setPermission(
             cmd,
             receiver,
             type,
             value,
             (message.guild as discord.Guild).id
         );
-        this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm])).catch((err) => LOG.error(err.message));
+        this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm.value])).catch((err) => LOG.error(err.message));
     }
 }
 

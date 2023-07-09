@@ -1,6 +1,7 @@
 import * as discord from "discord.js";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
+import { isEmpty } from "lodash";
 
 /**
  Testcases:
@@ -30,9 +31,12 @@ export class GetFaq extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-        const faq = this.getBotgartClient().faqRepository.getFAQ(args.key, guild.id);
-        const response = faq ? faq.text : L.get("FAQ_NOT_FOUND").formatUnicorn(args.key);
-        await this.reply(message, responsible, response);
+        const faq = await this.getBotgartClient().faqRepository.getFAQ(args.key, guild.id);
+        if (isEmpty(faq)) {
+            await this.reply(message, responsible, L.get("FAQ_NOT_FOUND").formatUnicorn(args.key));
+        } else {
+            await this.reply(message, responsible, faq.text);
+        }
     }
 }
 

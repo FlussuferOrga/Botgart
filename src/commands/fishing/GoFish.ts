@@ -4,7 +4,7 @@ import * as https from "https";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
-import { Fish } from "../../repositories/FishingRepository";
+import { GeneratedFish } from "../../repositories/FishingRepository";
 import { logger } from "../../util/Logging";
 
 /**
@@ -14,7 +14,7 @@ import { logger } from "../../util/Logging";
 const REEL_EMOTE = "🎣";
 const REEL_BASE_TIME = 5000;
 const WAIT_MIN_SECONDS = 10;
-const WAIT_MAX_SECONDS = 150;
+const WAIT_MAX_SECONDS = 5;
 
 async function gets(url: string, options = {}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -40,12 +40,12 @@ async function image(term: string): Promise<string> {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36",
             },
         });
-        LOG.info("Page: " + response);
+        //LOG.info("Page: " + response);
 
         const page = cheerio.load(response);
 
         const links = page("picture source");
-        LOG.info("" + links);
+        //LOG.info("" + links);
         const urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("srcset"));
         image = (urls.length === 0 ? "" : urls[Math.floor(Math.random() * urls.length)]) ?? "";
     } catch (e) {
@@ -58,15 +58,18 @@ class ActiveFisher {
     private client: BotgartClient;
     private fisher: discord.User;
     private message: discord.Message;
-    private fish: Fish;
+    private fish: GeneratedFish;
     private ended: boolean;
 
-    public constructor(client: BotgartClient, fisher: discord.User, message: discord.Message, fish: Fish) {
+    public constructor(client: BotgartClient, fisher: discord.User, fish: GeneratedFish) {
         this.client = client;
         this.fisher = fisher;
-        this.message = message;
         this.fish = fish;
         this.ended = false;
+    }
+
+    public setMessage(message) {
+        this.message = message;
     }
 
     public async createIdleEmbed(): Promise<discord.EmbedBuilder> {
@@ -103,7 +106,7 @@ class ActiveFisher {
     }
 
     public async bite(): Promise<void> {
-        await this.message.edit({ embeds: [await this.createBittenEmbed()] });
+        //await this.message.edit({embeds: [await this.createBittenEmbed()]});
         await this.message.react(REEL_EMOTE);
         this.message
             .createReactionCollector({
@@ -120,7 +123,7 @@ class ActiveFisher {
 
         let embed: discord.EmbedBuilder;
         if (reeled) {
-            this.client.fishingRepository.catchFish(this.fisher, this.fish);
+            await this.client.fishingRepository.catchFish(this.fisher, this.fish);
             embed = await this.createCaughtEmbed();
         } else {
             embed = await this.createEscapedEmbed();
@@ -146,11 +149,11 @@ export class GoFish extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-        const fish: Fish = this.getBotgartClient().fishingRepository.getRandomFish();
+        const fish: GeneratedFish = await this.getBotgartClient().fishingRepository.getRandomFish();
 
-        await message.reply(":fish:").then(async (message) => {
-            const af = new ActiveFisher(this.getBotgartClient(), responsible, message, fish);
-            await message.edit({ embeds: [await af.createIdleEmbed()] });
+        const af = new ActiveFisher(this.getBotgartClient(), responsible, fish);
+        await message.reply({ content: ":fish:", embeds: [await af.createIdleEmbed()] }).then(async (message) => {
+            af.setMessage(message);
             setTimeout((_) => af.bite(), Math.floor(Math.random() * 1000 * (WAIT_MAX_SECONDS - WAIT_MIN_SECONDS + 1) + WAIT_MIN_SECONDS));
         });
     }

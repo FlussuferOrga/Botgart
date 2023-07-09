@@ -236,7 +236,7 @@ function logConfig(config) {
 
     // probably we shouldn't log a token.
     configJsonString = configJsonString.replace(config.get().token, "***REDACTED***");
-    LOG.debug(`Resolved Configuration:\n${configJsonString}`);
+    LOG.verbose(`Resolved Configuration:\n${configJsonString}`);
 }
 
 function getConfigPath() {

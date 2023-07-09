@@ -1,41 +1,29 @@
 import { logger } from "../util/Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
+import { PermanentRole } from "../mikroorm/entities/PermanentRole";
 
 const LOG = logger();
 
 export class PermanentRoleRepository extends AbstractDbRepository {
-    public storePermanentRole(user: string, guild: string, role: string): boolean {
-        const sql = "INSERT INTO permanent_roles(guild, user, role) VALUES(?,?,?)";
-        return this.execute((db) => {
-            try {
-                db.prepare(sql).run(guild, user, role);
-                return true;
-            } catch (err) {
-                LOG.error("Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
-                return false;
-            }
-        }) as boolean;
+    public async storePermanentRole(user: string, guild: string, role: string): Promise<PermanentRole> {
+        return await this.orm.em.getRepository(PermanentRole).upsert({
+            guild,
+            user,
+            role,
+        });
     }
 
-    public getPermanentRoles(user: string, guild: string): string[] {
-        return this.execute((db) =>
-            db
-                .prepare("SELECT role FROM permanent_roles WHERE guild = ? AND user = ?")
-                .all(guild, user)
-                .map((r) => r.role)
-        );
+    public async getPermanentRoles(user: string, guild: string): Promise<string[]> {
+        const roles = await this.orm.em.getRepository(PermanentRole).find({ guild: guild, user: user }, { fields: ["role"] });
+        return roles.map((value) => value.role);
     }
 
-    public deletePermanentRole(user: string, guild: string, role: string): boolean {
-        const sql = "DELETE FROM permanent_roles WHERE guild = ? AND user = ? AND role = ?";
-        return this.execute((db) => {
-            try {
-                db.prepare(sql).run(guild, user, role);
-                return true;
-            } catch (err) {
-                LOG.error("Error while trying to store permanent role: {0}.".formatUnicorn(err.message));
-                return false;
-            }
-        }) as boolean;
+    public async deletePermanentRole(user: string, guild: string, role: string): Promise<boolean> {
+        const permRole = await this.orm.em.findOne(PermanentRole, { guild, user, role });
+        if (permRole !== null) {
+            await this.orm.em.removeAndFlush(permRole);
+            return true;
+        }
+        return false;
     }
 }

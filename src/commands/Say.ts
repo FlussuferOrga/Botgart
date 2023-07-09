@@ -52,7 +52,7 @@ export class Say extends BotgartCommand {
                 LOG.error("Can not find a channel {0}.".formatUnicorn(args.channel.id));
                 result = false;
             } else {
-                c.send(args.text);
+                await c.send(args.text);
                 LOG.info("Executed Say.");
                 result = true;
             }

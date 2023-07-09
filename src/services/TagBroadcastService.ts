@@ -5,7 +5,6 @@ import * as L from "../Locale";
 import { Commander, LeadType } from "../TS3Connection";
 import { logger } from "../util/Logging";
 const LOG = logger();
-import * as Gw2ApiUtils from "../Gw2ApiUtils";
 
 export class TagBroadcastService {
     private readonly ZERO_WIDTH_SPACE = "\u200B";

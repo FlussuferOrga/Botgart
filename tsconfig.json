@@ -8,9 +8,7 @@
     "baseUrl": "./src",
     "sourceMap": true,
     "experimentalDecorators": true,
-    "paths": {
-      "config.json": ["../config/config.json", "../config.json"]
-    },
+    "emitDecoratorMetadata": true,
     "module": "commonjs",
     "resolveJsonModule": true,
     "esModuleInterop": true,

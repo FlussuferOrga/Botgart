@@ -33,7 +33,7 @@ export class FishingLadder extends BotgartCommand {
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const length = 10;
-        const ladder: FishLadderEntry[] = this.getBotgartClient().fishingRepository.fishLadder(length);
+        const ladder: FishLadderEntry[] = await this.getBotgartClient().fishingRepository.fishLadder(length);
 
         Promise.all(
             ladder.map((fle) =>

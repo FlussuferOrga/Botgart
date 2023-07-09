@@ -26,7 +26,7 @@ export class Whois extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-        let res: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[];
+        let res: { account_name: string; member: discord.GuildMember | undefined; user: string }[];
 
         if (args?.name instanceof discord.GuildMember) {
             res = await this.queryUser(args.name);
@@ -96,20 +96,26 @@ export class Whois extends BotgartCommand {
 
         const matchingDiscordMembers = members.filter((member) => Whois.matches(member, namedEscaped)).map((value) => value.user.id);
 
-        const res = this.getBotgartClient().registrationRepository.whois(name, matchingDiscordMembers);
+        const res = await this.getBotgartClient().registrationRepository.whois(name, guild.id, matchingDiscordMembers);
 
         // map members
         const enhancedResult = await Promise.all(
             res.map(async (value) => ({
                 ...value,
-                member: guild.members.cache.get(value.discord_id),
+                member: await guild.members.fetch(value.user),
             }))
         );
 
         return this.sort(enhancedResult);
     }
 
-    private sort(enhancedResult: { account_name: string; member: discord.GuildMember | undefined; discord_id: string }[]) {
+    private sort(
+        enhancedResult: {
+            account_name: string;
+            member: discord.GuildMember | undefined;
+            user: string;
+        }[]
+    ) {
         // sort and return
         return enhancedResult.sort(
             (a, b) =>
@@ -129,12 +135,12 @@ export class Whois extends BotgartCommand {
     }
 
     private async queryUser(member: discord.GuildMember) {
-        const user = this.getBotgartClient().registrationRepository.getUserByDiscordId(member.user);
+        const user = await this.getBotgartClient().registrationRepository.getUserByDiscordId(member.user);
         return [
             {
-                discord_id: member.id,
+                user: member.id,
                 member: member,
-                account_name: user?.account_name,
+                account_name: user!.account_name,
             },
         ];
     }

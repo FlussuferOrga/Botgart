@@ -1,12 +1,12 @@
 import * as discord from "discord.js";
-import {Locale} from "discord.js";
-import {BotgartCommand} from "../BotgartCommand";
-import {ConfigError, InvalidKeyError, NetworkError} from "../Gw2ApiUtils";
+import { Locale } from "discord.js";
+import { BotgartCommand } from "../BotgartCommand";
+import { ConfigError, InvalidKeyError, NetworkError } from "../Gw2ApiUtils";
 import * as L from "../Locale";
-import {L as LL} from "../i18n/i18n-node";
-import {logger} from "../util/Logging";
-import {AkairoMessage, CommandArguments} from "@notenoughupdates/discord-akairo";
-import {DeclinedApiKeyError, KeyInvalidFormatError, KeyNotUniqueError} from "../services/ValidationService";
+import { L as LL } from "../i18n/i18n-node";
+import { logger } from "../util/Logging";
+import { AkairoMessage, CommandArguments } from "@notenoughupdates/discord-akairo";
+import { DeclinedApiKeyError, KeyInvalidFormatError, KeyNotUniqueError } from "../services/ValidationService";
 
 const LOG = logger();
 
@@ -35,7 +35,7 @@ export class Authenticate extends BotgartCommand {
                     {
                         id: "key",
                         type: "string",
-                        default: ""
+                        default: "",
                     },
                 ],
                 slash: true,
@@ -93,8 +93,8 @@ export class Authenticate extends BotgartCommand {
                 error = L.getIn(interaction.locale, "KEY_INVALID_FORMAT");
             } else if (err instanceof DeclinedApiKeyError) {
                 error = L.getIn(interaction.locale, "KEY_DECLINED");
-            //} else if (err instanceof KeyNotUniqueError) {
-            //    error = L.getIn(interaction.locale, "KEY_NOT_UNIQUE");
+                //} else if (err instanceof KeyNotUniqueError) {
+                //    error = L.getIn(interaction.locale, "KEY_NOT_UNIQUE");
             } else if (err instanceof ConfigError) {
                 LOG.error("A world is defined more than once in the config. Please fix the config file.");
                 error = L.getIn(interaction.locale, "INTERNAL_ERROR");
@@ -137,7 +137,7 @@ export class Authenticate extends BotgartCommand {
 
         await reply(L.get("CHECKING_KEY"));
         // 11111111-1111-1111-1111-11111111111111111111-1111-1111-1111-111111111111
-        LOG.info("Received: '" + args.key+"'")
+        LOG.info("Received: '" + args.key + "'");
         const apiKey = args.key.trim();
 
         try {
@@ -149,8 +149,8 @@ export class Authenticate extends BotgartCommand {
                 error = L.get("KEY_INVALID_FORMAT");
             } else if (err instanceof DeclinedApiKeyError) {
                 error = L.get("KEY_DECLINED");
-            //} else if (err instanceof KeyNotUniqueError) {
-            //    error = L.get("KEY_NOT_UNIQUE");
+                //} else if (err instanceof KeyNotUniqueError) {
+                //    error = L.get("KEY_NOT_UNIQUE");
             } else if (err instanceof ConfigError) {
                 LOG.error("A world is defined more than once in the config. Please fix the config file.");
                 error = L.get("INTERNAL_ERROR");

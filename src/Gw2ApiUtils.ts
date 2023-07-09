@@ -1,26 +1,26 @@
 import gw2client from "gw2api-client";
-import {getConfig, WorldAssignment} from "./config/Config";
-import {logger} from "./util/Logging";
+import { getConfig, WorldAssignment } from "./config/Config";
+import { logger } from "./util/Logging";
 
-export abstract class UnsuccessfulValidationError extends Error {
-}
+export abstract class UnsuccessfulValidationError extends Error {}
 
-export class NetworkError extends UnsuccessfulValidationError {
-}
+export class NetworkError extends UnsuccessfulValidationError {}
 
-export class InvalidKeyError extends UnsuccessfulValidationError {
-}
+export class InvalidKeyError extends UnsuccessfulValidationError {}
 
-export class ConfigError extends UnsuccessfulValidationError {
-}
+export class ConfigError extends UnsuccessfulValidationError {}
 
 function isBadToken(err) {
-    if (err.response){
-        if (err.response.status == 400){
-            return err.content.text === "invalid key" || err.content.text === "Invalid access token" || err.content.text === "account does not have game access";
+    if (err.response) {
+        if (err.response.status == 400) {
+            return (
+                err.content.text === "invalid key" ||
+                err.content.text === "Invalid access token" ||
+                err.content.text === "account does not have game access"
+            );
         }
     }
-    return false
+    return false;
 }
 
 export function createApiInstance() {
@@ -31,7 +31,7 @@ export function createApiInstance() {
     // retry some times and be polite about it
     api.fetch.retry((tries, err) => {
         if (isBadToken(err)) {
-            return tries <= 2
+            return tries <= 2;
         }
         return tries <= 5;
     });
@@ -51,8 +51,6 @@ export interface AccountData {
 }
 
 export async function getAccountInfo(apikey: string): Promise<AccountData> {
-
-
     try {
         const api = createApiInstance();
         api.authenticate(apikey);

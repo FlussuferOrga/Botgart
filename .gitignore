@@ -87,4 +87,4 @@ typings/
 # FuseBox cache
 .fusebox/
 
-# End of https://www.gitignore.io/api/node
+/src/mikroorm/migrations/.snapshot-database.db.json

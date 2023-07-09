@@ -32,7 +32,7 @@ export class ListDiscordLog extends BotgartCommand {
     async command(message, responsible, guild, args) {
         const cl = this.getBotgartClient();
         const textChannel: discord.TextChannel = guild.channels.cache.find((channel) => channel.name === args.channel);
-        const types: string[] = cl.logChannelRepository.getLogTypes(guild, textChannel);
+        const types: string[] = await cl.logChannelRepository.getLogTypes(guild, textChannel);
         const desc = "** '{0}' CHANNEL TYPES:**\n\n".formatUnicorn(textChannel.name).concat(types.join("\n"));
         message.reply(desc);
     }

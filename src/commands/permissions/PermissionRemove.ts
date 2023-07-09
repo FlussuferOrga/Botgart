@@ -21,10 +21,8 @@ export class PermissionRemove extends BotgartCommand {
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
         const permissionId: number = args.permissionId;
-        const number = this.getBotgartClient().commandPermissionRepository.removePermission(permissionId, guild.id);
-        if (number > 0) {
-            this.reply(message, responsible, L.get("PERMISSION_REMOVED")).catch((err) => LOG.error(err.message));
-        }
+        await this.getBotgartClient().commandPermissionRepository.removePermission(permissionId, guild.id);
+        await this.reply(message, responsible, L.get("PERMISSION_REMOVED")).catch((err) => LOG.error(err.message));
     }
 }
 

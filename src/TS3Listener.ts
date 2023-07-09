@@ -4,9 +4,11 @@ import events from "events";
 import * as moment from "moment";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import { Registration } from "./repositories/RegistrationRepository";
 import { Commander, CommanderState, TS3Commander, TS3Connection } from "./TS3Connection";
 import { logger } from "./util/Logging";
+import { UseRequestContext } from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/better-sqlite";
+import { Registration } from "./mikroorm/entities/Registration";
 
 const LOG = logger();
 
@@ -27,15 +29,13 @@ export class TS3Listener extends events.EventEmitter {
     private readonly commanderRole: string;
     private readonly userDelay: number;
     private readonly gracePeriod: number;
-    private readonly botgartClient: BotgartClient;
     private patience: number;
 
-    constructor(bgclient: BotgartClient) {
+    constructor(private readonly botgartClient: BotgartClient, private readonly orm: MikroORM) {
         super();
 
         const config = getConfig().get();
 
-        this.botgartClient = bgclient;
         this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
         this.commanderRole = config.ts_listener.commander_role;
         this.userDelay = config.ts_listener.user_delay;
@@ -45,6 +45,7 @@ export class TS3Listener extends events.EventEmitter {
         setInterval(() => this.checkCommanders(), config.ts_commander_check_interval);
     }
 
+    @UseRequestContext()
     private async checkCommanders(): Promise<void> {
         LOG.debug("Requesting commanders from TS-Bot.");
         const now: moment.Moment = moment.utc();
@@ -154,10 +155,10 @@ export class TS3Listener extends events.EventEmitter {
      */
     private async tagUp(g: discord.Guild, commander: Commander) {
         LOG.info(`Tagging up ${commander.getTS3DisplayName()} in ${g.name}.`);
-        const registration = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
+        const registration = await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
 
         let duser: discord.GuildMember | undefined;
-        if (registration !== undefined) {
+        if (registration !== null) {
             commander.setRegistration(registration);
             // the commander is member of the current discord -> give role
             duser = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
@@ -189,8 +190,7 @@ export class TS3Listener extends events.EventEmitter {
      * - the user's TS-UID-Discordname is forgotten
      */
     private async tagDown(g: discord.Guild, commander: Commander) {
-        const registration: Registration | undefined = this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
-        let dmember: discord.GuildMember | undefined = undefined;
+        const registration: Registration | null = await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
 
         try {
             await this.botgartClient.tagBroadcastService.tagDownBroadcast(commander);
@@ -198,10 +198,9 @@ export class TS3Listener extends events.EventEmitter {
             LOG.error("Could not close broadcast on tagdown", e);
         }
 
-        if (registration !== undefined) {
-            dmember = await g.members.fetch(registration.user);
+        if (registration !== null) {
             try {
-                await this.tagDownRemoveRole(g, dmember);
+                await this.tagDownRemoveRole(g, await g.members.fetch(registration.user));
             } catch (e) {
                 LOG.error("Could not unassign commander role from user", e);
             }

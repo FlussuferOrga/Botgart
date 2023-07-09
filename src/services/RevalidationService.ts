@@ -6,9 +6,9 @@ import { BotgartClient } from "../BotgartClient";
 import { getConfig, WorldAssignment } from "../config/Config";
 import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils";
 import * as L from "../Locale";
-import { Registration } from "../repositories/RegistrationRepository";
 import { logger } from "../util/Logging";
 import { formatUserPing } from "../util/Util";
+import { Registration } from "../mikroorm/entities/Registration";
 
 const LOG = logger();
 
@@ -42,7 +42,8 @@ export class RevalidationService {
      *           and the name of the role that user should have. Rows can be undefined if an error was encountered upon validation!
      */
     public async revalidateKeys() {
-        const allRegistrations = this.client.registrationRepository.loadRegistrationsFromDb();
+        //TODO: Scroll instead of full-load
+        const allRegistrations = await this.client.registrationRepository.loadRegistrationsFromDb();
         await PromisePool.withConcurrency(1)
             .for(allRegistrations)
             .handleError(async (error, user) => {
@@ -118,14 +119,14 @@ export class RevalidationService {
                         current_assignment?.role || "world:" + registration.current_world_id,
                     ])
                 );
-                this.client.registrationRepository.deleteKey(registration.api_key);
+                await this.client.registrationRepository.delete(registration);
                 return;
             }
             if (!authResult.valid) {
                 // user should be pruned: user has either transed (false) or deleted their key (invalid key)
                 LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
                 await this.client.validationService.setMemberRolesByWorldAssignment(member, null, "Api Key invalid or not authorized Server");
-                this.client.registrationRepository.deleteKey(registration.api_key);
+                await this.client.registrationRepository.delete(registration);
                 await this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
@@ -137,7 +138,7 @@ export class RevalidationService {
                 );
                 await member.send(L.get("KEY_INVALIDATED"));
             } else if (authResult.valid) {
-                this.updateDatabaseIfRequired(registration, authResult.accountData);
+                await this.updateDatabaseIfRequired(registration, authResult.accountData);
                 // user transferred to another admitted server -> update role
                 // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
                 await this.client.validationService.setMemberRolesByWorldAssignment(member, authResult.worldAssignment, "ReAuthentication");
@@ -146,20 +147,26 @@ export class RevalidationService {
         }
     }
 
-    private updateDatabaseIfRequired(registration: Registration, accountData: AccountData) {
+    private async updateDatabaseIfRequired(registration: Registration, accountData: AccountData) {
         const outdated =
             registration.account_name != accountData.name ||
             registration.gw2account != accountData.id ||
             registration.current_world_id != accountData.world;
         if (outdated) {
-            this.client.registrationRepository.updateRegistration(registration.id, accountData.world, accountData.name, accountData.id);
+            const old = {
+                account_name: registration.account_name,
+                gw2account: registration.gw2account,
+                current_world_id: registration.current_world_id,
+            };
+            registration = await this.client.registrationRepository.updateRegistration(
+                registration,
+                accountData.world,
+                accountData.name,
+                accountData.id
+            );
             if (LOG.isInfoEnabled()) {
-                LOG.info(`Account Data updated for ${registration.id}`, {
-                    old: {
-                        account_name: registration.account_name,
-                        gw2account: registration.gw2account,
-                        current_world_id: registration.current_world_id,
-                    },
+                LOG.info(`Account Data updated for ${registration.user}`, {
+                    old: old,
                     new: {
                         account_name: accountData.name,
                         gw2account: accountData.id,

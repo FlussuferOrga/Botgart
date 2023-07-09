@@ -1,29 +1,36 @@
-import discord from "discord.js";
+import discord, { Guild, User } from "discord.js";
 import * as schedule from "node-schedule";
 import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import { CronJobRepository } from "../repositories/CronJobRepository";
 import { logger } from "../util/Logging";
+import { RequestContext, UseRequestContext } from "@mikro-orm/core";
+import { MikroORM } from "@mikro-orm/better-sqlite";
+import { BetterSqliteMikroORM } from "@mikro-orm/better-sqlite/BetterSqliteMikroORM";
 
 const LOG = logger();
 
 export class CronJobService {
     private repository: CronJobRepository;
     private client: BotgartClient;
+    private readonly orm: MikroORM;
     public scheduledJobs: Map<number, schedule.Job> = new Map<number, schedule.Job>();
 
-    constructor(repository: CronJobRepository, client: BotgartClient) {
+    constructor(repository: CronJobRepository, orm: MikroORM, client: BotgartClient) {
         this.repository = repository;
         this.client = client;
+        this.orm = orm;
     }
 
+    @UseRequestContext()
     /**
      * Reschedules all cronjobs that are still in the database.
      * @returns {int} - number of successfully scheduled crons.
      */
-    public rescheduleCronJobs() {
+    public async rescheduleCronJobs() {
         let cronCount = 0;
-        this.client.cronJobRepository.getCronJobs().forEach(async (cron) => {
+        const cronJobs = await this.client.cronJobRepository.getCronJobs();
+        for (const cron of cronJobs) {
             const mod: BotgartCommand = this.client.commandHandler.modules.get(cron.command) as BotgartCommand;
             const args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args
             const guild = this.client.guilds.cache.find((g) => g.id == cron.guild);
@@ -32,12 +39,12 @@ export class CronJobService {
                     "I am no longer member of the guild {0} the cronjob with ID {1} was scheduled for. Skipping.".formatUnicorn(cron.guild, cron.id)
                 );
             } else {
-                const responsible: discord.GuildMember = await guild.members.fetch(cron.created_by); // cache.find(m => m.user.id == cron.created_by);
+                const responsible: discord.GuildMember = await guild.members.fetch(cron.createdBy); // cache.find(m => m.user.id == cron.created_by);
 
                 if (!responsible) {
                     LOG.warn(
                         "Responsible user with ID {0} for cronjob {1} is no longer present in Guild {2}.".formatUnicorn(
-                            cron.created_by,
+                            cron.createdBy,
                             cron.id,
                             guild.name
                         )
@@ -47,17 +54,17 @@ export class CronJobService {
                     if (!job) {
                         LOG.error("Could not reschedule cronjob {0} although it was read from the database.".formatUnicorn(cron.id));
                     } else {
-                        if (cron.id in this.scheduledJobs && this.scheduledJobs[cron.id]) {
+                        if (cron.id! in this.scheduledJobs && this.scheduledJobs[cron.id!]) {
                             // just to be safe, cancel any remaining jobs before rescheduling them
-                            this.scheduledJobs[cron.id].cancel();
+                            this.scheduledJobs[cron.id!].cancel();
                         }
-                        this.scheduledJobs[cron.id] = job;
+                        this.scheduledJobs[cron.id!] = job;
                         cronCount++;
                         LOG.info("Rescheduled cronjob {0} of type '{1}'".formatUnicorn(cron.id, cron.command));
                     }
                 }
             }
-        });
+        }
         LOG.info("Done rescheduling {0} cronjobs.".formatUnicorn(cronCount));
         return cronCount;
     }
@@ -72,12 +79,27 @@ export class CronJobService {
      * @param {Map} args - Args for the command.
      * @returns {Job}
      */
-    scheduleCronJob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: unknown) {
-        return schedule.scheduleJob(
-            time,
-            ((m, r, g, as) => {
-                m.command(null, r, g, as);
-            }).bind(this, cmd, responsible, guild, args)
-        );
+    scheduleCronJob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: Record<string, unknown>) {
+        const jobRunner = new JobRunner(cmd, responsible, guild, args);
+        return schedule.scheduleJob(time, () => RequestContext.createAsync(this.orm.em, () => jobRunner.execute()));
+    }
+}
+
+class JobRunner {
+    private readonly cmd: BotgartCommand;
+    private readonly responsible: User;
+    private readonly guild: Guild;
+    private readonly args: Record<string, unknown>;
+
+    constructor(cmd: BotgartCommand, responsible: User, guild: Guild, args: Record<string, unknown>) {
+        this.cmd = cmd;
+        this.responsible = responsible;
+        this.guild = guild;
+        this.args = args;
+    }
+
+    //@UseRequestContext()
+    async execute() {
+        await this.cmd.command(null, this.responsible, this.guild, this.args);
     }
 }

@@ -10,3 +10,4 @@ built
 package-lock.json
 package.json
 tsconfig.json
+src/mikroorm/migrations/.snapshot-database.db.json

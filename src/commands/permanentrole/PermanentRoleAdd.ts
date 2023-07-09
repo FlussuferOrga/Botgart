@@ -40,15 +40,15 @@ export class AddPermanentRole extends BotgartCommand {
         const roleName = args.role.name;
         const user = args.member.user;
         const messageGuild = message.guild as discord.Guild;
-        const success = cl.permanentRoleRepository.storePermanentRole(user.id, messageGuild.id, roleName);
+        const success = await cl.permanentRoleRepository.storePermanentRole(user.id, messageGuild.id, roleName);
 
         const guildName = messageGuild.name;
         if (success) {
             LOG.info("Successfully added role {0} to user {0} in guild {0}.".formatUnicorn(roleName, user.username, guildName));
-            message.reply(L.get("PERMANENT_ROLE_ADD_SUCC"));
+            await message.reply(L.get("PERMANENT_ROLE_ADD_SUCC"));
         } else {
             LOG.info("Could not add role {0} to user {0} in guild {0}.".formatUnicorn(roleName, user.username, guildName));
-            message.reply(L.get("PERMANENT_ROLE_ADD_FAIL"));
+            await message.reply(L.get("PERMANENT_ROLE_ADD_FAIL"));
         }
     }
 }
