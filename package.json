@@ -33,7 +33,7 @@
     "lint-fix": "eslint . --ext .ts,.json --fix",
     "dep-outdated": "npm outdated -l",
     "dep-typesync": "node ./node_modules/typesync/bin/typesync",
-    "dep-check-unused": "node ./node_modules/depcheck/bin/depcheck.js",
+    "dep-check-unused": "node ./node_modules/depcheck/bin/depcheck.js --ignores='rimraf,better-sqlite3'",
     "dep-audit-fix": "npm audit fix",
     "typesafe-i18n": "typesafe-i18n",
     "orm-generate-entities": "mikro-orm generate-entities --save --path=./src/mikroorm/entities2",
