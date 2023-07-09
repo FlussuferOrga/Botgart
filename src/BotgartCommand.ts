@@ -132,7 +132,7 @@ export class BotgartCommand extends akairo.Command {
      * @returns - true, if the user is an owner.
      */
     public isOwner(user: discord.GuildMember | discord.User) {
-        const ownerIds = getConfig().get().owner_ids; // as string[]; // FIXME: this should actually come out of the config as string[] already
+        const ownerIds = getConfig().get().owner_ids;
         return Array.isArray(ownerIds) && ownerIds.includes(user.id);
     }
 
