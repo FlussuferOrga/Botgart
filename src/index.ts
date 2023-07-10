@@ -1,5 +1,4 @@
 // show .ts files in stacktraces if sourcemaps are present
-import "source-map-support/register";
 import * as CommandLineArgs from "command-line-args";
 import { runApp } from "./app";
 

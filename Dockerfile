@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:18-alpine AS base
+FROM node:20-alpine AS base
 
 # set working directory
 WORKDIR /app
@@ -35,10 +35,13 @@ RUN apk add --no-cache curl
 ENV HTTP_PORT=3000
 EXPOSE 3000
 
+#allows attaching a debugger
+#EXPOSE 9229
+
 HEALTHCHECK --interval=1m --timeout=20s --start-period=2m \
    CMD curl -f --max-time 18 "http://127.0.0.1:${HTTP_PORT}/health" || exit 1
 
-CMD ["node","--enable-source-maps","/app/built/index.js","--patchall=run"]
+CMD ["node","--inspect=0.0.0.0:9229","--enable-source-maps","/app/built/index.js"]
 
 VOLUME /app/log
 VOLUME /app/db

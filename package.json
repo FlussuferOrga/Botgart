@@ -68,7 +68,6 @@
     "moment-timezone": "0.5.43",
     "node-schedule": "^2.1.1",
     "server-health": "^5.2.0",
-    "source-map-support": "^0.5.21",
     "table": "^6.8.1",
     "typesafe-i18n": "^5.24.4",
     "winston": "^3.9.0"
