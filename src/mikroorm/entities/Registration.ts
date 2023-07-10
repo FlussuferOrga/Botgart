@@ -4,7 +4,7 @@ import { MomentType } from "../types/Moment";
 
 @Entity({ tableName: "registrations" })
 @Unique({ properties: ["guild", "api_key"] })
-@Unique({ properties: ["guild", "gw2account"] })
+//@Unique({ properties: ["guild", "gw2account"] })
 export class Registration {
     @PrimaryKey()
     guild!: string;

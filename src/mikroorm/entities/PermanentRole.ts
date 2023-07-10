@@ -1,5 +1,7 @@
 import { Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
 import { ResetLeader } from "./ResetLeader";
+import {MomentType} from "../types/Moment";
+import moment from "moment-timezone";
 
 @Entity({ tableName: "permanent_roles" })
 export class PermanentRole {
@@ -14,4 +16,7 @@ export class PermanentRole {
 
     @Property()
     role!: string;
+
+    @Property({ type: MomentType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
+    created?: moment.Moment;
 }

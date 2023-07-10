@@ -38,6 +38,8 @@
     "typesafe-i18n": "typesafe-i18n",
     "orm-generate-entities": "mikro-orm generate-entities --save --path=./src/mikroorm/entities2",
     "orm-generate-migration": "mikro-orm migration:create",
+    "orm-generate-migratio-initial": "mikro-orm migration:create --initial",
+
     "orm-check-migration": "mikro-orm migration:check"
   },
   "typesync": {
