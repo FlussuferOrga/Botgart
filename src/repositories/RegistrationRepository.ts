@@ -109,7 +109,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                 users: value.users.split(","),
                 count: value.count,
                 gw2account: value.gw2account,
-                account_names: uniq(value.account_names)
+                account_names: uniq(value.account_names.split(","))
             };
         });
     }
