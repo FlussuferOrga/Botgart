@@ -1,14 +1,11 @@
-import discord, {Guild} from "discord.js";
-import {logger} from "../util/Logging";
-import {AbstractDbRepository} from "./AbstractDbRepository";
-import {Registration} from "../mikroorm/entities/Registration";
-import {expr} from "@mikro-orm/core";
-import {uniq} from "lodash";
+import discord from "discord.js";
+import { logger } from "../util/Logging";
+import { AbstractDbRepository } from "./AbstractDbRepository";
+import { Registration } from "../mikroorm/entities/Registration";
+import { expr } from "@mikro-orm/core";
+import { uniq } from "lodash";
 
 const LOG = logger();
-
-type DuplicatesEntry = { gw2account: any; userIds: any; count: any };
-
 export class RegistrationRepository extends AbstractDbRepository {
     /**
      * Gets a user by their account name. That is Foobar.1234.
@@ -18,7 +15,7 @@ export class RegistrationRepository extends AbstractDbRepository {
      * returns: the latest entry for that account name if any, else undefined.
      */
     public async getUserByAccountName(accountName: string): Promise<Registration | null> {
-        return await this.orm.em.getRepository(Registration).findOne({account_name: accountName});
+        return await this.orm.em.getRepository(Registration).findOne({ account_name: accountName });
     }
 
     /**
@@ -28,7 +25,7 @@ export class RegistrationRepository extends AbstractDbRepository {
      * returns: the latest entry for that account name if any, else undefined.
      */
     public async getUserByDiscordId(discordUser: discord.User): Promise<Registration | null> {
-        return await this.orm.em.getRepository(Registration).findOne({user: discordUser.id});
+        return await this.orm.em.getRepository(Registration).findOne({ user: discordUser.id });
     }
 
     public async whois(
@@ -46,23 +43,23 @@ export class RegistrationRepository extends AbstractDbRepository {
                 Registration,
                 {
                     guild: guildId,
-                    user: {$in: discordUserIds},
+                    user: { $in: discordUserIds },
                 },
-                {fields: ["account_name", "user"]}
+                { fields: ["account_name", "user"] }
             )),
             ...(await this.orm.em.find(
                 Registration,
                 {
                     guild: guildId,
-                    [expr("lower(account_name)")]: {$like: `%${searchString.toLowerCase()}%`},
+                    [expr("lower(account_name)")]: { $like: `%${searchString.toLowerCase()}%` },
                 },
-                {fields: ["account_name", "user"]}
+                { fields: ["account_name", "user"] }
             )),
         ]);
     }
 
     public async getDesignatedRoles(guildId): Promise<DesignatedWorlds[]> {
-        return await this.orm.em.getRepository(Registration).find({guild: guildId}, {fields: ["user", "current_world_id"]});
+        return await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["user", "current_world_id"] });
     }
 
     public async storeAPIKey(
@@ -90,7 +87,7 @@ export class RegistrationRepository extends AbstractDbRepository {
 
     public async loadUserIds(guildId: string): Promise<string[]> {
         LOG.info(`Loading all user ids for guild ${guildId}`);
-        const result = await this.orm.em.getRepository(Registration).find({guild: guildId}, {fields: ["user"]});
+        const result = await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["user"] });
         return result.map((d) => d.user);
     }
 
@@ -101,7 +98,7 @@ export class RegistrationRepository extends AbstractDbRepository {
             .select(["gw2account", knex.raw("group_concat(account_name, ',') as account_names"), knex.raw("group_concat(user, ',') as users")])
             .count("* as count")
             .from("registrations")
-            .where({guild: guild})
+            .where({ guild: guild })
             .groupBy("gw2account")
             .having("count", ">", 1);
         return result.map((value) => {
@@ -109,7 +106,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                 users: value.users.split(","),
                 count: value.count,
                 gw2account: value.gw2account,
-                account_names: uniq(value.account_names.split(","))
+                account_names: uniq(value.account_names.split(",")),
             };
         });
     }

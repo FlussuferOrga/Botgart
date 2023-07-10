@@ -53,7 +53,7 @@ export class AddResetLeader extends BotgartCommand {
         }
         const dbRoster = this.getBotgartClient().rosterService.getCachedRoster(guild, args.weekNumber, args.year);
         if (dbRoster !== undefined) {
-            const [g, mes, roster] = dbRoster;
+            const [, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
             roster.addLeadByName(WvwMap.getMapByName(args.map), name);
             await this.reply(message, responsible, L.get("ROSTER_LEAD_ADDED", [args.player, args.map, args.weekNumber, mes.url]));

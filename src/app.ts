@@ -1,11 +1,11 @@
-import {GatewayIntentBits, Partials} from "discord.js";
-import {BotgartClient} from "./BotgartClient";
-import {getConfig} from "./config/Config";
+import { GatewayIntentBits, Partials } from "discord.js";
+import { BotgartClient } from "./BotgartClient";
+import { getConfig } from "./config/Config";
 import * as L from "./Locale";
-import {logger} from "./util/Logging";
-import {WebServer} from "./WebServer";
-import {MikroORM} from "@mikro-orm/core";
-import {BetterSqliteDriver} from "@mikro-orm/better-sqlite";
+import { logger } from "./util/Logging";
+import { WebServer } from "./WebServer";
+import { MikroORM } from "@mikro-orm/core";
+import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
 
 const LOG = logger();
 
@@ -29,7 +29,7 @@ export async function runApp(orm: MikroORM<BetterSqliteDriver>) {
 
     L.setLanguages(config.get("locales"));
     const client = new BotgartClient(
-        {ownerID: config.get("owner_ids")},
+        { ownerID: config.get("owner_ids") },
         {
             intents: intents,
             partials: [

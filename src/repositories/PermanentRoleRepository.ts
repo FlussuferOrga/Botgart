@@ -1,8 +1,5 @@
-import { logger } from "../util/Logging";
 import { AbstractDbRepository } from "./AbstractDbRepository";
 import { PermanentRole } from "../mikroorm/entities/PermanentRole";
-
-const LOG = logger();
 
 export class PermanentRoleRepository extends AbstractDbRepository {
     public async storePermanentRole(user: string, guild: string, role: string): Promise<PermanentRole> {
@@ -14,7 +11,13 @@ export class PermanentRoleRepository extends AbstractDbRepository {
     }
 
     public async getPermanentRoles(user: string, guild: string): Promise<string[]> {
-        const roles = await this.orm.em.getRepository(PermanentRole).find({ guild: guild, user: user }, { fields: ["role"] });
+        const roles = await this.orm.em.getRepository(PermanentRole).find(
+            {
+                guild: guild,
+                user: user,
+            },
+            { fields: ["role"] }
+        );
         return roles.map((value) => value.role);
     }
 

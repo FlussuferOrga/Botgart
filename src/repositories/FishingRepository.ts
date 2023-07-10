@@ -15,7 +15,10 @@ export class FishingRepository extends AbstractDbRepository {
      */
     public async getRandomFish(): Promise<RandomFish> {
         const awaited = await this.orm.em.getRepository(RandomFish).findAll();
-        return awaited![0];
+        if (awaited === undefined || awaited.length == 0) {
+            throw Error("No fish found in database");
+        }
+        return awaited[0];
     }
 
     /**

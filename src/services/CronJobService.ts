@@ -6,7 +6,6 @@ import { CronJobRepository } from "../repositories/CronJobRepository";
 import { logger } from "../util/Logging";
 import { RequestContext, UseRequestContext } from "@mikro-orm/core";
 import { MikroORM } from "@mikro-orm/better-sqlite";
-import { BetterSqliteMikroORM } from "@mikro-orm/better-sqlite/BetterSqliteMikroORM";
 
 const LOG = logger();
 

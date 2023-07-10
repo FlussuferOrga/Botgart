@@ -1,5 +1,5 @@
 import { EntityManager } from "@mikro-orm/better-sqlite";
-import { Entity, Property, QueryOrder } from "@mikro-orm/core";
+import { Entity, Property } from "@mikro-orm/core";
 import { CaughtFish } from "./CaughtFish";
 
 @Entity({

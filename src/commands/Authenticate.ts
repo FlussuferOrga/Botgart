@@ -1,12 +1,11 @@
 import * as discord from "discord.js";
-import { Locale } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import { ConfigError, InvalidKeyError, NetworkError } from "../Gw2ApiUtils";
 import * as L from "../Locale";
 import { L as LL } from "../i18n/i18n-node";
 import { logger } from "../util/Logging";
 import { AkairoMessage, CommandArguments } from "@notenoughupdates/discord-akairo";
-import { DeclinedApiKeyError, KeyInvalidFormatError, KeyNotUniqueError } from "../services/ValidationService";
+import { DeclinedApiKeyError, KeyInvalidFormatError } from "../services/ValidationService";
 
 const LOG = logger();
 

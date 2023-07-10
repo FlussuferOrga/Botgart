@@ -21,7 +21,7 @@ interface BotgartCommandOptions {
 
 const LOG = logger();
 
-export class BotgartCommand extends akairo.Command {
+export abstract class BotgartCommand extends akairo.Command {
     protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
@@ -37,7 +37,7 @@ export class BotgartCommand extends akairo.Command {
      *                        cronable: false
      *                        everyonePermission: 0
      */
-    constructor(id: string, options: akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
+    protected constructor(id: string, options: akairo.CommandOptions, botgartOptions?: BotgartCommandOptionsNullable) {
         super(id, options);
         if (!options.aliases?.includes(id)) {
             LOG.warn(`Command ${id} is missing the command identity within the aliases`);

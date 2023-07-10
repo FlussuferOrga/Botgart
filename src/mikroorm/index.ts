@@ -1,6 +1,6 @@
-import {BetterSqliteDriver, MikroORM} from "@mikro-orm/better-sqlite";
+import { BetterSqliteDriver, MikroORM } from "@mikro-orm/better-sqlite";
 import mikroOrmConfig from "./config";
-import {logger} from "../util/Logging";
+import { logger } from "../util/Logging";
 
 const LOG = logger();
 

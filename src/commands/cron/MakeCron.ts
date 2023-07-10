@@ -1,5 +1,4 @@
 import { Message } from "discord.js";
-import * as schedule from "node-schedule";
 import { BotgartClient } from "../../BotgartClient";
 import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
@@ -77,7 +76,7 @@ export class MakeCron extends BotgartCommand {
 
     private async scheduleAndSave(schedule, message: Message, mod, parsedArgs) {
         const cl = this.client as BotgartClient;
-        const job = cl.cronJobService.scheduleCronJob(schedule, message.member!.user, message!.guild!, mod, parsedArgs);
+        const job = cl.cronJobService.scheduleCronJob(schedule, message.member!.user, message.guild!, mod, parsedArgs);
         if (!job) {
             return message.util!.send(L.get("CRONJOB_NOT_STORED"));
         } else {

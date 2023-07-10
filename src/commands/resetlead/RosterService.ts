@@ -181,7 +181,7 @@ export class RosterService {
             if (roster === undefined) {
                 LOG.error(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
             } else {
-                const [r, chan, mes] = roster;
+                const [r] = roster;
 
                 this.syncToTS3(guild, r).catch((reason) => LOG.error("Error update TS3:", reason));
             }

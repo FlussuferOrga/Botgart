@@ -1,4 +1,4 @@
-import { Entity, Index, PrimaryKey, Property, Unique } from "@mikro-orm/core";
+import { Entity, PrimaryKey, Property, Unique } from "@mikro-orm/core";
 import moment from "moment-timezone";
 import { MomentType } from "../types/Moment";
 

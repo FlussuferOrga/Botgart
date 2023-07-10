@@ -1,4 +1,4 @@
-import { BaseEntity, Check, Entity, PrimaryKey, PrimaryKeyType, Property } from "@mikro-orm/core";
+import { BaseEntity, Entity, PrimaryKey, PrimaryKeyType, Property } from "@mikro-orm/core";
 
 @Entity({ tableName: "fish" })
 //@Check({expression: "min_weight < max_weight"})

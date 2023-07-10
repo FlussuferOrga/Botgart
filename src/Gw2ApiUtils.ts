@@ -1,5 +1,4 @@
 import gw2client from "gw2api-client";
-import { getConfig, WorldAssignment } from "./config/Config";
 import { logger } from "./util/Logging";
 
 export abstract class UnsuccessfulValidationError extends Error {}

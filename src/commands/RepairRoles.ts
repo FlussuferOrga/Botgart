@@ -2,7 +2,6 @@ import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
 import { DesignatedWorlds } from "../repositories/RegistrationRepository";
 import { logger } from "../util/Logging";
-import * as Gw2ApiUtils from "../Gw2ApiUtils";
 import { Guild } from "discord.js";
 
 const LOG = logger();

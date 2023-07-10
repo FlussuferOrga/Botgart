@@ -58,7 +58,7 @@ export class ResetRoster extends BotgartCommand {
             // no roster for this guild+week -> create one
             await client.rosterService.createRoster(guild, args.channel, rosterYear, rosterWeek);
         } else {
-            const [dbRoster, dbChannel, dbMessage] = dbEntry;
+            const [, dbChannel, dbMessage] = dbEntry;
             // there is already a roster-post for this guild+week -> do nothing, log warning
             LOG.warn(
                 `Tried to initialise roster-post for calendar week ${rosterWeek} for guild '${guild.name}' in channel '${args.channel.name}'. But there is already such a post in channel '${dbChannel.name}'`

@@ -1,4 +1,4 @@
-import { EntityMetadata, EntityProperty, Type } from "@mikro-orm/core";
+import { Type } from "@mikro-orm/core";
 import moment, { Moment } from "moment-timezone";
 
 export class MomentType extends Type<Moment | undefined, string | undefined> {

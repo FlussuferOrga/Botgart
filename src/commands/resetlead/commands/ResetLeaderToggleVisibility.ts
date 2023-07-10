@@ -42,7 +42,7 @@ export class ToggleResetLeaderVisibility extends BotgartCommand {
         }
         const dbRoster = this.getBotgartClient().rosterService.getCachedRoster(guild, args.weekNumber, args.year);
         if (dbRoster !== undefined) {
-            const [g, mes, roster] = dbRoster;
+            const [, mes, roster] = dbRoster;
             const name: string = args.player instanceof discord.GuildMember ? Util.formatUserPing(args.player.id) : args.player;
             roster.toggleLeaderVisibility(name);
             this.reply(message, responsible, L.get("ROSTER_LEAD_VISIBILITY_TOGGLED", [name, args.weekNumber, mes.url]));

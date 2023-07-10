@@ -26,7 +26,7 @@ export class Whois extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-        let res: { account_name: string; member: discord.GuildMember | undefined; user: string }[];
+        let res: { account_name?: string; member?: discord.GuildMember; user: string }[];
 
         if (args?.name instanceof discord.GuildMember) {
             res = await this.queryUser(args.name);
@@ -140,7 +140,7 @@ export class Whois extends BotgartCommand {
             {
                 user: member.id,
                 member: member,
-                account_name: user!.account_name,
+                account_name: user?.account_name,
             },
         ];
     }

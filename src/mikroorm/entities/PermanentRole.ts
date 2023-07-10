@@ -1,6 +1,5 @@
-import { Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
-import { ResetLeader } from "./ResetLeader";
-import {MomentType} from "../types/Moment";
+import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
+import { MomentType } from "../types/Moment";
 import moment from "moment-timezone";
 
 @Entity({ tableName: "permanent_roles" })

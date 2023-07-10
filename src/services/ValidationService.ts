@@ -58,9 +58,13 @@ export class ValidationService {
             .map((roleName) => findRole(guild, roleName))
             .filter((value) => value !== undefined) as Role[];
 
-        const activeLinkRole = findRole(guild, this.activeLinkRoleName)!;
+        const allManagedRoles = [...discordWorldRoles];
 
-        const allManagedRoles = [...discordWorldRoles, activeLinkRole];
+        const activeLinkRole = findRole(guild, this.activeLinkRoleName);
+        if (activeLinkRole !== undefined) {
+            allManagedRoles.push(activeLinkRole);
+        }
+
         const rolesToRemove = allManagedRoles.filter((value) => !wantedRoles.includes(value));
 
         const currentRoles = guildMember.roles.cache.map((value) => value);
