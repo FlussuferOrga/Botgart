@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@notenoughupdates/discord-akairo": "^10.0.2",
-    "@supercharge/promise-pool": "^2.4.0",
+    "@supercharge/promise-pool": "^3.0.0",
     "await-semaphore": "^0.1.3",
     "await-timeout": "^1.1.1",
     "better-sqlite3": "^8.4.0",
