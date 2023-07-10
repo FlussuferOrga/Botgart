@@ -1,18 +1,16 @@
-import { GatewayIntentBits, Partials } from "discord.js";
-import { BotgartClient } from "./BotgartClient";
-import { getConfig } from "./config/Config";
+import {GatewayIntentBits, Partials} from "discord.js";
+import {BotgartClient} from "./BotgartClient";
+import {getConfig} from "./config/Config";
 import * as L from "./Locale";
-import { logger } from "./util/Logging";
-import { WebServer } from "./WebServer";
-import { MikroORM } from "@mikro-orm/core";
-import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
+import {logger} from "./util/Logging";
+import {WebServer} from "./WebServer";
+import {MikroORM} from "@mikro-orm/core";
+import {BetterSqliteDriver} from "@mikro-orm/better-sqlite";
 
 const LOG = logger();
 
 export async function runApp(orm: MikroORM<BetterSqliteDriver>) {
     const config = getConfig();
-
-    LOG.info("Starting Botgart...");
 
     const intents: GatewayIntentBits[] = [
         GatewayIntentBits.Guilds,
@@ -31,7 +29,7 @@ export async function runApp(orm: MikroORM<BetterSqliteDriver>) {
 
     L.setLanguages(config.get("locales"));
     const client = new BotgartClient(
-        { ownerID: config.get("owner_ids") },
+        {ownerID: config.get("owner_ids")},
         {
             intents: intents,
             partials: [
@@ -64,11 +62,5 @@ export async function runApp(orm: MikroORM<BetterSqliteDriver>) {
         LOG.info("Starting web server...");
         await webServer.start();
         LOG.info("Started web server.");
-
-        //await database.scheduleOptimize(15);
     });
-    // .catch(reason => {
-    //     LOG.error(`Error starting up bot: ${reason}`);
-    //     process.exit(1);
-    // });
 }
