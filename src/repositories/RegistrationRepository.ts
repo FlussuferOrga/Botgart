@@ -98,7 +98,7 @@ export class RegistrationRepository extends AbstractDbRepository {
         const knex = this.orm.em.getKnex();
         const result = await knex
             .queryBuilder()
-            .select(["gw2account", knex.raw("group_concat(user, ',') as users")])
+            .select(["gw2account", knex.raw("group_concat(account_name, ',') as account_names"), knex.raw("group_concat(user, ',') as users")])
             .count("* as count")
             .from("registrations")
             .where({guild: guild})
@@ -109,6 +109,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                 users: value.users.split(","),
                 count: value.count,
                 gw2account: value.gw2account,
+                account_names: uniq(value.account_names)
             };
         });
     }
