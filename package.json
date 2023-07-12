@@ -93,7 +93,7 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-jsonc": "^2.9.0",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-unused-imports": "^2.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
     "mocha": "^10.2.0",
     "npm-run-all2": "^6.0.6",
     "prettier": "2.8.8",
