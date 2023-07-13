@@ -22,7 +22,7 @@ export async function setupPersistence() {
 
     await optimize();
 
-    LOG.debug("Create Schema:\n\n " + (await orm.getSchemaGenerator().getCreateSchemaSQL()) + "\n\n");
+    //LOG.debug("Create Schema:\n\n " + (await orm.getSchemaGenerator().getCreateSchemaSQL()) + "\n\n");
 
     const migrator = orm.getMigrator();
     await migrator.up();
