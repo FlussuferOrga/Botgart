@@ -3,7 +3,7 @@ import { AbstractDbRepository } from "./AbstractDbRepository";
 import { Fish } from "../mikroorm/entities/Fish";
 import { CaughtFish } from "../mikroorm/entities/CaughtFish";
 import { RandomFish } from "../mikroorm/entities/RandomFish";
-import { QueryOrder, UseRequestContext } from "@mikro-orm/core";
+import { QueryOrder } from "@mikro-orm/core";
 import { FishingLadder } from "../mikroorm/entities/FishingLadder";
 
 export class FishingRepository extends AbstractDbRepository {
@@ -26,7 +26,6 @@ export class FishingRepository extends AbstractDbRepository {
      * @param user: who caught the fish .
      * @param fish: the fish that was caught
      */
-    @UseRequestContext()
     public async catchFish(user: discord.User, fish: GeneratedFish): Promise<void> {
         const caughtFish = new CaughtFish();
         caughtFish.fish_id = this.orm.em.getReference(Fish, fish.fish_id);

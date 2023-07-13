@@ -6,6 +6,7 @@ import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
 import { GeneratedFish } from "../../repositories/FishingRepository";
 import { logger } from "../../util/Logging";
+import {UseRequestContext} from "@mikro-orm/core";
 
 /**
  Testcases:
@@ -14,7 +15,7 @@ import { logger } from "../../util/Logging";
 const REEL_EMOTE = "🎣";
 const REEL_BASE_TIME = 5000;
 const WAIT_MIN_SECONDS = 10;
-const WAIT_MAX_SECONDS = 5;
+const WAIT_MAX_SECONDS = 150;
 
 async function gets(url: string, options = {}): Promise<string> {
     return new Promise<string>((resolve, reject) => {
@@ -117,6 +118,7 @@ class ActiveFisher {
             .on("end", (rs) => this.end(rs.size > 0));
     }
 
+    @UseRequestContext((type: GoFish) => (type.client as BotgartClient).orm)
     private async end(reeled: boolean): Promise<void> {
         if (this.ended) return;
         this.ended = true;
