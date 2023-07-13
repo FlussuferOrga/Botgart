@@ -49,7 +49,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
-    private orm: MikroORM<BetterSqliteDriver>;
+    orm: MikroORM<BetterSqliteDriver>;
 
     constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, orm: MikroORM<BetterSqliteDriver>) {
         super(options, clientOptions);
@@ -103,11 +103,6 @@ export class BotgartClient extends akairo.AkairoClient {
             directory: __dirname + "/listeners/",
         });
         this.listenerHandler.loadAll();
-
-        this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: __dirname + "/inhibitors/",
-        });
-        this.inhibitorHandler.loadAll();
     }
 
     public getTS3Connection(): TS3Connection {

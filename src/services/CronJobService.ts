@@ -21,7 +21,6 @@ export class CronJobService {
         this.orm = orm;
     }
 
-    @UseRequestContext()
     /**
      * Reschedules all cronjobs that are still in the database.
      * @returns {int} - number of successfully scheduled crons.

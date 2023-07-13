@@ -1,6 +1,7 @@
 import { Listener } from "@notenoughupdates/discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { logger } from "../util/Logging";
+import {UseRequestContext} from "@mikro-orm/core";
 
 const LOG = logger();
 
@@ -12,6 +13,7 @@ export class PermanentRoleListener extends Listener {
         });
     }
 
+    @UseRequestContext((type: Listener) => (type.client as BotgartClient).orm)
     async exec(member) {
         const cl = this.client as BotgartClient;
         const g = member.guild;

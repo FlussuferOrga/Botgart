@@ -147,7 +147,6 @@ export class RosterService {
         }
     }
 
-    @UseRequestContext()
     public onStartup() {
         this.client.guilds.cache.forEach((g) => {
             this.repository.getActiveRosters(g).then((value) => {
