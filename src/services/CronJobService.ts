@@ -4,7 +4,7 @@ import { BotgartClient } from "../BotgartClient";
 import { BotgartCommand } from "../BotgartCommand";
 import { CronJobRepository } from "../repositories/CronJobRepository";
 import { logger } from "../util/Logging";
-import { RequestContext, UseRequestContext } from "@mikro-orm/core";
+import { RequestContext } from "@mikro-orm/core";
 import { MikroORM } from "@mikro-orm/better-sqlite";
 
 const LOG = logger();

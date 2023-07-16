@@ -1,7 +1,7 @@
 import { Listener } from "@notenoughupdates/discord-akairo";
 import { BotgartClient } from "../BotgartClient";
 import { logger } from "../util/Logging";
-import {UseRequestContext} from "@mikro-orm/core";
+import { UseRequestContext } from "@mikro-orm/core";
 
 const LOG = logger();
 

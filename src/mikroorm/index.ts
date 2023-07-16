@@ -34,8 +34,6 @@ export async function setupPersistence() {
         throw Error("Database Migration is required");
     }
 
-
-
     LOG.info(`Scheduling database optimization every 60 minutes.`);
     //setInterval(optimize, 6 * 60 * 60 * 1000);
     return orm;

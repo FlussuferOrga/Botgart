@@ -6,7 +6,7 @@ import { BotgartCommand } from "../../BotgartCommand";
 import * as L from "../../Locale";
 import { GeneratedFish } from "../../repositories/FishingRepository";
 import { logger } from "../../util/Logging";
-import {UseRequestContext} from "@mikro-orm/core";
+import { UseRequestContext } from "@mikro-orm/core";
 
 /**
  Testcases:
