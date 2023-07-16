@@ -112,7 +112,10 @@ export abstract class BotgartCommand extends akairo.Command {
         }
 
         const perm = await this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, userId, roles, guildId);
-        return perm > 0 || perm + this.everyonePermission > 0;
+        const isAllowed = perm > 0 || perm + this.everyonePermission > 0;
+
+        LOG.info(`${this.id} : ${isAllowed} (${perm})`);
+        return isAllowed;
     }
 
     /**

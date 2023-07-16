@@ -45,22 +45,24 @@ export class Help extends BotgartCommand {
             commandId = args.command.id;
         }
         const separator = "\n";
-        const user: discord.GuildMember | discord.User = guild ? await guild.members.fetch(responsible.id) : responsible; // cache.find(m => m.id == responsible.id) : responsible;
-        // let checkPermissions = member ? member.permissions.has.bind(member.permissions) : () => true;
-        const allowedCommands = await Promise.all(
+        let allCommands = await Promise.all(
             Array.from(this.getBotgartClient().commandHandler.modules.values())
                 .filter((value) => commandId === null || value.id == commandId)
+                .filter((value) => value instanceof BotgartCommand)
                 .map((m) => m as BotgartCommand)
-                .filter(async (m) => {
+                .map(async (command) => {
                     if (message.member) {
-                        return await m.isAllowedMember(message.member);
+                        return { command, permited: await command.isAllowedMember(message.member) };
                     } else {
-                        return await m.isAllowedUser(message.author);
+                        return { command, permited: await command.isAllowedUser(message.author) };
                     }
                 })
         );
+
         const descs = "**COMMANDS:**\n\n".concat(
-            allowedCommands
+            allCommands
+                .filter((value) => value.permited)
+                .map((value) => value.command)
                 .sort((m1, m2) => (m1.id < m2.id ? -1 : 1))
                 .map((cmd) => {
                     let message = "";
