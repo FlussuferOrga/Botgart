@@ -17,13 +17,19 @@ export class CommandPermissionRepository extends AbstractDbRepository {
 
     public async checkPermission(command: string, userId: string, roles: string[], guildId?: string): Promise<[boolean, number]> {
         const knex = this.orm.em.getKnex();
+
+        let where: Record<string, any> = {
+            command: command,
+        };
+
+        if (typeof guildId !== "undefined") {
+            where.guild = guildId;
+        }
+
         const permission = (await knex
             .select(knex.raw("TOTAL(value) AS permission"))
             .from("command_permissions")
-            .where({
-                command: command,
-                guild: guildId,
-            })
+            .where(where)
             .whereIn("type", [PermissionType.user, PermissionType.role])
             .whereIn("receiver", [userId, ...roles])
             .first()) as number;
