@@ -7,7 +7,6 @@ import { getConfig } from "./config/Config";
 import { Commander, CommanderState, TS3Commander, TS3Connection } from "./TS3Connection";
 import { logger } from "./util/Logging";
 import { UseRequestContext } from "@mikro-orm/core";
-import { MikroORM } from "@mikro-orm/better-sqlite";
 import { Registration } from "./mikroorm/entities/Registration";
 
 const LOG = logger();
@@ -31,7 +30,7 @@ export class TS3Listener extends events.EventEmitter {
     private readonly gracePeriod: number;
     private patience: number;
 
-    constructor(private readonly botgartClient: BotgartClient, private readonly orm: MikroORM) {
+    constructor(private readonly botgartClient: BotgartClient) {
         super();
 
         const config = getConfig().get();
@@ -45,7 +44,7 @@ export class TS3Listener extends events.EventEmitter {
         setInterval(() => this.checkCommanders(), config.ts_commander_check_interval);
     }
 
-    @UseRequestContext()
+    @UseRequestContext((type: TS3Listener) => type.botgartClient.orm)
     private async checkCommanders(): Promise<void> {
         LOG.debug("Requesting commanders from TS-Bot.");
         const now: moment.Moment = moment.utc();

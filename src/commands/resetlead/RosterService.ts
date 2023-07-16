@@ -27,7 +27,11 @@ export class RosterService {
 
     private rosters: { [key: string]: [discord.Guild, discord.Message, Roster] };
 
-    constructor(repository: RosterRepository, private readonly orm: MikroORM, client: BotgartClient) {
+    constructor(
+        repository: RosterRepository,
+        private readonly orm: MikroORM,
+        client: BotgartClient
+    ) {
         this.repository = repository;
         this.client = client;
 

@@ -72,7 +72,7 @@ export class BotgartClient extends akairo.AkairoClient {
         this.revalidationService = new RevalidationService(this);
 
         this.commanders = new CommanderStorage();
-        this.ts3listener = new TS3Listener(this, orm);
+        this.ts3listener = new TS3Listener(this);
 
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
