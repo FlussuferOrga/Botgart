@@ -51,7 +51,13 @@ export class Help extends BotgartCommand {
             Array.from(this.getBotgartClient().commandHandler.modules.values())
                 .filter((value) => commandId === null || value.id == commandId)
                 .map((m) => m as BotgartCommand)
-                .filter(async (m) => await m.isAllowed(user))
+                .filter(async (m) => {
+                    if (message.member) {
+                        return await m.isAllowedMember(message.member);
+                    } else {
+                        return await m.isAllowedUser(message.author);
+                    }
+                })
         );
         const descs = "**COMMANDS:**\n\n".concat(
             allowedCommands

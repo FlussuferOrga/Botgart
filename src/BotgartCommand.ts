@@ -1,5 +1,6 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
+import { APIInteractionGuildMember, GuildMember, If, Snowflake } from "discord.js";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
 import * as L from "./Locale";
@@ -88,40 +89,30 @@ export abstract class BotgartCommand extends akairo.Command {
         return `COOLDOWN_${this.snakeCaseName()}`;
     }
 
-    /**
-     * Checks whether a user is allowed to execute a command.
-     * That's the case if either the user is the bot owner (set in config)
-     * or when the sum of permissions granted to the user personally,
-     * or all the rules the user has is greater than zero. Example:
-     * User A has two roles R and S. User A has 0 permission power on command C.
-     * The roles R and S have -5 and 10 permission power on C respetctivly.
-     * The special role everyone has permission power 1.
-     * In sum, A has: 0 + (-5) + 10 + 1 = 6 permission power. So they will
-     * be allowed to execute C.
-     * Note that this check takes place _in addition_ to the Akairo check
-     * userPermissions and clientPermissions, which is very limited as it
-     * is bound to the boolean permissions Discord gives out
-     * (i.e. "user is admin", "user can use external emotes" etc...).
-     * Those three checks are logically conjuncted with AND, so they must all pass.
-     * @param user - the user for which to check the permissions.
-     * @returns - true, if this function thinks the user is allowed to execute the command.
-     *
-     */
-    public async isAllowed(user: discord.GuildMember | discord.User) {
+    public async isAllowedApiMember(user: APIInteractionGuildMember, guildId: Snowflake) {
+        return await this.checkPermissions(user.user.id, user.roles, guildId);
+    }
+
+    public async isAllowedMember(user: GuildMember) {
+        const roles = user.roles.cache.map((r) => r.id);
+        return await this.checkPermissions(user.user.id, roles, user.guild.id);
+    }
+
+    public async isAllowedUser(user: discord.User) {
+        return await this.checkPermissions(user.id, [], null);
+    }
+
+    private async checkPermissions(userId: Snowflake, roles: string[], guildId: Snowflake | null) {
         if (!this.isEnabled()) {
             return false;
         }
 
-        if (this.isOwner(user)) {
+        if (this.isOwner(userId)) {
             return true;
         }
 
-        const userId = user.id;
-        const guildId = user instanceof discord.GuildMember ? user.guild.id : undefined;
-        const roles = user instanceof discord.GuildMember ? user.roles.cache.map((r) => r.id) : [];
-        const [allowed, perm] = await this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, userId, roles, guildId);
-        LOG.debug("resolved permission value: {}", perm);
-        return allowed || perm + this.everyonePermission > 0;
+        const perm = await this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, userId, roles, guildId);
+        return perm > 0 || perm + this.everyonePermission > 0;
     }
 
     /**
@@ -129,12 +120,12 @@ export abstract class BotgartCommand extends akairo.Command {
      * Owners are identified by their discord id (string of digits).
      * Multiple owners can be assigned in the config.
      * Users are allowed to execute every command.
-     * @param user - the user to check.
+     * @param userId - the user to check.
      * @returns - true, if the user is an owner.
      */
-    public isOwner(user: discord.GuildMember | discord.User) {
+    public isOwner(userId: Snowflake) {
         const ownerIds = getConfig().get().owner_ids;
-        return Array.isArray(ownerIds) && ownerIds.includes(user.id);
+        return Array.isArray(ownerIds) && ownerIds.includes(userId);
     }
 
     /**

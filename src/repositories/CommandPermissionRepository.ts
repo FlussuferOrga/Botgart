@@ -1,5 +1,6 @@
 import { AbstractDbRepository } from "./AbstractDbRepository";
 import { CommandPermission, PermissionType } from "../mikroorm/entities/CommandPermission";
+import { Snowflake } from "discord.js";
 
 export class Permission {
     command_permissions_id: number;
@@ -15,25 +16,25 @@ export class CommandPermissionRepository extends AbstractDbRepository {
         return await this.orm.em.find(CommandPermission, { guild: guildId });
     }
 
-    public async checkPermission(command: string, userId: string, roles: string[], guildId?: string): Promise<[boolean, number]> {
+    public async checkPermission(command: string, userId: string, roles: string[], guildId: Snowflake | null): Promise<number> {
         const knex = this.orm.em.getKnex();
 
         let where: Record<string, any> = {
             command: command,
         };
 
-        if (typeof guildId !== undefined) {
+        if (guildId !== null) {
             where.guild = guildId;
         }
 
-        const permission = (await knex
+        const result = (await knex
             .select(knex.raw("TOTAL(value) AS permission"))
             .from("command_permissions")
             .where(where)
             .whereIn("type", [PermissionType.user, PermissionType.role])
             .whereIn("receiver", [userId, ...roles])
-            .first()) as number;
-        return [permission > 0, permission];
+            .first()) as { permission: number };
+        return result.permission;
     }
 
     public async removePermission(permissionId: number, guildId: string): Promise<void> {
