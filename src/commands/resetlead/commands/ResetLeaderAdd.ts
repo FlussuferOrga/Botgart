@@ -15,6 +15,7 @@ export class AddResetLeader extends BotgartCommand {
         super("addresetlead", {
             aliases: ["addresetlead"],
             quoted: true,
+            channel: "guild",
             args: [
                 {
                     id: "player",

@@ -21,6 +21,7 @@ export class Poll extends BotgartCommand {
             {
                 aliases: ["poll", "vote"],
                 quoted: true,
+              channel: "guild",
                 args: [
                     {
                         id: "channel",

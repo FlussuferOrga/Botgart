@@ -19,6 +19,7 @@ export class DeleteCron extends BotgartCommand {
     constructor() {
         super("deletecron", {
             aliases: ["deletecron", "rmcron"],
+            channel: "guild",
             args: [
                 {
                     id: "id",

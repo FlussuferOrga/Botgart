@@ -14,6 +14,7 @@ export class ToggleResetLeaderVisibility extends BotgartCommand {
         super("toggleresetleadervisibility", {
             aliases: ["toggleresetleadervisibility"],
             quoted: true,
+            channel: "guild",
             args: [
                 {
                     id: "player",

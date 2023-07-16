@@ -16,6 +16,7 @@ export class ListFaqs extends BotgartCommand {
             "listfaqs",
             {
                 aliases: ["listfaqs", "lsfaqs", "lsrtfms"],
+                channel: "guild",
             },
             {
                 everyonePermission: 1,

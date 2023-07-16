@@ -12,6 +12,7 @@ export class Whois extends BotgartCommand {
     constructor() {
         super("whois", {
             aliases: ["whois"],
+            channel: "guild",
             args: [
                 {
                     id: "name",
@@ -111,7 +112,7 @@ export class Whois extends BotgartCommand {
 
     private sort(
         enhancedResult: {
-            account_name: string;
+            account_name?: string;
             member: discord.GuildMember | undefined;
             user: string;
         }[]

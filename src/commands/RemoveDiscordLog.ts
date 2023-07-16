@@ -15,6 +15,7 @@ export class RemoveDiscordLog extends BotgartCommand {
             {
                 aliases: ["removediscordlog"],
                 quoted: true,
+                channel: "guild",
                 args: [
                     {
                         id: "type",
@@ -30,8 +31,7 @@ export class RemoveDiscordLog extends BotgartCommand {
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: false,
-                availableAsDM: false,
+                cronable: false
             }
         );
     }

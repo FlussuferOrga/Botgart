@@ -23,7 +23,6 @@ export class Reauthenticate extends BotgartCommand {
                 // userPermissions: ['ADMINISTRATOR']
             },
             {
-                availableAsDM: true,
                 cronable: true,
             }
         );
@@ -32,10 +31,7 @@ export class Reauthenticate extends BotgartCommand {
     async command(message: discord.Message, responsible: discord.User, sguild: discord.Guild, args) {
         const cl: BotgartClient = this.getBotgartClient();
         LOG.info("Starting Re-authentication.");
-        cl.revalidationService.revalidateKeys();
-    }
-
-    postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<discord.Message> | undefined {
+        await cl.revalidationService.revalidateKeys();
         return message.reply(L.get("PRUNING_COMPLETE"));
     }
 }

@@ -16,6 +16,7 @@ export class MakeCron extends BotgartCommand {
         super("makecron", {
             aliases: ["makecron", "mkcron"],
             quoted: true,
+            channel: "guild",
             args: [
                 {
                     id: "schedule",

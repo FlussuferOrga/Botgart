@@ -15,6 +15,7 @@ export class RemovePermanentRole extends BotgartCommand {
     constructor() {
         super("removepermanentrole", {
             aliases: ["removepermarole", "removepermanentrole", "rmprole"],
+            channel: "guild",
             args: [
                 {
                     id: "member",

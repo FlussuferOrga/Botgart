@@ -67,7 +67,6 @@ export class Authenticate extends BotgartCommand {
                 ],
             },
             {
-                availableAsDM: true,
                 everyonePermission: 1,
             }
         );

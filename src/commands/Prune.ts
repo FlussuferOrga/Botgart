@@ -56,9 +56,6 @@ export class Prune extends BotgartCommand {
             });
     }
 
-    async postExecHook(message: discord.Message, args: Record<string, unknown>, result): Promise<string | void> {
-        return result.then((m) => message.reply(m)).catch(LOG.error);
-    }
 }
 
 module.exports = Prune;

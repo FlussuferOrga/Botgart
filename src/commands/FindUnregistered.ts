@@ -8,6 +8,7 @@ export class FindUnregistered extends BotgartCommand {
     constructor() {
         super("findunregistered", {
             aliases: ["findunregistered", "findunreg"],
+            channel: "guild",
         });
     }
 

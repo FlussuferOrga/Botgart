@@ -17,6 +17,7 @@ export class ResetRoster extends BotgartCommand {
             "resetroster",
             {
                 aliases: ["resetroster"],
+                channel: "guild",
                 args: [
                     {
                         id: "channel",

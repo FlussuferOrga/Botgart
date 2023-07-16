@@ -26,7 +26,6 @@ export class Help extends BotgartCommand {
                 ],
             },
             {
-                availableAsDM: true,
                 cronable: true,
                 everyonePermission: 1,
             }

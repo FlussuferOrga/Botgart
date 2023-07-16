@@ -15,6 +15,7 @@ export class RemoveResetLeader extends BotgartCommand {
         super("removeresetlead", {
             aliases: ["removeresetlead", "rmresetlead"],
             quoted: true,
+            channel: "guild",
             args: [
                 {
                     id: "player",

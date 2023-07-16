@@ -13,6 +13,7 @@ export class DiscordLog extends BotgartCommand {
             "discordlog",
             {
                 aliases: ["discordlog"],
+                channel: "guild",
                 quoted: true,
                 args: [
                     {

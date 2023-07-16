@@ -16,6 +16,7 @@ export class MakeFaq extends BotgartCommand {
             "addfaq",
             {
                 aliases: ["addfaq", "addrtfm"],
+              channel: "guild",
                 quoted: true,
                 args: [
                     {

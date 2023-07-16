@@ -14,6 +14,7 @@ export class ReactionSnapshot extends BotgartCommand {
             {
                 aliases: ["reactionsnapshot"],
                 quoted: true,
+                channel: "guild",
                 args: [
                     {
                         id: "message",

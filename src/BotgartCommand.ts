@@ -7,14 +7,12 @@ import * as L from "./Locale";
 import { logger } from "./util/Logging";
 
 interface BotgartCommandOptionsNullable {
-    availableAsDM?: boolean;
     cronable?: boolean;
     everyonePermission?: number;
     enabled?: boolean;
 }
 
 interface BotgartCommandOptions {
-    availableAsDM: boolean;
     cronable: boolean;
     everyonePermission: number;
     enabled: boolean;
@@ -23,7 +21,6 @@ interface BotgartCommandOptions {
 const LOG = logger();
 
 export abstract class BotgartCommand extends akairo.Command {
-    protected availableAsDM: boolean;
     protected cronable: boolean;
     protected everyonePermission: number;
     protected enabled: boolean;
@@ -34,7 +31,6 @@ export abstract class BotgartCommand extends akairo.Command {
      * @param id - unique identifier
      * @param options - options for the Akairo Command
      * @param botgartOptions - additional options for the Botgart Command. Defaults are:
-     *                        availableAsDM: false
      *                        cronable: false
      *                        everyonePermission: 0
      */
@@ -44,13 +40,11 @@ export abstract class BotgartCommand extends akairo.Command {
             LOG.warn(`Command ${id} is missing the command identity within the aliases`);
         }
         const defaults: BotgartCommandOptions = {
-            availableAsDM: false,
             cronable: false,
             everyonePermission: 0,
             enabled: true,
         };
         const settings: BotgartCommandOptions = botgartOptions === undefined ? defaults : { ...defaults, ...botgartOptions };
-        this.availableAsDM = settings.availableAsDM;
         this.cronable = settings.cronable;
         this.everyonePermission = settings.everyonePermission;
         this.cmdargs = options.args === undefined ? [] : options.args;
@@ -259,34 +253,13 @@ export abstract class BotgartCommand extends akairo.Command {
      * @param {Object} args - parameters.
      */
     public async exec(message: discord.Message, args: Record<string, unknown>): Promise<void> {
-        if (!this.availableAsDM && !message.member && message.util) {
-            await message.reply(L.get("NOT_AVAILABLE_AS_DM"));
-            return;
-        }
-
-        //command permission (removed)
-
         const errorMessage = this.checkArgs(args);
         if (errorMessage && message.util) {
             await message.reply(errorMessage);
             return;
         }
-
-        const res = await this.command(message, message.author, message.guild, args);
-        return this.postExecHook(message, args, res);
+        await this.command(message, message.author, message.guild, args);
     }
-
-    /**
-     * Optional method that is called in the default implementation of exec().
-     * This is useful for when directly invoking this command on a server should
-     * have slightly different behaviour than doing it from a cron (eg giving the user feedback).
-     * @param {Message} message - the Message as passed to exec().
-     * @param {Map} args - the arguments as passed to exec().
-     * @param {any} result - the result from command().
-     * @returns {any} - is returned to the caller.
-     */
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    public postExecHook(message: discord.Message, args: Record<string, unknown>, result: unknown): void {}
 
     /*
      * Convenience method to reply from within a command.

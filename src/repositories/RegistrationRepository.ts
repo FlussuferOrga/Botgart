@@ -6,6 +6,7 @@ import { expr } from "@mikro-orm/core";
 import { uniq } from "lodash";
 
 const LOG = logger();
+
 export class RegistrationRepository extends AbstractDbRepository {
     /**
      * Gets a user by their account name. That is Foobar.1234.
@@ -35,7 +36,7 @@ export class RegistrationRepository extends AbstractDbRepository {
     ): Promise<
         {
             user: string;
-            account_name: string;
+            account_name?: string;
         }[]
     > {
         return uniq([
@@ -55,6 +56,9 @@ export class RegistrationRepository extends AbstractDbRepository {
                 },
                 { fields: ["account_name", "user"] }
             )),
+            ...discordUserIds.map((value) => {
+                return { user: value };
+            }),
         ]);
     }
 

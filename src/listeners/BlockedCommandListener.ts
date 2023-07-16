@@ -1,6 +1,7 @@
 import { AkairoMessage, Command, Listener } from "@notenoughupdates/discord-akairo";
 import * as L from "../Locale";
 import { Message } from "discord.js";
+import { BuiltInReasons } from "@notenoughupdates/discord-akairo/dist/src/util/Constants";
 
 export class BlockedCommandListener extends Listener {
     constructor() {
@@ -10,18 +11,27 @@ export class BlockedCommandListener extends Listener {
         });
     }
 
-
     async exec(message: Message<boolean> | AkairoMessage, command: Command, reason: string) {
-        if (reason === "Insufficient Permissions") {
-            await message.reply({
-                content: L.get("NOT_PERMITTED"),
-                ephemeral: true,
-            });
-        } else {
-            await message.reply({
-                content: reason,
-                ephemeral: true,
-            });
+        await message.reply({
+            content: this.getReasonText(reason),
+            ephemeral: true,
+        });
+    }
+
+    private getReasonText(reason: string) {
+        switch (reason) {
+            case BuiltInReasons.GUILD:
+                return L.get("NOT_AVAILABLE_AS_DM");
+            case BuiltInReasons.DM:
+                return L.get("NOT_AVAILABLE_AS_GUILD");
+            case BuiltInReasons.OWNER:
+            case BuiltInReasons.SUPER_USER:
+            case BuiltInReasons.BOT:
+            case BuiltInReasons.CLIENT:
+            case "Insufficient Permissions":
+                return L.get("NOT_PERMITTED");
+            default:
+                return "Could run command: " + reason;
         }
     }
 }

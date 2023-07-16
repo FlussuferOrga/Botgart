@@ -11,6 +11,7 @@ export class FindDuplicates extends BotgartCommand {
     constructor() {
         super("findduplicates", {
             aliases: ["findduplicates", "finddupes"],
+            channel: "guild",
             // userPermissions: ['ADMINISTRATOR']
         });
     }

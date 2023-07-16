@@ -25,7 +25,6 @@ export class FishingLadder extends BotgartCommand {
                 aliases: ["fishingladder", "epeen"],
             },
             {
-                availableAsDM: true,
                 everyonePermission: 1,
             }
         );

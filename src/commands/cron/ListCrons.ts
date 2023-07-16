@@ -20,7 +20,6 @@ export class ListCrons extends BotgartCommand {
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                availableAsDM: true,
             }
         );
     }

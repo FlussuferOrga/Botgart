@@ -144,7 +144,6 @@ export class GoFish extends BotgartCommand {
                 ratelimit: 1,
             },
             {
-                availableAsDM: true,
                 everyonePermission: 1,
             }
         );

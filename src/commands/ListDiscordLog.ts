@@ -12,6 +12,7 @@ export class ListDiscordLog extends BotgartCommand {
             {
                 aliases: ["listdiscordlog"],
                 quoted: true,
+                channel: "guild",
                 args: [
                     {
                         id: "channel",
@@ -23,8 +24,7 @@ export class ListDiscordLog extends BotgartCommand {
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: false,
-                availableAsDM: false,
+                cronable: false
             }
         );
     }

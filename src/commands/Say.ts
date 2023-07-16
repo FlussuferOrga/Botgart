@@ -16,6 +16,7 @@ export class Say extends BotgartCommand {
         super(
             "say",
             {
+                channel: "guild",
                 aliases: ["say", "speak"],
                 quoted: true,
                 args: [

@@ -15,6 +15,7 @@ export class AddPermanentRole extends BotgartCommand {
     constructor() {
         super("addpermanentrole", {
             aliases: ["addpermarole", "addpermanentrole", "addprole"],
+            channel: "guild",
             args: [
                 {
                     id: "member",
