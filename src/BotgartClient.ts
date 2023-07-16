@@ -76,6 +76,14 @@ export class BotgartClient extends akairo.AkairoClient {
 
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
+        this.inhibitorHandler = new akairo.InhibitorHandler(this, {
+            directory: __dirname + "/inhibitors/",
+        });
+
+        this.listenerHandler = new akairo.ListenerHandler(this, {
+            directory: __dirname + "/listeners/",
+        });
+
         const prefix = getConfig().get().prefix;
         this.commandHandler = new ExtendedCommandHandler(
             this,
@@ -85,9 +93,21 @@ export class BotgartClient extends akairo.AkairoClient {
                 commandUtil: true,
                 commandUtilLifetime: 600000,
                 autoRegisterSlashCommands: true,
+                autoDefer: true,
             },
             orm
         );
+        this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
+        this.commandHandler.useListenerHandler(this.listenerHandler);
+
+        this.listenerHandler.setEmitters({
+            commandHandler: this.commandHandler,
+            inhibitorHandler: this.inhibitorHandler,
+            listenerHandler: this.listenerHandler,
+        });
+
+        this.inhibitorHandler.loadAll();
+        this.listenerHandler.loadAll();
         this.commandHandler.loadAll();
 
         this.commandHandler.on("cooldown", (message: discord.Message, command: akairo.Command, remaining: number) => {
@@ -98,11 +118,6 @@ export class BotgartClient extends akairo.AkairoClient {
                 }
             }
         });
-
-        this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: __dirname + "/listeners/",
-        });
-        this.listenerHandler.loadAll();
     }
 
     public getTS3Connection(): TS3Connection {

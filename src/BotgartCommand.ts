@@ -120,6 +120,7 @@ export abstract class BotgartCommand extends akairo.Command {
         const guildId = user instanceof discord.GuildMember ? user.guild.id : undefined;
         const roles = user instanceof discord.GuildMember ? user.roles.cache.map((r) => r.id) : [];
         const [allowed, perm] = await this.getBotgartClient().commandPermissionRepository.checkPermission(this.id, userId, roles, guildId);
+        LOG.debug("resolved permission value: {}", perm);
         return allowed || perm + this.everyonePermission > 0;
     }
 
@@ -196,24 +197,24 @@ export abstract class BotgartCommand extends akairo.Command {
     }
 
     /**
-     * This is the method that should actually do the whole execution.
-     * Ideally, exec() just calls this without doing anything else.
-     * That's important to make Commands seemlessly available through
-     * cronjobs, where no context like a Message is available.
-     * Discord objects like Guilds and Channels should also be resolved
-     * within this method to verify that they still exist.
-     * A user could have scheduled a cronjob a week before and since then
-     * the bot may have been kicked from the Guild or the channel could have
-     * been deleted.
-     * @param {Message} message - Message that triggered this command.
-     If the command is run as a cron, this parameter will be null.
-     Each command must check the validity of this parameter themselves if needed.
-     * @param {User} responsible - the User responsible for this command.
-     Either caller or whoever created the cronjob this command is running in.
-     Note the this could fail to resolve and should always be checked for null.
-     * @param {Guild} guild - the Guild on which to execute the command.
-     * @param {map} args - arguments for the command. Each command specifies the format themselves.
-     */
+   * This is the method that should actually do the whole execution.
+   * Ideally, exec() just calls this without doing anything else.
+   * That's important to make Commands seemlessly available through
+   * cronjobs, where no context like a Message is available.
+   * Discord objects like Guilds and Channels should also be resolved
+   * within this method to verify that they still exist.
+   * A user could have scheduled a cronjob a week before and since then
+   * the bot may have been kicked from the Guild or the channel could have
+   * been deleted.
+   * @param {Message} message - Message that triggered this command.
+   If the command is run as a cron, this parameter will be null.
+   Each command must check the validity of this parameter themselves if needed.
+   * @param {User} responsible - the User responsible for this command.
+   Either caller or whoever created the cronjob this command is running in.
+   Note the this could fail to resolve and should always be checked for null.
+   * @param {Guild} guild - the Guild on which to execute the command.
+   * @param {map} args - arguments for the command. Each command specifies the format themselves.
+   */
     public async command(
         message: discord.Message | null,
         responsible: discord.User | null,
@@ -269,11 +270,7 @@ export abstract class BotgartCommand extends akairo.Command {
             return;
         }
 
-        const causer = message.member || message.author;
-        if (!(await this.isAllowed(causer))) {
-            await message.reply(L.get("NOT_PERMITTED"));
-            return;
-        }
+        //command permission (removed)
 
         const errorMessage = this.checkArgs(args);
         if (errorMessage && message.util) {

@@ -22,7 +22,7 @@ export class CommandPermissionRepository extends AbstractDbRepository {
             command: command,
         };
 
-        if (typeof guildId !== "undefined") {
+        if (typeof guildId !== undefined) {
             where.guild = guildId;
         }
 
