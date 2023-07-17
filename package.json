@@ -49,7 +49,7 @@
   },
   "dependencies": {
     "@mikro-orm/better-sqlite": "^5.7.12",
-    "@mikro-orm/core": "^5.7.12",
+    "@mikro-orm/core": "^5.7.13",
     "@mikro-orm/migrations": "^5.7.12",
     "@notenoughupdates/discord-akairo": "^10.0.2",
     "@supercharge/promise-pool": "^3.0.0",
