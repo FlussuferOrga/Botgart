@@ -182,7 +182,7 @@ export class RosterService {
             );
 
             if (roster === undefined) {
-                LOG.error(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
+                LOG.warn(`Received request to start the initial ts3 sync for ${rosterWeek}, but no roster post exists for said week.`);
             } else {
                 const [r] = roster;
 
