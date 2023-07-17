@@ -1,11 +1,8 @@
 import { AkairoMessage, Command, Inhibitor } from "@notenoughupdates/discord-akairo";
 import { BotgartClient } from "../BotgartClient";
-import { logger } from "../util/Logging";
 import { UseRequestContext } from "@mikro-orm/core";
-import discord, { APIInteractionGuildMember, GuildMember, Message, User } from "discord.js";
+import { GuildMember, Message } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand";
-
-const LOG = logger();
 
 export class CommandPermissionInhibitor extends Inhibitor {
     constructor() {

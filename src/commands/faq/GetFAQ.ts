@@ -16,7 +16,7 @@ export class GetFaq extends BotgartCommand {
             "getfaq",
             {
                 aliases: ["getfaq", "faq", "getrtfm", "rtfm"],
-              channel: "guild",
+                channel: "guild",
                 args: [
                     {
                         id: "key",

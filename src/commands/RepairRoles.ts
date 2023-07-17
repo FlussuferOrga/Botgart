@@ -18,7 +18,7 @@ export class RepairRoles extends BotgartCommand {
             "repairroles",
             {
                 aliases: ["repairroles", "rolerepair"],
-              channel: "guild",
+                channel: "guild",
 
                 // userPermissions: ["ADMINISTRATOR"]
             },

@@ -55,7 +55,6 @@ export class Prune extends BotgartCommand {
                 return "An error occurred while pruning: {0}".formatUnicorn(e.message);
             });
     }
-
 }
 
 module.exports = Prune;

@@ -24,7 +24,7 @@ export class ListDiscordLog extends BotgartCommand {
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: false
+                cronable: false,
             }
         );
     }

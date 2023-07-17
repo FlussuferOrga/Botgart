@@ -2,7 +2,7 @@ import discord, { EmbedBuilder, Guild, Message, resolveColor } from "discord.js"
 import { BotgartClient } from "../BotgartClient";
 import { getConfig } from "../config/Config";
 import * as L from "../Locale";
-import { Commander, LeadType } from "../TS3Connection";
+import { Commander, LeadType } from "../Commanders";
 import { logger } from "../util/Logging";
 const LOG = logger();
 

@@ -44,7 +44,7 @@ export class Help extends BotgartCommand {
             commandId = args.command.id;
         }
         const separator = "\n";
-        let allCommands = await Promise.all(
+        const allCommands = await Promise.all(
             Array.from(this.getBotgartClient().commandHandler.modules.values())
                 .filter((value) => commandId === null || value.id == commandId)
                 .filter((value) => value instanceof BotgartCommand)

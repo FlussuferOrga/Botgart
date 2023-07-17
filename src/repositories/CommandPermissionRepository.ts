@@ -19,7 +19,7 @@ export class CommandPermissionRepository extends AbstractDbRepository {
     public async checkPermission(command: string, userId: string, roles: string[], guildId: Snowflake | null): Promise<number> {
         const knex = this.orm.em.getKnex();
 
-        let where: Record<string, any> = {
+        const where: Record<string, string> = {
             command: command,
         };
 

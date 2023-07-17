@@ -4,10 +4,11 @@ import events from "events";
 import * as moment from "moment";
 import { BotgartClient } from "./BotgartClient";
 import { getConfig } from "./config/Config";
-import { Commander, CommanderState, TS3Commander, TS3Connection } from "./TS3Connection";
+import { TS3Commander, TS3Connection } from "./TS3Connection";
 import { logger } from "./util/Logging";
 import { UseRequestContext } from "@mikro-orm/core";
 import { Registration } from "./mikroorm/entities/Registration";
+import { Commander, CommanderState } from "./Commanders";
 
 const LOG = logger();
 
@@ -46,15 +47,17 @@ export class TS3Listener extends events.EventEmitter {
 
     @UseRequestContext((type: TS3Listener) => type.botgartClient.orm)
     private async checkCommanders(): Promise<void> {
-        LOG.debug("Requesting commanders from TS-Bot.");
+        LOG.verbose("Requesting commanders from TS-Bot.");
         const now: moment.Moment = moment.utc();
         try {
             const res: string = await this.ts3connection.get("commanders");
             const data: { commanders: TS3Commander[] } = JSON.parse(res); // FIXME: error check
             const commanderTSUIDs: string[] = data.commanders.map((c) => c.ts_cluid);
-            LOG.debug(`Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
-            const taggedDown: Commander[] = this.botgartClient.commanders.setMinus(new Set<string>(commanderTSUIDs));
-            LOG.debug("Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
+            LOG.verbose(`Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
+            const taggedDown: Commander[] = this.botgartClient.commanders.getTaggedDown(new Set<string>(commanderTSUIDs));
+            if (taggedDown.length > 0) {
+                LOG.debug("Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
+            }
             this.botgartClient.guilds.cache.forEach((g) => {
                 data.commanders.forEach((c) => {
                     const account = c.account_name; // for lookup

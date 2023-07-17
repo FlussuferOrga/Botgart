@@ -31,7 +31,7 @@ export class RemoveDiscordLog extends BotgartCommand {
                 // userPermissions: ["ADMINISTRATOR"]
             },
             {
-                cronable: false
+                cronable: false,
             }
         );
     }

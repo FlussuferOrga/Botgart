@@ -19,8 +19,7 @@ export class ListCrons extends BotgartCommand {
                 aliases: ["listcrons", "lscrons"],
                 // userPermissions: ["ADMINISTRATOR"]
             },
-            {
-            }
+            {}
         );
     }
 

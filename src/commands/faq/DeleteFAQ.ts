@@ -16,7 +16,7 @@ export class DeleteFaq extends BotgartCommand {
             "deletefaq",
             {
                 aliases: ["deletefaq", "deletertfm", "rmfaq", "rmrtfm"],
-              channel: "guild",
+                channel: "guild",
                 args: [
                     {
                         id: "key",

@@ -16,13 +16,14 @@ import { CronJobService } from "./services/CronJobService";
 import { RevalidationService } from "./services/RevalidationService";
 import { TagBroadcastService } from "./services/TagBroadcastService";
 import { ValidationService } from "./services/ValidationService";
-import { CommanderStorage, TS3Connection } from "./TS3Connection";
+import { TS3Connection } from "./TS3Connection";
 import { TS3Listener } from "./TS3Listener";
 import { logger } from "./util/Logging";
 import { AkairoClientOptions } from "@notenoughupdates/discord-akairo";
 import { MikroORM } from "@mikro-orm/core";
 import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
 import { ExtendedCommandHandler } from "./ExtendedCommandHandler";
+import { CommanderStorage } from "./Commanders";
 
 const LOG = logger();
 
