@@ -1,10 +1,10 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
 import { APIInteractionGuildMember, GuildMember, Snowflake } from "discord.js";
-import { BotgartClient } from "./BotgartClient";
-import { getConfig } from "./config/Config";
-import * as L from "./Locale";
-import { logger } from "./util/Logging";
+import { BotgartClient } from "./BotgartClient.js";
+import { getConfig } from "./config/Config.js";
+import * as L from "./Locale.js";
+import { logger } from "./util/Logging.js";
 
 interface BotgartCommandOptionsNullable {
     cronable?: boolean;

@@ -1,7 +1,7 @@
 import { Argument, Command } from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { splitMessage } from "../util/Util";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { splitMessage } from "../util/Util.js";
 
 /**
  Testcases:
@@ -11,7 +11,7 @@ import { splitMessage } from "../util/Util";
  - run with very long help text (change desc for some commands in Locale) > 2000 chars -> response comes in parts
  - run with one very long help text (change desc for one command in Locale) > 2000 chars -> that command is omitted
  */
-export class Help extends BotgartCommand {
+export default class Help extends BotgartCommand {
     constructor() {
         super(
             "help",
@@ -85,5 +85,3 @@ export class Help extends BotgartCommand {
         }
     }
 }
-
-module.exports = Help;

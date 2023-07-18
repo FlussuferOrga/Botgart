@@ -1,15 +1,15 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../../BotgartCommand";
-import * as L from "../../../Locale";
-import * as Util from "../../../util/Util";
-import * as ResetUtil from "../ResetUtil";
+import { BotgartCommand } from "../../../BotgartCommand.js";
+import * as L from "../../../Locale.js";
+import * as Util from "../../../util/Util.js";
+import * as ResetUtil from "../ResetUtil.js";
 
 /**
  Testcases:
 
  */
-export class ToggleResetLeaderVisibility extends BotgartCommand {
+export default class ToggleResetLeaderVisibility extends BotgartCommand {
     constructor() {
         super("toggleresetleadervisibility", {
             aliases: ["toggleresetleadervisibility"],
@@ -50,5 +50,3 @@ export class ToggleResetLeaderVisibility extends BotgartCommand {
         }
     }
 }
-
-module.exports = ToggleResetLeaderVisibility;

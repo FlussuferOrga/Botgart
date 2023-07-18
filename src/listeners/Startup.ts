@@ -1,11 +1,11 @@
 import { Listener } from "@notenoughupdates/discord-akairo";
-import { BotgartClient } from "../BotgartClient";
-import { logger } from "../util/Logging";
+import { BotgartClient } from "../BotgartClient.js";
+import { logger } from "../util/Logging.js";
 import { UseRequestContext } from "@mikro-orm/core";
 
 const LOG = logger();
 
-export class Startup extends Listener {
+export default class Startup extends Listener {
     constructor() {
         super("ready", {
             emitter: "client",
@@ -25,5 +25,3 @@ export class Startup extends Listener {
         client.user?.setActivity("{0}{1} für Hilfe".formatUnicorn(client.commandHandler.prefix, help));
     }
 }
-
-module.exports = Startup;

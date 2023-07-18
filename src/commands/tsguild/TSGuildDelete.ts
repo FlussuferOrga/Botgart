@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
 
-export class TsGuildDelete extends BotgartCommand {
+export default class TsGuildDelete extends BotgartCommand {
     constructor() {
         super("tsguilddelete", {
             aliases: ["tsguilddelete", "rmguild", "deleteguild"],
@@ -28,5 +28,3 @@ export class TsGuildDelete extends BotgartCommand {
         await this.reply(message, responsible, L.get("RM_GUILD_COMPLETE"));
     }
 }
-
-module.exports = TsGuildDelete;

@@ -1,12 +1,12 @@
 import discord, { GuildMember, Role, Snowflake } from "discord.js";
-import { isEqual, sortBy, uniq } from "lodash";
-import { BotgartClient } from "../BotgartClient";
-import { getConfig, WorldAssignment } from "../config/Config";
-import { logger } from "../util/Logging";
-import { findRole } from "../util/Util";
-import { AccountData, getAccountInfo } from "../Gw2ApiUtils";
-import * as Util from "../util/Util";
-import * as L from "../Locale";
+import { isEqual, sortBy, uniq } from "lodash-es";
+import { BotgartClient } from "../BotgartClient.js";
+import { getConfig, WorldAssignment } from "../config/Config.js";
+import { logger } from "../util/Logging.js";
+import { findRole } from "../util/Util.js";
+import { AccountData, getAccountInfo } from "../Gw2ApiUtils.js";
+import * as Util from "../util/Util.js";
+import * as L from "../Locale.js";
 
 const LOG = logger();
 

@@ -1,30 +1,5 @@
-import chai, { assert, expect } from "chai";
-import chaiDateTime from "chai-datetime";
-import moment from "moment";
-import * as U from "../util/Util";
-
-chai.use(chaiDateTime);
-
-describe("Util - Date", () => {
-    it("compare dates without time", () =>
-        assert.isTrue(U.compareDatesWithoutTime(new Date(Date.UTC(2019, 1, 1, 23, 59, 59)), new Date(Date.UTC(2019, 1, 1)))));
-
-    it("convert twice", () => {
-        const orig = "2019-12-12 00:00:00";
-        const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
-        return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
-    });
-
-    it("convert twice with time", () => {
-        const orig = "2019-12-12 12:15:51";
-        const mom: moment.Moment = U.sqliteTimestampToMoment(orig);
-        return assert.equal(U.momentToLocalSqliteTimestamp(mom), orig);
-    });
-
-    // it("reset date2", function() {
-    //  expect(false).equal(false);
-    // });
-});
+import { assert, expect } from "chai";
+import * as U from "../util/Util.js";
 
 describe("Util - WvW", () => {
     it("determine tier", () => {
@@ -41,42 +16,6 @@ describe("Util - WvW", () => {
             }
         }
     });
-});
-
-describe("Util - Is Between", () => {
-    it("is between", () => expect(U.isBetweenTime(moment("2010-10-20 4:30", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
-
-    it("is at start", () => expect(U.isBetweenTime(moment("2010-10-20 23:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
-
-    it("is at end", () => expect(U.isBetweenTime(moment("2010-10-20 05:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
-
-    it("rollover", () => expect(U.isBetweenTime(moment("2010-10-20 04:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
-
-    it("is before", () => expect(!U.isBetweenTime(moment("2010-10-20 22:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
-
-    it("is after", () => expect(!U.isBetweenTime(moment("2010-10-20 06:00", "YYYY-MM-DD HH:mm"), "23:00:00", "05:00:00")));
-});
-
-describe("Util - Crons", () => {
-    it("empty string", () => expect(!U.parseCronDate("")));
-
-    // it("undefined", () => expect(!Utils.parseCronDate(undefined)));
-
-    it("cron valid string 1", () => expect(U.parseCronDate("0 * 32 * 3")).equal("0 * 32 * 3"));
-
-    it("cron valid string 2", () => expect(U.parseCronDate("00 99 32 32 3")).equal("00 99 32 32 3"));
-
-    it("cron valid string 3", () => expect(U.parseCronDate("* * * * *")).equal("* * * * *"));
-
-    it("cron invalid string 1", () => assert(!U.parseCronDate("123 * * * *")));
-
-    it("cron invalid string 2", () => assert(!U.parseCronDate("* * * * * *")));
-
-    it("cron invalid string 3", () => assert(!U.parseCronDate("** * * * *")));
-
-    it("cron valid Moment 1", () => assert(U.parseCronDate("12.12.2019 15:15").constructor.name === "Moment"));
-
-    it("cron invalid Moment 1", () => assert(!U.parseCronDate("99.99.2019 15:15")));
 });
 
 describe("Util - Sets", () => {

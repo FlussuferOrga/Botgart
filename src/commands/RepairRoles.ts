@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { DesignatedWorlds } from "../repositories/RegistrationRepository";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
+import { logger } from "../util/Logging.js";
 import { Guild } from "discord.js";
 
 const LOG = logger();
@@ -12,7 +12,7 @@ const LOG = logger();
  - remove role from user manually after registration -> users should get their roles back (output on console)
  - remove role from server -> error on console
  */
-export class RepairRoles extends BotgartCommand {
+export default class RepairRoles extends BotgartCommand {
     public constructor() {
         super(
             "repairroles",
@@ -52,5 +52,3 @@ export class RepairRoles extends BotgartCommand {
         );
     }
 }
-
-module.exports = RepairRoles;

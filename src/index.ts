@@ -1,10 +1,10 @@
 // show .ts files in stacktraces if sourcemaps are present
 import * as CommandLineArgs from "command-line-args";
-import { runApp } from "./app";
+import { runApp } from "./app.js";
 
-import "./util/string.extensions";
-import { setupPersistence } from "./mikroorm";
-import { logger } from "./util/Logging";
+import "./util/string.extensions.js";
+import { setupPersistence } from "./mikroorm/index.js";
+import { logger } from "./util/Logging.js";
 
 const LOG = logger();
 

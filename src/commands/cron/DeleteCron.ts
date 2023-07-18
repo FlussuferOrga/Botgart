@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { logger } from "../../util/Logging";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { logger } from "../../util/Logging.js";
 
 const LOG = logger();
 
@@ -15,7 +15,7 @@ type Args = { id?: number };
  - delete non-numeric cron id -> error
  - cron: anything -> error
  */
-export class DeleteCron extends BotgartCommand {
+export default class DeleteCron extends BotgartCommand {
     constructor() {
         super("deletecron", {
             aliases: ["deletecron", "rmcron"],
@@ -79,5 +79,3 @@ export class DeleteCron extends BotgartCommand {
         return canceled || deletedFromDB;
     }
 }
-
-module.exports = DeleteCron;

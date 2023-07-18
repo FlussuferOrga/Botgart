@@ -1,5 +1,5 @@
-import { BotgartCommand } from "../BotgartCommand";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { logger } from "../util/Logging.js";
 
 const LOG = logger();
 
@@ -7,7 +7,7 @@ const LOG = logger();
  Testcases:
 
  */
-export class DiscordLog extends BotgartCommand {
+export default class DiscordLog extends BotgartCommand {
     constructor() {
         super(
             "discordlog",
@@ -42,5 +42,3 @@ export class DiscordLog extends BotgartCommand {
         }
     }
 }
-
-module.exports = DiscordLog;

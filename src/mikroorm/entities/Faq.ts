@@ -1,6 +1,6 @@
 import { Collection, Entity, Index, ManyToOne, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
-import { MomentType } from "../types/Moment";
-import moment from "moment-timezone";
+import { LuxonDateTimeType } from "../types/LuxonDateTimeType.js";
+import { DateTime } from "luxon";
 
 @Entity({ tableName: "faqs" })
 export class Faq {
@@ -19,8 +19,8 @@ export class Faq {
     @OneToMany(() => FaqKey, (faqKey) => faqKey.faqId)
     keys = new Collection<FaqKey>(this);
 
-    @Property({ type: MomentType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
-    created?: moment.Moment;
+    @Property({ type: LuxonDateTimeType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
+    created?: DateTime;
 }
 
 @Entity({ tableName: "faq_keys" })

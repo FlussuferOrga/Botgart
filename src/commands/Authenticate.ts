@@ -1,11 +1,11 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { ConfigError, InvalidKeyError, NetworkError } from "../Gw2ApiUtils";
-import * as L from "../Locale";
-import { L as LL } from "../i18n/i18n-node";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { ConfigError, InvalidKeyError, NetworkError } from "../Gw2ApiUtils.js";
+import * as L from "../Locale.js";
+import { L as LL } from "../i18n/i18n-node.js";
+import { logger } from "../util/Logging.js";
 import { AkairoMessage, CommandArguments } from "@notenoughupdates/discord-akairo";
-import { DeclinedApiKeyError, KeyInvalidFormatError } from "../services/ValidationService";
+import { DeclinedApiKeyError, KeyInvalidFormatError } from "../services/ValidationService.js";
 
 const LOG = logger();
 
@@ -23,7 +23,7 @@ const API_KEY = "api_key";
  - cron: anything -> error
  */
 
-export class Authenticate extends BotgartCommand {
+export default class Authenticate extends BotgartCommand {
     constructor() {
         super(
             "authenticate",
@@ -166,5 +166,3 @@ export class Authenticate extends BotgartCommand {
         }
     }
 }
-
-module.exports = Authenticate;

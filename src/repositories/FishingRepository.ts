@@ -1,10 +1,10 @@
 import * as discord from "discord.js";
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { Fish } from "../mikroorm/entities/Fish";
-import { CaughtFish } from "../mikroorm/entities/CaughtFish";
-import { RandomFish } from "../mikroorm/entities/RandomFish";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { Fish } from "../mikroorm/entities/Fish.js";
+import { CaughtFish } from "../mikroorm/entities/CaughtFish.js";
+import { RandomFish } from "../mikroorm/entities/RandomFish.js";
 import { QueryOrder } from "@mikro-orm/core";
-import { FishingLadder } from "../mikroorm/entities/FishingLadder";
+import { FishingLadder } from "../mikroorm/entities/FishingLadder.js";
 
 export class FishingRepository extends AbstractDbRepository {
     /**

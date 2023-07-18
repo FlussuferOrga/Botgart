@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import moment from "moment-timezone";
-import { MomentType } from "../types/Moment";
-import { Fish } from "./Fish";
+import { Fish } from "./Fish.js";
+import { DateTime } from "luxon";
+import { LuxonDateTimeType } from "../types/LuxonDateTimeType.js";
 
 @Entity({ tableName: "caught_fish" })
 export class CaughtFish {
@@ -17,6 +17,6 @@ export class CaughtFish {
     @Property()
     user!: string;
 
-    @Property({ type: MomentType, nullable: false, defaultRaw: "CURRENT_TIMESTAMP" })
-    timestamp!: moment.Moment;
+    @Property({ type: LuxonDateTimeType, nullable: false, defaultRaw: "CURRENT_TIMESTAMP" })
+    timestamp!: DateTime;
 }

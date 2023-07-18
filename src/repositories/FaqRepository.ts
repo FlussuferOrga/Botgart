@@ -1,5 +1,5 @@
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { Faq } from "../mikroorm/entities/Faq";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { Faq } from "../mikroorm/entities/Faq.js";
 
 export class FaqRepository extends AbstractDbRepository {
     public async storeFAQ(user: string, guild: string, keys: string[], text: string): Promise<Faq> {

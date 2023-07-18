@@ -1,11 +1,11 @@
 import { Listener } from "@notenoughupdates/discord-akairo";
-import { BotgartClient } from "../BotgartClient";
-import { logger } from "../util/Logging";
+import { BotgartClient } from "../BotgartClient.js";
+import { logger } from "../util/Logging.js";
 import { UseRequestContext } from "@mikro-orm/core";
 
 const LOG = logger();
 
-export class RosterStartupListener extends Listener {
+export default class RosterStartupListener extends Listener {
     constructor() {
         super("rosterStartup", {
             emitter: "client",
@@ -20,5 +20,3 @@ export class RosterStartupListener extends Listener {
         client.rosterService.onStartup();
     }
 }
-
-module.exports = RosterStartupListener;

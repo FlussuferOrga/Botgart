@@ -1,5 +1,5 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { ResetRoster } from "./ResetRoster";
+import { Entity, ManyToOne, PrimaryKey, Property, Rel } from "@mikro-orm/core";
+import { ResetRoster } from "./ResetRoster.js";
 
 @Entity({ tableName: "reset_leaders" })
 export class ResetLeader {
@@ -13,7 +13,7 @@ export class ResetLeader {
         onDelete: "cascade",
         nullable: false,
     })
-    resetRosterId?: ResetRoster;
+    resetRosterId?: Rel<ResetRoster>;
 
     @Property()
     map!: string;

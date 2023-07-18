@@ -1,6 +1,6 @@
 import { Entity, PrimaryKey, PrimaryKeyType, Property } from "@mikro-orm/core";
-import { MomentType } from "../types/Moment";
-import moment from "moment-timezone";
+import { LuxonDateTimeType } from "../types/LuxonDateTimeType.js";
+import { DateTime } from "luxon";
 
 export enum PermissionType {
     user = "user",
@@ -30,6 +30,6 @@ export class CommandPermission {
     @Property()
     value!: number;
 
-    @Property({ type: MomentType, nullable: false, defaultRaw: "CURRENT_TIMESTAMP" })
-    timestamp!: moment.Moment;
+    @Property({ type: LuxonDateTimeType, nullable: false, defaultRaw: "CURRENT_TIMESTAMP" })
+    timestamp!: DateTime;
 }

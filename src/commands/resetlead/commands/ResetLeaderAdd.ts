@@ -1,16 +1,16 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../../BotgartCommand";
-import * as L from "../../../Locale";
-import * as Util from "../../../util/Util";
-import * as ResetUtil from "../ResetUtil";
-import { WvwMap } from "../WvwMap";
+import { BotgartCommand } from "../../../BotgartCommand.js";
+import * as L from "../../../Locale.js";
+import * as Util from "../../../util/Util.js";
+import * as ResetUtil from "../ResetUtil.js";
+import { WvwMap } from "../WvwMap.js";
 
 /**
  Testcases:
 
  */
-export class AddResetLeader extends BotgartCommand {
+export default class AddResetLeader extends BotgartCommand {
     constructor() {
         super("addresetlead", {
             aliases: ["addresetlead"],
@@ -61,5 +61,3 @@ export class AddResetLeader extends BotgartCommand {
         }
     }
 }
-
-module.exports = AddResetLeader;

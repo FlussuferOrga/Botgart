@@ -1,10 +1,10 @@
 import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
-import { getConfig, WorldAssignment } from "../config/Config";
-import { splitMessage } from "../util/Util";
+import { BotgartClient } from "../BotgartClient.js";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { getConfig, WorldAssignment } from "../config/Config.js";
+import { splitMessage } from "../util/Util.js";
 
-export class FindUnregistered extends BotgartCommand {
+export default class FindUnregistered extends BotgartCommand {
     constructor() {
         super("findunregistered", {
             aliases: ["findunregistered", "findunreg"],
@@ -38,5 +38,3 @@ export class FindUnregistered extends BotgartCommand {
             });
     }
 }
-
-module.exports = FindUnregistered;

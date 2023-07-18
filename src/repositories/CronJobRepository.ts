@@ -1,5 +1,5 @@
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { CronJob } from "../mikroorm/entities/CronJob";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { CronJob } from "../mikroorm/entities/CronJob.js";
 
 export class CronJobRepository extends AbstractDbRepository {
     public async storeCronJob(job: Omit<CronJob, "id" | "created">): Promise<CronJob> {

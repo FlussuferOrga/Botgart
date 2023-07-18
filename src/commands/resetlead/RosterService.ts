@@ -1,16 +1,15 @@
 import discord from "discord.js";
-import moment from "moment-timezone";
-import { BotgartClient } from "../../BotgartClient";
-import { getConfig } from "../../config/Config";
-import { RosterRepository } from "../../repositories/RosterRepository";
-import { logger } from "../../util/Logging";
-import * as Util from "../../util/Util";
-import { ResetLeader } from "./ResetLeader";
-import * as ResetUtil from "./ResetUtil";
-import { Roster } from "./Roster";
-import { WvwMap } from "./WvwMap";
+import { BotgartClient } from "../../BotgartClient.js";
+import { getConfig } from "../../config/Config.js";
+import { RosterRepository } from "../../repositories/RosterRepository.js";
+import { logger } from "../../util/Logging.js";
+import * as Util from "../../util/Util.js";
+import { ResetLeader } from "./ResetLeader.js";
+import * as ResetUtil from "./ResetUtil.js";
+import { Roster } from "./Roster.js";
+import { WvwMap } from "./WvwMap.js";
 import { MikroORM, UseRequestContext } from "@mikro-orm/core";
-import { debounce } from "lodash";
+import { debounce } from "lodash-es";
 
 const LOG = logger();
 
@@ -147,7 +146,7 @@ export class RosterService {
                 this.prepareRefresh(guild, mes, roster);
             });
         if (roster.isUpcoming()) {
-            this.syncToTS3(guild, roster);
+            this.syncToTS3(guild, roster).catch((reason) => LOG.error("Unable to sync Roster: %s", reason));
         }
     }
 
@@ -171,7 +170,7 @@ export class RosterService {
 
     private initSyncToTS3(): void {
         const rosterWeek = ResetUtil.currentWeek();
-        const rosterYear = moment().utc().year();
+        const rosterYear = ResetUtil.currentYear();
         const guilds = this.client.guilds.cache;
 
         guilds.forEach(async (guild) => {
@@ -207,10 +206,10 @@ export class RosterService {
             }
             return user;
         };
-        const resetDateTime = roster.getResetMoment().tz(getConfig().get().timeZone);
+        const resetDateTime = roster.getResetDateTime().setZone(getConfig().get().timeZone);
         await this.client.getTS3Connection().post("resetroster", {
-            date: resetDateTime.format("DD.MM.YYYY HH:mm z"), // TODO: remove
-            datetime: resetDateTime.format(),
+            date: resetDateTime.toFormat("dd.MM.yyyy HH:mm ZZZZ"), // TODO: remove
+            datetime: resetDateTime.toISO(),
             rbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map((l) => resolveUser(l.name))),
             gbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map((l) => resolveUser(l.name))),
             bbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.BlueBorderlands)).map((l) => resolveUser(l.name))),

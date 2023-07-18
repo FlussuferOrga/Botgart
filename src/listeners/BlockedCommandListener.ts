@@ -1,9 +1,9 @@
 import { AkairoMessage, Command, Listener } from "@notenoughupdates/discord-akairo";
-import * as L from "../Locale";
+import * as L from "../Locale.js";
 import { Message } from "discord.js";
-import { BuiltInReasons } from "@notenoughupdates/discord-akairo/dist/src/util/Constants";
+import { BuiltInReasons } from "@notenoughupdates/discord-akairo/dist/src/util/Constants.js";
 
-export class BlockedCommandListener extends Listener {
+export default class BlockedCommandListener extends Listener {
     constructor() {
         super("BlockedResponse", {
             emitter: "commandHandler",
@@ -35,5 +35,3 @@ export class BlockedCommandListener extends Listener {
         }
     }
 }
-
-module.exports = BlockedCommandListener;

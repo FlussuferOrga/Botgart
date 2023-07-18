@@ -1,17 +1,17 @@
 import discord, { Guild, User } from "discord.js";
 import * as schedule from "node-schedule";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
-import { CronJobRepository } from "../repositories/CronJobRepository";
-import { logger } from "../util/Logging";
+import { BotgartClient } from "../BotgartClient.js";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { CronJobRepository } from "../repositories/CronJobRepository.js";
+import { logger } from "../util/Logging.js";
 import { RequestContext } from "@mikro-orm/core";
 import { MikroORM } from "@mikro-orm/better-sqlite";
 
 const LOG = logger();
 
 export class CronJobService {
-    private repository: CronJobRepository;
-    private client: BotgartClient;
+    private readonly repository: CronJobRepository;
+    private readonly client: BotgartClient;
     private readonly orm: MikroORM;
     public scheduledJobs: Map<number, schedule.Job> = new Map<number, schedule.Job>();
 
@@ -27,7 +27,7 @@ export class CronJobService {
      */
     public async rescheduleCronJobs() {
         let cronCount = 0;
-        const cronJobs = await this.client.cronJobRepository.getCronJobs();
+        const cronJobs = await this.repository.getCronJobs();
         for (const cron of cronJobs) {
             const mod: BotgartCommand = this.client.commandHandler.modules.get(cron.command) as BotgartCommand;
             const args = mod.deserialiseArgs(cron.arguments || "{}"); // make sure JSON.parse works for empty command args

@@ -1,10 +1,10 @@
 import { AkairoMessage, Command, Inhibitor } from "@notenoughupdates/discord-akairo";
-import { BotgartClient } from "../BotgartClient";
+import { BotgartClient } from "../BotgartClient.js";
 import { UseRequestContext } from "@mikro-orm/core";
 import { GuildMember, Message } from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
+import { BotgartCommand } from "../BotgartCommand.js";
 
-export class CommandPermissionInhibitor extends Inhibitor {
+export default class CommandPermissionInhibitor extends Inhibitor {
     constructor() {
         super("commandPermission", {
             type: "post", //post parse
@@ -30,5 +30,3 @@ export class CommandPermissionInhibitor extends Inhibitor {
         return false;
     }
 }
-
-module.exports = CommandPermissionInhibitor;

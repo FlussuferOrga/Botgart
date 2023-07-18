@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
 
 /**
  Testcases:
@@ -10,7 +10,7 @@ import * as L from "../../Locale";
  - cron: all of the above
  */
 
-export class DeleteFaq extends BotgartCommand {
+export default class DeleteFaq extends BotgartCommand {
     constructor() {
         super(
             "deletefaq",
@@ -38,5 +38,3 @@ export class DeleteFaq extends BotgartCommand {
         return deleted;
     }
 }
-
-module.exports = DeleteFaq;

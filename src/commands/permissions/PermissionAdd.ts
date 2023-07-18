@@ -1,12 +1,12 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { logger } from "../../util/Logging";
-import { PermissionType } from "../../mikroorm/entities/CommandPermission";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { logger } from "../../util/Logging.js";
+import { PermissionType } from "../../mikroorm/entities/CommandPermission.js";
 
 const LOG = logger();
 
-export class PermissionAdd extends BotgartCommand {
+export default class PermissionAdd extends BotgartCommand {
     constructor() {
         super("permissionadd", {
             aliases: ["permissionadd", "permadd", "permit"],
@@ -65,5 +65,3 @@ export class PermissionAdd extends BotgartCommand {
         this.reply(message, responsible, L.get("PERMISSION_SET_TO", [receiverName, cmd, perm.value])).catch((err) => LOG.error(err.message));
     }
 }
-
-module.exports = PermissionAdd;

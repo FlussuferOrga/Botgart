@@ -1,7 +1,7 @@
 import { Listener } from "@notenoughupdates/discord-akairo";
-import * as L from "../Locale";
+import * as L from "../Locale.js";
 
-export class JoinListener extends Listener {
+export default class JoinListener extends Listener {
     constructor() {
         super("JoinListener", {
             emitter: "client",
@@ -15,5 +15,3 @@ export class JoinListener extends Listener {
         }
     }
 }
-
-module.exports = JoinListener;

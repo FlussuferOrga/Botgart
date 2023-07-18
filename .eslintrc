@@ -3,7 +3,8 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "plugin:require-extensions/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -14,7 +15,8 @@
   "plugins": [
     "@typescript-eslint",
     "prettier",
-    "unused-imports"
+    "unused-imports",
+    "require-extensions"
   ],
   "rules": {
     "prettier/prettier": [

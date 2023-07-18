@@ -1,15 +1,14 @@
 import * as discord from "discord.js";
-import moment from "moment-timezone";
-import { ResetLeader } from "../commands/resetlead/ResetLeader";
-import * as ResetUtil from "../commands/resetlead/ResetUtil";
-import { Roster } from "../commands/resetlead/Roster";
-import { WvwMap } from "../commands/resetlead/WvwMap";
-import { logger } from "../util/Logging";
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { ResetRoster } from "../mikroorm/entities/ResetRoster";
-import { ResetLeader as ResetLeaderEntity } from "../mikroorm/entities/ResetLeader";
+import { ResetLeader } from "../commands/resetlead/ResetLeader.js";
+import * as ResetUtil from "../commands/resetlead/ResetUtil.js";
+import { Roster } from "../commands/resetlead/Roster.js";
+import { WvwMap } from "../commands/resetlead/WvwMap.js";
+import { logger } from "../util/Logging.js";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { ResetRoster } from "../mikroorm/entities/ResetRoster.js";
+import { ResetLeader as ResetLeaderEntity } from "../mikroorm/entities/ResetLeader.js";
 
-import { compact } from "lodash";
+import { compact } from "lodash-es";
 import { Guild, GuildBasedChannel, TextChannel } from "discord.js";
 
 const LOG = logger();
@@ -21,7 +20,7 @@ export class RosterRepository extends AbstractDbRepository {
         const activeRosters = await this.orm.em.getRepository(ResetRoster).find(
             {
                 weekNumber: { $gte: ResetUtil.currentWeek() },
-                year: { $gte: moment().utc().year() },
+                year: { $gte: ResetUtil.currentYear() },
                 guild: guild.id,
             },
             { populate: ["leaders"] }

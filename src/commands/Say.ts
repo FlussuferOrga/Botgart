@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { logger } from "../util/Logging.js";
 
 const LOG = logger();
 
@@ -11,7 +11,7 @@ const LOG = logger();
  - with invalid channel -> error
  - from cron: remove channel bot was supposed to talk in -> error
  */
-export class Say extends BotgartCommand {
+export default class Say extends BotgartCommand {
     constructor() {
         super(
             "say",
@@ -74,5 +74,3 @@ export class Say extends BotgartCommand {
         return args;
     }
 }
-
-module.exports = Say;

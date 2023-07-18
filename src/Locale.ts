@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { logger as logger1 } from "./util/Logging";
+import { logger as logger1 } from "./util/Logging.js";
 import discord from "discord.js";
 
 const logger = logger1();

@@ -1,5 +1,5 @@
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { CommandPermission, PermissionType } from "../mikroorm/entities/CommandPermission";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { CommandPermission, PermissionType } from "../mikroorm/entities/CommandPermission.js";
 import { Snowflake } from "discord.js";
 
 export class Permission {

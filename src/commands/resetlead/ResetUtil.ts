@@ -1,40 +1,40 @@
-import moment, { Moment } from "moment-timezone";
-import { WvwRegion } from "./WvwRegion";
+import { WvwRegion } from "./WvwRegion.js";
+import { DateTime } from "luxon";
 
 export function currentWeek(): number {
-    return moment().utc().isoWeek();
+    return DateTime.utc().weekNumber;
 }
 
 export function currentYear(): number {
-    return moment().utc().year();
+    return DateTime.utc().weekYear;
 }
 
-export function getResetForWeek(isoWeek = moment().isoWeek(), year = moment().year(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
-    const { resetWeekDay, resetTimeUTC } = WvwRegion.getProperties(wvwRegion);
-    return moment().tz("UTC").year(year).isoWeek(isoWeek).isoWeekday(resetWeekDay).hour(resetTimeUTC).startOf("hour");
+export function getResetForWeek(isoWeek = DateTime.utc().weekNumber, year = DateTime.utc().weekYear, wvwRegion: WvwRegion = WvwRegion.EU): DateTime {
+    const { resetWeekDay, resetHourUTC } = WvwRegion.getProperties(wvwRegion);
+    return DateTime.utc().set({ weekYear: year, weekNumber: isoWeek, weekday: resetWeekDay, hour: resetHourUTC }).startOf("hour");
 }
 
-export function getNextResetDateMoment(startingPoint = moment(), wvwRegion: WvwRegion = WvwRegion.EU): Moment {
-    const _startingPoint = startingPoint.clone().tz("UTC");
-    const { resetWeekDay, resetTimeUTC } = WvwRegion.getProperties(wvwRegion);
+export function getNextResetDateTime(startingPoint = DateTime.utc(), wvwRegion: WvwRegion = WvwRegion.EU): DateTime {
+    const _startingPoint = startingPoint!.toUTC();
+    const { resetWeekDay, resetHourUTC } = WvwRegion.getProperties(wvwRegion);
 
-    let nextResetMoment;
-    if (_startingPoint.isoWeekday() < resetWeekDay) {
+    let nextReset: DateTime | undefined;
+    if (_startingPoint.get("weekday") < resetWeekDay) {
         // next reset is somewhere this week
-        nextResetMoment = _startingPoint.isoWeekday(resetWeekDay);
-    } else if (_startingPoint.isoWeekday() > resetWeekDay) {
+        nextReset = _startingPoint.set({ weekday: resetWeekDay });
+    } else if (_startingPoint.get("weekday") > resetWeekDay) {
         // reset already happened this week
-        nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
-    } else if (_startingPoint.isoWeekday() == resetWeekDay) {
+        nextReset = _startingPoint.plus({ week: 1 }).set({ weekday: resetWeekDay });
+    } else if (_startingPoint.get("weekday") == resetWeekDay) {
         // reset day is today
-        if (_startingPoint.hour() >= resetTimeUTC) {
+        if (_startingPoint.get("hour") >= resetHourUTC) {
             // reset is happening or happened today
-            nextResetMoment = _startingPoint.add(1, "weeks").isoWeekday(resetWeekDay);
+            nextReset = _startingPoint.plus({ week: 1 }).set({ weekday: resetWeekDay });
         } else {
-            nextResetMoment = _startingPoint; // starting point IS reset day but before reset time
+            nextReset = _startingPoint; // starting point IS reset day but before reset time
         }
     }
     // reset time
-    nextResetMoment = nextResetMoment.hour(resetTimeUTC).startOf("hour");
-    return nextResetMoment;
+    nextReset = nextReset!.set({ hour: resetHourUTC }).startOf("hour");
+    return nextReset;
 }

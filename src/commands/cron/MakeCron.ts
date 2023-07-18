@@ -1,8 +1,8 @@
 import { Message } from "discord.js";
-import { BotgartClient } from "../../BotgartClient";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { logger } from "../../util/Logging";
+import { BotgartClient } from "../../BotgartClient.js";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { logger } from "../../util/Logging.js";
 
 const LOG = logger();
 
@@ -11,7 +11,7 @@ const LOG = logger();
  - schedule cron with id
  - schedule cron with alias
  */
-export class MakeCron extends BotgartCommand {
+export default class MakeCron extends BotgartCommand {
     constructor() {
         super("makecron", {
             aliases: ["makecron", "mkcron"],
@@ -99,5 +99,3 @@ export class MakeCron extends BotgartCommand {
         }
     }
 }
-
-module.exports = MakeCron;

@@ -1,9 +1,9 @@
 import discord from "discord.js";
-import { logger } from "../util/Logging";
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { Registration } from "../mikroorm/entities/Registration";
+import { logger } from "../util/Logging.js";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { Registration } from "../mikroorm/entities/Registration.js";
 import { expr } from "@mikro-orm/core";
-import { uniq } from "lodash";
+import { uniq } from "lodash-es";
 
 const LOG = logger();
 

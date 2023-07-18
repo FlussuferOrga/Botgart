@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import * as L from "../Locale";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import * as L from "../Locale.js";
+import { logger } from "../util/Logging.js";
 
 const LOG = logger();
 
@@ -14,7 +14,7 @@ const LOG = logger();
  - emotes string doesn't contain proper emotes -> error
  - cron: everything of the above
  */
-export class Poll extends BotgartCommand {
+export default class Poll extends BotgartCommand {
     constructor() {
         super(
             "poll",
@@ -83,5 +83,3 @@ export class Poll extends BotgartCommand {
         LOG.info("Created poll '{0}'.".formatUnicorn(args.question));
     }
 }
-
-module.exports = Poll;

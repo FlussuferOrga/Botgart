@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as gw2u from "../../Gw2ApiUtils";
-import * as L from "../../Locale";
-import * as Const from "../../util/Const";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as gw2u from "../../Gw2ApiUtils.js";
+import * as L from "../../Locale.js";
+import * as Const from "../../util/Const.js";
 
 type ArgType = {
     confirm?: boolean;
@@ -15,7 +15,7 @@ type ArgType = {
  Testcases:
 
  */
-export class TsGuildAdd extends BotgartCommand {
+export default class TsGuildAdd extends BotgartCommand {
     constructor() {
         super("tsguildadd", {
             aliases: ["tsguildadd", "mkguild", "createguild"],
@@ -94,5 +94,3 @@ export class TsGuildAdd extends BotgartCommand {
         }
     }
 }
-
-module.exports = TsGuildAdd;

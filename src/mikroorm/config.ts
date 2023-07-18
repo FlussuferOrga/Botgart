@@ -1,21 +1,26 @@
-import { getConfig } from "../config/Config";
+import { getConfig } from "../config/Config.js";
 import { Options } from "@mikro-orm/better-sqlite";
-import { Registration } from "./entities/Registration";
-import { CaughtFish } from "./entities/CaughtFish";
-import { Fish } from "./entities/Fish";
-import { CommandPermission } from "./entities/CommandPermission";
-import { CronJob } from "./entities/CronJob";
-import { DiscordLogChannel } from "./entities/DiscordLogChannel";
-import { FaqKey, Faq } from "./entities/Faq";
-import { ResetRoster } from "./entities/ResetRoster";
-import { ResetLeader } from "./entities/ResetLeader";
-import { RandomFish } from "./entities/RandomFish";
-import { FishingLadder } from "./entities/FishingLadder";
+import { Registration } from "./entities/Registration.js";
+import { CaughtFish } from "./entities/CaughtFish.js";
+import { Fish } from "./entities/Fish.js";
+import { CommandPermission } from "./entities/CommandPermission.js";
+import { CronJob } from "./entities/CronJob.js";
+import { DiscordLogChannel } from "./entities/DiscordLogChannel.js";
+import { FaqKey, Faq } from "./entities/Faq.js";
+import { ResetRoster } from "./entities/ResetRoster.js";
+import { ResetLeader } from "./entities/ResetLeader.js";
+import { RandomFish } from "./entities/RandomFish.js";
+import { FishingLadder } from "./entities/FishingLadder.js";
 import path from "path";
-import { logger } from "../util/Logging";
-import { PermanentRole } from "./entities/PermanentRole";
+import { logger } from "../util/Logging.js";
+import { PermanentRole } from "./entities/PermanentRole.js";
+import { fileURLToPath } from "url";
 
 const dbName = getConfig().get().db_location;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const LOG = logger({ file: "mikroorm" });
 const config: Options = {
     entities: [

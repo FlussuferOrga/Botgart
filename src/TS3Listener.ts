@@ -1,14 +1,14 @@
 import * as discord from "discord.js";
 import { Guild } from "discord.js";
 import events from "events";
-import * as moment from "moment";
-import { BotgartClient } from "./BotgartClient";
-import { getConfig } from "./config/Config";
-import { TS3Commander, TS3Connection } from "./TS3Connection";
-import { logger } from "./util/Logging";
+import { BotgartClient } from "./BotgartClient.js";
+import { getConfig } from "./config/Config.js";
+import { TS3Commander, TS3Connection } from "./TS3Connection.js";
+import { logger } from "./util/Logging.js";
 import { UseRequestContext } from "@mikro-orm/core";
-import { Registration } from "./mikroorm/entities/Registration";
-import { Commander, CommanderState } from "./Commanders";
+import { Registration } from "./mikroorm/entities/Registration.js";
+import { Commander, CommanderState } from "./Commanders.js";
+import { DateTime } from "luxon";
 
 const LOG = logger();
 
@@ -48,7 +48,7 @@ export class TS3Listener extends events.EventEmitter {
     @UseRequestContext((type: TS3Listener) => type.botgartClient.orm)
     private async checkCommanders(): Promise<void> {
         LOG.verbose("Requesting commanders from TS-Bot.");
-        const now: moment.Moment = moment.utc();
+        const now: DateTime = DateTime.utc();
         try {
             const res: string = await this.ts3connection.get("commanders");
             const data: { commanders: TS3Commander[] } = JSON.parse(res); // FIXME: error check

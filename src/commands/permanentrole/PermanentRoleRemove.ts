@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartClient } from "../../BotgartClient";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { logger } from "../../util/Logging";
+import { BotgartClient } from "../../BotgartClient.js";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { logger } from "../../util/Logging.js";
 
 const LOG = logger();
 
@@ -11,7 +11,7 @@ const LOG = logger();
 
  */
 
-export class RemovePermanentRole extends BotgartCommand {
+export default class RemovePermanentRole extends BotgartCommand {
     constructor() {
         super("removepermanentrole", {
             aliases: ["removepermarole", "removepermanentrole", "rmprole"],
@@ -56,5 +56,3 @@ export class RemovePermanentRole extends BotgartCommand {
         }
     }
 }
-
-module.exports = RemovePermanentRole;

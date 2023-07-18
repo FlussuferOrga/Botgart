@@ -1,6 +1,7 @@
 import { Entity, PrimaryKey, Property, Unique } from "@mikro-orm/core";
-import moment from "moment-timezone";
-import { MomentType } from "../types/Moment";
+
+import { LuxonDateTimeType } from "../types/LuxonDateTimeType.js";
+import { DateTime } from "luxon";
 
 @Entity({ tableName: "registrations" })
 @Unique({ properties: ["guild", "api_key"] })
@@ -25,6 +26,6 @@ export class Registration {
     @Property()
     account_name: string;
 
-    @Property({ type: MomentType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
-    created?: moment.Moment;
+    @Property({ type: LuxonDateTimeType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
+    created?: DateTime;
 }

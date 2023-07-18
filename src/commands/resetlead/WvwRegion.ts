@@ -7,19 +7,19 @@ export enum WvwRegion {
 export namespace WvwRegion {
     export function getProperties(wvwRegion: WvwRegion) {
         let resetWeekDay: number;
-        let resetTimeUTC: number;
+        let resetHourUTC: number;
         switch (wvwRegion) {
             case WvwRegion.EU:
                 resetWeekDay = 5;
-                resetTimeUTC = 18;
+                resetHourUTC = 18;
                 break;
             case WvwRegion.NA:
                 resetWeekDay = 6;
-                resetTimeUTC = 2;
+                resetHourUTC = 2;
                 break;
             default:
                 throw Error("Unmapped WvW Region");
         }
-        return { resetWeekDay, resetTimeUTC };
+        return { resetWeekDay, resetHourUTC: resetHourUTC };
     }
 }

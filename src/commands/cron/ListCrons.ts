@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as Const from "../../util/Const";
-import { logger } from "../../util/Logging";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as Const from "../../util/Const.js";
+import { logger } from "../../util/Logging.js";
 
 const LOG = logger();
 
@@ -11,7 +11,7 @@ const LOG = logger();
  - with no crons in db -> bot DMs nothing
  - cron: anything -> error
  */
-export class ListCrons extends BotgartCommand {
+export default class ListCrons extends BotgartCommand {
     constructor() {
         super(
             "listcrons",
@@ -49,5 +49,3 @@ export class ListCrons extends BotgartCommand {
         message?.reply("```\n" + mes + "\n```");
     }
 }
-
-module.exports = ListCrons;

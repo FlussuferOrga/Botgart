@@ -1,6 +1,6 @@
 import { EntityManager } from "@mikro-orm/better-sqlite";
 import { Entity, Property } from "@mikro-orm/core";
-import { CaughtFish } from "./CaughtFish";
+import { CaughtFish } from "./CaughtFish.js";
 
 @Entity({
     expression: (em: EntityManager) => {

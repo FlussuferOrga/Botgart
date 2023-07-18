@@ -1,7 +1,7 @@
-import * as moment from "moment/moment";
 import * as discord from "discord.js";
-import { Registration } from "./mikroorm/entities/Registration";
-import { logger } from "./util/Logging";
+import { Registration } from "./mikroorm/entities/Registration.js";
+import { logger } from "./util/Logging.js";
+import { DateTime } from "luxon";
 
 const LOG = logger();
 
@@ -53,9 +53,9 @@ export class Commander {
     private ts3channel: string;
     private ts3channelPath: string[];
     private ts3joinUrl: string;
-    private raidStart?: moment.Moment;
-    private raidEnd?: moment.Moment;
-    private lastUpdate: moment.Moment;
+    private raidStart?: DateTime;
+    private raidEnd?: DateTime;
+    private lastUpdate: DateTime;
     private state: CommanderState;
     private discordMember: discord.GuildMember;
     private broadcastMessage: discord.Message | undefined;
@@ -102,27 +102,27 @@ export class Commander {
         this.ts3joinUrl = value;
     }
 
-    public getRaidStart(): moment.Moment | undefined {
+    public getRaidStart(): DateTime | undefined {
         return this.raidStart;
     }
 
-    public setRaidStart(timestamp: moment.Moment) {
+    public setRaidStart(timestamp: DateTime) {
         this.raidStart = timestamp;
     }
 
-    public getRaidEnd(): moment.Moment | undefined {
+    public getRaidEnd(): DateTime | undefined {
         return this.raidEnd;
     }
 
-    public setRaidEnd(timestamp: moment.Moment) {
+    public setRaidEnd(timestamp: DateTime) {
         this.raidEnd = timestamp;
     }
 
-    public getLastUpdate(): moment.Moment {
+    public getLastUpdate(): DateTime {
         return this.lastUpdate;
     }
 
-    public setLastUpdate(timestamp: moment.Moment) {
+    public setLastUpdate(timestamp: DateTime) {
         this.lastUpdate = timestamp;
     }
 
@@ -157,16 +157,6 @@ export class Commander {
     public setCurrentLeadType(value: "UNKNOWN" | "PPT" | "PPK") {
         this.currentLeadType = value;
     }
-
-    /**
-     * returns: the time of the _ongoing_ raid in seconds. If no raid is going on, 0 is returned.
-     *          That means: when this method is called, it assumes the raid is still going on!
-     */
-    public getRaidTime(): number {
-        // this cast is save, since we checked beforehand in the condition of the ternary...
-        return this.getRaidStart() !== undefined ? (moment.utc().valueOf() - (this.getRaidStart() as moment.Moment).valueOf()) / 1000 : 0;
-    }
-
     public constructor(
         accountName: string,
         ts3DisplayName: string,
@@ -181,7 +171,7 @@ export class Commander {
         this.ts3channel = ts3channel;
         this.ts3channelPath = ts3channelPath;
         this.ts3joinUrl = ts3joinUrl;
-        this.lastUpdate = moment.utc();
+        this.lastUpdate = DateTime.utc();
         this.raidStart = undefined;
         this.state = CommanderState.TAG_UP;
     }

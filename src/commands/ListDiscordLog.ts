@@ -1,11 +1,11 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
+import { BotgartCommand } from "../BotgartCommand.js";
 
 /**
  Testcases:
 
  */
-export class ListDiscordLog extends BotgartCommand {
+export default class ListDiscordLog extends BotgartCommand {
     constructor() {
         super(
             "listdiscordlog",
@@ -37,5 +37,3 @@ export class ListDiscordLog extends BotgartCommand {
         message.reply(desc);
     }
 }
-
-module.exports = ListDiscordLog;

@@ -1,5 +1,5 @@
 import gw2client from "gw2api-client";
-import { logger } from "./util/Logging";
+import { logger } from "./util/Logging.js";
 
 export abstract class UnsuccessfulValidationError extends Error {}
 

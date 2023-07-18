@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as Const from "../../util/Const";
-import { logger } from "../../util/Logging";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as Const from "../../util/Const.js";
+import { logger } from "../../util/Logging.js";
 
 const TEASER_LENGTH = 30;
 const LOG = logger();
@@ -10,7 +10,7 @@ const LOG = logger();
  Testcases:
  - list faqs -> bot lists all available faqs
  */
-export class ListFaqs extends BotgartCommand {
+export default class ListFaqs extends BotgartCommand {
     constructor() {
         super(
             "listfaqs",
@@ -50,5 +50,3 @@ export class ListFaqs extends BotgartCommand {
         await message.reply("```\n" + mes + "\n```");
     }
 }
-
-module.exports = ListFaqs;

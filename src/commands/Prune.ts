@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import * as L from "../Locale";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import * as L from "../Locale.js";
+import { logger } from "../util/Logging.js";
 
 const LOG = logger();
 
@@ -10,7 +10,7 @@ const LOG = logger();
 
  */
 
-export class Prune extends BotgartCommand {
+export default class Prune extends BotgartCommand {
     constructor() {
         super(
             "prune",
@@ -56,5 +56,3 @@ export class Prune extends BotgartCommand {
             });
     }
 }
-
-module.exports = Prune;

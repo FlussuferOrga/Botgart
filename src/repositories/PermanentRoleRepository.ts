@@ -1,5 +1,5 @@
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { PermanentRole } from "../mikroorm/entities/PermanentRole";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { PermanentRole } from "../mikroorm/entities/PermanentRole.js";
 
 export class PermanentRoleRepository extends AbstractDbRepository {
     public async storePermanentRole(user: string, guild: string, role: string): Promise<PermanentRole> {

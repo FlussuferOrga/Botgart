@@ -1,4 +1,4 @@
-import * as L from "../../Locale";
+import * as L from "../../Locale.js";
 
 export class WvwMap {
     static readonly EternalBattlegrounds = new WvwMap("📙", "ETERNAL_BATTLEGROUNDS", ["EBG"]);

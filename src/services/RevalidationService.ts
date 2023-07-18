@@ -1,14 +1,14 @@
-import PromisePool from "@supercharge/promise-pool";
+import { PromisePool } from "@supercharge/promise-pool";
 import { Semaphore } from "await-semaphore";
 import Timeout from "await-timeout";
 import discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { getConfig, WorldAssignment } from "../config/Config";
-import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils";
-import * as L from "../Locale";
-import { logger } from "../util/Logging";
-import { formatUserPing } from "../util/Util";
-import { Registration } from "../mikroorm/entities/Registration";
+import { BotgartClient } from "../BotgartClient.js";
+import { getConfig, WorldAssignment } from "../config/Config.js";
+import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils.js";
+import * as L from "../Locale.js";
+import { logger } from "../util/Logging.js";
+import { formatUserPing } from "../util/Util.js";
+import { Registration } from "../mikroorm/entities/Registration.js";
 
 const LOG = logger();
 

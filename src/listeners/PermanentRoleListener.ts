@@ -1,11 +1,11 @@
 import { Listener } from "@notenoughupdates/discord-akairo";
-import { BotgartClient } from "../BotgartClient";
-import { logger } from "../util/Logging";
+import { BotgartClient } from "../BotgartClient.js";
+import { logger } from "../util/Logging.js";
 import { UseRequestContext } from "@mikro-orm/core";
 
 const LOG = logger();
 
-export class PermanentRoleListener extends Listener {
+export default class PermanentRoleListener extends Listener {
     constructor() {
         super("PermanentRoleListener", {
             emitter: "client",
@@ -34,5 +34,3 @@ export class PermanentRoleListener extends Listener {
         });
     }
 }
-
-module.exports = PermanentRoleListener;

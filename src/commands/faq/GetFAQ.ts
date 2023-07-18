@@ -1,7 +1,7 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { isEmpty } from "lodash";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { isEmpty } from "lodash-es";
 
 /**
  Testcases:
@@ -10,7 +10,7 @@ import { isEmpty } from "lodash";
  - non-existing key -> feedback to user
  */
 
-export class GetFaq extends BotgartCommand {
+export default class GetFaq extends BotgartCommand {
     constructor() {
         super(
             "getfaq",
@@ -40,5 +40,3 @@ export class GetFaq extends BotgartCommand {
         }
     }
 }
-
-module.exports = GetFaq;

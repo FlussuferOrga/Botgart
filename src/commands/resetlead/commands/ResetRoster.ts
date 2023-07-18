@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../../BotgartCommand";
-import * as L from "../../../Locale";
-import { logger } from "../../../util/Logging";
-import * as ResetUtil from "../ResetUtil";
+import { BotgartCommand } from "../../../BotgartCommand.js";
+import * as L from "../../../Locale.js";
+import { logger } from "../../../util/Logging.js";
+import * as ResetUtil from "../ResetUtil.js";
 
 const LOG = logger();
 
@@ -11,7 +11,7 @@ const LOG = logger();
 
  */
 
-export class ResetRoster extends BotgartCommand {
+export default class ResetRoster extends BotgartCommand {
     constructor() {
         super(
             "resetroster",
@@ -86,5 +86,3 @@ export class ResetRoster extends BotgartCommand {
         return args;
     }
 }
-
-module.exports = ResetRoster;

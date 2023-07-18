@@ -1,13 +1,13 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import * as L from "../Locale";
-import { logger } from "../util/Logging";
-import { chunk } from "lodash";
+import { BotgartCommand } from "../BotgartCommand.js";
+import * as L from "../Locale.js";
+import { logger } from "../util/Logging.js";
+import { chunk } from "lodash-es";
 import { GuildMember } from "discord.js";
 
 const LOG = logger();
 
-export class FindDuplicates extends BotgartCommand {
+export default class FindDuplicates extends BotgartCommand {
     constructor() {
         super("findduplicates", {
             aliases: ["findduplicates", "finddupes"],
@@ -34,5 +34,3 @@ export class FindDuplicates extends BotgartCommand {
         await message.reply(L.get("FIND_DUPLICATES_COMPLETE"));
     }
 }
-
-module.exports = FindDuplicates;

@@ -1,14 +1,14 @@
 import { Argument } from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import * as L from "../Locale";
-import * as U from "../util/Util";
+import { BotgartCommand } from "../BotgartCommand.js";
+import * as L from "../Locale.js";
+import * as U from "../util/Util.js";
 
 /**
  Testcases:
  */
 
-export class Whois extends BotgartCommand {
+export default class Whois extends BotgartCommand {
     constructor() {
         super("whois", {
             aliases: ["whois"],
@@ -146,5 +146,3 @@ export class Whois extends BotgartCommand {
         ];
     }
 }
-
-module.exports = Whois;

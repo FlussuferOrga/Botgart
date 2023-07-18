@@ -1,12 +1,12 @@
 import discord, { ColorResolvable } from "discord.js";
 import events from "events";
-import moment, { Moment } from "moment-timezone";
-import { getConfig } from "../../config/Config";
-import * as L from "../../Locale";
-import * as Util from "../../util/Util";
-import { ResetLeader } from "./ResetLeader";
-import * as ResetUtil from "./ResetUtil";
-import { WvwMap } from "./WvwMap";
+import { getConfig } from "../../config/Config.js";
+import * as L from "../../Locale.js";
+import * as Util from "../../util/Util.js";
+import { ResetLeader } from "./ResetLeader.js";
+import * as ResetUtil from "./ResetUtil.js";
+import { WvwMap } from "./WvwMap.js";
+import { DateTime } from "luxon";
 
 const EMPTY_MESSAGE = "_ _";
 
@@ -15,7 +15,7 @@ export class Roster extends events.EventEmitter {
     public readonly weekNumber: number;
     public readonly year: number;
 
-    public readonly resetMoment: Moment;
+    public readonly resetDateTime: DateTime;
 
     public constructor(weekNumber: number, year: number) {
         super();
@@ -26,21 +26,21 @@ export class Roster extends events.EventEmitter {
             this.leads[m.name] = [m, new Util.GeneralSet<ResetLeader>()];
         }
 
-        this.resetMoment = ResetUtil.getResetForWeek(this.weekNumber, this.year);
+        this.resetDateTime = ResetUtil.getResetForWeek(this.weekNumber, this.year);
     }
 
     /**
      * @returns the date for the reset this roster represents.
      */
-    public getResetMoment(): Moment {
-        return this.resetMoment.clone(); // better hand out a close..
+    public getResetDateTime(): DateTime {
+        return this.resetDateTime; // better hand out a close..
     }
 
     /**
      * @returns true iff the reset of this roster is the next reset.
      */
     public isUpcoming(): boolean {
-        return this.resetMoment.isSameOrAfter(moment());
+        return this.resetDateTime > DateTime.now();
     }
 
     /**
@@ -155,8 +155,8 @@ export class Roster extends events.EventEmitter {
      */
     public toMessageEmbed(): discord.EmbedBuilder {
         const timezone = getConfig().get().timeZone;
-        const resetDateTime = this.getResetMoment();
-        const displayedDateTime = resetDateTime.tz(timezone).format("DD.MM.YYYY HH:mm z");
+        const resetDateTime = this.getResetDateTime();
+        const displayedDateTime = resetDateTime.setZone(timezone).toFormat("dd.MM.yyyy HH:mm ZZZZ");
         const re = new discord.EmbedBuilder()
             .setColor(this.getEmbedColour())
             .setAuthor({ name: "Reset Commander Roster" })

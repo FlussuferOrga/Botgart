@@ -1,5 +1,5 @@
 import * as http from "http";
-import { LeadType } from "./Commanders";
+import { LeadType } from "./Commanders.js";
 
 export interface TS3Commander {
     readonly account_name: string;

@@ -1,6 +1,6 @@
 import { Entity, PrimaryKey, Property } from "@mikro-orm/core";
-import { MomentType } from "../types/Moment";
-import moment from "moment-timezone";
+import { LuxonDateTimeType } from "../types/LuxonDateTimeType.js";
+import { DateTime } from "luxon";
 
 @Entity({ tableName: "permanent_roles" })
 export class PermanentRole {
@@ -16,6 +16,6 @@ export class PermanentRole {
     @Property()
     role!: string;
 
-    @Property({ type: MomentType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
-    created?: moment.Moment;
+    @Property({ type: LuxonDateTimeType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
+    created?: DateTime;
 }

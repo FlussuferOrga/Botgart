@@ -1,12 +1,12 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { createTable } from "../util/Table";
-import * as L from "../Locale";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { createTable } from "../util/Table.js";
+import * as L from "../Locale.js";
 
 const CHARSET = "utf-8";
 const ATTACHMENT_NAME = "result.txt";
 
-export class GuildChannelList extends BotgartCommand {
+export default class GuildChannelList extends BotgartCommand {
     constructor() {
         super("guildchannnellist", {
             aliases: ["guildchannnellist", "lsguildchan"],
@@ -33,5 +33,3 @@ export class GuildChannelList extends BotgartCommand {
             });
     }
 }
-
-module.exports = GuildChannelList;

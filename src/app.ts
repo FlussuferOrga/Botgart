@@ -1,9 +1,9 @@
 import { GatewayIntentBits, Partials } from "discord.js";
-import { BotgartClient } from "./BotgartClient";
-import { getConfig } from "./config/Config";
-import * as L from "./Locale";
-import { logger } from "./util/Logging";
-import { WebServer } from "./WebServer";
+import { BotgartClient } from "./BotgartClient.js";
+import { getConfig } from "./config/Config.js";
+import * as L from "./Locale.js";
+import { logger } from "./util/Logging.js";
+import { WebServer } from "./WebServer.js";
 import { MikroORM } from "@mikro-orm/core";
 import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
 

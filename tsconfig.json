@@ -3,18 +3,22 @@
     "outDir": "./built",
     "allowJs": true,
     "removeComments": true,
-    "target": "ES2019",
-    "lib": ["ES2019"],
+    "target": "ES2021",
+    "lib": [
+      "ESNext"
+    ],
     "baseUrl": "./src",
     "sourceMap": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "commonjs",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "incremental": true
+    "incremental": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": [
     "./src/**/*"

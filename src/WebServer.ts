@@ -1,7 +1,7 @@
 import * as http from "http";
 import serverHealth from "server-health";
-import { getConfig } from "./config/Config";
-import { logger } from "./util/Logging";
+import { getConfig } from "./config/Config.js";
+import { logger } from "./util/Logging.js";
 
 const LOG = logger();
 

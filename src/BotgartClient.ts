@@ -1,31 +1,36 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
 import { GuildChannel, ThreadChannel } from "discord.js";
-import { BotgartCommand } from "./BotgartCommand";
-import { RosterService } from "./commands/resetlead/RosterService";
-import { getConfig } from "./config/Config";
-import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository";
-import { CronJobRepository } from "./repositories/CronJobRepository";
-import { FaqRepository } from "./repositories/FaqRepository";
-import { FishingRepository } from "./repositories/FishingRepository";
-import { LogChannelRepository } from "./repositories/LogChannelRepository";
-import { PermanentRoleRepository } from "./repositories/PermanentRoleRepository";
-import { RegistrationRepository } from "./repositories/RegistrationRepository";
-import { RosterRepository } from "./repositories/RosterRepository";
-import { CronJobService } from "./services/CronJobService";
-import { RevalidationService } from "./services/RevalidationService";
-import { TagBroadcastService } from "./services/TagBroadcastService";
-import { ValidationService } from "./services/ValidationService";
-import { TS3Connection } from "./TS3Connection";
-import { TS3Listener } from "./TS3Listener";
-import { logger } from "./util/Logging";
+import { BotgartCommand } from "./BotgartCommand.js";
+import { RosterService } from "./commands/resetlead/RosterService.js";
+import { getConfig } from "./config/Config.js";
+import { CommandPermissionRepository } from "./repositories/CommandPermissionRepository.js";
+import { CronJobRepository } from "./repositories/CronJobRepository.js";
+import { FaqRepository } from "./repositories/FaqRepository.js";
+import { FishingRepository } from "./repositories/FishingRepository.js";
+import { LogChannelRepository } from "./repositories/LogChannelRepository.js";
+import { PermanentRoleRepository } from "./repositories/PermanentRoleRepository.js";
+import { RegistrationRepository } from "./repositories/RegistrationRepository.js";
+import { RosterRepository } from "./repositories/RosterRepository.js";
+import { CronJobService } from "./services/CronJobService.js";
+import { RevalidationService } from "./services/RevalidationService.js";
+import { TagBroadcastService } from "./services/TagBroadcastService.js";
+import { ValidationService } from "./services/ValidationService.js";
+import { TS3Connection } from "./TS3Connection.js";
+import { TS3Listener } from "./TS3Listener.js";
+import { logger } from "./util/Logging.js";
 import { AkairoClientOptions } from "@notenoughupdates/discord-akairo";
 import { MikroORM } from "@mikro-orm/core";
 import { BetterSqliteDriver } from "@mikro-orm/better-sqlite";
-import { ExtendedCommandHandler } from "./ExtendedCommandHandler";
-import { CommanderStorage } from "./Commanders";
+import { ExtendedCommandHandler } from "./ExtendedCommandHandler.js";
+import { CommanderStorage } from "./Commanders.js";
+import { fileURLToPath } from "url";
+import path from "path";
 
 const LOG = logger();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export class BotgartClient extends akairo.AkairoClient {
     public fishingRepository: FishingRepository;
@@ -50,7 +55,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
-    orm: MikroORM<BetterSqliteDriver>;
+    public readonly orm: MikroORM<BetterSqliteDriver>;
 
     constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, orm: MikroORM<BetterSqliteDriver>) {
         super(options, clientOptions);
@@ -78,26 +83,22 @@ export class BotgartClient extends akairo.AkairoClient {
         this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
-            directory: __dirname + "/inhibitors/",
+            directory: path.join(__dirname, "inhibitors"),
         });
 
         this.listenerHandler = new akairo.ListenerHandler(this, {
-            directory: __dirname + "/listeners/",
+            directory: path.join(__dirname, "listeners"),
         });
 
         const prefix = getConfig().get().prefix;
-        this.commandHandler = new ExtendedCommandHandler(
-            this,
-            {
-                directory: __dirname + "/commands/",
-                prefix: prefix,
-                commandUtil: true,
-                commandUtilLifetime: 600000,
-                autoRegisterSlashCommands: true,
-                autoDefer: true,
-            },
-            orm
-        );
+        this.commandHandler = new ExtendedCommandHandler(this, {
+            directory: path.join(__dirname, "commands"),
+            prefix: prefix,
+            commandUtil: true,
+            commandUtilLifetime: 600000,
+            autoRegisterSlashCommands: true,
+            autoDefer: true,
+        });
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
         this.commandHandler.useListenerHandler(this.listenerHandler);
 
@@ -107,9 +108,18 @@ export class BotgartClient extends akairo.AkairoClient {
             listenerHandler: this.listenerHandler,
         });
 
-        this.inhibitorHandler.loadAll();
-        this.listenerHandler.loadAll();
-        this.commandHandler.loadAll();
+        this.inhibitorHandler
+            .loadAll()
+            .then((value) => LOG.info("Loaded"))
+            .catch((reason) => LOG.error("Error: %s", reason));
+        this.listenerHandler
+            .loadAll()
+            .then((value) => LOG.info("Loaded"))
+            .catch((reason) => LOG.error("Error: %s", reason));
+        this.commandHandler
+            .loadAll()
+            .then((value) => LOG.info("Loaded"))
+            .catch((reason) => LOG.error("Error: %s", reason));
 
         this.commandHandler.on("cooldown", (message: discord.Message, command: akairo.Command, remaining: number) => {
             if (command instanceof BotgartCommand) {

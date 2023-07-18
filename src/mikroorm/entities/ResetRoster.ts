@@ -1,5 +1,5 @@
 import { Collection, Entity, OneToMany, PrimaryKey, Property } from "@mikro-orm/core";
-import { ResetLeader } from "./ResetLeader";
+import { ResetLeader } from "./ResetLeader.js";
 
 @Entity({ tableName: "reset_rosters" })
 export class ResetRoster {

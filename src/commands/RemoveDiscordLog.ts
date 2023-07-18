@@ -1,6 +1,6 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { logger } from "../util/Logging";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { logger } from "../util/Logging.js";
 
 const LOG = logger();
 
@@ -8,7 +8,7 @@ const LOG = logger();
  Testcases:
 
  */
-export class RemoveDiscordLog extends BotgartCommand {
+export default class RemoveDiscordLog extends BotgartCommand {
     constructor() {
         super(
             "removediscordlog",
@@ -49,5 +49,3 @@ export class RemoveDiscordLog extends BotgartCommand {
         await message.reply(desc);
     }
 }
-
-module.exports = RemoveDiscordLog;

@@ -1,7 +1,7 @@
 import discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import { FishLadderEntry } from "../../repositories/FishingRepository";
-import { splitMessage } from "../../util/Util";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import { FishLadderEntry } from "../../repositories/FishingRepository.js";
+import { splitMessage } from "../../util/Util.js";
 
 /**
  Testcases:
@@ -17,7 +17,7 @@ function readableWeight(n: number): string {
     return `${kg.toLocaleString()} kg ${g} g`;
 }
 
-export class FishingLadder extends BotgartCommand {
+export default class FishingLadder extends BotgartCommand {
     constructor() {
         super(
             "fishingladder",
@@ -48,5 +48,3 @@ export class FishingLadder extends BotgartCommand {
         });
     }
 }
-
-module.exports = FishingLadder;

@@ -1,6 +1,6 @@
 import discord from "discord.js";
-import { AbstractDbRepository } from "./AbstractDbRepository";
-import { DiscordLogChannel } from "../mikroorm/entities/DiscordLogChannel";
+import { AbstractDbRepository } from "./AbstractDbRepository.js";
+import { DiscordLogChannel } from "../mikroorm/entities/DiscordLogChannel.js";
 
 export class LogChannelRepository extends AbstractDbRepository {
     public async getLogChannels(guild: discord.Guild, type: string): Promise<string[]> {

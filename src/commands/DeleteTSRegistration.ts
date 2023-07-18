@@ -1,13 +1,13 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../BotgartCommand";
-import { getConfig } from "../config/Config";
-import * as L from "../Locale";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { getConfig } from "../config/Config.js";
+import * as L from "../Locale.js";
 
 /**
  Testcases:
 
  */
-export class DeleteTsRegistration extends BotgartCommand {
+export default class DeleteTsRegistration extends BotgartCommand {
     constructor() {
         super("deletetsregistration", {
             aliases: ["deletetsregistration", "rmtsreg"],
@@ -38,5 +38,3 @@ export class DeleteTsRegistration extends BotgartCommand {
         }
     }
 }
-
-module.exports = DeleteTsRegistration;

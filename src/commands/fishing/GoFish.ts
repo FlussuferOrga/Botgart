@@ -1,11 +1,11 @@
 import * as cheerio from "cheerio";
 import * as discord from "discord.js";
 import * as https from "https";
-import { BotgartClient } from "../../BotgartClient";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { GeneratedFish } from "../../repositories/FishingRepository";
-import { logger } from "../../util/Logging";
+import { BotgartClient } from "../../BotgartClient.js";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { GeneratedFish } from "../../repositories/FishingRepository.js";
+import { logger } from "../../util/Logging.js";
 import { UseRequestContext } from "@mikro-orm/core";
 
 /**
@@ -134,7 +134,7 @@ class ActiveFisher {
     }
 }
 
-export class GoFish extends BotgartCommand {
+export default class GoFish extends BotgartCommand {
     constructor() {
         super(
             "gofish",
@@ -159,5 +159,3 @@ export class GoFish extends BotgartCommand {
         });
     }
 }
-
-module.exports = GoFish;

@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import * as ts3 from "../TS3Connection";
-import { Commander, CommanderStorage } from "../Commanders";
+import * as ts3 from "../TS3Connection.js";
+import { Commander, CommanderStorage } from "../Commanders.js";
 
 const c1: Commander = new Commander("Len.1879", "[RoE] Len", "111111", "Öffentlicher Raid [DE]", ["Öffentlicher Raid [DE]"], "");
 const c2: Commander = new Commander("Jey.1879", "[RoE] Jey", "222222", "Internal Raid [EN]", ["Internal Raid [EN]"], "");

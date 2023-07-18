@@ -1,21 +1,19 @@
-import { AkairoClient, Command, CommandHandler, CommandHandlerOptions } from "@notenoughupdates/discord-akairo";
+import { Command, CommandHandler, CommandHandlerOptions } from "@notenoughupdates/discord-akairo";
 import { ChatInputCommandInteraction, Message } from "discord.js";
-import { MikroORM, UseRequestContext } from "@mikro-orm/core";
+import { UseRequestContext } from "@mikro-orm/core";
+import { BotgartClient } from "./BotgartClient.js";
 
 export class ExtendedCommandHandler extends CommandHandler {
-    private orm: MikroORM;
-
-    constructor(client: AkairoClient, options: CommandHandlerOptions, orm: MikroORM) {
+    constructor(client: BotgartClient, options: CommandHandlerOptions) {
         super(client, options);
-        this.orm = orm;
     }
 
-    @UseRequestContext()
+    @UseRequestContext((type: CommandHandler) => (type.client as BotgartClient).orm)
     handleDirectCommand(message: Message, content: string, command: Command, ignore?: boolean): Promise<boolean | null> {
         return super.handleDirectCommand(message, content, command, ignore);
     }
 
-    @UseRequestContext()
+    @UseRequestContext((type: CommandHandler) => (type.client as BotgartClient).orm)
     handleSlash(interaction: ChatInputCommandInteraction): Promise<boolean | null> {
         return super.handleSlash(interaction);
     }

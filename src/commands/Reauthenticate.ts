@@ -1,8 +1,8 @@
 import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
-import * as L from "../Locale";
-import { logger } from "../util/Logging";
+import { BotgartClient } from "../BotgartClient.js";
+import { BotgartCommand } from "../BotgartCommand.js";
+import * as L from "../Locale.js";
+import { logger } from "../util/Logging.js";
 
 const LOG = logger();
 
@@ -14,7 +14,7 @@ const LOG = logger();
  - remove a formerly valid API key with user no longer in guild -> key gets unauthenticated
  - cron: all of the above -> reauth success
  */
-export class Reauthenticate extends BotgartCommand {
+export default class Reauthenticate extends BotgartCommand {
     constructor() {
         super(
             "reauthenticate",
@@ -35,5 +35,3 @@ export class Reauthenticate extends BotgartCommand {
         return message.reply(L.get("PRUNING_COMPLETE"));
     }
 }
-
-module.exports = Reauthenticate;

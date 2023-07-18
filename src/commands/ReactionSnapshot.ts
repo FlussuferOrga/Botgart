@@ -1,13 +1,13 @@
 import * as discord from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { BotgartCommand } from "../BotgartCommand";
-import { splitMessage } from "../util/Util";
+import { BotgartClient } from "../BotgartClient.js";
+import { BotgartCommand } from "../BotgartCommand.js";
+import { splitMessage } from "../util/Util.js";
 
 /**
  Testcases:
 
  */
-export class ReactionSnapshot extends BotgartCommand {
+export default class ReactionSnapshot extends BotgartCommand {
     constructor() {
         super(
             "reactionsnapshot",
@@ -57,5 +57,3 @@ export class ReactionSnapshot extends BotgartCommand {
         }
     }
 }
-
-module.exports = ReactionSnapshot;

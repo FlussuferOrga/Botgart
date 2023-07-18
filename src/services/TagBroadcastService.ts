@@ -1,9 +1,9 @@
 import discord, { EmbedBuilder, Guild, Message, resolveColor } from "discord.js";
-import { BotgartClient } from "../BotgartClient";
-import { getConfig } from "../config/Config";
-import * as L from "../Locale";
-import { Commander, LeadType } from "../Commanders";
-import { logger } from "../util/Logging";
+import { BotgartClient } from "../BotgartClient.js";
+import { getConfig } from "../config/Config.js";
+import * as L from "../Locale.js";
+import { Commander, LeadType } from "../Commanders.js";
+import { logger } from "../util/Logging.js";
 const LOG = logger();
 
 export class TagBroadcastService {
@@ -151,10 +151,10 @@ export class TagBroadcastService {
                 timestampFormat = "f";
             }
             if (commander.getRaidStart() !== undefined) {
-                lines.push(`**Start:** <t:${commander.getRaidStart()!.unix()!}:${timestampFormat}>`);
+                lines.push(`**Start:** <t:${commander.getRaidStart()!.toSeconds()!}:${timestampFormat}>`);
             }
             if (commander.getRaidEnd() !== undefined) {
-                lines.push(`**End:** <t:${commander.getRaidEnd()!.unix()!}:${timestampFormat}>`);
+                lines.push(`**End:** <t:${commander.getRaidEnd()!.toSeconds()!}:${timestampFormat}>`);
             }
             embed.addFields([
                 {

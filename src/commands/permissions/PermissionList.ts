@@ -1,15 +1,15 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import { logger } from "../../util/Logging";
-import { createTable } from "../../util/Table";
-import { CommandPermission, PermissionType } from "../../mikroorm/entities/CommandPermission";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import { logger } from "../../util/Logging.js";
+import { createTable } from "../../util/Table.js";
+import { CommandPermission, PermissionType } from "../../mikroorm/entities/CommandPermission.js";
 
 const LOG = logger();
 
 const CHARSET = "utf-8";
 const ATTACHMENT_NAME = "result.txt";
 
-export class PermissionList extends BotgartCommand {
+export default class PermissionList extends BotgartCommand {
     constructor() {
         super("permissionlist", {
             aliases: ["permissionlist", "permlist"],
@@ -64,5 +64,3 @@ export class PermissionList extends BotgartCommand {
         );
     }
 }
-
-module.exports = PermissionList;

@@ -1,11 +1,11 @@
 import * as discord from "discord.js";
-import { BotgartCommand } from "../../BotgartCommand";
-import * as L from "../../Locale";
-import { logger } from "../../util/Logging";
+import { BotgartCommand } from "../../BotgartCommand.js";
+import * as L from "../../Locale.js";
+import { logger } from "../../util/Logging.js";
 
 const LOG = logger();
 
-export class PermissionRemove extends BotgartCommand {
+export default class PermissionRemove extends BotgartCommand {
     constructor() {
         super("permissionremove", {
             aliases: ["permissionremove", "permremove"],
@@ -25,5 +25,3 @@ export class PermissionRemove extends BotgartCommand {
         await this.reply(message, responsible, L.get("PERMISSION_REMOVED")).catch((err) => LOG.error(err.message));
     }
 }
-
-module.exports = PermissionRemove;
