@@ -1,6 +1,5 @@
 import callsites from "callsites";
 import * as winston from "winston";
-import { TransformableInfo } from "logform";
 
 export function getErrorMessageWithCausedByParts(err: Error, stack = true): string {
     const doNewLines = stack;
@@ -43,7 +42,7 @@ function createLogger() {
         winston.format.splat(),
         winston.format.simple(),
         //
-        winston.format.printf(({ level, file, message, timestamp, stack, cause, err, name, ...rest }: TransformableInfo) => {
+        winston.format.printf(({ level, file, message, timestamp, stack, cause, err, name, ...rest }) => {
             let restString = "";
             if (Object.getOwnPropertyNames(rest).length > 0) {
                 restString = "\n" + indent(JSON.stringify(rest));

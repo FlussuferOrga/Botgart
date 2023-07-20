@@ -1,2 +1,2 @@
-*
-!api/.openapi-generator-ignore
+api/**/.openapi-generator-ignore
+api/**/.openapi-generator
