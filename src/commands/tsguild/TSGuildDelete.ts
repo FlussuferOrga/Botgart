@@ -20,11 +20,16 @@ export default class TsGuildDelete extends BotgartCommand {
         });
     }
 
-    async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: { guildName: string }): Promise<void> {
-        this.getBotgartClient()
-            .getTS3Connection()
-            .delete("guild", { name: args.guildName })
-            .then((res) => message.reply(L.get("HTTP_REQUEST_RETURNED", [JSON.stringify(res)])));
-        await this.reply(message, responsible, L.get("RM_GUILD_COMPLETE"));
+    async command(
+        message: discord.Message,
+        responsible: discord.User,
+        guild: discord.Guild,
+        args: {
+            guildName: string;
+        }
+    ): Promise<void> {
+        let response = await this.getBotgartClient().guildsApi.guildDelete({ guildDeleteRequest: { name: args.guildName } });
+        await message.reply(L.get("HTTP_REQUEST_RETURNED", [response]));
+        await message.reply(L.get("RM_GUILD_COMPLETE"));
     }
 }

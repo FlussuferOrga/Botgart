@@ -16,8 +16,7 @@ import { CronJobService } from "./services/CronJobService.js";
 import { RevalidationService } from "./services/RevalidationService.js";
 import { TagBroadcastService } from "./services/TagBroadcastService.js";
 import { ValidationService } from "./services/ValidationService.js";
-import { TS3Connection } from "./TS3Connection.js";
-import { TS3Listener } from "./TS3Listener.js";
+import { CommanderPoller } from "./CommanderPoller.js";
 import { logger } from "./util/Logging.js";
 import { AkairoClientOptions } from "@notenoughupdates/discord-akairo";
 import { MikroORM } from "@mikro-orm/core";
@@ -26,6 +25,7 @@ import { ExtendedCommandHandler } from "./ExtendedCommandHandler.js";
 import { CommanderStorage } from "./Commanders.js";
 import { fileURLToPath } from "url";
 import path from "path";
+import { CommandersApi, Configuration, GuildsApi, RegistrationApi, ResetrosterApi } from "./generated/api/botgerda/index.js";
 
 const LOG = logger();
 
@@ -48,14 +48,18 @@ export class BotgartClient extends akairo.AkairoClient {
     public validationService: ValidationService;
     public revalidationService: RevalidationService;
 
-    private readonly ts3connection: TS3Connection;
-    public readonly ts3listener: TS3Listener;
+    public readonly commanderPoller: CommanderPoller;
     public readonly commanders: CommanderStorage;
 
     public readonly commandHandler: akairo.CommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
     public readonly orm: MikroORM<BetterSqliteDriver>;
+
+    public readonly commandersApi: CommandersApi;
+    public readonly guildsApi: GuildsApi;
+    public readonly registrationApi: RegistrationApi;
+    public readonly resetrosterApi: ResetrosterApi;
 
     constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, orm: MikroORM<BetterSqliteDriver>) {
         super(options, clientOptions);
@@ -78,9 +82,15 @@ export class BotgartClient extends akairo.AkairoClient {
         this.revalidationService = new RevalidationService(this);
 
         this.commanders = new CommanderStorage();
-        this.ts3listener = new TS3Listener(this);
+        this.commanderPoller = new CommanderPoller(this);
 
-        this.ts3connection = new TS3Connection(getConfig().get().ts_listener.ip, getConfig().get().ts_listener.port, "MainConnection");
+        // noinspection HttpUrlsUsage
+        let basePath = `http://${getConfig().get().ts_listener.ip}:${getConfig().get().ts_listener.port}`;
+        let configuration = new Configuration({ basePath: basePath });
+        this.commandersApi = new CommandersApi(configuration);
+        this.guildsApi = new GuildsApi(configuration);
+        this.registrationApi = new RegistrationApi(configuration);
+        this.resetrosterApi = new ResetrosterApi(configuration);
 
         this.inhibitorHandler = new akairo.InhibitorHandler(this, {
             directory: path.join(__dirname, "inhibitors"),
@@ -131,10 +141,6 @@ export class BotgartClient extends akairo.AkairoClient {
         });
     }
 
-    public getTS3Connection(): TS3Connection {
-        return this.ts3connection;
-    }
-
     /**
      * Logs a string to a Discord-text-channel. For each type, one or more channels
      * can be set. Types are arbitrary strings, making this feature far more
@@ -153,9 +159,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public async discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
         const channels: string[] = await this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
-            LOG.debug(
-                "Expected channel for type '{0}' was not found in guild '{1}' to discord-log message: '{2}'.".formatUnicorn(type, guild.name, message)
-            );
+            LOG.debug("Expected channel for type '%s' was not found in guild '%s' to discord-log message: '%s'.", type, guild.name, message);
         } else {
             for (const cid of channels) {
                 const channel: GuildChannel | ThreadChannel | null = await guild.channels.fetch(cid);

@@ -47,12 +47,12 @@ export enum CommanderState {
 export type LeadType = "UNKNOWN" | "PPT" | "PPK";
 
 export class Commander {
-    private accountName: string;
+    private accountName: string | null;
     private ts3DisplayName: string;
     private ts3clientUID: string;
     private ts3channel: string;
     private ts3channelPath: string[];
-    private ts3joinUrl: string;
+    private ts3joinUrl: string | null;
     private raidStart?: DateTime;
     private raidEnd?: DateTime;
     private lastUpdate: DateTime;
@@ -62,7 +62,7 @@ export class Commander {
     private currentLeadType: LeadType;
     private registration: Registration | undefined;
 
-    public getAccountName(): string {
+    public getAccountName(): string | null{
         return this.accountName;
     }
 
@@ -94,7 +94,7 @@ export class Commander {
         this.ts3channelPath = value;
     }
 
-    public getTs3joinUrl(): string {
+    public getTs3joinUrl(): string|null {
         return this.ts3joinUrl;
     }
 
@@ -157,13 +157,14 @@ export class Commander {
     public setCurrentLeadType(value: "UNKNOWN" | "PPT" | "PPK") {
         this.currentLeadType = value;
     }
+
     public constructor(
-        accountName: string,
+        accountName: string | null,
         ts3DisplayName: string,
         ts3clientUID: string,
         ts3channel: string,
         ts3channelPath: string[],
-        ts3joinUrl: string
+        ts3joinUrl: string | null
     ) {
         this.accountName = accountName;
         this.ts3DisplayName = ts3DisplayName;

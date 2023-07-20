@@ -146,7 +146,11 @@ export class RosterService {
                 this.prepareRefresh(guild, mes, roster);
             });
         if (roster.isUpcoming()) {
-            this.syncToTS3(guild, roster).catch((reason) => LOG.error("Unable to sync Roster: %s", reason));
+            try {
+                await this.syncToTS3(guild, roster);
+            } catch (e) {
+                LOG.error("Unable to sync Roster.", { err: e });
+            }
         }
     }
 
@@ -185,7 +189,11 @@ export class RosterService {
             } else {
                 const [r] = roster;
 
-                this.syncToTS3(guild, r).catch((reason) => LOG.error("Error update TS3:", reason));
+                try {
+                    await this.syncToTS3(guild, r);
+                } catch (err) {
+                    LOG.error("Error update TS3", { err });
+                }
             }
         });
     }
@@ -207,13 +215,15 @@ export class RosterService {
             return user;
         };
         const resetDateTime = roster.getResetDateTime().setZone(getConfig().get().timeZone);
-        await this.client.getTS3Connection().post("resetroster", {
-            date: resetDateTime.toFormat("dd.MM.yyyy HH:mm ZZZZ"), // TODO: remove
-            datetime: resetDateTime.toISO(),
-            rbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map((l) => resolveUser(l.name))),
-            gbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map((l) => resolveUser(l.name))),
-            bbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.BlueBorderlands)).map((l) => resolveUser(l.name))),
-            ebg: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.EternalBattlegrounds)).map((l) => resolveUser(l.name))),
+        await this.client.resetrosterApi.updateRoster({
+            rosterInformation: {
+                date: resetDateTime.toFormat("dd.MM.yyyy HH:mm ZZZZ"), // TODO: remove
+                datetime: resetDateTime.toISO()!,
+                rbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map((l) => resolveUser(l.name))),
+                gbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map((l) => resolveUser(l.name))),
+                bbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.BlueBorderlands)).map((l) => resolveUser(l.name))),
+                ebg: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.EternalBattlegrounds)).map((l) => resolveUser(l.name))),
+            },
         });
     }
 }

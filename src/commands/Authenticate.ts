@@ -100,7 +100,7 @@ export default class Authenticate extends BotgartCommand {
                 LOG.error("Network error while trying to resolve world.");
                 error = L.getIn(interaction.locale, "INTERNAL_ERROR");
             } else if (err instanceof InvalidKeyError) {
-                LOG.error("Invalid key: {0}".formatUnicorn(apiKey));
+                LOG.error("Invalid key: %s", apiKey);
                 error = L.getIn(interaction.locale, "KEY_DECLINED");
             } else {
                 LOG.error("Unexpected error occured while validating world.", err);
@@ -156,7 +156,7 @@ export default class Authenticate extends BotgartCommand {
                 LOG.error("Network error while trying to resolve world.");
                 error = L.get("INTERNAL_ERROR");
             } else if (err instanceof InvalidKeyError) {
-                LOG.error("Invalid key: {0}".formatUnicorn(apiKey));
+                LOG.error("Invalid key: %s", apiKey);
                 error = L.get("KEY_DECLINED");
             } else {
                 LOG.error("Unexpected error occured while validating world.", err);

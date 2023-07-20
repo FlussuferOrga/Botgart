@@ -28,7 +28,9 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "npm-run-all clean compile",
+    "build": "npm-run-all clean generate:* compile",
+    "generate:openapi": "openapi-generator-cli generate",
+    "generate:i18n": "typesafe-i18n --no-watch",
     "compile": "tsc",
     "clean": "rimraf ./built",
     "start": "node --enable-source-maps ./built/index.js",
@@ -79,6 +81,7 @@
   },
   "devDependencies": {
     "@mikro-orm/cli": "^5.7.13",
+    "@openapitools/openapi-generator-cli": "^2.7.0",
     "@types/await-timeout": "^0.3.1",
     "@types/better-sqlite3": "^7.6.4",
     "@types/callsites": "^3.0.0",

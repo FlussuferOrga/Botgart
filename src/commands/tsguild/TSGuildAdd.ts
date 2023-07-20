@@ -72,25 +72,25 @@ export default class TsGuildAdd extends BotgartCommand {
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: ArgType): Promise<void> {
         if (!args.confirm) {
-            message.reply(L.get("MK_GUILD_CANCELED"));
+            await message.reply(L.get("MK_GUILD_CANCELED"));
         } else if (args.confirm) {
             if (!(await gw2u.guildExists(args.guildName))) {
-                message.reply(L.get("MK_GUILD_UNKNOWN_GUILD", [args.guildName]));
+                await message.reply(L.get("MK_GUILD_UNKNOWN_GUILD", [args.guildName]));
             } else {
-                await this.getBotgartClient()
-                    .getTS3Connection()
-                    .post("guild", {
+                let response = await this.getBotgartClient().guildsApi.guildCreate({
+                    guildCreateRequest: {
                         name: args.guildName,
-                        tsgroup: args.guildTSGroup,
                         contacts: args.contacts,
-                    })
-                    .then((res) => message.reply(L.get("HTTP_REQUEST_RETURNED", [JSON.stringify(res)])));
-                message.reply(L.get("MK_GUILD_COMPLETE"));
+                        tsgroup: args.guildTSGroup,
+                    },
+                });
+                await message.reply(L.get("HTTP_REQUEST_RETURNED", [response]));
+                await message.reply(L.get("MK_GUILD_COMPLETE"));
             }
         } else {
             // happens mainly if the args parsing was canceled,
             // see [1]
-            message.reply(L.get(this.helptextKey()));
+            await message.reply(L.get(this.helptextKey()));
         }
     }
 }

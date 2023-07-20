@@ -3,7 +3,6 @@ import { Guild } from "discord.js";
 import events from "events";
 import { BotgartClient } from "./BotgartClient.js";
 import { getConfig } from "./config/Config.js";
-import { TS3Commander, TS3Connection } from "./TS3Connection.js";
 import { logger } from "./util/Logging.js";
 import { UseRequestContext } from "@mikro-orm/core";
 import { Registration } from "./mikroorm/entities/Registration.js";
@@ -24,8 +23,7 @@ const RECONNECT_PATIENCE = 10;
  * Doing so will throw two events "tagup" and "tagdown".
  * The latter will be thrown _after_ the ended lead has been written to the DB.
  */
-export class TS3Listener extends events.EventEmitter {
-    private readonly ts3connection: TS3Connection;
+export class CommanderPoller extends events.EventEmitter {
     private readonly commanderRole: string;
     private readonly userDelay: number;
     private readonly gracePeriod: number;
@@ -35,8 +33,6 @@ export class TS3Listener extends events.EventEmitter {
         super();
 
         const config = getConfig().get();
-
-        this.ts3connection = new TS3Connection(config.ts_listener.ip, config.ts_listener.port);
         this.commanderRole = config.ts_listener.commander_role;
         this.userDelay = config.ts_listener.user_delay;
         this.gracePeriod = config.ts_listener.grace_period;
@@ -45,27 +41,28 @@ export class TS3Listener extends events.EventEmitter {
         setInterval(() => this.checkCommanders(), config.ts_commander_check_interval);
     }
 
-    @UseRequestContext((type: TS3Listener) => type.botgartClient.orm)
+    @UseRequestContext((type: CommanderPoller) => type.botgartClient.orm)
     private async checkCommanders(): Promise<void> {
         LOG.verbose("Requesting commanders from TS-Bot.");
         const now: DateTime = DateTime.utc();
         try {
-            const res: string = await this.ts3connection.get("commanders");
-            const data: { commanders: TS3Commander[] } = JSON.parse(res); // FIXME: error check
-            const commanderTSUIDs: string[] = data.commanders.map((c) => c.ts_cluid);
+            let commandersList = (await this.botgartClient.commandersApi.commandersList()).commanders;
+            // const res: string = await this.ts3connection.get("commanders");
+            const data = { commanders: commandersList! };
+            const commanderTSUIDs: string[] = data.commanders.map((c) => c.tsCluid!);
             LOG.verbose(`Commanders that are still active: ${JSON.stringify(commanderTSUIDs)}`);
             const taggedDown: Commander[] = this.botgartClient.commanders.getTaggedDown(new Set<string>(commanderTSUIDs));
             if (taggedDown.length > 0) {
-                LOG.debug("Tagging down: {0}".formatUnicorn(JSON.stringify(taggedDown)));
+                LOG.debug("Tagging down", { commanders: taggedDown });
             }
             this.botgartClient.guilds.cache.forEach((g) => {
                 data.commanders.forEach((c) => {
-                    const account = c.account_name; // for lookup
-                    const uid = c.ts_cluid; // for this.users
-                    const username = c.ts_display_name; // for broadcast
-                    const channel = c.ts_channel_name; // for broadcast and this.channels
-                    const channel_path = c.ts_channel_path; // for broadcast and this.channels
-                    const ts_join_url = c.ts_join_url; // for broadcast and this.channels
+                    const account = c.accountName; // for lookup
+                    const uid = c.tsCluid; // for this.users
+                    const username = c.tsDisplayName; // for broadcast
+                    const channel = c.tsChannelName; // for broadcast and this.channels
+                    const channel_path = c.tsChannelPath; // for broadcast and this.channels
+                    const ts_join_url = c.tsJoinUrl; // for broadcast and this.channels
                     const type = c.leadtype || "UNKNOWN";
 
                     let commander = this.botgartClient.commanders.getCommanderByTS3UID(uid);
@@ -135,7 +132,7 @@ export class TS3Listener extends events.EventEmitter {
             });
             this.patience = RECONNECT_PATIENCE;
         } catch (ex) {
-            LOG.error(`Could not retrieve active commanders: ${ex}`);
+            LOG.error(`Could not retrieve active commanders:`, { err: ex });
             // by going as low -1 we do not get an underflow by going indefinitely low
             // but we do the reset only once (when reaching 0) instead of every time after reaching 0.
             this.patience = Math.max(this.patience - 1, -1);
@@ -157,7 +154,10 @@ export class TS3Listener extends events.EventEmitter {
      */
     private async tagUp(g: discord.Guild, commander: Commander) {
         LOG.info(`Tagging up ${commander.getTS3DisplayName()} in ${g.name}.`);
-        const registration = await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
+        let registration: Registration | null = null;
+        if (commander.getAccountName() !== null) {
+            registration = await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName()!);
+        }
 
         let duser: discord.GuildMember | undefined;
         if (registration !== null) {
@@ -192,7 +192,10 @@ export class TS3Listener extends events.EventEmitter {
      * - the user's TS-UID-Discordname is forgotten
      */
     private async tagDown(g: discord.Guild, commander: Commander) {
-        const registration: Registration | null = await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName());
+        let registration: Registration | null = null;
+        if (commander.getAccountName() !== null) {
+            registration = await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName()!);
+        }
 
         try {
             await this.botgartClient.tagBroadcastService.tagDownBroadcast(commander);

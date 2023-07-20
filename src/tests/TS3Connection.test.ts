@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import * as ts3 from "../TS3Connection.js";
 import { Commander, CommanderStorage } from "../Commanders.js";
 
 const c1: Commander = new Commander("Len.1879", "[RoE] Len", "111111", "Öffentlicher Raid [DE]", ["Öffentlicher Raid [DE]"], "");
@@ -14,21 +13,21 @@ filledStorage.addCommander(c1);
 filledStorage.addCommander(c2);
 filledStorage.addCommander(c3);
 
-const dataFromTS3: { commanders: ts3.TS3Commander[] } = {
+const dataFromTS3: { commanders: Commander[] } = {
     commanders: [
-        {
-            account_name: "Len.1879",
-            ts_cluid: "111111",
-            ts_display_name: "[RoE] Len",
-            ts_channel_path: ["Events", "Silas Kaffee-Raid 04:50AM till 6:00 AM"],
-            ts_channel_name: "Silas Kaffee-Raid 04:50AM till 6:00 AM",
-            ts_join_url: "https://invite.teamspeak.com/my-ts-server.example.com/?cid=17",
-        },
+        new Commander(
+            "Len.1879",
+            "[RoE] Len",
+            "111111",
+            "Silas Kaffee-Raid 04:50AM till 6:00 AM",
+            ["Events", "Silas Kaffee-Raid 04:50AM till 6:00 AM"],
+            "https://invite.teamspeak.com/my-ts-server.example.com/?cid=17"
+        ),
     ],
 };
-const dataFromTS3Empty: { commanders: ts3.TS3Commander[] } = { commanders: [] };
+const dataFromTS3Empty: { commanders: Commander[] } = { commanders: [] };
 
-describe("TS3Connection", () => {
+describe("Commander Storage", () => {
     it("Set minus empty - {}", () => {
         expect(emptyStorage.getTaggedDown(new Set<string>())).deep.equal([]);
     });
@@ -62,18 +61,18 @@ describe("TS3Connection", () => {
     });
 
     it("Set minus received from TS3 1", () => {
-        expect(singleStorage.getTaggedDown(new Set<string>(dataFromTS3.commanders.map((c) => c.ts_cluid))).length).equal(0);
+        expect(singleStorage.getTaggedDown(new Set<string>(dataFromTS3.commanders.map((c) => c.getTS3ClientUID()))).length).equal(0);
     });
 
     it("Set minus received from TS3 2", () => {
-        expect(filledStorage.getTaggedDown(new Set<string>(dataFromTS3.commanders.map((c) => c.ts_cluid))).length).equal(2);
+        expect(filledStorage.getTaggedDown(new Set<string>(dataFromTS3.commanders.map((c) => c.getTS3ClientUID()))).length).equal(2);
     });
 
     it("Set minus received from TS3 empty", () => {
-        expect(filledStorage.getTaggedDown(new Set<string>(dataFromTS3Empty.commanders.map((c) => c.ts_cluid))).length).equal(3);
+        expect(filledStorage.getTaggedDown(new Set<string>(dataFromTS3Empty.commanders.map((c) => c.getTS3ClientUID()))).length).equal(3);
     });
 
     it("Set minus received from TS3 empty", () => {
-        expect(emptyStorage.getTaggedDown(new Set<string>(dataFromTS3Empty.commanders.map((c) => c.ts_cluid))).length).equal(0);
+        expect(emptyStorage.getTaggedDown(new Set<string>(dataFromTS3Empty.commanders.map((c) => c.getTS3ClientUID()))).length).equal(0);
     });
 });

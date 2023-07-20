@@ -47,8 +47,8 @@ export class WebServer {
 
     public async close() {
         if (this.server != undefined) {
-            await this.server.removeListener("error", WebServer.onError);
-            await this.server.close();
+            this.server.removeListener("error", WebServer.onError);
+            this.server.close();
         }
     }
 }

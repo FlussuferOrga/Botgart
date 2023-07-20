@@ -1,17 +1,75 @@
 import callsites from "callsites";
 import * as winston from "winston";
+import { TransformableInfo } from "logform";
+
+export function getErrorMessageWithCausedByParts(err: Error, stack = true): string {
+    const doNewLines = stack;
+    let txt = "";
+
+    if (stack) {
+        txt += err.stack;
+    } else {
+        txt += err.message;
+    }
+
+    if (err.cause != null) {
+        if (err.cause instanceof Error) {
+            if (doNewLines) {
+                txt += "\n[caused by] ";
+            } else {
+                txt += " [caused by] ";
+            }
+
+            txt += getErrorMessageWithCausedByParts(err.cause, stack);
+        } else {
+            txt += `[Unknown cause type?!]: ${JSON.stringify(err.cause)}`;
+        }
+    }
+
+    return txt;
+}
+
+const SPLAT = Symbol.for("splat");
+
+function indent(string: string) {
+    const regex = /^(?!\s*$)/gm;
+    return string.replace(regex, "    ");
+}
 
 function createLogger() {
     const defaultFormat = winston.format.combine(
+        // winston.format.errors({ stack: true, cause: true }),
         winston.format.timestamp(),
         winston.format.splat(),
         winston.format.simple(),
-        winston.format.printf(({ level, file, message, timestamp, ...rest }) => {
+        //
+        winston.format.printf(({ level, file, message, timestamp, stack, cause, err, name, ...rest }: TransformableInfo) => {
             let restString = "";
             if (Object.getOwnPropertyNames(rest).length > 0) {
-                restString = " " + JSON.stringify(rest);
+                restString = "\n" + indent(JSON.stringify(rest));
             }
-            return `${timestamp} ${level} [${file}]: ${message}${restString}`;
+
+            let text = `${timestamp} ${level} [${file}]: ${message}${restString}`;
+
+            let splat = rest[SPLAT];
+            if (err !== undefined && err instanceof Error) {
+                text = text + "\n" + indent(getErrorMessageWithCausedByParts(err));
+            } else if (splat !== undefined && splat.length > 0) {
+                const parts: unknown[] = splat;
+                for (let part of parts) {
+                    if (part instanceof Error) {
+                        text = text + "\n" + indent(getErrorMessageWithCausedByParts(part));
+                    }
+                }
+            } else {
+                if (cause !== undefined || stack !== undefined) {
+                    let err = { stack, cause, name };
+                    if (err) {
+                        text = text + "\n" + indent(getErrorMessageWithCausedByParts(err as Error));
+                    }
+                }
+            }
+            return text;
         })
     );
     const options = {
@@ -30,10 +88,6 @@ function createLogger() {
             new winston.transports.File({
                 filename: "log/bot_errors.log",
                 level: "error",
-            }),
-            new winston.transports.File({
-                filename: "/tmp/botgart_debug.log",
-                level: "debug",
             }),
         ],
     };
