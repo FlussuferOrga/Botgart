@@ -62,7 +62,7 @@ export class Commander {
     private currentLeadType: LeadType;
     private registration: Registration | undefined;
 
-    public getAccountName(): string | null{
+    public getAccountName(): string | null {
         return this.accountName;
     }
 
@@ -94,7 +94,7 @@ export class Commander {
         this.ts3channelPath = value;
     }
 
-    public getTs3joinUrl(): string|null {
+    public getTs3joinUrl(): string | null {
         return this.ts3joinUrl;
     }
 

@@ -51,19 +51,19 @@ function createLogger() {
 
             let text = `${timestamp} ${level} [${file}]: ${message}${restString}`;
 
-            let splat = rest[SPLAT];
+            const splat = rest[SPLAT];
             if (err !== undefined && err instanceof Error) {
                 text = text + "\n" + indent(getErrorMessageWithCausedByParts(err));
             } else if (splat !== undefined && splat.length > 0) {
                 const parts: unknown[] = splat;
-                for (let part of parts) {
+                for (const part of parts) {
                     if (part instanceof Error) {
                         text = text + "\n" + indent(getErrorMessageWithCausedByParts(part));
                     }
                 }
             } else {
                 if (cause !== undefined || stack !== undefined) {
-                    let err = { stack, cause, name };
+                    const err = { stack, cause, name };
                     if (err) {
                         text = text + "\n" + indent(getErrorMessageWithCausedByParts(err as Error));
                     }

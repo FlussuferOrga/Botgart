@@ -85,8 +85,8 @@ export class BotgartClient extends akairo.AkairoClient {
         this.commanderPoller = new CommanderPoller(this);
 
         // noinspection HttpUrlsUsage
-        let basePath = `http://${getConfig().get().ts_listener.ip}:${getConfig().get().ts_listener.port}`;
-        let configuration = new Configuration({ basePath: basePath });
+        const basePath = `http://${getConfig().get().ts_listener.ip}:${getConfig().get().ts_listener.port}`;
+        const configuration = new Configuration({ basePath: basePath });
         this.commandersApi = new CommandersApi(configuration);
         this.guildsApi = new GuildsApi(configuration);
         this.registrationApi = new RegistrationApi(configuration);

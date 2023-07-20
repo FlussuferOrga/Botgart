@@ -28,7 +28,7 @@ export default class TsGuildDelete extends BotgartCommand {
             guildName: string;
         }
     ): Promise<void> {
-        let response = await this.getBotgartClient().guildsApi.guildDelete({ guildDeleteRequest: { name: args.guildName } });
+        const response = await this.getBotgartClient().guildsApi.guildDelete({ guildDeleteRequest: { name: args.guildName } });
         await message.reply(L.get("HTTP_REQUEST_RETURNED", [response]));
         await message.reply(L.get("RM_GUILD_COMPLETE"));
     }

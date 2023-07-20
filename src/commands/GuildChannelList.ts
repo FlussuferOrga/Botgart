@@ -16,7 +16,7 @@ export default class GuildChannelList extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, never>): Promise<void> {
-        let response = await this.getBotgartClient().guildsApi.guildChannelList();
+        const response = await this.getBotgartClient().guildsApi.guildChannelList();
         const data: string[][] = [];
         if (Array.isArray(response)) {
             for (const row of response) {

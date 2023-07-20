@@ -26,7 +26,7 @@ export default class DeleteTsRegistration extends BotgartCommand {
         if (getConfig().get().ts_unregister_protection.includes(gw2account)) {
             await this.reply(message, responsible, L.get("TS_UNREGISTER_PROTECTION"));
         } else {
-            let response = await this.getBotgartClient().registrationApi.registrationDelete({
+            const response = await this.getBotgartClient().registrationApi.registrationDelete({
                 registrationDeleteRequest: { gw2account: gw2account },
             });
             await message.reply(L.get("TS_REGISTRATIONS_DELETED", [(response.changes || 0).toString()]));

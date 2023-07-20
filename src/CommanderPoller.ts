@@ -46,7 +46,7 @@ export class CommanderPoller extends events.EventEmitter {
         LOG.verbose("Requesting commanders from TS-Bot.");
         const now: DateTime = DateTime.utc();
         try {
-            let commandersList = (await this.botgartClient.commandersApi.commandersList()).commanders;
+            const commandersList = (await this.botgartClient.commandersApi.commandersList()).commanders;
             // const res: string = await this.ts3connection.get("commanders");
             const data = { commanders: commandersList! };
             const commanderTSUIDs: string[] = data.commanders.map((c) => c.tsCluid!);
