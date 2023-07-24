@@ -151,10 +151,10 @@ export class TagBroadcastService {
                 timestampFormat = "f";
             }
             if (commander.getRaidStart() !== undefined) {
-                lines.push(`**Start:** <t:${commander.getRaidStart()!.toSeconds()!}:${timestampFormat}>`);
+                lines.push(`**Start:** <t:${commander.getRaidStart()!.toUnixInteger()!}:${timestampFormat}>`);
             }
             if (commander.getRaidEnd() !== undefined) {
-                lines.push(`**End:** <t:${commander.getRaidEnd()!.toSeconds()!}:${timestampFormat}>`);
+                lines.push(`**End:** <t:${commander.getRaidEnd()!.toUnixInteger()!}:${timestampFormat}>`);
             }
             embed.addFields([
                 {
