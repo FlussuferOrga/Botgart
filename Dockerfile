@@ -14,7 +14,7 @@ RUN npm set progress=false && npm config set depth 0
 
 COPY package*.json ./
 # only production dependencies so we can later use them in the final image
-RUN npm install --only=production --loglevel info
+RUN npm install --omit=dev --loglevel info
 
 
 # ---- Build ----
