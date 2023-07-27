@@ -4,6 +4,7 @@ import { getConfig } from "../config/Config.js";
 import * as L from "../Locale.js";
 import { Commander, LeadType } from "../Commanders.js";
 import { logger } from "../util/Logging.js";
+
 const LOG = logger();
 
 export class TagBroadcastService {
@@ -52,7 +53,7 @@ export class TagBroadcastService {
         const currentWorldId = commander.getRegistration()?.current_world_id;
         let role = "?";
         if (currentWorldId) {
-            const assignment = await this.client.validationService.getAssignmentByWorldId(currentWorldId);
+            const assignment = this.client.validationService.getAssignmentByWorldId(currentWorldId);
             if (assignment) {
                 role = assignment.role;
             }
@@ -103,6 +104,8 @@ export class TagBroadcastService {
             const messageEmbed = this.createEmbed(commander);
             const msgContent = await this.generateMessage(g, commander);
             await message.edit({ content: msgContent, embeds: [messageEmbed] });
+        } else {
+            LOG.warn("No tag message to update for commander", commander);
         }
     }
 

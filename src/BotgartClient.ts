@@ -1,6 +1,6 @@
 import * as akairo from "@notenoughupdates/discord-akairo";
 import * as discord from "discord.js";
-import { GuildChannel, ThreadChannel } from "discord.js";
+import { Guild, GuildChannel, ThreadChannel } from "discord.js";
 import { BotgartCommand } from "./BotgartCommand.js";
 import { RosterService } from "./commands/resetlead/RosterService.js";
 import { getConfig } from "./config/Config.js";
@@ -184,5 +184,9 @@ export class BotgartClient extends akairo.AkairoClient {
             LOG.info("Preparing Shutdown");
             await this.tagBroadcastService.tagDownAllBroadcastsForShutdown();
         }
+    }
+
+    public currentGuilds(): IterableIterator<Guild> {
+        return this.guilds.valueOf().values();
     }
 }
