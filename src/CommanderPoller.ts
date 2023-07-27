@@ -1,6 +1,5 @@
 import * as discord from "discord.js";
 import { Guild } from "discord.js";
-import events from "events";
 import { BotgartClient } from "./BotgartClient.js";
 import { getConfig } from "./config/Config.js";
 import { logger } from "./util/Logging.js";
@@ -60,7 +59,7 @@ export class CommanderPoller {
             LOG.debug("Tagging down", { commanders: taggedDown });
         }
         const now: DateTime = DateTime.now();
-        for (let g of this.botgartClient.currentGuilds()) {
+        for (const g of this.botgartClient.currentGuilds()) {
             for (const c of commanders) {
                 let commander = this.botgartClient.commanders.getCommanderByTS3UID(c.tsCluid);
                 if (commander === undefined) {
@@ -158,7 +157,7 @@ export class CommanderPoller {
         if (registration !== null) {
             commander.setRegistration(registration);
             // the commander is member of the current discord -> give role
-            let duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
+            const duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
             if (duser !== undefined) {
                 commander.setDiscordMember(duser);
             } else {
