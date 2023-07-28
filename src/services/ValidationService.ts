@@ -164,7 +164,7 @@ export class ValidationService {
 
         await Promise.all(
             designations.map(async (d) => {
-                let member: GuildMember | null = await this.getMember(guild, d, d.user);
+                let member: GuildMember | null = await this.getMember(guild, d.user);
                 if (member) {
                     await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
                 } else {
@@ -182,8 +182,8 @@ export class ValidationService {
             return await guild.members.fetch({ user: user });
         } catch (e) {
             if (e.code == 10007) {
-                LOG.warn("User %s is not a member anymore.", user);
-                return null;
+                // Unknown member
+                return null; // User is not a member
             }
             throw e;
         }
