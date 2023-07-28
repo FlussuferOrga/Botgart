@@ -40,7 +40,6 @@ export default class RepairRoles extends BotgartCommand {
         const designations: DesignatedWorlds[] = await cl.registrationRepository.getDesignatedRoles(guild.id);
         LOG.info(`Found ${designations.length} users to check.`);
 
-        let members = await guild.members.list();
         await Promise.all(
             designations.map(async (d) => {
                 let member: GuildMember | null = await this.getMember(guild, d);
