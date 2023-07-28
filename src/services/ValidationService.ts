@@ -1,4 +1,4 @@
-import discord, { Guild, GuildMember, Role, Snowflake } from "discord.js";
+import discord, { Guild, GuildMember, Role, Snowflake, User, UserResolvable } from "discord.js";
 import { isEqual, sortBy, uniq } from "lodash-es";
 import { BotgartClient } from "../BotgartClient.js";
 import { getConfig, WorldAssignment } from "../config/Config.js";
@@ -13,6 +13,7 @@ import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
 const LOG = logger();
 
 export class DeclinedApiKeyError extends Error {}
+
 export class KeyInvalidFormatError extends Error {}
 
 export class ValidationService {
@@ -128,7 +129,7 @@ export class ValidationService {
         // numbnut when it comes to data privacy and posting your
         // API key in public channels.
         for (const guild of this.client.guilds.cache.values()) {
-            const m: discord.GuildMember = await guild.members.fetch(userId); // cache.find(m => m.id == message.author.id);
+            const m: GuildMember | null = await this.getMember(guild, userId);
             if (m) {
                 members.push(m);
             }
@@ -163,7 +164,7 @@ export class ValidationService {
 
         await Promise.all(
             designations.map(async (d) => {
-                let member: GuildMember | null = await this.getMember(guild, d);
+                let member: GuildMember | null = await this.getMember(guild, d, d.user);
                 if (member) {
                     await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
                 } else {
@@ -176,12 +177,12 @@ export class ValidationService {
         );
     }
 
-    private async getMember(guild: Guild, d: DesignatedWorlds): Promise<GuildMember | null> {
+    private async getMember(guild: Guild, user: UserResolvable): Promise<GuildMember | null> {
         try {
-            return await guild.members.fetch({ user: d.user });
+            return await guild.members.fetch({ user: user });
         } catch (e) {
             if (e.code == 10007) {
-                LOG.warn("User %s is not a member anymore.", d.user);
+                LOG.warn("User %s is not a member anymore.", user);
                 return null;
             }
             throw e;
