@@ -1,13 +1,14 @@
-import discord, { GuildMember, Role, Snowflake } from "discord.js";
+import discord, { Guild, GuildMember, Role, Snowflake } from "discord.js";
 import { isEqual, sortBy, uniq } from "lodash-es";
 import { BotgartClient } from "../BotgartClient.js";
 import { getConfig, WorldAssignment } from "../config/Config.js";
 import { logger } from "../util/Logging.js";
+import * as Util from "../util/Util.js";
 import { findRole } from "../util/Util.js";
 import { AccountData, getAccountInfo } from "../Gw2ApiUtils.js";
-import * as Util from "../util/Util.js";
 import * as L from "../Locale.js";
 import { Registration } from "../mikroorm/entities/Registration.js";
+import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
 
 const LOG = logger();
 
@@ -155,5 +156,38 @@ export class ValidationService {
             await this.client.validationService.setMemberRolesByWorldAssignment(member, null, reason);
         }
         await this.client.registrationRepository.deleteById(registration);
+    }
+
+    public async repairRoles(guild: Guild) {
+        LOG.info(`Starting role repair.`);
+
+        const designations: DesignatedWorlds[] = await this.client.registrationRepository.getDesignatedRoles(guild.id);
+        LOG.info(`Found ${designations.length} users to check.`);
+
+        await Promise.all(
+            designations.map(async (d) => {
+                let member: GuildMember | null = await this.getMember(guild, d);
+                if (member) {
+                    await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
+                } else {
+                    let registration = await this.client.registrationRepository.getUserByDiscordId(d.user);
+                    if (registration) {
+                        await this.client.validationService.deleteMember(registration, undefined, "User left the server");
+                    }
+                }
+            })
+        );
+    }
+
+    private async getMember(guild: Guild, d: DesignatedWorlds): Promise<GuildMember | null> {
+        try {
+            return await guild.members.fetch({ user: d.user });
+        } catch (e) {
+            if (e.code == 10007) {
+                LOG.warn("User %s is not a member anymore.", d.user);
+                return null;
+            }
+            throw e;
+        }
     }
 }
