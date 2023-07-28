@@ -49,7 +49,7 @@ export default class RepairRoles extends BotgartCommand {
                 } else {
                     let registration = await cl.registrationRepository.getUserByDiscordId(d.user);
                     if (registration) {
-                        await this.getBotgartClient().validationService.deleteMember(registration);
+                        await this.getBotgartClient().validationService.deleteMember(registration, undefined, "User left the server");
                     }
                 }
             })
@@ -64,7 +64,7 @@ export default class RepairRoles extends BotgartCommand {
                 LOG.warn("User %s is not a member anymore.", d.user);
                 return null;
             }
-            throw e
+            throw e;
         }
     }
 }
