@@ -38,7 +38,7 @@ export class TagBroadcastService {
                 `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`
             );
         } else {
-            LOG.info("Sending Broadcast Message to %s", textChannel.id);
+            LOG.verbose(`Sending Broadcast Message to ${textChannel.id}`);
             const message = await this.generateMessage(g, commander);
             const embed = this.createEmbed(commander);
             let send = await textChannel.send({ content: message, embeds: [embed] });
