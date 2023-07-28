@@ -13,9 +13,6 @@ import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
 const LOG = logger();
 
 export class DeclinedApiKeyError extends Error {}
-
-export class KeyNotUniqueError extends Error {}
-
 export class KeyInvalidFormatError extends Error {}
 
 export class ValidationService {

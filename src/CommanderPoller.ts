@@ -38,12 +38,12 @@ export class CommanderPoller {
     }
 
     private async checkCommanders(): Promise<void> {
-        LOG.info("Starting Commander Update");
+        LOG.verbose("Starting Commander Update");
 
         let commanders: ApiCommander[];
         try {
             commanders = (await this.botgartClient.commandersApi.commandersList())?.commanders || [];
-            LOG.info(`Commanders that are currently active based on TS response: ${JSON.stringify(commanders.map((c) => c.tsDisplayName!))}`);
+            LOG.verbose(`Commanders that are currently active based on TS response: ${JSON.stringify(commanders.map((c) => c.tsDisplayName!))}`);
         } catch (ex) {
             LOG.error(`Could not retrieve active commanders:`, { err: ex });
             // by going as low -1 we do not get an underflow by going indefinitely low
@@ -56,7 +56,10 @@ export class CommanderPoller {
         }
         const taggedDown: Commander[] = this.botgartClient.commanders.getTaggedDown(new Set<string>(commanders.map((c) => c.tsCluid!)));
         if (taggedDown.length > 0) {
-            LOG.debug("Tagging down", { commanders: taggedDown });
+            LOG.debug(
+                "Tagging down",
+                taggedDown.map((value) => value.getTS3DisplayName())
+            );
         }
         const now: DateTime = DateTime.now();
         for (const g of this.botgartClient.currentGuilds()) {
@@ -130,7 +133,7 @@ export class CommanderPoller {
 
         this.patience = RECONNECT_PATIENCE;
 
-        LOG.info("Done Commander Update.");
+        LOG.verbose("Done Commander Update.");
     }
 
     private tagDownAllDueToMissingConnection() {
