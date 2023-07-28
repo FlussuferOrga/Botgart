@@ -1,4 +1,4 @@
-import discord, { Guild, GuildMember, Role, Snowflake, User, UserResolvable } from "discord.js";
+import discord, { Guild, GuildMember, Role, Snowflake, UserResolvable } from "discord.js";
 import { isEqual, sortBy, uniq } from "lodash-es";
 import { BotgartClient } from "../BotgartClient.js";
 import { getConfig, WorldAssignment } from "../config/Config.js";
@@ -7,7 +7,6 @@ import * as Util from "../util/Util.js";
 import { findRole } from "../util/Util.js";
 import { AccountData, getAccountInfo } from "../Gw2ApiUtils.js";
 import * as L from "../Locale.js";
-import { Registration } from "../mikroorm/entities/Registration.js";
 import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
 
 const LOG = logger();
@@ -149,13 +148,6 @@ export class ValidationService {
         return this.worldAssignments.find((value) => value.world_id == worldId);
     }
 
-    public async deleteMember(registration: Pick<Registration, "guild" | "user">, member?: GuildMember, reason?: string) {
-        if (member) {
-            await this.client.validationService.setMemberRolesByWorldAssignment(member, null, reason);
-        }
-        await this.client.registrationRepository.deleteById(registration);
-    }
-
     public async repairRoles(guild: Guild) {
         LOG.info(`Starting role repair.`);
 
@@ -166,12 +158,11 @@ export class ValidationService {
             designations.map(async (d) => {
                 let member: GuildMember | null = await this.getMember(guild, d.user);
                 if (member) {
+                    LOG.debug("Repairing %s -> ", d.user, member.nickname);
                     await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
                 } else {
-                    let registration = await this.client.registrationRepository.getUserByDiscordId(d.user);
-                    if (registration) {
-                        await this.client.validationService.deleteMember(registration, undefined, "User left the server");
-                    }
+                    LOG.debug("Repairing Non-Member %s -> ", d.user);
+                    await this.client.validationService.client.registrationRepository.deleteById(d);
                 }
             })
         );

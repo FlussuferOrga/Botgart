@@ -1,7 +1,5 @@
 import * as discord from "discord.js";
-import { Guild, GuildMember } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand.js";
-import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
 import { logger } from "../util/Logging.js";
 
 const LOG = logger();
