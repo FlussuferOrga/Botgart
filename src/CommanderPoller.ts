@@ -31,8 +31,8 @@ export class CommanderPoller {
     constructor(private readonly botgartClient: BotgartClient) {
         const config = getConfig().get();
         this.commanderRole = config.ts_listener.commander_role;
-        this.userDelay = Duration.fromObject({ seconds: config.ts_listener.user_delay });
-        this.gracePeriod = Duration.fromObject({ seconds: config.ts_listener.grace_period });
+        this.userDelay = Duration.fromObject({ milliseconds: config.ts_listener.user_delay });
+        this.gracePeriod = Duration.fromObject({ milliseconds: config.ts_listener.grace_period });
         this.patience = RECONNECT_PATIENCE;
         setInterval(() => this.checkCommanders(), config.ts_commander_check_interval);
     }
