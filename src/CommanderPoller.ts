@@ -157,13 +157,11 @@ export class CommanderPoller {
             registration = await this.getRegistration(g.id, commander);
         }
 
-        LOG.info("Registration Discord User:", registration?.user);
         if (registration !== null) {
             commander.setRegistration(registration);
             // the commander is member of the current discord -> give role
             const member: discord.GuildMember | undefined = await g.members.fetch({ user: registration.user }); // cache.find(m => m.id === registration.user);
             if (member !== undefined) {
-                LOG.info("Registration Discord Member:", member.id);
                 commander.setDiscordMember(member);
             } else {
                 LOG.warn(
