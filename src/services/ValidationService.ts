@@ -150,10 +150,10 @@ export class ValidationService {
         return this.worldAssignments.find((value) => value.world_id == worldId);
     }
 
-    public async deleteMember(registration: Registration, member?: GuildMember, reason?: string) {
+    public async deleteMember(registration: Pick<Registration, "guild" | "user">, member?: GuildMember, reason?: string) {
         if (member) {
             await this.client.validationService.setMemberRolesByWorldAssignment(member, null, reason);
         }
-        await this.client.registrationRepository.delete(registration);
+        await this.client.registrationRepository.deleteById(registration);
     }
 }

@@ -63,7 +63,7 @@ export class RegistrationRepository extends AbstractDbRepository {
     }
 
     public async getDesignatedRoles(guildId): Promise<DesignatedWorlds[]> {
-        return await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["user", "current_world_id"] });
+        return await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["guild", "user", "current_world_id"] });
     }
 
     public async storeAPIKey(
@@ -128,6 +128,10 @@ export class RegistrationRepository extends AbstractDbRepository {
     public async delete(registration: Registration) {
         await this.orm.em.removeAndFlush(registration);
     }
+
+    public async deleteById(registration: Pick<Registration, "guild" | "user">) {
+        await this.orm.em.remove(registration).flush();
+    }
 }
 
-export type DesignatedWorlds = Pick<Registration, "user" | "current_world_id">;
+export type DesignatedWorlds = Pick<Registration, "guild" | "user" | "current_world_id">;
