@@ -25,8 +25,8 @@ export class RegistrationRepository extends AbstractDbRepository {
      * discordUser: the Discord user to retrieve the account for.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public async getUserByDiscordId(discordUser: discord.User): Promise<Registration | null> {
-        return await this.orm.em.getRepository(Registration).findOne({ user: discordUser.id });
+    public async getUserByDiscordId(discordUserId: any): Promise<Registration | null> {
+        return await this.orm.em.getRepository(Registration).findOne({ user: discordUserId });
     }
 
     public async whois(

@@ -42,11 +42,19 @@ export default class RepairRoles extends BotgartCommand {
 
         await Promise.all(
             designations.map(async (d) => {
-                const member: discord.GuildMember | null = await guild.members.fetch(d.user);
-                if (!member) {
-                    LOG.error(`User ${d.user} is not present in this guild.`);
-                } else {
-                    await this.getBotgartClient().validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
+                try {
+                    const member: discord.GuildMember | null = await guild.members.fetch(d.user);
+                    if (!member) {
+                        LOG.error(`User ${d.user} is not present in this guild.`);
+                    } else {
+                        await this.getBotgartClient().validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
+                    }
+                } catch (e) {
+                    if (e.code == 10007) {
+                        LOG.warn("User %s is not a member anymore. Deleting", d.user);
+                        let registration = await cl.registrationRepository.getUserByDiscordId(d.user);
+                        if (registration) await cl.registrationRepository.delete(registration);
+                    }
                 }
             })
         );
