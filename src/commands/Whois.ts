@@ -136,7 +136,7 @@ export default class Whois extends BotgartCommand {
     }
 
     private async queryUser(member: discord.GuildMember) {
-        const user = await this.getBotgartClient().registrationRepository.getUserByDiscordId(discordUser.id);
+        const user = await this.getBotgartClient().registrationRepository.getUserByDiscordId(member.user.id);
         return [
             {
                 user: member.id,

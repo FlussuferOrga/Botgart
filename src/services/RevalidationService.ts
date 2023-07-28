@@ -1,7 +1,7 @@
 import { PromisePool } from "@supercharge/promise-pool";
 import { Semaphore } from "await-semaphore";
 import Timeout from "await-timeout";
-import discord from "discord.js";
+import discord, { Guild, GuildMember } from "discord.js";
 import { BotgartClient } from "../BotgartClient.js";
 import { getConfig, WorldAssignment } from "../config/Config.js";
 import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils.js";
@@ -125,8 +125,7 @@ export class RevalidationService {
             if (!authResult.valid) {
                 // user should be pruned: user has either transed (false) or deleted their key (invalid key)
                 LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
-                await this.client.validationService.setMemberRolesByWorldAssignment(member, null, "Api Key invalid or not authorized Server");
-                await this.client.registrationRepository.delete(registration);
+                await this.client.validationService.deleteMember(registration, member, "Api Key invalid or not authorized Server");
                 await this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,

@@ -2,7 +2,7 @@ import * as discord from "discord.js";
 import { BotgartCommand } from "../BotgartCommand.js";
 import { DesignatedWorlds } from "../repositories/RegistrationRepository.js";
 import { logger } from "../util/Logging.js";
-import { Guild } from "discord.js";
+import { Guild, GuildMember } from "discord.js";
 
 const LOG = logger();
 
@@ -40,23 +40,31 @@ export default class RepairRoles extends BotgartCommand {
         const designations: DesignatedWorlds[] = await cl.registrationRepository.getDesignatedRoles(guild.id);
         LOG.info(`Found ${designations.length} users to check.`);
 
+        let members = await guild.members.list();
         await Promise.all(
             designations.map(async (d) => {
-                try {
-                    const member: discord.GuildMember | null = await guild.members.fetch(d.user);
-                    if (!member) {
-                        LOG.error(`User ${d.user} is not present in this guild.`);
-                    } else {
-                        await this.getBotgartClient().validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
-                    }
-                } catch (e) {
-                    if (e.code == 10007) {
-                        LOG.warn("User %s is not a member anymore. Deleting", d.user);
-                        let registration = await cl.registrationRepository.getUserByDiscordId(d.user);
-                        if (registration) await cl.registrationRepository.delete(registration);
+                let member: GuildMember | null = await this.getMember(guild, d);
+                if (member) {
+                    await this.getBotgartClient().validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
+                } else {
+                    let registration = await cl.registrationRepository.getUserByDiscordId(d.user);
+                    if (registration) {
+                        await this.getBotgartClient().validationService.deleteMember(registration);
                     }
                 }
             })
         );
+    }
+
+    private async getMember(guild: Guild, d: DesignatedWorlds): Promise<GuildMember | null> {
+        try {
+            return await guild.members.fetch({ user: d.user });
+        } catch (e) {
+            if (e.code == 10007) {
+                LOG.warn("User %s is not a member anymore.", d.user);
+                return null;
+            }
+            throw e
+        }
     }
 }

@@ -7,6 +7,7 @@ import { findRole } from "../util/Util.js";
 import { AccountData, getAccountInfo } from "../Gw2ApiUtils.js";
 import * as Util from "../util/Util.js";
 import * as L from "../Locale.js";
+import { Registration } from "../mikroorm/entities/Registration.js";
 
 const LOG = logger();
 
@@ -147,5 +148,12 @@ export class ValidationService {
 
     public getAssignmentByWorldId(worldId: number | null): WorldAssignment | undefined {
         return this.worldAssignments.find((value) => value.world_id == worldId);
+    }
+
+    public async deleteMember(registration: Registration, member?: GuildMember, reason?: string) {
+        if (member) {
+            await this.client.validationService.setMemberRolesByWorldAssignment(member, null, reason);
+        }
+        await this.client.registrationRepository.delete(registration);
     }
 }

@@ -130,7 +130,4 @@ export class RegistrationRepository extends AbstractDbRepository {
     }
 }
 
-export interface DesignatedWorlds {
-    readonly user: string;
-    readonly current_world_id: number;
-}
+export type DesignatedWorlds = Pick<Registration, "user" | "current_world_id">;
