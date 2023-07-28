@@ -15,8 +15,8 @@ export class RegistrationRepository extends AbstractDbRepository {
      * accountName: GW2 account name.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public async getUserByAccountName(accountName: string): Promise<Registration | null> {
-        return await this.orm.em.getRepository(Registration).findOne({ account_name: accountName });
+    public async getUserByAccountName(guildId: string, accountName: string): Promise<Registration | null> {
+        return await this.orm.em.getRepository(Registration).findOne({ guild: guildId, account_name: accountName });
     }
 
     /**

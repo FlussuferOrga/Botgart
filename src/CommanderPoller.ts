@@ -151,15 +151,17 @@ export class CommanderPoller {
         LOG.info(`Tagging up ${commander.getTS3DisplayName()} in ${g.name}.`);
         let registration: Registration | null = null;
         if (commander.getAccountName() !== null) {
-            registration = await this.getRegistration(commander);
+            registration = await this.getRegistration(g.id, commander);
         }
 
+        LOG.info("Registration Discord User:", registration?.user);
         if (registration !== null) {
             commander.setRegistration(registration);
             // the commander is member of the current discord -> give role
-            const duser: discord.GuildMember | undefined = await g.members.fetch(registration.user); // cache.find(m => m.id === registration.user);
-            if (duser !== undefined) {
-                commander.setDiscordMember(duser);
+            const member: discord.GuildMember | undefined = await g.members.fetch({ user: registration.user }); // cache.find(m => m.id === registration.user);
+            if (member !== undefined) {
+                LOG.info("Registration Discord Member:", member.id);
+                commander.setDiscordMember(member);
             } else {
                 LOG.warn(
                     `Tried to find GuildMember for user with registration ID ${registration.user}, but could not find any. Maybe this is a caching problem?`
@@ -182,7 +184,7 @@ export class CommanderPoller {
     private async tagDown(g: discord.Guild, commander: Commander) {
         let registration: Registration | null = null;
         if (commander.getAccountName() !== null) {
-            registration = await this.getRegistration(commander);
+            registration = await this.getRegistration(g.id, commander);
         }
 
         try {
@@ -205,8 +207,8 @@ export class CommanderPoller {
     }
 
     @UseRequestContext((type: CommanderPoller) => type.botgartClient.orm)
-    private async getRegistration(commander: Commander) {
-        return await this.botgartClient.registrationRepository.getUserByAccountName(commander.getAccountName()!);
+    private async getRegistration(guildId: string, commander: Commander) {
+        return await this.botgartClient.registrationRepository.getUserByAccountName(guildId, commander.getAccountName()!);
     }
 
     private async tagUpdate(g: Guild, commander: Commander) {

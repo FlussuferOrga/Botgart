@@ -28,7 +28,7 @@ export class TagBroadcastService {
         this.pingRolePPK = config.ts_listener.ping_role_ppk;
     }
 
-    async sendTagUpBroadcast(g: discord.Guild, commander: Commander) {
+    public async sendTagUpBroadcast(g: discord.Guild, commander: Commander) {
         // broadcast the message
         const textChannel: discord.TextBasedChannel = g.channels.cache.find(
             (c) => c.name === this.broadcastChannel && c.isTextBased()
@@ -38,6 +38,7 @@ export class TagBroadcastService {
                 `I was supposed to broadcast the commander message on guild '${g.name}' in channel '${this.broadcastChannel}', but no such channel was found there. Skipping.`
             );
         } else {
+            LOG.info("Sending Broadcast Message to %s", textChannel.id);
             const message = await this.generateMessage(g, commander);
             const embed = this.createEmbed(commander);
             let send = await textChannel.send({ content: message, embeds: [embed] });
