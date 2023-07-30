@@ -98,7 +98,7 @@ export class Commander {
         return this.ts3joinUrl;
     }
 
-    public setTs3joinUrl(value: string) {
+    public setTs3joinUrl(value: string | null) {
         this.ts3joinUrl = value;
     }
 

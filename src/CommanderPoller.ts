@@ -114,10 +114,38 @@ export class CommanderPoller {
                     case CommanderState.COMMANDER:
                         // still raiding -> update timestamp
                         commander.setLastUpdate(now);
-                        commander.setCurrentLeadType(c.leadtype || "UNKNOWN");
-                        commander.setTS3Channel(c.tsChannelName);
-                        commander.setTs3channelPath(c.tsChannelPath);
-                        await this.tagUpdate(g, commander);
+
+                        let changed = false;
+
+                        if (commander.getTS3DisplayName() !== c.tsDisplayName) {
+                            commander.setTS3DisplayName(c.tsDisplayName);
+                            changed = true;
+                        }
+
+                        let newLeadType = c.leadtype || "UNKNOWN";
+                        if (commander.getCurrentLeadType() != newLeadType) {
+                            commander.setCurrentLeadType(newLeadType);
+                            changed = true;
+                        }
+
+                        if (commander.getTS3Channel() !== c.tsChannelName) {
+                            commander.setTS3Channel(c.tsChannelName);
+                            changed = true;
+                        }
+
+                        if (commander.getTs3channelPath() !== c.tsChannelPath) {
+                            commander.setTs3channelPath(c.tsChannelPath);
+                            changed = true;
+                        }
+
+                        if (commander.getTs3joinUrl() !== c.tsJoinUrl) {
+                            commander.setTs3joinUrl(c.tsJoinUrl);
+                            changed = true;
+                        }
+                        if (changed) {
+                            LOG.debug(`Updating broadcast for ${c.tsDisplayName}`);
+                            await this.tagUpdate(g, commander);
+                        }
                         break;
                 }
             }
