@@ -8,6 +8,7 @@ import { Registration } from "./mikroorm/entities/Registration.js";
 import { Commander, CommanderState } from "./Commanders.js";
 import { DateTime, Duration } from "luxon";
 import { Commander as ApiCommander } from "./generated/api/botgerda/models/index.js";
+import { isEqual } from "lodash-es";
 
 const LOG = logger();
 
@@ -136,7 +137,7 @@ export class CommanderPoller {
                             LOG.debug(`TS3Channel Changed ${commander.getTS3Channel()} -> ${c.tsChannelName}`);
                         }
 
-                        if (commander.getTs3channelPath() !== c.tsChannelPath) {
+                        if (!isEqual(commander.getTs3channelPath(),c.tsChannelPath)) {
                             commander.setTs3channelPath(c.tsChannelPath);
                             changed = true;
                             LOG.debug(`Ts3channelPath Changed ${commander.getTs3channelPath()} -> ${c.tsChannelPath}`);
