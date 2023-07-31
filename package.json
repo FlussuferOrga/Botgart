@@ -96,7 +96,7 @@
     "@typescript-eslint/parser": "^6.1.0",
     "chai": "^4.3.7",
     "depcheck": "^1.4.3",
-    "eslint": "8.45.0",
+    "eslint": "8.46.0",
     "eslint-config-prettier": "^8.9.0",
     "eslint-plugin-jsonc": "^2.9.0",
     "eslint-plugin-prettier": "^5.0.0",
