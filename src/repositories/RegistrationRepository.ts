@@ -1,4 +1,3 @@
-import discord from "discord.js";
 import { logger } from "../util/Logging.js";
 import { AbstractDbRepository } from "./AbstractDbRepository.js";
 import { Registration } from "../mikroorm/entities/Registration.js";
@@ -25,7 +24,7 @@ export class RegistrationRepository extends AbstractDbRepository {
      * discordUser: the Discord user to retrieve the account for.
      * returns: the latest entry for that account name if any, else undefined.
      */
-    public async getUserByDiscordId(discordUserId: any): Promise<Registration | null> {
+    public async getUserByDiscordId(discordUserId: string): Promise<Registration | null> {
         return await this.orm.em.getRepository(Registration).findOne({ user: discordUserId });
     }
 

@@ -41,7 +41,7 @@ export class TagBroadcastService {
             LOG.verbose(`Sending Broadcast Message to ${textChannel.id}`);
             const message = await this.generateMessage(g, commander);
             const embed = this.createEmbed(commander);
-            let send = await textChannel.send({ content: message, embeds: [embed] });
+            const send = await textChannel.send({ content: message, embeds: [embed] });
             if (send.crosspostable) {
                 await send.crosspost();
             }

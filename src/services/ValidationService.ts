@@ -156,7 +156,7 @@ export class ValidationService {
 
         await Promise.all(
             designations.map(async (d) => {
-                let member: GuildMember | null = await this.getMember(guild, d.user);
+                const member: GuildMember | null = await this.getMember(guild, d.user);
                 if (member) {
                     LOG.debug(`Repairing ${d.user} -> ${member.nickname || member.user.username}`);
                     await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");

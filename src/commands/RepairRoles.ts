@@ -29,7 +29,7 @@ export default class RepairRoles extends BotgartCommand {
     public async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args: Record<string, unknown>): Promise<void> {
         // noinspection ES6MissingAwait
         await this.getBotgartClient().validationService.repairRoles(guild);
-        LOG.info("Done repairing roles")
+        LOG.info("Done repairing roles");
         await message.react("✅");
     }
 }

@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 @Unique({ properties: ["guild", "api_key"] })
 //@Unique({ properties: ["guild", "gw2account"] })
 export class Registration {
-    [PrimaryKeyType]?: [string,string]; // this is needed for proper type checks in `FilterQuery`
+    [PrimaryKeyType]?: [string, string]; // this is needed for proper type checks in `FilterQuery`
 
     @PrimaryKey()
     guild!: string;

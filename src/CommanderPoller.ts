@@ -114,44 +114,7 @@ export class CommanderPoller {
 
                     case CommanderState.COMMANDER:
                         // still raiding -> update timestamp
-                        commander.setLastUpdate(now);
-
-                        let changed = false;
-
-                        if (commander.getTS3DisplayName() !== c.tsDisplayName) {
-                            commander.setTS3DisplayName(c.tsDisplayName);
-                            changed = true;
-                            LOG.debug(`TS3DisplayName Changed ${commander.getTS3DisplayName()} -> ${c.tsDisplayName}`);
-                        }
-
-                        let newLeadType = c.leadtype || "UNKNOWN";
-                        if (commander.getCurrentLeadType() !== newLeadType) {
-                            commander.setCurrentLeadType(newLeadType);
-                            changed = true;
-                            LOG.debug(`CurrentLeadType Changed ${commander.getCurrentLeadType()} -> ${newLeadType}`);
-                        }
-
-                        if (commander.getTS3Channel() !== c.tsChannelName) {
-                            commander.setTS3Channel(c.tsChannelName);
-                            changed = true;
-                            LOG.debug(`TS3Channel Changed ${commander.getTS3Channel()} -> ${c.tsChannelName}`);
-                        }
-
-                        if (!isEqual(commander.getTs3channelPath(),c.tsChannelPath)) {
-                            commander.setTs3channelPath(c.tsChannelPath);
-                            changed = true;
-                            LOG.debug(`Ts3channelPath Changed ${commander.getTs3channelPath()} -> ${c.tsChannelPath}`);
-                        }
-
-                        if (commander.getTs3joinUrl() !== c.tsJoinUrl) {
-                            commander.setTs3joinUrl(c.tsJoinUrl);
-                            changed = true;
-                            LOG.debug(`Ts3joinUrl Changed ${commander.getTs3joinUrl()} -> ${c.tsJoinUrl}`);
-                        }
-                        if (changed) {
-                            LOG.debug(`Updating broadcast for ${c.tsDisplayName}`);
-                            await this.tagUpdate(g, commander);
-                        }
+                        await this.update(commander, now, c, g);
                         break;
                 }
             }
@@ -168,6 +131,47 @@ export class CommanderPoller {
         this.patience = RECONNECT_PATIENCE;
 
         LOG.verbose("Done Commander Update.");
+    }
+
+    private async update(commander: Commander, now: DateTime, c: ApiCommander, g: Guild) {
+        commander.setLastUpdate(now);
+
+        let changed = false;
+
+        if (commander.getTS3DisplayName() !== c.tsDisplayName) {
+            commander.setTS3DisplayName(c.tsDisplayName);
+            changed = true;
+            LOG.debug(`TS3DisplayName Changed ${commander.getTS3DisplayName()} -> ${c.tsDisplayName}`);
+        }
+
+        const newLeadType = c.leadtype || "UNKNOWN";
+        if (commander.getCurrentLeadType() !== newLeadType) {
+            commander.setCurrentLeadType(newLeadType);
+            changed = true;
+            LOG.debug(`CurrentLeadType Changed ${commander.getCurrentLeadType()} -> ${newLeadType}`);
+        }
+
+        if (commander.getTS3Channel() !== c.tsChannelName) {
+            commander.setTS3Channel(c.tsChannelName);
+            changed = true;
+            LOG.debug(`TS3Channel Changed ${commander.getTS3Channel()} -> ${c.tsChannelName}`);
+        }
+
+        if (!isEqual(commander.getTs3channelPath(), c.tsChannelPath)) {
+            commander.setTs3channelPath(c.tsChannelPath);
+            changed = true;
+            LOG.debug(`Ts3channelPath Changed ${commander.getTs3channelPath()} -> ${c.tsChannelPath}`);
+        }
+
+        if (commander.getTs3joinUrl() !== c.tsJoinUrl) {
+            commander.setTs3joinUrl(c.tsJoinUrl);
+            changed = true;
+            LOG.debug(`Ts3joinUrl Changed ${commander.getTs3joinUrl()} -> ${c.tsJoinUrl}`);
+        }
+        if (changed) {
+            LOG.debug(`Updating broadcast for ${c.tsDisplayName}`);
+            await this.tagUpdate(g, commander);
+        }
     }
 
     private tagDownAllDueToMissingConnection() {
