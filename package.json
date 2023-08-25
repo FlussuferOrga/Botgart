@@ -77,7 +77,7 @@
     "node-schedule": "^2.1.1",
     "server-health": "^5.2.0",
     "table": "^6.8.1",
-    "typesafe-i18n": "^5.26.1",
+    "typesafe-i18n": "^5.26.2",
     "winston": "^3.10.0"
   },
   "devDependencies": {
