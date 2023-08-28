@@ -72,7 +72,7 @@
     "discord.js": "^14.12.1",
     "gw2api-client": "^7.5.2",
     "lodash-es": "^4.17.21",
-    "luxon": "^3.4.0",
+    "luxon": "^3.4.2",
     "memoizer-ts": "^1.0.1",
     "node-schedule": "^2.1.1",
     "server-health": "^5.2.0",
