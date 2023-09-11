@@ -10,6 +10,15 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 20
+    groups:
+      mikro-orm:
+        patterns:
+          - "@mikro-orm/*"
+      linting:
+        patterns:
+          - "@typescript-eslint/*"
+          - "eslint"
+          - "eslint-*"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
