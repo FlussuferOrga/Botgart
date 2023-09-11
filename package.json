@@ -57,7 +57,7 @@
     ]
   },
   "dependencies": {
-    "@mikro-orm/better-sqlite": "^5.7.14",
+    "@mikro-orm/better-sqlite": "^5.8.0",
     "@mikro-orm/core": "^5.7.14",
     "@mikro-orm/migrations": "^5.7.14",
     "@notenoughupdates/discord-akairo": "^10.0.2",
