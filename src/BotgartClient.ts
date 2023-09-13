@@ -28,6 +28,7 @@ import path from "path";
 import { CommandersApi, Configuration, GuildsApi, RegistrationApi, ResetrosterApi } from "./generated/api/botgerda/index.js";
 
 const LOG = logger();
+const AKAIRO_LOG = logger({ file: "akairoDebug" });
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -63,6 +64,10 @@ export class BotgartClient extends akairo.AkairoClient {
 
     constructor(options: AkairoClientOptions, clientOptions: discord.ClientOptions, orm: MikroORM<BetterSqliteDriver>) {
         super(options, clientOptions);
+        this.on("akairoDebug", (args) => {
+            AKAIRO_LOG.info(args);
+        });
+
         this.orm = orm;
 
         // Repositories
@@ -107,7 +112,7 @@ export class BotgartClient extends akairo.AkairoClient {
             commandUtil: true,
             commandUtilLifetime: 600000,
             autoRegisterSlashCommands: true,
-            autoDefer: true
+            autoDefer: true,
         });
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
         this.commandHandler.useListenerHandler(this.listenerHandler);

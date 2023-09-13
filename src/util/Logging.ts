@@ -105,10 +105,12 @@ function createLogger() {
 const internalLogger = createLogger();
 
 export function logger(options: Record<string, unknown> = {}): winston.Logger {
-    const callFile: string[] = callsites()[1].getFileName()?.split("/") ?? ["UNKNOWN"];
-    const file = callFile[callFile.length - 1];
-    return internalLogger.child({
-        file: file,
+    let childLoggerOpts = {
         ...options,
-    });
+    };
+    if (!childLoggerOpts.file) {
+        const callFile: string[] = callsites()[1].getFileName()?.split("/") ?? ["UNKNOWN"];
+        childLoggerOpts.file = callFile[callFile.length - 1];
+    }
+    return internalLogger.child(childLoggerOpts);
 }
