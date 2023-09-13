@@ -107,7 +107,7 @@ export class BotgartClient extends akairo.AkairoClient {
             commandUtil: true,
             commandUtilLifetime: 600000,
             autoRegisterSlashCommands: true,
-            autoDefer: true,
+            autoDefer: true
         });
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
         this.commandHandler.useListenerHandler(this.listenerHandler);

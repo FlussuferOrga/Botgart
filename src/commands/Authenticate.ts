@@ -56,7 +56,7 @@ export default class Authenticate extends BotgartCommand {
                         //     "de": "api_key",
                         // },
                         required: true,
-                        description: LL.de.commands.auth.opt.api_key.description(),
+                        description: LL.en.commands.auth.opt.api_key.description(),
                         descriptionLocalizations: {
                             de: LL.de.commands.auth.opt.api_key.description(),
                         },
