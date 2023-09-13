@@ -6,6 +6,7 @@ import { L as LL } from "../i18n/i18n-node.js";
 import { logger } from "../util/Logging.js";
 import { AkairoMessage, CommandArguments } from "@notenoughupdates/discord-akairo";
 import { DeclinedApiKeyError, KeyInvalidFormatError } from "../services/ValidationService.js";
+import { PermissionFlagsBits, PermissionResolvable } from "discord.js";
 
 const LOG = logger();
 
@@ -40,6 +41,7 @@ export default class Authenticate extends BotgartCommand {
                 slash: true,
                 slashOnly: false,
                 slashEphemeral: true,
+                slashDefaultMemberPermissions: [PermissionFlagsBits.SendMessages],
                 slashDmPermission: true,
                 localization: {
                     nameLocalizations: {
