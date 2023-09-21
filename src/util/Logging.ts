@@ -105,7 +105,7 @@ function createLogger() {
 const internalLogger = createLogger();
 
 export function logger(options: Record<string, unknown> = {}): winston.Logger {
-    let childLoggerOpts = {
+    const childLoggerOpts = {
         ...options,
     };
     if (!childLoggerOpts.file) {
