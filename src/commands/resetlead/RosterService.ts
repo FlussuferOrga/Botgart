@@ -217,7 +217,6 @@ export class RosterService {
         const resetDateTime = roster.getResetDateTime().setZone(getConfig().get().timeZone);
         await this.client.resetrosterApi.updateRoster({
             rosterInformation: {
-                date: resetDateTime.toFormat("dd.MM.yyyy HH:mm ZZZZ"), // TODO: remove
                 datetime: resetDateTime.toISO()!,
                 rbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.RedBorderlands)).map((l) => resolveUser(l.name))),
                 gbl: await Promise.all(Array.from(roster.getMapLeaders(WvwMap.GreenBorderlands)).map((l) => resolveUser(l.name))),

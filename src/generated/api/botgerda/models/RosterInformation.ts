@@ -24,12 +24,6 @@ export interface RosterInformation {
      * @type {string}
      * @memberof RosterInformation
      */
-    date: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RosterInformation
-     */
     datetime?: string;
     /**
      * 
@@ -62,7 +56,6 @@ export interface RosterInformation {
  */
 export function instanceOfRosterInformation(value: object): boolean {
     let isInstance = true;
-    isInstance = isInstance && "date" in value;
     isInstance = isInstance && "rbl" in value;
     isInstance = isInstance && "gbl" in value;
     isInstance = isInstance && "bbl" in value;
@@ -81,7 +74,6 @@ export function RosterInformationFromJSONTyped(json: any, ignoreDiscriminator: b
     }
     return {
         
-        'date': json['date'],
         'datetime': !exists(json, 'datetime') ? undefined : json['datetime'],
         'rbl': json['rbl'],
         'gbl': json['gbl'],
@@ -99,7 +91,6 @@ export function RosterInformationToJSON(value?: RosterInformation | null): any {
     }
     return {
         
-        'date': value.date,
         'datetime': value.datetime,
         'rbl': value.rbl,
         'gbl': value.gbl,
