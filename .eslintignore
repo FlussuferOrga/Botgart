@@ -6,3 +6,4 @@ db
 .idea
 .github
 log
+.typesafe-i18n.json
