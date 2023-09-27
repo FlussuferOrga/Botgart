@@ -32,6 +32,8 @@ export default class Reauthenticate extends BotgartCommand {
         const cl: BotgartClient = this.getBotgartClient();
         LOG.info("Starting Re-authentication.");
         await cl.revalidationService.revalidateKeys();
-        return message.reply(L.get("PRUNING_COMPLETE"));
+        if (message) {
+            return message.reply(L.get("PRUNING_COMPLETE"));
+        }
     }
 }

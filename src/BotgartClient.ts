@@ -26,6 +26,7 @@ import { CommanderStorage } from "./Commanders.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import { CommandersApi, Configuration, GuildsApi, RegistrationApi, ResetrosterApi } from "./generated/api/botgerda/index.js";
+import { Duration } from "luxon";
 
 const LOG = logger();
 const AKAIRO_LOG = logger({ file: "akairoDebug" });
@@ -52,7 +53,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public readonly commanderPoller: CommanderPoller;
     public readonly commanders: CommanderStorage;
 
-    public readonly commandHandler: akairo.CommandHandler;
+    public readonly commandHandler: ExtendedCommandHandler;
     public readonly listenerHandler: akairo.ListenerHandler;
     public readonly inhibitorHandler: akairo.InhibitorHandler;
     public readonly orm: MikroORM<BetterSqliteDriver>;
@@ -114,6 +115,9 @@ export class BotgartClient extends akairo.AkairoClient {
             autoRegisterSlashCommands: true,
             autoDefer: true,
         });
+
+        //workaround. Interaction commands are getting deleted every now and then..
+
         this.commandHandler.useInhibitorHandler(this.inhibitorHandler);
         this.commandHandler.useListenerHandler(this.listenerHandler);
 
@@ -184,6 +188,7 @@ export class BotgartClient extends akairo.AkairoClient {
     }
 
     public async prepareShutdown() {
+        this.emit("shutdown");
         if (this.token !== null) {
             // is logged in
             LOG.info("Preparing Shutdown");
