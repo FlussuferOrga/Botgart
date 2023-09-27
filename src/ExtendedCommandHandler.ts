@@ -17,7 +17,7 @@ export class ExtendedCommandHandler extends CommandHandler {
 
     private setupReregistration(options: CommandHandlerOptions, client: BotgartClient) {
         if (options?.autoRegisterSlashCommands) {
-            let duration = Duration.fromObject({ hours: 1 });
+            const duration = Duration.fromObject({ hours: 1 });
             LOG.debug("Starting InteractionCommandRefresh every " + duration.toString());
 
             this.intervalRef = setInterval(() => super.registerInteractionCommands(), duration.toMillis());

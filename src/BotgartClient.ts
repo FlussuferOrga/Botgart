@@ -26,7 +26,6 @@ import { CommanderStorage } from "./Commanders.js";
 import { fileURLToPath } from "url";
 import path from "path";
 import { CommandersApi, Configuration, GuildsApi, RegistrationApi, ResetrosterApi } from "./generated/api/botgerda/index.js";
-import { Duration } from "luxon";
 
 const LOG = logger();
 const AKAIRO_LOG = logger({ file: "akairoDebug" });
