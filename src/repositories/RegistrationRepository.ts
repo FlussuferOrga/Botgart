@@ -59,7 +59,7 @@ export class RegistrationRepository extends AbstractDbRepository {
         return [...dbResult, ...nonDbDiscordUserResult];
     }
 
-    public async getDesignatedRoles(guildId): Promise<DesignatedWorlds[]> {
+    public async getDesignatedRoles(guildId: string): Promise<DesignatedWorlds[]> {
         return await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["guild", "user", "current_world_id"] });
     }
 
