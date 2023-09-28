@@ -167,7 +167,7 @@ export class BotgartClient extends akairo.AkairoClient {
     public async discordLog(guild: discord.Guild, type: string, message: string, disposable = true) {
         const channels: string[] = await this.logChannelRepository.getLogChannels(guild, type);
         if (channels.length === 0 && !disposable) {
-            LOG.debug("Expected channel for type '%s' was not found in guild '%s' to discord-log message: '%s'.", type, guild.name, message);
+            LOG.debug("Expected channel for type '%s' was not found in guild '%s' to discord-log message.", type, guild.name);
         } else {
             for (const cid of channels) {
                 const channel: GuildChannel | ThreadChannel | null = await guild.channels.fetch(cid);

@@ -38,27 +38,25 @@ export class RegistrationRepository extends AbstractDbRepository {
             account_name?: string;
         }[]
     > {
-        return uniq([
-            ...(await this.orm.em.find(
-                Registration,
-                {
-                    guild: guildId,
-                    user: { $in: discordUserIds },
-                },
-                { fields: ["account_name", "user"] }
-            )),
-            ...(await this.orm.em.find(
-                Registration,
-                {
-                    guild: guildId,
-                    [expr("lower(account_name)")]: { $like: `%${searchString.toLowerCase()}%` },
-                },
-                { fields: ["account_name", "user"] }
-            )),
-            ...discordUserIds.map((value) => {
-                return { user: value };
-            }),
-        ]);
+        let dbResult = await this.orm.em.find(
+            Registration,
+            {
+                guild: guildId,
+                $or: [
+                    {
+                        user: { $in: discordUserIds },
+                    },
+                    {
+                        [expr("lower(account_name)")]: { $like: `%${searchString.toLowerCase()}%` },
+                    },
+                ],
+            },
+            { fields: ["account_name", "user"] }
+        );
+        let userIdsInDbResult = dbResult.map((val) => val.user);
+
+        let nonDbDiscordUserResult = discordUserIds.filter((value) => !userIdsInDbResult.includes(value)).map((value) => ({ user: value }));
+        return [...dbResult, ...nonDbDiscordUserResult];
     }
 
     public async getDesignatedRoles(guildId): Promise<DesignatedWorlds[]> {
