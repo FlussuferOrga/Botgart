@@ -78,7 +78,7 @@
     "server-health": "^5.2.0",
     "table": "^6.8.1",
     "typesafe-i18n": "^5.26.2",
-    "winston": "^3.10.0"
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@mikro-orm/cli": "^5.8.5",
