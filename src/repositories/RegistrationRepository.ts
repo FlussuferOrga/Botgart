@@ -38,7 +38,7 @@ export class RegistrationRepository extends AbstractDbRepository {
             account_name?: string;
         }[]
     > {
-        let dbResult = await this.orm.em.find(
+        const dbResult = await this.orm.em.find(
             Registration,
             {
                 guild: guildId,
@@ -53,9 +53,9 @@ export class RegistrationRepository extends AbstractDbRepository {
             },
             { fields: ["account_name", "user"] }
         );
-        let userIdsInDbResult = dbResult.map((val) => val.user);
+        const userIdsInDbResult = dbResult.map((val) => val.user);
 
-        let nonDbDiscordUserResult = discordUserIds.filter((value) => !userIdsInDbResult.includes(value)).map((value) => ({ user: value }));
+        const nonDbDiscordUserResult = discordUserIds.filter((value) => !userIdsInDbResult.includes(value)).map((value) => ({ user: value }));
         return [...dbResult, ...nonDbDiscordUserResult];
     }
 
