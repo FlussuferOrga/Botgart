@@ -86,7 +86,7 @@
     "@types/await-timeout": "^0.3.1",
     "@types/better-sqlite3": "^7.6.5",
     "@types/callsites": "^3.0.0",
-    "@types/chai": "^4.3.8",
+    "@types/chai": "^4.3.9",
     "@types/command-line-args": "^5.2.1",
     "@types/convict": "^6.1.4",
     "@types/lodash-es": "^4.17.9",
