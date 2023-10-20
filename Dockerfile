@@ -1,5 +1,5 @@
 # ---- Base Node ----
-FROM node:20-alpine AS base
+FROM node:21-alpine AS base
 
 # set working directory
 WORKDIR /app
