@@ -85,7 +85,6 @@
     "@openapitools/openapi-generator-cli": "^2.7.0",
     "@types/await-timeout": "^0.3.2",
     "@types/better-sqlite3": "^7.6.6",
-    "@types/callsites": "^3.0.0",
     "@types/chai": "^4.3.9",
     "@types/command-line-args": "^5.2.2",
     "@types/convict": "^6.1.5",
