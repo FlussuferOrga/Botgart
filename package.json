@@ -86,7 +86,7 @@
     "@types/await-timeout": "^0.3.2",
     "@types/better-sqlite3": "^7.6.6",
     "@types/chai": "^4.3.9",
-    "@types/command-line-args": "^5.2.2",
+    "@types/command-line-args": "^5.2.3",
     "@types/convict": "^6.1.5",
     "@types/lodash-es": "^4.17.10",
     "@types/luxon": "^3.3.3",
