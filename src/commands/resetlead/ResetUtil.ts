@@ -14,7 +14,7 @@ export function getResetForWeek(isoWeek = DateTime.utc().weekNumber, year = Date
     return DateTime.utc().set({ weekYear: year, weekNumber: isoWeek, weekday: resetWeekDay, hour: resetHourUTC }).startOf("hour");
 }
 
-export function getNextResetDateTime(startingPoint = DateTime.utc(), wvwRegion: WvwRegion = WvwRegion.EU): DateTime {
+export function getNextResetDateTime(startingPoint: DateTime = DateTime.utc(), wvwRegion: WvwRegion = WvwRegion.EU): DateTime {
     const _startingPoint = startingPoint!.toUTC();
     const { resetWeekDay, resetHourUTC } = WvwRegion.getProperties(wvwRegion);
 
