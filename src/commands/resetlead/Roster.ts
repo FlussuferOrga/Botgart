@@ -6,7 +6,7 @@ import * as Util from "../../util/Util.js";
 import { ResetLeader } from "./ResetLeader.js";
 import * as ResetUtil from "./ResetUtil.js";
 import { WvwMap } from "./WvwMap.js";
-import { DateTime } from "luxon";
+import { DateTime, WeekNumbers } from "luxon";
 
 const EMPTY_MESSAGE = "_ _";
 
@@ -26,7 +26,7 @@ export class Roster extends events.EventEmitter {
             this.leads[m.name] = [m, new Util.GeneralSet<ResetLeader>()];
         }
 
-        this.resetDateTime = ResetUtil.getResetForWeek(this.weekNumber, this.year);
+        this.resetDateTime = ResetUtil.getResetForWeek(this.weekNumber as WeekNumbers, this.year);
     }
 
     /**

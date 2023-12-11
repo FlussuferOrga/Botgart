@@ -5,7 +5,8 @@
     "removeComments": true,
     "target": "ES2021",
     "lib": [
-      "ESNext"
+      "ESNext",
+      "dom"
     ],
     "baseUrl": "./src",
     "sourceMap": true,
