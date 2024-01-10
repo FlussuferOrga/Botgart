@@ -1,3 +1,5 @@
+import { WeekdayNumbers } from "luxon";
+
 export enum WvwRegion {
     EU = "EU",
     NA = "NA",
@@ -6,7 +8,7 @@ export enum WvwRegion {
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace WvwRegion {
     export function getProperties(wvwRegion: WvwRegion) {
-        let resetWeekDay: number;
+        let resetWeekDay: WeekdayNumbers;
         let resetHourUTC: number;
         switch (wvwRegion) {
             case WvwRegion.EU:
