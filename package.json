@@ -70,7 +70,7 @@
     "command-line-args": "^5.2.1",
     "convict": "6.2.4",
     "discord.js": "^14.14.1",
-    "gw2api-client": "^7.6.0",
+    "gw2api-client": "^7.6.1",
     "lodash-es": "^4.17.21",
     "luxon": "^3.4.4",
     "memoizer-ts": "^1.0.1",
