@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@mikro-orm/cli": "^6.0.2",
-    "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@openapitools/openapi-generator-cli": "^2.9.0",
     "@types/await-timeout": "^0.3.3",
     "@types/better-sqlite3": "^7.6.8",
     "@types/chai": "^4.3.11",
