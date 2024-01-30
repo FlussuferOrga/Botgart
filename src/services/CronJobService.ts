@@ -79,7 +79,7 @@ export class CronJobService {
      */
     scheduleCronJob(time: string, responsible: discord.User, guild: discord.Guild, cmd: BotgartCommand, args: Record<string, unknown>) {
         const jobRunner = new JobRunner(cmd, responsible, guild, args);
-        return schedule.scheduleJob(time, () => RequestContext.createAsync(this.orm.em, () => jobRunner.execute()));
+        return schedule.scheduleJob(time, () => RequestContext.create(this.orm.em, () => jobRunner.execute()));
     }
 }
 
@@ -96,7 +96,7 @@ class JobRunner {
         this.args = args;
     }
 
-    //@UseRequestContext()
+    //@CreateRequestContext()
     async execute() {
         await this.cmd.command(null, this.responsible, this.guild, this.args);
     }

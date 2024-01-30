@@ -9,8 +9,8 @@ export class ResetLeader {
     @ManyToOne({
         entity: () => ResetRoster,
         fieldName: "reset_roster_id",
-        onUpdateIntegrity: "cascade",
-        onDelete: "cascade",
+        updateRule: "cascade",
+        deleteRule: "cascade",
         nullable: false,
     })
     resetRosterId?: Rel<ResetRoster>;

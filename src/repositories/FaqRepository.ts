@@ -3,7 +3,7 @@ import { Faq } from "../mikroorm/entities/Faq.js";
 
 export class FaqRepository extends AbstractDbRepository {
     public async storeFAQ(user: string, guild: string, keys: string[], text: string): Promise<Faq> {
-        const faq = await this.orm.em.create(Faq, {
+        const faq = this.orm.em.create(Faq, {
             guild: guild,
             createdBy: user,
             text: text,
@@ -11,7 +11,7 @@ export class FaqRepository extends AbstractDbRepository {
                 key: value,
             })),
         });
-        await this.orm.em.getRepository(Faq).persistAndFlush(faq);
+        await this.orm.em.persistAndFlush(faq);
 
         return faq;
     }

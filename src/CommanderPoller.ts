@@ -3,7 +3,7 @@ import { Guild } from "discord.js";
 import { BotgartClient } from "./BotgartClient.js";
 import { getConfig } from "./config/Config.js";
 import { logger } from "./util/Logging.js";
-import { UseRequestContext } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/core";
 import { Registration } from "./mikroorm/entities/Registration.js";
 import { Commander, CommanderState } from "./Commanders.js";
 import { DateTime, Duration } from "luxon";
@@ -245,7 +245,7 @@ export class CommanderPoller {
         this.botgartClient.commanders.deleteCommander(commander);
     }
 
-    @UseRequestContext((type: CommanderPoller) => type.botgartClient.orm)
+    @CreateRequestContext((type: CommanderPoller) => type.botgartClient.orm)
     private async getRegistration(guildId: string, commander: Commander) {
         return await this.botgartClient.registrationRepository.getUserByAccountName(guildId, commander.getAccountName()!);
     }

@@ -1,18 +1,21 @@
 import { EntityManager } from "@mikro-orm/better-sqlite";
-import { Entity, Property } from "@mikro-orm/core";
+import { Entity, Property, raw } from "@mikro-orm/core";
+import { Fish } from "./Fish.js";
 
 @Entity({
-    expression: (em: EntityManager) => {
-        return em.raw(`SELECT fish_id,
-                              name,
-                              image,
-                              rarity,
-                              ABS(RANDOM()) % (max_weight - min_weight) + min_weight AS weight,
-                              points_per_gramm,
-                              reel_time_factor
-                       FROM fish
-                       ORDER BY ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * rarity DESC
-                       LIMIT 1`);
+    expression: (em: EntityManager, where, options) => {
+        return em
+            .createQueryBuilder(Fish, "f")
+            .select([
+                "f.fish_id",
+                "f.name",
+                "f.image",
+                "f.rarity",
+                raw(`(ABS(RANDOM()) % (f.max_weight - f.min_weight) + f.min_weight)`).as("weight"),
+                "f.points_per_gramm",
+                "f.reel_time_factor",
+            ])
+            .orderBy({ [raw(`(ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * f.rarity)`)]: "DESC" });
     },
 })
 export class RandomFish {

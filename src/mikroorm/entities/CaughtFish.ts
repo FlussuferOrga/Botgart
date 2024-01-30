@@ -8,7 +8,7 @@ export class CaughtFish {
     @PrimaryKey({ autoincrement: true })
     caught_id!: number;
 
-    @ManyToOne({ entity: () => Fish, fieldName: "fish_id", onDelete: "cascade", nullable: false })
+    @ManyToOne({ entity: () => Fish, fieldName: "fish_id", deleteRule: "cascade", nullable: false })
     fish_id: Fish;
 
     @Property()

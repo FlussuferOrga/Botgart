@@ -1,4 +1,4 @@
-import { Entity, PrimaryKey, PrimaryKeyType, Property } from "@mikro-orm/core";
+import { Entity, PrimaryKey, PrimaryKeyProp, Property } from "@mikro-orm/core";
 import { LuxonDateTimeType } from "../types/LuxonDateTimeType.js";
 import { DateTime } from "luxon";
 
@@ -10,7 +10,7 @@ export enum PermissionType {
 
 @Entity({ tableName: "command_permissions" })
 export class CommandPermission {
-    [PrimaryKeyType]?: number;
+    [PrimaryKeyProp]?: number;
 
     @PrimaryKey({ nullable: false, autoincrement: true })
     commandPermissionsId?: number;

@@ -5,7 +5,8 @@ import { logger } from "../util/Logging.js";
 const LOG = logger();
 
 export async function setupPersistence() {
-    const orm = await MikroORM.init<BetterSqliteDriver>(mikroOrmConfig, false);
+    const options = { ...mikroOrmConfig, ...{ connect: false } };
+    const orm = await MikroORM.init<BetterSqliteDriver>(options);
     LOG.info("Connecting to DB");
     await orm.connect();
 

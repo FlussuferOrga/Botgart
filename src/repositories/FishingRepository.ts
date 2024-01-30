@@ -1,10 +1,10 @@
-import * as discord from "discord.js";
 import { AbstractDbRepository } from "./AbstractDbRepository.js";
 import { Fish } from "../mikroorm/entities/Fish.js";
 import { CaughtFish } from "../mikroorm/entities/CaughtFish.js";
 import { RandomFish } from "../mikroorm/entities/RandomFish.js";
 import { QueryOrder } from "@mikro-orm/core";
 import { FishingLadder } from "../mikroorm/entities/FishingLadder.js";
+import { User } from "discord.js";
 
 export class FishingRepository extends AbstractDbRepository {
     /**
@@ -14,19 +14,17 @@ export class FishingRepository extends AbstractDbRepository {
      * @returns a randomly selected Fish.
      */
     public async getRandomFish(): Promise<RandomFish> {
-        const awaited = await this.orm.em.getRepository(RandomFish).findAll();
-        if (awaited === undefined || awaited.length == 0) {
+        const awaited = await this.orm.em.getRepository(RandomFish).createQueryBuilder().limit(1).getSingleResult();
+        if (awaited === null) {
             throw Error("No fish found in database");
         }
-        return awaited[0];
+        return awaited;
     }
 
     /**
      * Stores that a user has caught a fish.
-     * @param user: who caught the fish .
-     * @param fish: the fish that was caught
      */
-    public async catchFish(user: discord.User, fish: GeneratedFish): Promise<void> {
+    public async catchFish(user: User, fish: RandomFish): Promise<void> {
         const caughtFish = new CaughtFish();
         caughtFish.fish_id = this.orm.em.getReference(Fish, fish.fish_id);
         caughtFish.weight = fish.weight;
@@ -46,17 +44,6 @@ export class FishingRepository extends AbstractDbRepository {
         });
     }
 }
-
-export interface GeneratedFish {
-    readonly fish_id: number;
-    readonly name: string;
-    readonly image: string;
-    readonly rarity: number;
-    readonly weight: number;
-    readonly points_per_gramm: number;
-    readonly reel_time_factor: number;
-}
-
 export interface FishLadderEntry {
     readonly user: string;
     readonly rank: number;

@@ -15,12 +15,14 @@ import path from "path";
 import { logger } from "../util/Logging.js";
 import { PermanentRole } from "./entities/PermanentRole.js";
 import { fileURLToPath } from "url";
+import { Migrator } from "@mikro-orm/migrations";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const LOG = logger({ file: "mikroorm" });
 const config: Options = defineConfig({
+    extensions: [Migrator],
     entities: [
         Registration,
         Fish,

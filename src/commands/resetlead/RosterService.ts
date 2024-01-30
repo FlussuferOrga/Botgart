@@ -8,7 +8,7 @@ import { ResetLeader } from "./ResetLeader.js";
 import * as ResetUtil from "./ResetUtil.js";
 import { Roster } from "./Roster.js";
 import { WvwMap } from "./WvwMap.js";
-import { MikroORM, UseRequestContext } from "@mikro-orm/core";
+import { MikroORM, CreateRequestContext } from "@mikro-orm/core";
 import { debounce } from "lodash-es";
 
 const LOG = logger();
@@ -71,7 +71,7 @@ export class RosterService {
     // reduces strain if people are being funny by clicking around wildly
     // and only updates once if someone who was tagged for multiple maps
     // pulls back, instead for once for every map.
-    @UseRequestContext()
+    @CreateRequestContext()
     public async refreshGuarded(guild: discord.Guild, roster: Roster, message: discord.Message) {
         await this.refresh(guild, roster, message);
     }

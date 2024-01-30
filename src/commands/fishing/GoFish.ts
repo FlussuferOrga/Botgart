@@ -4,9 +4,9 @@ import * as https from "https";
 import { BotgartClient } from "../../BotgartClient.js";
 import { BotgartCommand } from "../../BotgartCommand.js";
 import * as L from "../../Locale.js";
-import { GeneratedFish } from "../../repositories/FishingRepository.js";
 import { logger } from "../../util/Logging.js";
-import { UseRequestContext } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/core";
+import { RandomFish } from "../../mikroorm/entities/RandomFish.js";
 
 /**
  Testcases:
@@ -59,10 +59,10 @@ class ActiveFisher {
     private client: BotgartClient;
     private fisher: discord.User;
     private message: discord.Message;
-    private fish: GeneratedFish;
+    private fish: RandomFish;
     private ended: boolean;
 
-    public constructor(client: BotgartClient, fisher: discord.User, fish: GeneratedFish) {
+    public constructor(client: BotgartClient, fisher: discord.User, fish: RandomFish) {
         this.client = client;
         this.fisher = fisher;
         this.fish = fish;
@@ -90,11 +90,11 @@ class ActiveFisher {
             .setTitle(L.get("FISHING_CAUGHT_TITLE", [], " | ", false))
             .setColor(0x00ff00)
             .setDescription(L.get("FISHING_CAUGHT_DESCRIPTION"))
-            .setImage(this.fish.image)
+            .setImage(this.fish.image || null)
             .addFields([
                 { name: ":fish:", value: `${this.fish.name}`, inline: true },
                 { name: ":scales:", value: `${this.fish.weight} g`, inline: true },
-                { name: ":moneybag:", value: `${this.fish.points_per_gramm * this.fish.weight}`, inline: true },
+                { name: ":moneybag:", value: `${(this.fish!.points_per_gramm || 1) * this.fish.weight}`, inline: true },
             ]);
     }
 
@@ -112,13 +112,13 @@ class ActiveFisher {
         this.message
             .createReactionCollector({
                 filter: (e, u) => u.id !== this.client.user?.id && e.emoji.name === REEL_EMOTE,
-                time: REEL_BASE_TIME * this.fish.reel_time_factor,
+                time: REEL_BASE_TIME * (this.fish.reel_time_factor || 1),
             })
             .on("collect", (r) => this.end(true))
             .on("end", (rs) => this.end(rs.size > 0));
     }
 
-    @UseRequestContext((type: GoFish) => (type.client as BotgartClient).orm)
+    @CreateRequestContext((type: GoFish) => (type.client as BotgartClient).orm)
     private async end(reeled: boolean): Promise<void> {
         if (this.ended) return;
         this.ended = true;
@@ -150,7 +150,7 @@ export default class GoFish extends BotgartCommand {
     }
 
     async command(message: discord.Message, responsible: discord.User, guild: discord.Guild, args): Promise<void> {
-        const fish: GeneratedFish = await this.getBotgartClient().fishingRepository.getRandomFish();
+        const fish = await this.getBotgartClient().fishingRepository.getRandomFish();
 
         const af = new ActiveFisher(this.getBotgartClient(), responsible, fish);
         await message.reply({ content: ":fish:", embeds: [await af.createIdleEmbed()] }).then(async (message) => {

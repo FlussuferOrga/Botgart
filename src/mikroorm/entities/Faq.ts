@@ -35,8 +35,8 @@ export class FaqKey {
     @ManyToOne({
         entity: () => Faq,
         fieldName: "faq_id",
-        onUpdateIntegrity: "cascade",
-        onDelete: "cascade",
+        updateRule: "cascade",
+        deleteRule: "cascade",
         nullable: false,
     })
     faqId!: Faq;

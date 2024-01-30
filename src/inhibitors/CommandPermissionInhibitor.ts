@@ -1,6 +1,6 @@
 import { AkairoMessage, Command, Inhibitor } from "@notenoughupdates/discord-akairo";
 import { BotgartClient } from "../BotgartClient.js";
-import { UseRequestContext } from "@mikro-orm/core";
+import { CreateRequestContext } from "@mikro-orm/core";
 import { GuildMember, Message } from "discord.js";
 import { BotgartCommand } from "../BotgartCommand.js";
 
@@ -13,7 +13,7 @@ export default class CommandPermissionInhibitor extends Inhibitor {
         });
     }
 
-    @UseRequestContext((type: Inhibitor) => (type.client as BotgartClient).orm)
+    @CreateRequestContext((type: Inhibitor) => (type.client as BotgartClient).orm)
     async exec(message: Message | AkairoMessage, command?: Command): Promise<boolean> {
         if (command instanceof BotgartCommand) {
             if (message.member !== null) {

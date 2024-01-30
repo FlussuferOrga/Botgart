@@ -1,9 +1,9 @@
-import { BaseEntity, Entity, PrimaryKey, PrimaryKeyType, Property } from "@mikro-orm/core";
+import { BaseEntity, Entity, PrimaryKey, PrimaryKeyProp, Property } from "@mikro-orm/core";
 
 @Entity({ tableName: "fish" })
 //@Check({expression: "min_weight < max_weight"})
-export class Fish extends BaseEntity<Fish, "fish_id"> {
-    [PrimaryKeyType]?: number; // this is needed for proper type checks in `FilterQuery`
+export class Fish extends BaseEntity {
+    [PrimaryKeyProp]?: number; // this is needed for proper type checks in `FilterQuery`
 
     @PrimaryKey({ autoincrement: false, nullable: true })
     fish_id?: number;

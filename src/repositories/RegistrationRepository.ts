@@ -1,7 +1,7 @@
 import { logger } from "../util/Logging.js";
 import { AbstractDbRepository } from "./AbstractDbRepository.js";
 import { Registration } from "../mikroorm/entities/Registration.js";
-import { expr } from "@mikro-orm/core";
+import { raw } from "@mikro-orm/core";
 import { uniq } from "lodash-es";
 
 const LOG = logger();
@@ -47,7 +47,7 @@ export class RegistrationRepository extends AbstractDbRepository {
                         user: { $in: discordUserIds },
                     },
                     {
-                        [expr("lower(account_name)")]: { $like: `%${searchString.toLowerCase()}%` },
+                        [raw("lower(account_name)")]: { $like: `%${searchString.toLowerCase()}%` },
                     },
                 ],
             },
