@@ -1,5 +1,5 @@
 import discord, { Guild, GuildMember, Role, Snowflake, UserResolvable } from "discord.js";
-import { isEqual, sortBy, uniq } from "lodash-es";
+import { chunk, isEqual, sortBy, uniq } from "lodash-es";
 import { BotgartClient } from "../BotgartClient.js";
 import { getConfig, WorldAssignment } from "../config/Config.js";
 import { logger } from "../util/Logging.js";
@@ -154,20 +154,24 @@ export class ValidationService {
         const designations: DesignatedWorlds[] = await this.client.registrationRepository.getDesignatedRoles(guild.id);
         LOG.info(`Found ${designations.length} users to check.`);
 
-        let members = await guild.members.fetch({ user: designations.map((value) => value.user) });
+        for (let chunkDesignations of chunk(designations, 100)) {
+            let members = await guild.members.fetch({
+                user: chunkDesignations.map((value) => value.user),
+            });
 
-        await Promise.all(
-            designations.map(async (d) => {
-                const member: GuildMember | null = members.get(d.user) || null;
-                if (member) {
-                    LOG.debug(`Repairing ${d.user} -> ${member.nickname || member.user.username}`);
-                    await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
-                } else {
-                    LOG.debug(`Repairing Non-Member ${d.user}`);
-                    await this.client.validationService.client.registrationRepository.deleteById(d);
-                }
-            })
-        );
+            await Promise.all(
+                chunkDesignations.map(async (d) => {
+                    const member: GuildMember | null = members.get(d.user) || null;
+                    if (member) {
+                        LOG.debug(`Repairing ${d.user} -> ${member.nickname || member.user.username}`);
+                        await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
+                    } else {
+                        LOG.debug(`Repairing Non-Member ${d.user}`);
+                        await this.client.validationService.client.registrationRepository.deleteById(d);
+                    }
+                })
+            );
+        }
     }
 
     private async getMember(guild: Guild, user: UserResolvable): Promise<GuildMember | null> {
