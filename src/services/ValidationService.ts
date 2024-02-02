@@ -153,8 +153,11 @@ export class ValidationService {
 
         const designations: DesignatedWorlds[] = await this.client.registrationRepository.getDesignatedRoles(guild.id);
         LOG.info(`Found ${designations.length} users to check.`);
-
-        let members = await guild.members.fetch({ user: designations.map((value) => value.user) });
+        LOG.info(`Fetching users. This may take a long time.`);
+        let members = await guild.members.fetch({
+            user: designations.map((value) => value.user),
+            time: 1000 * 60 * 60, //1h
+        });
 
         await Promise.all(
             designations.map(async (d) => {
