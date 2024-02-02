@@ -154,9 +154,11 @@ export class ValidationService {
         const designations: DesignatedWorlds[] = await this.client.registrationRepository.getDesignatedRoles(guild.id);
         LOG.info(`Found ${designations.length} users to check.`);
 
+        let members = await guild.members.fetch({ user: designations.map((value) => value.user) });
+
         await Promise.all(
             designations.map(async (d) => {
-                const member: GuildMember | null = await this.getMember(guild, d.user);
+                const member: GuildMember | null = members.get(d.user) || null;
                 if (member) {
                     LOG.debug(`Repairing ${d.user} -> ${member.nickname || member.user.username}`);
                     await this.client.validationService.setMemberRolesByWorldId(member, d.current_world_id, "Role Repair");
