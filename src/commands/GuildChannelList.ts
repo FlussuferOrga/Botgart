@@ -3,6 +3,7 @@ import { BotgartCommand } from "../BotgartCommand.js";
 import { createTable } from "../util/Table.js";
 import * as L from "../Locale.js";
 import { GuildChannelStats } from "../generated/api/botgerda/index.js";
+import { sortBy } from "lodash-es";
 
 const CHARSET = "utf-8";
 const ATTACHMENT_NAME = "result.txt";
@@ -29,6 +30,7 @@ export default class GuildChannelList extends BotgartCommand {
 
     private generate(list: GuildChannelStats[] | null | undefined, data: string[][], indent = 0) {
         if (Array.isArray(list)) {
+            list = sortBy(list, (value) => value.name);
             for (let i = 0; i < list.length; i++) {
                 const row = list[i];
                 let name: string;
