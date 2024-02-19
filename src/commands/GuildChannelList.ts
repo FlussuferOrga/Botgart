@@ -36,7 +36,7 @@ export default class GuildChannelList extends BotgartCommand {
                 const prefix = " ".repeat(indent);
                 const isLast = i === sortedList.length - 1;
                 const branchSymbol = isLast ? "└── " : "├── ";
-                const name = prefix + branchSymbol + row.name;
+                const name = prefix + (indent === 0 ? "" : branchSymbol) + row.name;
                 data.push([name, row.emptySince]);
                 this.generate(row.subChannels, data, indent + 1);
             }
