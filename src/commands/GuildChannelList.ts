@@ -30,16 +30,13 @@ export default class GuildChannelList extends BotgartCommand {
 
     private generate(list: GuildChannelStats[] | null | undefined, data: string[][], indent = 0) {
         if (Array.isArray(list)) {
-            list = sortBy(list, (value) => value.name);
-            for (let i = 0; i < list.length; i++) {
-                const row = list[i];
-                let name: string;
-                let prefix = "  ".repeat(indent);
-                if (i == list.length - 1) {
-                    name = prefix + (indent > 0 ? "└──" : "") + row.name;
-                } else {
-                    name = prefix + (indent > 0 ? "├──" : "") + row.name;
-                }
+            const sortedList = sortBy(list, "name"); // Sort channels alphabetically by name
+            for (let i = 0; i < sortedList.length; i++) {
+                const row = sortedList[i];
+                const prefix = " ".repeat(indent);
+                const isLast = i === sortedList.length - 1;
+                const branchSymbol = isLast ? "└── " : "├── ";
+                const name = prefix + branchSymbol + row.name;
                 data.push([name, row.emptySince]);
                 this.generate(row.subChannels, data, indent + 1);
             }
