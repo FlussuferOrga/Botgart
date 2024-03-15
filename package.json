@@ -57,9 +57,9 @@
     ]
   },
   "dependencies": {
-    "@mikro-orm/better-sqlite": "^6.1.9",
-    "@mikro-orm/core": "^6.1.9",
-    "@mikro-orm/migrations": "^6.1.9",
+    "@mikro-orm/better-sqlite": "^6.1.10",
+    "@mikro-orm/core": "^6.1.10",
+    "@mikro-orm/migrations": "^6.1.10",
     "@notenoughupdates/discord-akairo": "^10.0.2",
     "@supercharge/promise-pool": "^3.1.1",
     "await-semaphore": "^0.1.3",
@@ -81,7 +81,7 @@
     "winston": "^3.12.0"
   },
   "devDependencies": {
-    "@mikro-orm/cli": "^6.1.9",
+    "@mikro-orm/cli": "^6.1.10",
     "@openapitools/openapi-generator-cli": "^2.12.0",
     "@types/await-timeout": "^0.3.3",
     "@types/better-sqlite3": "^7.6.9",
