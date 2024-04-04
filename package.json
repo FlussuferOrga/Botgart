@@ -76,7 +76,7 @@
     "memoizer-ts": "^1.0.1",
     "node-schedule": "^2.1.1",
     "server-health": "^5.3.0",
-    "table": "^6.8.1",
+    "table": "^6.8.2",
     "typesafe-i18n": "^5.26.2",
     "winston": "^3.13.0"
   },
