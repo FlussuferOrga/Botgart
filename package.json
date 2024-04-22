@@ -84,7 +84,7 @@
     "@mikro-orm/cli": "^6.2.2",
     "@openapitools/openapi-generator-cli": "^2.13.2",
     "@types/await-timeout": "^0.3.3",
-    "@types/better-sqlite3": "^7.6.9",
+    "@types/better-sqlite3": "^7.6.10",
     "@types/chai": "^4.3.14",
     "@types/command-line-args": "^5.2.3",
     "@types/convict": "^6.1.6",
