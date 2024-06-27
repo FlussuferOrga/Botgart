@@ -8,6 +8,9 @@
       "role": "rolename (must exist!)"
     }
   ],
+  "gw2_guild_id": "FEE8F7B7-17B5-E411-AF00-AC162DC028B5",
+  "discord_server_id": "573504887267262474",
+  "discord_role_name": "Flussi",
   "ts_listener": {
     "ip": "127.0.0.1",
     "port": 10137,

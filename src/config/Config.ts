@@ -37,6 +37,21 @@ const configSchema = {
     arg: "current_link_role",
     env: "CURRENT_LINK_ROLE"
   },
+  gw2_guild_id: {
+    doc: "GW2 API base64 guild id",
+    format: String,
+    default: undefined
+  },
+  discord_server_id: {
+    doc: "Discord guild/server id",
+    format: String,
+    default: undefined
+  },
+  discord_role_name: {
+    doc: "Discord role in guild/server id",
+    format: String,
+    default: undefined
+  },
   locales: {
     doc: "Language",
     format: val => {

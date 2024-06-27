@@ -21,11 +21,17 @@ export class ValidationService {
 
     private client: BotgartClient;
     private activeLinkRoleName: string;
+    private gw2GuildId?: string;
+    private discordServerId?: string;
+    private discordRoleName?: string;
 
     constructor(client: BotgartClient) {
         this.client = client;
         this.worldAssignments = getConfig().get().world_assignments;
         this.activeLinkRoleName = getConfig().get().current_link_role;
+        this.gw2GuildId = getConfig().get().gw2_guild_id;
+        this.discordServerId = getConfig().get().discord_server_id;
+        this.discordRoleName = getConfig().get().discord_role_name;
     }
 
     private readonly worldAssignments: WorldAssignment[];
@@ -88,6 +94,7 @@ export class ValidationService {
 
         const worldAssignment = await this.getAssignmentByWorldId(accountData.world);
 
+        await this.addUserGuildRole(accountData, author);
         if (worldAssignment === undefined) {
             LOG.info("Declined API key {0}.".formatUnicorn(apiKey));
             throw new DeclinedApiKeyError();
@@ -96,6 +103,40 @@ export class ValidationService {
             await Util.asyncForEach(members, async (member: discord.GuildMember) => {
                 await this.addVerificationInGuild(member, worldAssignment, apiKey, accountData);
             });
+        }
+    }
+
+    private async addUserGuildRole(accountData: AccountData, author: discord.User) {
+        if (!this.gw2GuildId || !this.discordServerId || !this.discordRoleName) {
+            LOG.warn("Missing configuration for guild check");
+            return;
+        }
+        const discordServer = await this.client.guilds.fetch(this.discordServerId);
+        if (!discordServer) {
+            LOG.error("Could not get discord server");
+            return;
+        }
+        const member = await discordServer?.members?.fetch(author?.id);
+        if (!member) {
+            LOG.error("Could not get author as discord server member");
+            return;
+        }
+        const role = findRole(discordServer, this.discordRoleName);
+        if (!role) {
+            LOG.error("Could not find role in discord server");
+            return;
+        }
+        const hasRole = member?.roles?.cache?.some((role) => role.name === this.discordRoleName);
+        const hasGuild = accountData.guilds.includes(this.gw2GuildId);
+        if (hasGuild && !hasRole) {
+            LOG.info("Adding user role");
+            member.roles.add(role);
+        } else if (!hasGuild && hasRole) {
+            LOG.info("User role should be removed");
+        } else if (hasGuild && hasRole) {
+            LOG.info("User has already role");
+        } else {
+            LOG.info("User doesnt and shouldn't have role");
         }
     }
 
@@ -166,6 +207,18 @@ export class ValidationService {
                 }
             })
         );
+        LOG.info("Repairing guild role assignments");
+        (await this.client.registrationRepository.loadRegistrationsFromDb()).map(async (registration) => {
+            const accountData = await getAccountInfo(registration.api_key);
+            if (!accountData) {
+                LOG.error(`Could not get account data for ${registration.account_name}`);
+            }
+            const user = await this.client.users.fetch(registration.user);
+            if (!user) {
+                LOG.error(`Could not get discord user for ${registration.account_name}`);
+            }
+            this.addUserGuildRole(accountData, user);
+        });
     }
 
     private async getMember(guild: Guild, user: UserResolvable): Promise<GuildMember | null> {
