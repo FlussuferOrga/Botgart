@@ -42,7 +42,7 @@ export class ValidationService {
     ) {
         const desiredRoleNames: string[] = [];
         if (registration) {
-            if (this.registeredRoleName) {
+            if (this.registeredRoleName != null) {
                 desiredRoleNames.push(this.registeredRoleName);
             }
             if (registration.current_world_id) {
