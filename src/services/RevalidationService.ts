@@ -3,7 +3,6 @@ import { Semaphore } from "await-semaphore";
 import Timeout from "await-timeout";
 import discord from "discord.js";
 import { BotgartClient } from "../BotgartClient.js";
-import { getConfig, WorldAssignment } from "../config/Config.js";
 import { AccountData, getAccountInfo, InvalidKeyError } from "../Gw2ApiUtils.js";
 import * as L from "../Locale.js";
 import { logger } from "../util/Logging.js";
@@ -12,13 +11,7 @@ import { Registration } from "../mikroorm/entities/Registration.js";
 
 const LOG = logger();
 
-export type CheckResult =
-    | { valid: false }
-    | {
-          accountData: AccountData;
-          valid: true;
-          worldAssignment: WorldAssignment;
-      };
+export type CheckResult = undefined | false | AccountData;
 
 export class RevalidationService {
     private static REAUTH_DELAY = 1000;
@@ -30,10 +23,7 @@ export class RevalidationService {
 
     constructor(client: BotgartClient) {
         this.client = client;
-        this.worldAssignments = getConfig().get().world_assignments;
     }
-
-    private readonly worldAssignments: WorldAssignment[];
 
     /**
      * Revalidates all keys that have been put into the database. Note that due to rate limiting, this method implements some
@@ -50,7 +40,7 @@ export class RevalidationService {
                 LOG.error(`Error during validation of ${user.account_name}: ${error}`);
             })
             .process(async (reg) => {
-                const result = await this.checkRegistration(this.worldAssignments, reg);
+                const result = await this.checkRegistration(reg);
                 if (result !== undefined) {
                     await this.handle(reg, result);
                 } else {
@@ -60,30 +50,18 @@ export class RevalidationService {
             });
     }
 
-    private async checkRegistration(worldAssignments: WorldAssignment[], r: Registration): Promise<undefined | CheckResult> {
+    private async checkRegistration(r: Registration): Promise<CheckResult> {
         const release = await RevalidationService.SEM.acquire();
         LOG.info(`Sending revalidation request for API key ${r.api_key}.`);
         try {
-            const accountData = await getAccountInfo(r.api_key);
-
-            const validationResult = this.client.validationService.getAssignmentByWorldId(accountData.world);
-
-            if (validationResult) {
-                return {
-                    accountData: accountData,
-                    valid: true,
-                    worldAssignment: validationResult,
-                };
-            } else {
-                return { valid: false };
-            }
+            return await getAccountInfo(r.api_key);
         } catch (e) {
             if (e instanceof InvalidKeyError) {
                 // while this was an actual error when initially registering (=> tell user their key is invalid),
                 // in the context of revalidation this is actually a valid case: the user must have given a valid key
                 // upon registration (or else it would not have ended up in the DB) and has now deleted the key
                 // => remove the validation role from the user
-                return { valid: false };
+                return false;
             } else {
                 LOG.error(`Error occurred while revalidating key ${r.api_key}. User will be except from this revalidation.\n${e}`);
                 return undefined;
@@ -98,8 +76,6 @@ export class RevalidationService {
     private async handle(registration: Registration, authResult: CheckResult) {
         const guild: discord.Guild | null = await this.client.guilds.fetch(registration.guild);
 
-        const current_assignment = await this.client.validationService.getAssignmentByWorldId(registration.current_world_id);
-
         // filter out users for which we encountered errors
         if (!guild) {
             LOG.error(`Could not find a guild ${registration.guild}. Have I been kicked?`);
@@ -113,36 +89,25 @@ export class RevalidationService {
                 await this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
-                    L.get("DLOG_UNAUTH", [
-                        formatUserPing(registration.user),
-                        registration.account_name,
-                        current_assignment?.role || "world:" + registration.current_world_id,
-                    ])
+                    L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name])
                 );
                 await this.client.registrationRepository.delete(registration);
                 return;
             }
-            if (!authResult.valid) {
+            if (authResult == false) {
                 // user should be pruned: user has either transed (false) or deleted their key (invalid key)
-                LOG.info("Unauthing {0}.".formatUnicorn(member.user.username));
-                await this.client.validationService.setMemberRolesByWorldAssignment(member, null, "Api Key invalid or not authorized Server");
+                LOG.info("Unauthorize {0}.".formatUnicorn(member.user.username));
+                await this.client.validationService.synchronizeDiscordRoles(member, null, "Api Key invalid");
                 await this.client.registrationRepository.deleteById(registration);
                 await this.client.discordLog(
                     guild,
                     RevalidationService.LOG_TYPE_DEAUTHORIZE,
-                    L.get("DLOG_UNAUTH", [
-                        formatUserPing(registration.user),
-                        registration.account_name,
-                        current_assignment?.role || "world:" + registration.current_world_id,
-                    ])
+                    L.get("DLOG_UNAUTH", [formatUserPing(registration.user), registration.account_name])
                 );
                 await member.send(L.get("KEY_INVALIDATED"));
-            } else if (authResult.valid) {
-                await this.updateDatabaseIfRequired(registration, authResult.accountData);
-                // user transferred to another admitted server -> update role
-                // log("info", `Changing role of user ${member.displayName} from ${currentRole} to ${admittedRole} (unless they are the same).`);
-                await this.client.validationService.setMemberRolesByWorldAssignment(member, authResult.worldAssignment, "ReAuthentication");
-                // assignServerRole(member, currentRole, admittedRole === undefined ? null : admittedRole);
+            } else if (authResult != undefined) {
+                const updatedRegistration = await this.updateDatabaseIfRequired(registration, authResult);
+                await this.client.validationService.synchronizeDiscordRoles(member, updatedRegistration, "ReAuthentication");
             }
         }
     }
@@ -151,29 +116,34 @@ export class RevalidationService {
         const outdated =
             registration.account_name != accountData.name ||
             registration.gw2account != accountData.id ||
-            registration.current_world_id != accountData.world;
+            registration.current_world_id != accountData.world ||
+            registration.gw2GuildIds != accountData.guilds;
         if (outdated) {
             const old = {
                 account_name: registration.account_name,
                 gw2account: registration.gw2account,
                 current_world_id: registration.current_world_id,
+                guildIds: registration.gw2GuildIds,
             };
             registration = await this.client.registrationRepository.updateRegistration(
                 registration,
                 accountData.world,
                 accountData.name,
-                accountData.id
+                accountData.id,
+                accountData.guilds
             );
             if (LOG.isInfoEnabled()) {
                 LOG.info(`Account Data updated for ${registration.user}`, {
                     old: old,
                     new: {
-                        account_name: accountData.name,
-                        gw2account: accountData.id,
-                        current_world_id: accountData.world,
+                        account_name: registration.account_name,
+                        gw2account: registration.gw2account,
+                        current_world_id: registration.current_world_id,
+                        guildIds: registration.gw2GuildIds,
                     },
                 });
             }
         }
+        return registration;
     }
 }

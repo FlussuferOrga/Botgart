@@ -47,6 +47,7 @@ export interface AccountData {
     id: string;
     world: number;
     name: string;
+    guilds: string[];
 }
 
 export async function getAccountInfo(apikey: string): Promise<AccountData> {
