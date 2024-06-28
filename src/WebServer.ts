@@ -29,7 +29,6 @@ export class WebServer {
             };
             this.server.on("error", startupErrorListener);
             this.server.listen(parseInt(httpConfig.port), httpConfig.host, undefined, () => {
-
                 LOG.info(`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
 
                 this.server.on("error", WebServer.onError);
