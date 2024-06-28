@@ -54,6 +54,11 @@ const configSchema = {
         arg: "locales",
         env: "LOCALES",
     },
+    registered_role_name: {
+        doc: "Role Name assigned if verified",
+        format: String,
+        default: null,
+    },
     world_assignments: {
         doc: "World Role Mapping",
         format: "source-array",

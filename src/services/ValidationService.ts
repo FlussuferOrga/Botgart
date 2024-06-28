@@ -22,12 +22,14 @@ export class ValidationService {
 
     private client: BotgartClient;
     private readonly activeLinkRoleName: string;
+    private readonly registeredRoleName: string | null;
 
     constructor(client: BotgartClient) {
         this.client = client;
         this.worldAssignments = getConfig().get().world_assignments;
         this.guildAssignments = getConfig().get().guild_assignments;
         this.activeLinkRoleName = getConfig().get().current_link_role;
+        this.registeredRoleName = getConfig().get().registered_role_name;
     }
 
     private readonly worldAssignments: WorldAssignment[];
@@ -40,6 +42,9 @@ export class ValidationService {
     ) {
         const desiredRoleNames: string[] = [];
         if (registration) {
+            if (this.registeredRoleName) {
+                desiredRoleNames.push(this.registeredRoleName);
+            }
             if (registration.current_world_id) {
                 const worldAssignment = this.getAssignmentByWorldId(registration.current_world_id);
                 if (worldAssignment) {
@@ -92,19 +97,11 @@ export class ValidationService {
         );
     }
 
-    private collectAllManagedRoles(guild: Guild) {
-        const managedRoles = [...this.worldAssignments, ...this.guildAssignments]
-            .map((value) => value.role)
+    public collectAllManagedRoles(guild: Guild) {
+        return [this.activeLinkRoleName, this.registeredRoleName, ...[...this.worldAssignments, ...this.guildAssignments].map((value) => value.role)]
+            .filter((value) => value !== undefined && value !== null)
             .map((roleName) => findRole(guild, roleName))
             .filter((value) => value !== undefined) as Role[];
-
-        const allManagedRoles = [...managedRoles];
-
-        const activeLinkRole = findRole(guild, this.activeLinkRoleName);
-        if (activeLinkRole !== undefined) {
-            allManagedRoles.push(activeLinkRole);
-        }
-        return allManagedRoles;
     }
 
     public async validate(apiKey: string, author: discord.User) {
