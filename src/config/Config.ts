@@ -9,8 +9,7 @@ import { Info, SystemZone } from "luxon";
 const LOG = logger();
 
 export type WorldAssignment = { world_id: number; role: string, link: boolean };
-export type GuildAssignment = { guild_id: string; role: string};
-
+export type GuildAssignment = { guild_id: string; role: string };
 
 const configSchema = {
     db_location: {

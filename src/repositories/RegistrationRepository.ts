@@ -1,7 +1,7 @@
 import { logger } from "../util/Logging.js";
 import { AbstractDbRepository } from "./AbstractDbRepository.js";
 import { Registration } from "../mikroorm/entities/Registration.js";
-import { raw } from "@mikro-orm/core";
+import { EntityData, raw } from "@mikro-orm/core";
 import { uniq } from "lodash-es";
 
 const LOG = logger();
@@ -65,22 +65,8 @@ export class RegistrationRepository extends AbstractDbRepository {
             .find({ guild: guildId }, { fields: ["guild", "user", "current_world_id", "gw2GuildIds"] });
     }
 
-    public async storeAPIKey(
-        user: string,
-        guild: string,
-        key: string,
-        gw2account: string,
-        accountName: string,
-        currentWorldId: number
-    ): Promise<Registration> {
-        return await this.orm.em.upsert(Registration, {
-            guild: guild,
-            user: user,
-            api_key: key,
-            gw2account: gw2account,
-            account_name: accountName,
-            current_world_id: currentWorldId,
-        });
+    public async storeAPIKey(data: EntityData<Registration>): Promise<Registration> {
+        return await this.orm.em.upsert(Registration, data);
     }
 
     public async loadRegistrationsFromDb(): Promise<Registration[]> {

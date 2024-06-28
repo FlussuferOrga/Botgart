@@ -119,14 +119,15 @@ export class ValidationService {
     }
 
     private async addVerificationInGuild(member: GuildMember, apiKey: string, accountData: AccountData) {
-        const registration = await this.client.registrationRepository.storeAPIKey(
-            member.user.id,
-            member.guild.id,
-            apiKey,
-            accountData.id,
-            accountData.name,
-            accountData.world
-        ); // this cast should pass, since we either resolved by now or fell back to NULL
+        const registration = await this.client.registrationRepository.storeAPIKey({
+            guild: member.guild.id,
+            user: member.user.id,
+            api_key: apiKey,
+            gw2account: accountData.id,
+            account_name: accountData.name,
+            current_world_id: accountData.world,
+            gw2GuildIds: accountData.guilds,
+        }); // this cast should pass, since we either resolved by now or fell back to NULL
         if (registration !== null) {
             LOG.info("Accepted {0} for {1} on {2} ({3}).".formatUnicorn(apiKey, member.user.username, member.guild.name, member.guild.id));
             await this.client.validationService.synchronizeDiscordRoles(member, registration, "Authentication");
