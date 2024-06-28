@@ -25,7 +25,7 @@
   },
   "exports": "./index.js",
   "engines": {
-    "node": ">=21"
+    "node": ">=22"
   },
   "scripts": {
     "run": "npm-run-all build start",
