@@ -25,13 +25,10 @@ export class WebServer {
 
             const startupErrorListener = (err) => {
                 // not needed after it has been invoked
-                this.server.removeListener("error", startupErrorListener);
                 reject(err);
             };
             this.server.on("error", startupErrorListener);
             this.server.listen(parseInt(httpConfig.port), httpConfig.host, undefined, () => {
-                // not needed since server is running now
-                this.server.removeListener("error", startupErrorListener);
 
                 LOG.info(`Web Server is listening on ${httpConfig.host}:${httpConfig.port} .`);
 
@@ -47,7 +44,6 @@ export class WebServer {
 
     public async close() {
         if (this.server != undefined) {
-            this.server.removeListener("error", WebServer.onError);
             this.server.close();
         }
     }

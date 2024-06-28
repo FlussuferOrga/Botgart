@@ -56,7 +56,7 @@ export class RosterService {
             LOG.error(`Received request to watch roster for week ${roster.weekNumber}, but no meta information was found in the database.`);
             return;
         }
-        const refreshDelayedFn = (eventRoster: Roster, map: string, p: string) => {
+        const refreshDelayedFn = (eventRoster: Roster) => {
             const wrappedFunc = async function (service: RosterService, roster: Roster) {
                 await service.refreshGuarded(guild, roster, message);
             };

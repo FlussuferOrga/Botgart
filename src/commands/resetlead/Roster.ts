@@ -1,5 +1,5 @@
 import discord, { ColorResolvable } from "discord.js";
-import events from "events";
+import EventEmitter from "events";
 import { getConfig } from "../../config/Config.js";
 import * as L from "../../Locale.js";
 import * as Util from "../../util/Util.js";
@@ -10,7 +10,13 @@ import { DateTime, WeekNumbers } from "luxon";
 
 const EMPTY_MESSAGE = "_ _";
 
-export class Roster extends events.EventEmitter {
+export interface RosterEvents {
+    addleader: [roster: Roster, map: WvwMap, leader: ResetLeader];
+    removeleader: [roster: Roster, map: WvwMap, leader: ResetLeader];
+    togglevisibility: [roster: Roster, leaders: ResetLeader[]];
+}
+
+export class Roster extends EventEmitter {
     public readonly leads: { [key: string]: [WvwMap, Util.GeneralSet<ResetLeader>] };
     public readonly weekNumber: number;
     public readonly year: number;
@@ -110,10 +116,10 @@ export class Roster extends events.EventEmitter {
     public removeLead(map: WvwMap | undefined, leader: ResetLeader): void {
         if (map === undefined) {
             for (const m in this.leads) {
-                const mapLeads = this.leads[m][1];
+                const [map, mapLeads] = this.leads[m];
                 if (mapLeads.has(leader)) {
                     mapLeads.delete(leader);
-                    this.emit("removeleader", this, m, leader);
+                    this.emit("removeleader", this, map, leader);
                 }
             }
         } else {
@@ -193,5 +199,21 @@ export class Roster extends events.EventEmitter {
         } else {
             return EMPTY_MESSAGE;
         }
+    }
+
+    public on<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => any): this {
+        return super.on(event, listener);
+    }
+
+    public once<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => any): this {
+        return super.once(event, listener);
+    }
+
+    public emit<Event extends keyof RosterEvents>(event: Event, ...args: RosterEvents[Event]): boolean {
+        return super.emit(event, ...args);
+    }
+
+    public off<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => any): this {
+        return super.off(event, listener);
     }
 }
