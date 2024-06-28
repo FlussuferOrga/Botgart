@@ -30,4 +30,7 @@ export class Registration {
 
     @Property({ type: LuxonDateTimeType, nullable: true, defaultRaw: "CURRENT_TIMESTAMP" })
     created?: DateTime;
+
+    @Property({ fieldName: "gw2_guild_ids", type: "array", nullable: true })
+    gw2GuildIds: string[];
 }

@@ -1,3 +1,4 @@
+import "../util/string.extensions.js";
 import { getConfig } from "../config/Config.js";
 import { defineConfig, Options } from "@mikro-orm/better-sqlite";
 import { Registration } from "./entities/Registration.js";

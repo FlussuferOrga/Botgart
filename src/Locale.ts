@@ -43,8 +43,8 @@ EN = {
         PERMANENT_ROLE_RM_FAIL: "Permanent role could not be removed.",
         WHOIS_EMPTY_RESULT: "No results found.",
         WHOIS_RESULTS: "The following possible results were found:",
-        DLOG_AUTH: "User {0} with ingame account `{1}` has been authorised with role {2}.",
-        DLOG_UNAUTH: "User {0} with ingame account `{1}` has been de-authorised and lost their role {2}.",
+        DLOG_AUTH: "User {0} with ingame account `{1}` has been authorised.",
+        DLOG_UNAUTH: "User {0} with ingame account `{1}` has been de-authorised.",
 
         CRONJOB_STORED: "Your cronjob has been saved with ID `{0}`. Next execution: `{1}`.",
         CRONJOB_NOT_STORED:

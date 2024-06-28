@@ -44,9 +44,10 @@
     "dep-typesync": "node ./node_modules/typesync/bin/typesync",
     "dep-check-unused": "node ./node_modules/depcheck/bin/depcheck.js --ignores='rimraf,@types/better-sqlite3,better-sqlite3,ts-node'",
     "dep-audit-fix": "npm audit fix",
-    "orm-generate-migration": "mikro-orm migration:create",
-    "orm-generate-migratio-initial": "mikro-orm migration:create --initial",
-    "orm-check-migration": "mikro-orm migration:check",
+    "orm-debug": "mikro-orm-esm debug",
+    "orm-generate-migration": "mikro-orm-esm migration:create",
+    "orm-generate-migratio-initial": "mikro-orm-esm migration:create --initial",
+    "orm-check-migration": "mikro-orm-esm migration:check",
     "local-ci": "npm-run-all build lint test dep-check-unused dep-outdated"
   },
   "typesync": {

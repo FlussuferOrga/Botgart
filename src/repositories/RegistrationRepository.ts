@@ -59,8 +59,10 @@ export class RegistrationRepository extends AbstractDbRepository {
         return [...dbResult, ...nonDbDiscordUserResult];
     }
 
-    public async getDesignatedRoles(guildId: string): Promise<DesignatedWorlds[]> {
-        return await this.orm.em.getRepository(Registration).find({ guild: guildId }, { fields: ["guild", "user", "current_world_id"] });
+    public async getDesignatedRoles(guildId: string): Promise<MemberForRoleRepair[]> {
+        return await this.orm.em
+            .getRepository(Registration)
+            .find({ guild: guildId }, { fields: ["guild", "user", "current_world_id", "gw2GuildIds"] });
     }
 
     public async storeAPIKey(
@@ -112,11 +114,18 @@ export class RegistrationRepository extends AbstractDbRepository {
         });
     }
 
-    public async updateRegistration(registration: Registration, currentWorldId: number, accountName: string, gw2accountId: string) {
+    public async updateRegistration(
+        registration: Registration,
+        currentWorldId: number,
+        accountName: string,
+        gw2accountId: string,
+        guildIds: string[]
+    ) {
         const entity = this.orm.em.assign(registration, {
             current_world_id: currentWorldId,
             account_name: accountName,
             gw2account: gw2accountId,
+            gw2GuildIds: guildIds,
         });
         await this.orm.em.flush();
         return entity;
@@ -131,4 +140,4 @@ export class RegistrationRepository extends AbstractDbRepository {
     }
 }
 
-export type DesignatedWorlds = Pick<Registration, "guild" | "user" | "current_world_id">;
+export type MemberForRoleRepair = Pick<Registration, "guild" | "user" | "current_world_id" | "gw2GuildIds">;
