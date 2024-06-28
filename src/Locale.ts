@@ -244,8 +244,8 @@ DE = {
         PERMANENT_ROLE_RM_FAIL: "Die permanente Rolle konnte nicht entfernt werden.",
         WHOIS_EMPTY_RESULT: "Keine Treffer gefunden.",
         WHOIS_RESULTS: "Die folgenden möglichen Treffer wurden gefunden:",
-        DLOG_AUTH: "Benutzer {0} mit dem Ingame-Account `{1}` wurde mit der Rolle {2} autorisiert.",
-        DLOG_UNAUTH: "Benutzer {0} mit dem Ingame-Account `{1}` wurde ent-autorisiert und hat die Rolle {2} verloren.",
+        DLOG_AUTH: "Benutzer {0} mit dem Ingame-Account `{1}` wurde autorisiert.",
+        DLOG_UNAUTH: "Benutzer {0} mit dem Ingame-Account `{1}` wurde ent-autorisiert.",
 
         CRONJOB_STORED: "Dein Cronjob wurde gespeichert mit der ID `{0}`. Nächste Ausführung: `{1}`.",
         CRONJOB_NOT_STORED:
@@ -455,8 +455,8 @@ DE_SWG = {
         PERMANENT_ROLE_RM_FAIL: "Konnt ich net wegmachen.",
         WHOIS_EMPTY_RESULT: "Han nix gfunde.",
         WHOIS_RESULTS: "Des han ich gfunde:",
-        DLOG_AUTH: "Benutzer {0} mit dem Ingame-Account `{1}` han ich mit der Rolle {2} autorisiert.",
-        DLOG_UNAUTH: "Benutzer {0} mit dem Ingame-Account `{1}` han ich ent-autorisiert und er het die Rolle {2} verloren.",
+        DLOG_AUTH: "Benutzer {0} mit dem Ingame-Account `{1}` han ich autorisiert.",
+        DLOG_UNAUTH: "Benutzer {0} mit dem Ingame-Account `{1}` han ich ent-autorisiert.",
 
         CRONJOB_STORED: "Deinen Cronjob han ich mir gemerkt mit der ID `{0}`. Snächscht mal: `{1}`.",
         CRONJOB_NOT_STORED:
