@@ -201,11 +201,11 @@ export class Roster extends EventEmitter {
         }
     }
 
-    public on<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => never): this {
+    public on<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => void): this {
         return super.on(event, listener);
     }
 
-    public once<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => never): this {
+    public once<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => void): this {
         return super.once(event, listener);
     }
 
@@ -213,7 +213,7 @@ export class Roster extends EventEmitter {
         return super.emit(event, ...args);
     }
 
-    public off<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => never): this {
+    public off<Event extends keyof RosterEvents>(event: Event, listener: (...args: RosterEvents[Event]) => void): this {
         return super.off(event, listener);
     }
 }
