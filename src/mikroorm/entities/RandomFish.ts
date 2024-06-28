@@ -3,7 +3,7 @@ import { Entity, Property, raw } from "@mikro-orm/core";
 import { Fish } from "./Fish.js";
 
 @Entity({
-    expression: (em: EntityManager, where, options) => {
+    expression: (em: EntityManager, where) => {
         return em
             .createQueryBuilder(Fish, "f")
             .select([
@@ -15,6 +15,7 @@ import { Fish } from "./Fish.js";
                 "f.points_per_gramm",
                 "f.reel_time_factor",
             ])
+            .where(where)
             .orderBy({ [raw(`(ABS(RANDOM() / CAST(-9223372036854775808 AS REAL)) * f.rarity)`)]: "DESC" });
     },
 })
