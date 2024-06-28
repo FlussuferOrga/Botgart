@@ -8,6 +8,12 @@
       "role": "rolename (must exist!)"
     }
   ],
+  "guild_assignments": [
+    {
+      "guild_id": "FEE8F7B7-17B5-E411-AF00-AC162DC028B5",
+      "role": "Rising River"
+    }
+  ],
   "ts_listener": {
     "ip": "127.0.0.1",
     "port": 10137,
