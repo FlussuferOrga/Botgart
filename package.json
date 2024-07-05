@@ -68,7 +68,7 @@
     "better-sqlite3": "^10.0.0",
     "callsites": "^4.1.0",
     "cheerio": "^1.0.0-rc.12",
-    "command-line-args": "^5.2.1",
+    "command-line-args": "^6.0.0",
     "convict": "6.2.4",
     "discord.js": "^14.14.1",
     "gw2api-client": "^7.7.1",
